@@ -1,0 +1,23 @@
+# Document Perception — Layer 1 + Layer 2 (Detect/Parse/See/Locate)
+# Tech stack locked in Foundation_Master_Context.md section 4.
+
+docling
+python-docx
+openpyxl
+defusedxml
+fastapi
+uvicorn[standard]
+pydantic>=2
+python-multipart
+aiosqlite
+
+# python-magic requires the native libmagic DLL, which Windows dev machines
+# don't ship. python-magic-bin is the same python-magic API/license (MIT),
+# bundled with the Windows libmagic binary. Approved substitution — see
+# conversation log 2026-08-03. On Linux/macOS deploy targets, swap back to
+# plain `python-magic` (libmagic is present via the OS package manager).
+python-magic-bin; sys_platform == "win32"
+python-magic; sys_platform != "win32"
+
+# Dev/test only
+pytest
