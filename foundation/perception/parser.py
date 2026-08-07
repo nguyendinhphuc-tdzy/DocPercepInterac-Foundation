@@ -7,12 +7,18 @@ from __future__ import annotations
 
 import logging
 from functools import lru_cache
+from pathlib import Path
 
 from docling.datamodel.base_models import InputFormat
 from docling.datamodel.pipeline_options import PdfPipelineOptions
 from docling.document_converter import DocumentConverter, PdfFormatOption
 
 logger = logging.getLogger(__name__)
+
+# Pre-downloaded model artifacts (see foundation/models/README.md). If this
+# directory exists, Docling loads models from here instead of Hugging Face
+# Hub, so a clone + extract is enough to run fully offline.
+LOCAL_ARTIFACTS_PATH = Path(__file__).resolve().parent.parent / "models"
 
 
 @lru_cache(maxsize=1)
@@ -34,6 +40,9 @@ def get_converter() -> DocumentConverter:
     pipeline_options.generate_page_images = False
     pipeline_options.layout_batch_size = 1
     pipeline_options.table_batch_size = 1
+    if LOCAL_ARTIFACTS_PATH.is_dir():
+        pipeline_options.artifacts_path = LOCAL_ARTIFACTS_PATH
+        logger.info("Using local model artifacts at %s", LOCAL_ARTIFACTS_PATH)
     converter = DocumentConverter(
         format_options={
             InputFormat.PDF: PdfFormatOption(pipeline_options=pipeline_options)

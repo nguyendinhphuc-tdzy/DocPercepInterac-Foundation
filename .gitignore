@@ -29,3 +29,8 @@ Thumbs.db
 
 # Claude
 .claude/
+
+# Docling models (distributed separately via internal storage — see foundation/models/README.md)
+foundation/models/*
+!foundation/models/README.md
+*.zip
