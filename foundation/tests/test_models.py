@@ -1,4 +1,4 @@
-"""Unit tests for perception/models.py (P1-01 acceptance criteria)."""
+"""Unit tests for perception/models.py — schema per Foundation_Build_Plan.md section 3."""
 import json
 import sys
 from pathlib import Path
@@ -6,18 +6,19 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from perception.models import (
-    BoundingBox,
-    DocxAnchor,
+    AnchorDOCX,
+    AnchorPDF,
+    AnchorXLSX,
+    Element,
+    ElementIndex,
     ElementType,
-    FoundationDocument,
-    FoundationElement,
-    PdfAnchor,
-    XlsxAnchor,
+    Profile,
+    ProfileField,
 )
 
 
 def test_docx_anchor_model_dump_json_is_valid_json():
-    anchor = DocxAnchor(paragraph_index=5, style_id="Heading 1", text_fingerprint="a3f2b1c0")
+    anchor = AnchorDOCX(paragraph_index=5, style_id="Heading 1", text_fingerprint="a3f2b1c0")
     dumped = anchor.model_dump_json()
     parsed = json.loads(dumped)
     assert parsed["format"] == "docx"
@@ -25,66 +26,77 @@ def test_docx_anchor_model_dump_json_is_valid_json():
 
 
 def test_xlsx_anchor_roundtrip():
-    anchor = XlsxAnchor(sheet_name="BCTC", cell_address="B5")
+    anchor = AnchorXLSX(sheet_name="BCTC", cell_address="B5")
     parsed = json.loads(anchor.model_dump_json())
     assert parsed["format"] == "xlsx"
     assert parsed["cell_address"] == "B5"
 
 
-def test_pdf_anchor_bbox_bounds():
-    anchor = PdfAnchor(
-        page=1,
-        bbox=BoundingBox(page=1, x=0.1, y=0.2, w=0.8, h=0.05),
-        reading_order_index=3,
-    )
+def test_pdf_anchor_bbox_relative_bounds():
+    anchor = AnchorPDF(page=1, bbox_relative=(0.1, 0.2, 0.8, 0.05), reading_order_index=3)
     assert anchor.page == 1
-    assert 0.0 <= anchor.bbox.x <= 1.0
+    assert all(0.0 <= v <= 1.0 for v in anchor.bbox_relative)
 
 
 def test_anchor_union_discriminates_by_format():
-    docx_el = FoundationElement(
+    docx_el = Element(
+        index=0,
         type=ElementType.HEADING,
-        text="A. CURRENT ASSETS",
-        anchor=DocxAnchor(paragraph_index=0, style_id="Heading 1", text_fingerprint="abc123"),
+        name="A. CURRENT ASSETS",
+        anchor=AnchorDOCX(paragraph_index=0, style_id="Heading 1", text_fingerprint="abc123"),
     )
-    xlsx_el = FoundationElement(
-        type=ElementType.TABLE_CELL,
-        text="1000000",
-        anchor=XlsxAnchor(sheet_name="Sheet1", cell_address="A1"),
+    xlsx_el = Element(
+        index=1,
+        type=ElementType.CELL,
+        name="Revenue 2025",
+        anchor=AnchorXLSX(sheet_name="Sheet1", cell_address="A1"),
     )
-    pdf_el = FoundationElement(
-        type=ElementType.PARAGRAPH,
-        text="Footnote",
-        anchor=PdfAnchor(
-            page=2,
-            bbox=BoundingBox(page=2, x=0.0, y=0.0, w=1.0, h=1.0),
-            reading_order_index=0,
-        ),
+    pdf_el = Element(
+        index=2,
+        type=ElementType.PARA,
+        name="Footnote",
+        anchor=AnchorPDF(page=2, bbox_relative=(0.0, 0.0, 1.0, 1.0), reading_order_index=0),
     )
 
-    assert isinstance(docx_el.anchor, DocxAnchor)
-    assert isinstance(xlsx_el.anchor, XlsxAnchor)
-    assert isinstance(pdf_el.anchor, PdfAnchor)
+    assert isinstance(docx_el.anchor, AnchorDOCX)
+    assert isinstance(xlsx_el.anchor, AnchorXLSX)
+    assert isinstance(pdf_el.anchor, AnchorPDF)
 
     # Round-trip through JSON must preserve the correct anchor subtype.
-    doc = FoundationDocument(
+    index = ElementIndex(
         source_path="fixture_bcdt.docx",
         format="docx",
-        page_count=1,
         elements=[docx_el, xlsx_el, pdf_el],
-        docling_version="0.0.0-test",
     )
-    reloaded = FoundationDocument.model_validate_json(doc.model_dump_json())
-    assert isinstance(reloaded.elements[0].anchor, DocxAnchor)
-    assert isinstance(reloaded.elements[1].anchor, XlsxAnchor)
-    assert isinstance(reloaded.elements[2].anchor, PdfAnchor)
+    reloaded = ElementIndex.model_validate_json(index.model_dump_json())
+    assert isinstance(reloaded.elements[0].anchor, AnchorDOCX)
+    assert isinstance(reloaded.elements[1].anchor, AnchorXLSX)
+    assert isinstance(reloaded.elements[2].anchor, AnchorPDF)
 
 
 def test_confidence_bounds():
-    el = FoundationElement(
-        type=ElementType.PARAGRAPH,
-        text="x",
-        anchor=DocxAnchor(paragraph_index=0, style_id=None, text_fingerprint="ffffffff"),
+    el = Element(
+        index=0,
+        type=ElementType.PARA,
+        name="x",
+        anchor=AnchorDOCX(paragraph_index=0, style_id="Normal", text_fingerprint="ffffffff"),
         confidence=0.5,
     )
     assert 0.0 <= el.confidence <= 1.0
+
+
+def test_profile_field_and_version():
+    profile = Profile(
+        profile_id="cit-workpaper-v1",
+        version=1,
+        document_type="bcdt",
+        fields=[
+            ProfileField(
+                field_name="revenue",
+                match_rule="label",
+                anchor_pattern={"text_contains": "Doanh thu"},
+            )
+        ],
+    )
+    assert profile.version == 1
+    assert profile.fields[0].match_rule == "label"
