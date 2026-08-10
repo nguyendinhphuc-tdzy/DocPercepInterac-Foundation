@@ -1,15 +1,50 @@
 # Document Perception — Layer 1 + Layer 2 (Detect/Parse/See/Locate)
-# Tech stack locked in Foundation_Master_Context.md section 4.
+#
+# TWO ARCHITECTURES CURRENTLY COEXIST IN THIS FILE — decision pending senior
+# sign-off (see Foundation_Build_Plan_v3.md section 17, step 0).
+#   1. Original stack (Foundation_Master_Context.md section 4) — Docling-based.
+#   2. v3 stack (Foundation_Build_Plan_v3.md) — pdfplumber/pdf2image geometry
+#      layer + openai/Workbench classification layer. Docling is BANNED under
+#      v3 ("Cấm dùng: Docling, torch, transformers, PaddleOCR").
+# pdfplumber/pdf2image are still "waiting for approval" in CRADL as of
+# 2026-08-07 — installed here to code in parallel per explicit instruction,
+# not because approval is confirmed. Do not ship/deploy on this basis alone.
 
-docling
+# --- Shared (needed by both architectures) ---
 python-docx
 openpyxl
 defusedxml
-fastapi
-uvicorn[standard]
 pydantic>=2
 python-multipart
+
+# --- Original stack (Docling-based) — kept as parallel track, may be removed ---
+docling
+fastapi
+uvicorn[standard]
 aiosqlite
+
+# --- v3 stack — Geometry Layer (⏳ pdfplumber/pdf2image NOT YET APPROVED) ---
+pdfplumber
+pdf2image
+# pdf2image also requires Poppler installed at the OS level (pdftoppm/
+# pdftocairo on PATH) — NOT a pip package. Not installed on this dev machine
+# as of 2026-08-07; confirm with IT whether it needs separate approval.
+
+# --- v3 stack — Classification Layer (Workbench via openai client) ---
+openai
+azure-identity
+msal
+azure-core
+jsonschema
+tenacity
+cachetools
+numpy
+pandas
+
+# --- v3 stack — Access layer (replaces FastAPI, which is also pending) ---
+flask
+werkzeug
+# sqlite3 is stdlib — no package needed.
 
 # python-magic requires the native libmagic DLL, which Windows dev machines
 # don't ship. python-magic-bin is the same python-magic API/license (MIT),

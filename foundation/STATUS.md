@@ -1,10 +1,42 @@
 # Document Perception — Build Status
 
 Trạng thái thực tế của `foundation/` tính đến thời điểm này. Đối chiếu với
-`../Foundation_Build_Plan.md` (bản khớp slide đã duyệt, mục 9 & 16 — nguồn
-roadmap hiện hành) và `Foundation_Master_Context.md` (bản gốc, tham khảo lịch
-sử). Cập nhật file này mỗi khi có module mới hoàn thành — đừng để nó trôi
-khỏi thực tế code.
+`../Foundation_Build_Plan.md` (bản khớp slide đã duyệt, mục 9 & 16) và
+`Foundation_Master_Context.md` (bản gốc, tham khảo lịch sử). Cập nhật file
+này mỗi khi có module mới hoàn thành — đừng để nó trôi khỏi thực tế code.
+
+---
+
+## ⚠️ PIVOT KIẾN TRÚC ĐANG TREO (2026-08-07) — đọc trước khi làm gì tiếp
+
+`../Foundation_Build_Plan_v3.md` thay thế toàn bộ cách parse PDF: bỏ Docling,
+dùng **Geometry Layer** (`pdfplumber`+`pdf2image`, tất định, không AI) +
+**Classification Layer** (`openai` client gọi Workbench nội bộ, có AI, tắt
+được bằng feature flag). Access layer đổi FastAPI → Flask. Chi tiết đầy đủ,
+xem file đó.
+
+**Trạng thái duyệt (CRADL):** `pdfplumber`/`pdf2image` đang **⏳ waiting for
+approval** — CHƯA chính thức được duyệt. Đã cài vào venv để code song song
+theo yêu cầu tường minh, **không phải vì đã có xác nhận duyệt**. Không dùng
+làm căn cứ để deploy/ship.
+
+**Đã cài thêm (2026-08-07), xác nhận thật bằng `pip list`:**
+`pdfplumber 0.11.10`, `pdf2image 1.17.0`, `openai 2.53.0`, `azure-identity
+1.25.3`, `msal 1.37.0`, `azure-core 1.41.0`, `jsonschema 4.26.0`, `tenacity
+9.1.4`, `cachetools 7.1.7`, `numpy 2.4.6`, `pandas 3.0.5`, `flask 3.1.3`,
+`werkzeug 3.1.8`. Docling vẫn giữ nguyên trong venv/requirements.txt làm
+track song song, **chưa gỡ**.
+
+**2 phát hiện thật khi test — quan trọng, không có trong build plan v3:**
+
+| # | Phát hiện | Chi tiết |
+|---|---|---|
+| 1 | **`fixture_report.pdf` là PDF scan ảnh, không phải digital** | `pdfplumber` trích được 0 chars/0 words trên mọi trang kiểm tra; trang có 8 image, một cái kích thước gần khớp cả trang (595×841pt = A4), 0 vector lines/rects. Điều này **mâu thuẫn với comment cũ trong `parser.py`** ("fixture PDFs are born-digital, not scanned images"). OCR nằm ngoài scope build hiện tại (cả bản cũ lẫn v3) → fixture này **không dùng được** cho Geometry Layer mới cho tới khi có quyết định về OCR. `fixture_report_2.pdf` mới là fixture PDF digital thật (test thấy 305-369 words/trang). |
+| 2 | **Poppler chưa cài trên máy dev** | `pdf2image.convert_from_path()` fail thật: `PDFInfoNotInstalledError: Unable to get page count. Is poppler installed and in PATH?`. `pdfplumber` (dùng để trích text/bbox) hoạt động bình thường không cần Poppler — chỉ `pdf2image` (render ảnh trang cho Screen 1) bị chặn. Đúng như build plan v3 mục 2 đã cảnh báo: Poppler là OS-level binary, chưa rõ có cần duyệt riêng với IT không. |
+
+**Việc cần làm ngay theo build plan v3 mục 17 (chưa làm, không tự ý làm khi chưa hỏi):**
+1. Gửi câu hỏi "thuần code vs model" + câu hỏi Poppler cho senior/IT — **bạn cần tự gửi**, không phải việc code.
+2. Refactor `perception/parser.py` tách interface Geometry Layer khỏi Docling — việc kỹ thuật có thể làm ngay, không cần chờ duyệt, chưa bắt đầu.
 
 ---
 
