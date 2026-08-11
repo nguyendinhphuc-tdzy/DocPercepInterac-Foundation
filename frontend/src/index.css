@@ -1,0 +1,533 @@
+:root {
+  --primary: #00338d;
+  --primary-light: rgba(0, 51, 141, 0.1);
+  --bg-body: #f8fafc;
+  --bg-pane: #ffffff;
+  --border: #e2e8f0;
+  --text-main: #334155;
+  --text-muted: #64748b;
+  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --transition: all 0.2s ease-in-out;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  font-family: var(--font-family);
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  overflow: hidden;
+}
+
+/* App shell */
+.app-header {
+  height: 48px;
+  background-color: var(--bg-pane);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  font-weight: 600;
+  font-size: 16px;
+  color: var(--primary);
+  box-shadow: var(--shadow-sm);
+  z-index: 10;
+}
+
+.app-header svg {
+  margin-right: 10px;
+}
+
+.app-body {
+  height: calc(100% - 48px);
+}
+
+/* Panes */
+.pane {
+  background: var(--bg-pane);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+}
+
+.pane-header {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--border);
+  font-weight: 600;
+  font-size: 13px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: #fdfdfd;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+.pane-content {
+  flex: 1;
+  overflow: auto;
+  padding: 16px;
+  position: relative;
+}
+
+.pane-empty-state {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: var(--text-muted);
+  font-size: 13px;
+  text-align: center;
+  padding: 24px;
+}
+
+.pane-empty-state .empty-icon {
+  color: var(--border);
+}
+
+/* react-resizable-panels handles */
+.resize-handle-h {
+  width: 8px;
+  background-color: var(--bg-body);
+  border-left: 1px solid var(--border);
+  border-right: 1px solid var(--border);
+  cursor: col-resize;
+  transition: var(--transition);
+}
+
+.resize-handle-h:hover,
+.resize-handle-h:active {
+  background-color: var(--primary-light);
+}
+
+.resize-handle-v {
+  height: 8px;
+  background-color: var(--bg-body);
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  cursor: row-resize;
+  transition: var(--transition);
+}
+
+.resize-handle-v:hover,
+.resize-handle-v:active {
+  background-color: var(--primary-light);
+}
+
+/* Sync highlighting */
+.sync-target {
+  transition: var(--transition);
+  cursor: pointer;
+}
+
+.sync-target.active {
+  background-color: var(--primary-light) !important;
+  border-color: var(--primary) !important;
+  box-shadow: 0 0 0 1px var(--primary) inset !important;
+  color: var(--primary);
+}
+
+/* Pane 1: Input Viewer */
+.doc-canvas {
+  width: 100%;
+  max-width: 400px;
+  min-height: 500px;
+  background: white;
+  box-shadow: var(--shadow-md);
+  margin: 0 auto;
+  position: relative;
+  border: 1px solid var(--border);
+}
+
+.bbox {
+  position: absolute;
+  border: 2px solid rgba(100, 116, 139, 0.4);
+  background: rgba(100, 116, 139, 0.1);
+  border-radius: 2px;
+}
+
+.bbox:hover,
+.bbox.active {
+  border-color: var(--primary);
+  background: var(--primary-light);
+  z-index: 10;
+}
+
+/* Pane 2: Element Index */
+.element-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.element-table th,
+.element-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--border);
+  text-align: left;
+}
+
+.element-table th {
+  font-weight: 500;
+  color: var(--text-muted);
+  position: sticky;
+  top: 0;
+  background: var(--bg-pane);
+  z-index: 5;
+}
+
+.element-table tbody tr:hover {
+  background: var(--bg-body);
+}
+
+.element-type-badge {
+  color: var(--primary);
+  font-weight: 500;
+}
+
+.confidence-bar {
+  height: 6px;
+  background: #e2e8f0;
+  border-radius: 3px;
+  overflow: hidden;
+  width: 60px;
+  display: inline-block;
+  vertical-align: middle;
+  margin-left: 8px;
+}
+
+.confidence-fill {
+  height: 100%;
+  background: #10b981;
+}
+
+.confidence-fill.low {
+  background: #f59e0b;
+}
+
+.review-badge {
+  font-size: 10px;
+  padding: 2px 6px;
+  border-radius: 10px;
+  background: #fef3c7;
+  color: #d97706;
+  font-weight: 600;
+  margin-left: 6px;
+}
+
+/* Pane 3: Intent / Mapping — chatbox for the application layer */
+.chat-pane-body {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.chat-thread {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding: 16px;
+}
+
+.chat-thread .pane-empty-state {
+  margin: auto 0;
+}
+
+.chat-message {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  max-width: 85%;
+}
+
+.chat-message.user {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.chat-message.assistant {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.chat-bubble {
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.chat-bubble.user {
+  background: var(--primary);
+  color: white;
+  border-bottom-right-radius: 2px;
+}
+
+.chat-bubble.assistant {
+  background: var(--bg-body);
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  border-bottom-left-radius: 2px;
+}
+
+.chat-timestamp {
+  font-size: 10px;
+  color: var(--text-muted);
+}
+
+.tool-hint-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.tool-badge {
+  display: inline-flex;
+  align-items: center;
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-weight: 600;
+}
+
+.tool-badge.idle {
+  background: var(--bg-body);
+  color: var(--text-muted);
+  border: 1px solid var(--border);
+}
+
+.tool-badge.pending {
+  background: #fef3c7;
+  color: #d97706;
+}
+
+.tool-badge.done {
+  background: var(--primary-light);
+  color: var(--primary);
+}
+
+.tool-badge.error {
+  background: #fee2e2;
+  color: #dc2626;
+}
+
+.chat-input-area {
+  border-top: 1px solid var(--border);
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.chat-input-row {
+  display: flex;
+  gap: 8px;
+  align-items: flex-end;
+}
+
+.chat-textarea {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  font-family: inherit;
+  font-size: 13px;
+  outline: none;
+  resize: none;
+  transition: border-color 0.2s;
+}
+
+.chat-textarea:focus {
+  border-color: var(--primary);
+}
+
+.btn-primary {
+  background: var(--primary);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: opacity 0.2s;
+  align-self: stretch;
+}
+
+.btn-primary:hover {
+  opacity: 0.9;
+}
+
+.btn-primary:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.mapping-visual {
+  background: var(--bg-body);
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  min-height: 120px;
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px;
+  gap: 12px;
+  margin-top: 4px;
+}
+
+.mapping-node {
+  background: white;
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-sm);
+  font-size: 12px;
+  font-weight: 500;
+  z-index: 2;
+}
+
+.mapping-node .mapping-node-sub {
+  color: var(--text-muted);
+  font-size: 10px;
+  font-weight: 400;
+}
+
+.mapping-line {
+  position: absolute;
+  top: 50%;
+  left: 100px;
+  right: 100px;
+  height: 2px;
+  background: var(--primary);
+  opacity: 0.3;
+  z-index: 1;
+}
+
+.mapping-line::after {
+  content: '';
+  position: absolute;
+  top: -3px;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background: var(--primary);
+  border-radius: 50%;
+  animation: moveDot 2s infinite linear;
+}
+
+@keyframes moveDot {
+  0% {
+    left: 0;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+/* Pane 4: Output & Trace */
+.output-container {
+  display: flex;
+  height: 100%;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.excel-grid-wrap {
+  flex: 2;
+  min-width: 240px;
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.excel-grid {
+  display: grid;
+  grid-template-columns: 40px repeat(3, 1fr);
+  font-size: 12px;
+}
+
+.excel-cell {
+  border-right: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  padding: 4px 8px;
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+}
+
+.excel-header {
+  background: #f1f5f9;
+  font-weight: 500;
+  color: var(--text-muted);
+  justify-content: center;
+}
+
+.trace-log {
+  flex: 1.5;
+  min-width: 200px;
+  background: var(--bg-body);
+  border-radius: 6px;
+  padding: 16px;
+  overflow-y: auto;
+  border: 1px solid var(--border);
+}
+
+.trace-item {
+  position: relative;
+  padding-left: 20px;
+  margin-bottom: 16px;
+  font-size: 12px;
+}
+
+.trace-item::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 4px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--primary);
+}
+
+.trace-item::after {
+  content: '';
+  position: absolute;
+  left: 3px;
+  top: 16px;
+  width: 2px;
+  height: calc(100% + 4px);
+  background: var(--border);
+}
+
+.trace-item:last-child::after {
+  display: none;
+}
+
+.trace-time {
+  color: var(--text-muted);
+  font-size: 10px;
+  margin-bottom: 2px;
+}
