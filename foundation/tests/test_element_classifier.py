@@ -12,7 +12,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from perception.anchor_builder import assign_anchors
-from perception.element_classifier import classify_block, classify_blocks
+from perception.element_classifier import Classifier, classify_block, classify_blocks
 from perception.models import Element, ElementType
 from perception.parser import parse_docx
 
@@ -88,33 +88,59 @@ def test_classify_block_matches_classify_blocks_element_by_element():
     assert via_blocks == via_single
 
 
-def test_classify_blocks_uses_custom_classifier_instead_of_baseline():
-    """Demonstrates the pluggable-classifier seam: a caller can pass any
-    callable matching the Classifier protocol (e.g. a future AI-model
-    wrapper) and classify_blocks must use it instead of the deterministic
-    baseline classify_block.
+def test_classify_blocks_satisfies_the_document_level_classifier_protocol():
+    """classify_blocks is the baseline Classifier — its signature must match
+    the document-level Protocol exactly: all blocks/anchors of a document in
+    one call, not one block at a time.
+    """
+    baseline: Classifier = classify_blocks
+    blocks, anchors = _load()
+    elements = baseline(blocks, "docx", anchors)
+    assert isinstance(elements, list)
+    assert len(elements) == len(blocks)
+
+
+def test_document_level_classifier_is_a_drop_in_replacement_for_the_baseline():
+    """Demonstrates the document-level seam: a caller holds a `Classifier`
+    reference (defaulting to classify_blocks) and invokes it uniformly. A
+    different implementation matching the same (blocks, fmt, anchors,
+    start_index) signature — e.g. a future AI-model wrapper with access to
+    every block at once — is a drop-in replacement, with no dispatcher or
+    per-block parameter involved.
     """
     blocks, anchors = _load()
 
-    def always_para(block, index, fmt, anchor) -> Element:
-        return Element(
-            index=index,
-            type=ElementType.PARA,
-            name="mock-classified",
-            text=block.get("text") or "",
-            anchor=anchor,
-            confidence=0.0,
-        )
+    def mock_document_classifier(
+        blocks, fmt, anchors, start_index: int = 0
+    ) -> list[Element]:
+        # A real AI implementation would use cross-block context here (e.g.
+        # all blocks at once) — this mock just proves the call shape works
+        # and that the caller's choice of Classifier is actually honored.
+        return [
+            Element(
+                index=start_index + i,
+                type=ElementType.PARA,
+                name=f"mock-classified (saw {len(blocks)} blocks total)",
+                text=block.get("text") or "",
+                anchor=anchor,
+                confidence=0.0,
+            )
+            for i, (block, anchor) in enumerate(zip(blocks, anchors))
+        ]
 
-    elements = classify_blocks(blocks, "docx", anchors, classifier=always_para)
+    def run_with(classifier: Classifier) -> list[Element]:
+        return classifier(blocks, "docx", anchors)
 
-    assert len(elements) == len(blocks)
-    assert all(el.type == ElementType.PARA for el in elements)
-    assert all(el.name == "mock-classified" for el in elements)
+    baseline_elements = run_with(classify_blocks)
+    mock_elements = run_with(mock_document_classifier)
+
+    assert len(mock_elements) == len(blocks)
+    assert all(el.type == ElementType.PARA for el in mock_elements)
+    assert all(str(len(blocks)) in el.name for el in mock_elements)
 
     # sanity check: the baseline would NOT have classified everything as
     # PARA (the fixture has headings and table cells too), proving the
-    # custom classifier was actually used, not silently ignored.
-    baseline_elements = classify_blocks(blocks, "docx", anchors)
+    # mock classifier was actually used in place of the baseline, not
+    # silently ignored.
     baseline_types = {el.type for el in baseline_elements}
     assert baseline_types != {ElementType.PARA}

@@ -11,12 +11,18 @@ module works. This module knows nothing about any specific use case (Tax,
 Audit, GTPS, ...) and must stay that way — see STATUS.md "Quy tắc không
 được phá vỡ".
 
-Classification Layer seam: `classify_blocks()` accepts an optional
-`classifier` argument (see the `Classifier` protocol below) so a caller can
-plug in an AI/ML model — a user-supplied classifier, not OpenAI/Workbench —
-in place of the deterministic baseline `classify_block`, without this module
-or any of its callers changing. Building that model is out of scope here;
-this only defines where it plugs in.
+Classification Layer seam: `Classifier` (below) is a document-level seam —
+it receives ALL of a document's blocks/anchors at once, not one block at a
+time. This is deliberate: a per-block seam can't see surrounding blocks, so
+an AI classifier plugged in at that granularity could never use cross-block
+context (e.g. "this heading's section depends on the heading before it") or
+batch its calls (one model invocation per document instead of one per
+block). `classify_blocks()` is the deterministic baseline implementation of
+`Classifier` — a caller holds a `Classifier` (defaulting to
+`classify_blocks`) and calls it; a user-supplied AI model (not
+OpenAI/Workbench) that implements the same signature is a drop-in
+replacement, no dispatcher needed. Building that model is out of scope
+here; this only defines where it plugs in.
 """
 from __future__ import annotations
 
@@ -26,24 +32,38 @@ from perception.models import Anchor, Element, ElementType
 
 
 class Classifier(Protocol):
-    """Signature any classifier — deterministic or AI-backed — must satisfy
-    to be usable by classify_blocks(). `classify_block` (below) is the
-    default implementation; a future user-supplied model wrapper is another.
+    """Document-level classification seam.
+
+    Receives every block/anchor of one document in a single call (not one
+    block at a time), so an implementation can use cross-block context —
+    e.g. inferring a heading's section from neighboring headings, or
+    disambiguating a block's role from what precedes/follows it — and can
+    batch a single model invocation over the whole document instead of
+    calling out once per block. `classify_blocks()` (below) is the
+    deterministic baseline implementation; this Protocol is the integration
+    point a future user-supplied AI model plugs into as a drop-in
+    replacement.
     """
 
     def __call__(
-        self, block: Mapping[str, Any], index: int, fmt: str, anchor: Anchor
-    ) -> Element: ...
+        self,
+        blocks: list[Mapping[str, Any]],
+        fmt: str,
+        anchors: list[Anchor],
+        start_index: int = 0,
+    ) -> list[Element]: ...
 
 
 def classify_block(block: Mapping[str, Any], index: int, fmt: str, anchor: Anchor) -> Element:
-    """Deterministic baseline classifier — the default `Classifier`.
+    """Deterministic, per-block classification building block.
 
     Labels a GeometryBlock with a display type/name for the Element Index.
     The Anchor itself is core IP (perception/anchor_builder.py) — this
     heuristic is not: it's a minimal, explicit stand-in (style_id prefix /
-    presence of table_index) for a real AI-backed classifier, which any
-    caller can substitute via classify_blocks(classifier=...).
+    presence of table_index) for real classification. Used by
+    classify_blocks() (the baseline Classifier) to classify one block at a
+    time; it has no visibility into other blocks in the document, unlike
+    the document-level Classifier seam above.
     """
     text = block.get("text") or ""
 
@@ -72,21 +92,20 @@ def classify_blocks(
     fmt: str,
     anchors: list[Anchor],
     start_index: int = 0,
-    classifier: Classifier = classify_block,
 ) -> list[Element]:
-    """Assembles the Element Index for one document: pairs each block with
-    its anchor (same order, 1:1 — anchors is assumed already assigned via
-    perception/anchor_builder.py::assign_anchors) and classifies it,
-    numbering elements from `start_index` so callers merging elements
-    across multiple source files can keep one continuous index space (see
-    applications/gpts/mapping_service.py).
+    """Deterministic baseline `Classifier` — assembles the Element Index for
+    one document by mapping classify_block() over each (block, anchor) pair,
+    in order, numbering elements from `start_index` so callers merging
+    elements across multiple source files can keep one continuous index
+    space (see applications/gpts/mapping_service.py).
 
-    `classifier` defaults to the deterministic baseline `classify_block`.
-    Passing a different one is the integration point for a future AI
-    Classification Layer (a user-supplied model, not built here) —
-    classify_blocks itself never needs to change.
+    This function's signature matches the `Classifier` Protocol exactly, so
+    it doubles as the default Classifier: a caller holds a reference to a
+    Classifier (defaulting to this function) and calls it uniformly,
+    whether that reference points here or at a future AI-backed
+    implementation — no separate dispatch mechanism is needed.
     """
     return [
-        classifier(block, start_index + i, fmt, anchor)
+        classify_block(block, start_index + i, fmt, anchor)
         for i, (block, anchor) in enumerate(zip(blocks, anchors))
     ]

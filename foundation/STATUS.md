@@ -950,3 +950,46 @@ phải import từ `gpts` (phá "Quy tắc không được phá vỡ") hoặc vi
 **Tests:** 56 → **63 passed** (7 test mới ở `test_element_classifier.py`).
 Không sửa `anchor_builder.py`/`parser.py`/`detector.py`, không thêm
 dependency mới.
+
+**⚠️ SUPERSEDED (2026-08-17, muộn hơn cùng ngày):** chữ ký `Classifier`/
+`classify_blocks(..., classifier=...)` mô tả ngay trên — seam **per-block**
+— đã bị thay bằng seam **document-level**. Xem mục "✅ ĐÃ GIẢI QUYẾT" ngay
+bên dưới.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-17, muộn hơn cùng ngày): Nâng seam `Classifier` từ per-block lên document-level
+
+**Bối cảnh:** seam vừa build (mục ngay trên) nhận từng `block` một —
+`Classifier = (block, index, fmt, anchor) -> Element`. Vấn đề: 1 model AI
+cắm vào seam này không thấy được các block xung quanh, nên không thể suy
+luận theo ngữ cảnh (vd gán "section" cho heading dựa vào heading liền kề)
+và bắt buộc phải gọi model 1 lần/block (tốn kém, mất ngữ cảnh) thay vì
+batch cả document trong 1 lần gọi.
+
+**Đã sửa (chỉ đổi hình dạng seam, hành vi baseline giữ nguyên y hệt):**
+- `Classifier` protocol đổi chữ ký thành document-level:
+  `(blocks, fmt, anchors, start_index=0) -> list[Element]` — nhận toàn bộ
+  block của 1 document trong 1 lần gọi.
+- `classify_block(block, index, fmt, anchor) -> Element` **giữ nguyên**
+  — vẫn là building block per-block cho baseline, không đổi logic.
+- `classify_blocks(blocks, fmt, anchors, start_index=0) -> list[Element]`
+  — bỏ tham số `classifier=` (seam per-block không còn ở đây nữa), thân
+  hàm map `classify_block` qua từng `(block, anchor)` **y hệt logic cũ**,
+  và giờ chính hàm này khớp đúng chữ ký `Classifier` document-level →
+  đóng vai trò baseline Classifier mặc định. Cơ chế inject: caller giữ 1
+  biến `Classifier` (mặc định `classify_blocks`) rồi gọi thẳng — model AI
+  tương lai cùng chữ ký là drop-in replacement, không cần dispatcher riêng.
+- `applications/gpts/mapping_service.py`: không cần sửa gì — vốn đã gọi
+  `classify_blocks(...)` không truyền `classifier=` từ trước. Verify lại:
+  `test_mapping_service.py` (3 test) vẫn pass nguyên, `run_mapping()`
+  không đổi hành vi.
+- `tests/test_element_classifier.py`: thay test seam per-block cũ bằng 2
+  test document-level — 1 xác nhận `classify_blocks` khớp đúng
+  `Classifier` protocol mới, 1 chứng minh 1 classifier document-level khác
+  (mock, có `len(blocks)` trong tên phần tử — bằng chứng nó "thấy" toàn
+  bộ document) dùng thay baseline được, kèm sanity-check baseline không
+  trả toàn `PARA` để loại trừ pass ngẫu nhiên.
+
+**Tests:** 63 → **64 passed** (net +1 — 1 test cũ thay bằng 2 test mới).
+Chưa build model AI nào — đúng scope, chỉ đổi hình dạng seam.
