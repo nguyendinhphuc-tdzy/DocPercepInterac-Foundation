@@ -1,10 +1,68 @@
 # Document Perception — Build Status
 
 Trạng thái thực tế của `foundation/` (+ `frontend/`) tính đến thời điểm này.
-Đối chiếu với **`../Foundation_Build_Plan_v4.md`** (bản mới nhất, sau buổi họp
-chuẩn bị Partners 10/08 — thay thế v3) và `Foundation_Build_Plan_v3.md`
-(kiến trúc 2 lớp / data model / API chi tiết, v4 không lặp lại). Cập nhật
-file này mỗi khi có module mới hoàn thành — đừng để nó trôi khỏi thực tế code.
+Đối chiếu với **`../Foundation_Build_Plan_v4.md`** (sau buổi họp chuẩn bị
+Partners 10/08 — thay thế v3) và `Foundation_Build_Plan_v3.md` (kiến trúc 2
+lớp / data model / API chi tiết, v4 không lặp lại). Cập nhật file này mỗi
+khi có module mới hoàn thành — đừng để nó trôi khỏi thực tế code.
+
+**⚠️ 2026-08-14: `Foundation_Build_Plan_v5.md` đã tồn tại** (thêm nhánh OCR
+— xem §11, §14 cũ) nhưng file STATUS.md này **chưa đối chiếu lại với v5**,
+vẫn đang bám v4. Đừng coi phần "ĐÃ LÊN v4" ngay dưới đây là nguồn sự thật
+mới nhất tuyệt đối — chỉ là chưa có ai làm việc đối chiếu v5 riêng.
+
+---
+
+## 📍 TÌNH TRẠNG HIỆN TẠI (chốt 2026-08-14) — đọc mục này trước, phần dưới là lịch sử/lý do
+
+Toàn bộ nội dung từ mục "✅ ĐÃ GIẢI QUYẾT (2026-08-14): Access layer..."
+trở xuống (trước bảng "Đã làm được") là **1 phiên làm việc duy nhất, cùng
+ngày 2026-08-14** — không phải nhiều ngày như số thứ tự cũ từng ghi nhầm
+(đã sửa lại toàn bộ ngày tháng trong file này cho đúng). Mục này tóm tắt
+kết quả cuối cùng của phiên đó; đọc các mục "✅ ĐÃ GIẢI QUYẾT" bên dưới nếu
+cần biết **tại sao**/**như thế nào**.
+
+**Backend (`foundation/`) — chạy được thật, 48/48 test pass:**
+- Geometry Layer (`perception/parser.py`) — parse DOCX/XLSX/PDF tất định,
+  không AI. Giữ cả table cell rỗng (placeholder thật, không phải noise).
+- **Anchor system** (`perception/anchor_builder.py`, IP cốt lõi) — assign +
+  resolve cho cả 3 định dạng, **P3-04 PASS thật**, tự hồi phục qua drift
+  (DOCX table hash, DOCX paragraph tie-break qua `duplicate_ordinal`, XLSX
+  qua nhãn dòng, PDF qua vị trí). Generic — không biết gì về GTPS.
+- Application layer (`applications/gpts/mapping_service.py`) — pipeline
+  đầy đủ cho demo "Local file mapping": nhận N file source + 1 file
+  target, trả elements thật + áp `DEMO_RULES` (hard-code 1 client HMV,
+  không phải logic chung).
+- Access layer (`api/app.py`, `api/routes/process.py`) — `POST
+  /api/process`, `PATCH /api/elements/<id>` (sửa 1 element, ghi thẳng vào
+  output, không chạy lại pipeline), `GET /api/download/<id>`.
+- **Không có database** — mọi thứ file-based dưới `.uploads/<id>/`
+  (gitignored). Chưa cần, xem lý do trong hội thoại 2026-08-14 nếu cần
+  tham khảo lại (chưa lưu thành mục riêng ở đây).
+
+**Frontend (`frontend/`) — 1 màn hình workspace duy nhất, không còn Intake riêng:**
+- Thêm document qua nút "+" ngay trong pane DOCUMENT — tự phân loại
+  source/target theo đuôi file, không bắt user chọn vai trò thủ công.
+- Sửa element trực tiếp trên UI (Document + Elements pane) → ghi thẳng
+  vào file output qua PATCH, có **Undo** (session-only, nút ở header +
+  Ctrl/Cmd+Z), hover 1 pane → highlight + tự cuộn tới element liên quan ở
+  pane khác (Document ↔ Elements ↔ Results).
+- Copy đã trung lập hóa (không còn giọng Tax/GTPS). `AgentPane` là
+  placeholder trung thực (input disabled, không giả vờ hoạt động) — chưa
+  nối AI thật.
+
+**Giới hạn thật, không phải bug, cần nhớ khi demo:**
+- `DEMO_RULES` chỉ khớp đúng 1 client (HMV) — file khác vẫn extract +
+  anchor thật nhưng `mapped: []`.
+- `element_classifier.py` chưa build — không có phân loại/đề xuất mapping
+  tự động cho tài liệu chưa biết trước ngoài GTPS/HMV.
+- Sửa trực tiếp (PATCH) chỉ hỗ trợ output DOCX, chưa mở route cho XLSX
+  (engine phía dưới đã hỗ trợ, chỉ chưa nối route).
+- `detect_format()` (MIME check) reject nhầm file `.docx`/`.xlsx` thật
+  trên máy dev này — `api/` không dùng hàm này để validate.
+- Poppler chưa cài — `render_pdf_pages()` (ảnh trang PDF) chưa dùng được.
+- Digital Gateway/Copilot research + benchmark AI: deprioritized theo yêu
+  cầu user, chưa làm, không phải bỏ.
 
 ---
 
@@ -177,6 +235,490 @@ thật, chưa có package `applications/`, chưa có endpoint `/intent`. Việc
 nối thật là backend/algorithm work — vẫn nằm trong phần đang tạm dừng chờ
 họp, không tự ý build.
 
+**⚠️ SUPERSEDED (2026-08-14):** toàn bộ cây component mô tả ở trên
+(`DashboardLayout`, `input-viewer/`, `element-index/`, `intent-mapping/`,
+`output-trace/`) đã bị **thay thế** bởi một bản dựng lại frontend, không
+xóa file cũ (vẫn nằm trong `src/components/` làm tham chiếu) nhưng
+`App.tsx` không còn render chúng nữa. Xem mục "✅ ĐÃ GIẢI QUYẾT
+(2026-08-14)" ngay bên dưới cho kiến trúc hiện hành thật sự.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-14): Access layer (Flask) + application layer (GTPS) xong, frontend nối API thật cho use case demo đầu
+
+**Bối cảnh:** user báo lỗi UI "màn hình trắng, chỉ hiện text" khi build —
+audit phát hiện 2 lớp vấn đề tách biệt, cả hai đã xử lý xong trong phiên
+này.
+
+**⚠️ SUPERSEDED (2026-08-14):** flow "Intake → Workspace" mô tả ngay dưới
+đây đã bị thay bằng **1 màn hình duy nhất** — xem mục "Bỏ màn hình Intake
+riêng" ở dưới. `IntakeScreen` đã bị xóa hẳn khỏi repo, không phải chỉ
+ngừng render.
+
+**1. Bug UI thật (đã sửa) — Tailwind CSS chưa từng được cài:**
+Frontend đã được dựng lại (không rõ từ phiên nào, không có ghi chú trước
+đó trong file này) thành flow **Intake → Workspace** hoàn toàn mới, thay
+cho `DashboardLayout` 4-pane mô tả ở mục "Frontend scaffold" phía trên:
+- `App.tsx` → `IntakeScreen` (upload Source + Target, nút "Start
+  Processing") hoặc `WorkspaceLayout` (`WorkspaceHeader` + 4 pane:
+  `DocumentPane`/`ElementsPane`/`AgentPane`/`ResultsPane`, dùng
+  `react-resizable-panels` `Group`/`Panel`/`Separator` với prop
+  `orientation` — đúng API 4.12.2, khớp ghi chú cũ).
+- State: `state/workspaceStore.ts` (zustand) thay `syncStore.ts` cũ.
+- Toàn bộ component mới viết bằng Tailwind utility classes
+  (`flex`, `bg-gray-50`, `rounded-lg`...) nhưng **`tailwindcss` không có
+  trong `package.json`, không config, không `@tailwind`/`@import` nào
+  trong `index.css`** — mọi class vô tác dụng, render ra HTML không style
+  (đúng triệu chứng "trắng, chỉ hiện text"). Đã cài `tailwindcss` +
+  `@tailwindcss/vite` (v4, plugin-based, không cần `postcss.config`),
+  thêm `@import "tailwindcss";` vào `index.css`. Đồng thời sửa
+  `WorkspaceLayout.tsx` dùng nhầm prop `direction` (API cũ) thay vì
+  `orientation` (API 4.12.2 thật) trên `Group`.
+- `frontend/src/App.tsx`, `WorkspaceHeader.tsx` có 2 unused-import lỗi
+  chặn `tsc -b`/`npm run build` — đã dọn.
+
+**2. Access layer + application layer (mới xây, chưa có gì trước đó):**
+`api/` trước đây hoàn toàn rỗng (mục "Chưa làm" #10 cũ). Đã build:
+- `foundation/applications/gpts/mapping_service.py` — package
+  `applications/` (v4 mục 6, mục "Chưa làm" #7 cũ) đầu tiên trong repo.
+  Chứa `geometry_block_to_element()` (adapter `GeometryBlock` →
+  `Element`/`Anchor` pydantic thật, KHÔNG phải
+  `element_classifier.py` — type là heuristic tối thiểu, có ghi chú rõ
+  trong code để không ai nhầm đây là Classification Layer thật) và
+  `run_mapping()` (gọi lại `mapping/demo_mapper.py`'s `DEMO_RULES` +
+  `mapping/lineage.py` + `mapping/writeback.py`, parameterized theo
+  path thay vì hard-code, trả JSON-serializable thay vì print).
+- `foundation/api/app.py` + `api/routes/process.py` — Flask thật đầu
+  tiên trong repo. `POST /api/process` (nhận multipart source+target,
+  chạy `run_mapping`, trả elements + mapped + `download_url`),
+  `GET /api/download/<id>` (trả DOCX đã patch). CORS mở (`*`, local-only
+  tool, không có auth boundary).
+- `perception/models.py`: `AnchorDOCX.paragraph_index` đổi từ `int` bắt
+  buộc → `Optional[int] = None` (table-cell block không có
+  paragraph_index) + thêm `table_hash` — mirror sang
+  `frontend/src/types/element.ts`. Đây là phần "cần bổ sung nhỏ" đã ghi
+  chú sẵn ở bảng P1 phía trên.
+- `mapping/lineage.py::log_mapping()` giờ `return record` (trước đây
+  không return gì) — để API có data trả JSON, không phá caller cũ
+  (`demo_mapper.py` không dùng giá trị trả về).
+- Frontend: `src/api/client.ts` (fetch + FormData), `workspaceStore.ts`
+  thêm `runProcessing()`, 4 pane (Document/Elements/Agent trừ ra/Results)
+  đọc dữ liệu thật thay vì mock cứng. `AgentPane` **cố tình chưa đụng** —
+  vẫn đúng ranh giới đã ghi ở trên (chờ OpenAI/Workbench thật).
+
+**Giới hạn đã biết, không phải bug:** `DEMO_RULES` hard-code cho đúng 1
+client (HMV) — chỉ map ra kết quả non-zero khi nguồn là
+`HMV-FA&RPT FY2024.xlsx` và đích là 1 trong các bản Local File HMV (kể cả
+bản `_drifted`, nhờ self-healing anchor). File bất kỳ khác vẫn parse ra
+elements thật (kèm anchor thật — xem mục P3-04 ngay dưới), `mapped: []` —
+hành vi đúng của MVP, chưa có `element_classifier.py` (mục "Chưa làm" #2,
+vẫn ❌ chưa làm — khác với anchor, đây là bước phân loại ngữ nghĩa, đề xuất
+mapping tự động cho tài liệu chưa biết trước, KHÔNG phải bước gán anchor).
+
+**Phát hiện mới — gotcha máy dev:** `perception/detector.py::detect_format()`
+(MIME check qua `python-magic-bin`) **reject cả file `.docx` thật, chưa
+chỉnh sửa gì** trên máy dev này — libmagic bundle detect ra
+`application/octet-stream` thay vì OOXML mime thật. `api/routes/process.py`
+vì vậy **không dùng `detect_format()`** để validate upload, chỉ check đuôi
+file (giống cách `extract_geometry()` tự dispatch). Chưa điều tra sâu
+`detect_format()` — nếu sau này cần dùng lại (vd validate ở chỗ khác),
+nhớ gotcha này trước.
+
+**Tests:** 18 → **20 passed** (`tests/test_mapping_service.py` mới, 2
+test — 1 chạy thật với fixture HMV thật, skip nếu máy không có
+`anonymize client/Demo files/`, 1 test cặp file bất kỳ → xác nhận
+`mapped == []`). Đã verify thật qua browser (Playwright, cài tạm rồi gỡ
+— cùng cách team làm 2026-08-11): upload đúng cặp file demo → Document
+pane hiện mục lục thật, Elements pane hiện đủ 2733 elements thật, Results
+pane hiện "3 mapped" + giá trị thật + link tải DOCX đã patch, 0 lỗi
+console.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-14, cùng ngày): `perception/anchor_builder.py` thật + P3-04 PASS — milestone lớn nhất đã chạm tới
+
+**Bối cảnh:** user yêu cầu rõ — tạm gác research Digital Gateway/Copilot và
+benchmark AI, tập trung xây thuật toán anchor **tự động, tổng quát**, phải
+đọc được file DOCX/PDF/XLSX **chưa biết trước** (khác hẳn `DEMO_RULES`
+hard-code 1 client ở mục trên). Đây chính là milestone P3-04 mà
+`Foundation_Master_Context.md` §5 gọi là "IP của dự án" và
+`Foundation_Build_Plan_v3.md` §9.2 định nghĩa là "milestone bắt buộc,
+không negotiate". Thiết kế **đã có sẵn đầy đủ** trong 2 file đó — việc làm
+hôm nay là triển khai đúng thiết kế, không phải tự nghĩ ra thuật toán mới.
+
+**Sửa 1 lỗi đặt sai chỗ trước khi build:** `mapping/anchor_builder.py`
+(có sẵn từ trước, `build_table_hash`/`resolve_table_anchor` — cơ chế
+self-heal DOCX table qua hash, generic, không biết gì về GTPS) **đặt sai
+thư mục** so với đúng kiến trúc `Foundation_Master_Context.md` §9 (liệt kê
+rõ `perception/anchor_builder.py`). Đã **di chuyển nguyên vẹn** (không sửa
+logic) sang `perception/anchor_builder.py`, sửa 2 import site
+(`mapping/writeback.py`, `perception/parser.py`), xóa file cũ — không để
+lại re-export shim.
+
+**Đã build trong `perception/anchor_builder.py` (module giờ đầy đủ cho cả
+3 định dạng):**
+- **DOCX** — `assign_docx_anchor()` (paragraph: `paragraph_index`+
+  `style_id`+`text_fingerprint`; table cell: `table_index`+`table_hash`+
+  `row_index`+`col_index`, tái dùng logic đã có). `resolve_docx_anchor()`
+  — ladder đúng 3 tầng theo Master_Context §5: **Strategy 1**
+  style_id+text_fingerprint khớp (tốt nhất, sống sót khi có
+  insert/delete paragraph ở chỗ khác — đây chính là kịch bản P3-04),
+  **Strategy 2** paragraph_index+style_id khớp (fallback, cảnh báo nội
+  dung có thể đã đổi), **Strategy 3** paragraph_index đơn thuần (cảnh báo
+  độ tin cậy thấp), **FAIL** → raise `ValueError` (không bao giờ âm thầm
+  trả sai). Table-cell anchor dùng lại nguyên `resolve_table_anchor()` đã
+  có (self-heal qua hash).
+- **XLSX** — `assign_xlsx_anchor()` + `resolve_xlsx_anchor()`: `named_range`
+  ưu tiên hơn `cell_address` đúng spec, không có ladder (đúng quyết định
+  cũ — cell address đủ ổn định cho file digital).
+- **PDF** — `assign_pdf_anchors()` (tính `bbox_relative` từ bbox tuyệt đối
+  + kích thước trang mới thêm vào `GeometryBlock`, `reading_order_index`
+  reset theo từng trang). `resolve_pdf_anchor()` — **cố tình không dùng
+  content fingerprint** (khác DOCX): `tests/test_parser.py` đã chứng minh
+  văn bản tài chính thật lặp lại boilerplate 10+ lần qua nhiều trang, nên
+  match theo nội dung không an toàn cho PDF — đúng như `AnchorPDF` không
+  có field `text_fingerprint`. Strategy 1 = khớp `(page,
+  reading_order_index)` **và** bbox gần đúng vị trí cũ (tự phát hiện: nếu
+  chỉ khớp index mà không kiểm tra bbox, một block khác trôi vào đúng vị
+  trí cũ sẽ bị nhận nhầm — bug này bị 1 test tự viết bắt được và đã sửa
+  trước khi merge). Strategy 2 (fallback, cảnh báo) = bbox gần nhất trên
+  cùng trang, bỏ qua reading order.
+- `applications/gpts/mapping_service.py` **đổi từ tự xây anchor inline
+  sang gọi `assign_anchors()`** — đúng ranh giới kiến trúc (anchor là core
+  IP, không phải chuyện riêng của GTPS). Tiện thể thêm luôn nhánh PDF còn
+  thiếu (trước đây source PDF sẽ crash `ValueError` dù `api/` đã cho phép
+  upload PDF).
+
+**P3-04 PASS thật** (`tests/test_anchor_builder.py`, test
+`test_p304_docx_paragraph_anchor_survives_insertion_at_start`): build DOCX
+nhiều paragraph, gán anchor cho 1 đoạn, chèn 1 paragraph mới vào đầu file
+(shift toàn bộ `paragraph_index` phía sau), parse lại, resolve anchor cũ
+→ **vẫn trả về đúng đoạn text cũ**, Strategy 1, không cảnh báo. Đúng 100%
+kịch bản P3-04 mô tả trong `Foundation_Build_Plan_v3.md` §9.2.
+
+**Chưa làm / vẫn ❌ (không đổi):** `element_classifier.py` — phân loại
+ngữ nghĩa (heading/table/note...) và đề xuất mapping cho tài liệu chưa
+biết trước. Anchor không phụ thuộc classification (đúng nguyên tắc "anchor
+trước, nhãn sau" — `Foundation_Build_Plan_v3.md` mục 4), nên việc này build
+xong không bị chặn bởi #2, nhưng #2 vẫn cần cho bất kỳ demo nào ngoài
+GTPS/HMV.
+
+**Deprioritized theo yêu cầu user (không phải bỏ, chỉ tạm gác):** Digital
+Gateway/Copilot competitive research (mục "Chưa làm" #12), benchmark 3
+kịch bản AI (#13). Output engine giữ nguyên "Clone & Replace" — user xác
+nhận đủ cho MVP, Profile-driven Fill/Task-shaped để sau.
+
+**Tests:** 20 → **32 passed** (`tests/test_anchor_builder.py` mới, 12
+test — assign sanity cho cả 3 format, P3-04 thật, Strategy 2 fallback khi
+nội dung đổi, fail sạch khi anchor trỏ ra ngoài văn bản, XLSX
+resolve/named_range, PDF Strategy 1+2). Regression: `test_mapping_service.py`
+2 test cũ vẫn pass nguyên — HMV demo qua `/api/process` sống thật vẫn trả
+đúng 662/2733 elements + 3 mapped sau khi refactor. Spot-check
+`assign_pdf_anchors` trên fixture PDF 32 trang thật (`fixture_report_2.pdf`)
+— 968 block, 0 bbox_relative lệch khoảng [0,1], reading_order_index reset
+đúng ở mọi ranh giới trang.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-14, muộn hơn cùng ngày): 3 gap độ tin cậy của anchor — đóng cả 3
+
+Ngay sau khi build xong `perception/anchor_builder.py`, tự đánh giá lại
+mức độ sẵn sàng cho "document chưa biết trước" thì thấy rõ: **assign**
+(gán anchor) đã generic thật, nhưng **resolve** (tìm lại khi tài liệu đổi)
+mới chỉ chứng minh chắc chắn ở nhánh DOCX table (nhờ fixture drift thật).
+3 gap còn lại — user yêu cầu đóng cả 3, đã xong cả 3:
+
+**1. DOCX paragraph — Strategy 1 tie-break dưới drift lệch (không đều):**
+Tìm được ngay trong file HMV thật: caption "Source: TP Cat database" lặp
+lại **9 lần**, cùng style `BodyText` — ambiguity thật, không phải giả
+định. Test cũ (`test_p304...`) chỉ chèn 1 đoạn ở đầu file → mọi occurrence
+dịch chuyển ĐỀU nhau, không thật sự thử tie-break. Test mới
+(`test_p304_docx_duplicate_ordinal_survives_uneven_drift_on_real_document`)
+chèn 50 đoạn **giữa** occurrence #4 và #5 (không đều) — **verify bằng
+toán**: thuật toán tie-break cũ ("gần nhất với paragraph_index đã ghi")
+**sẽ chọn sai** (occurrence #4 ở khoảng cách 3, occurrence #5 đúng ở
+khoảng cách 50). Đã sửa bằng field mới `AnchorDOCX.duplicate_ordinal` —
+thứ hạng của paragraph này trong số các paragraph cùng chữ ký
+(style_id+text_fingerprint), tính từ đầu văn bản — bất biến với insertion
+ở chỗ khác vì các occurrence cùng chữ ký không đổi thứ tự tương đối với
+nhau. Test verify bằng **object identity** (`resolved._p is expected._p`),
+không chỉ so text — loại trừ khả năng "đúng ngẫu nhiên vì trùng text".
+
+**2. XLSX — hoàn toàn không có cơ chế tự phục hồi (gap nghiêm trọng nhất):**
+Trước đây `resolve_xlsx_anchor` chỉ tra `sheet_name!cell_address` trực
+tiếp — nếu user chèn/xóa dòng, trả về **sai ô mà không báo lỗi**. Đã thêm
+`AnchorXLSX.row_label_fingerprint` (hash của ô đầu tiên có dữ liệu tính từ
+trái sang trong cùng dòng — quy ước phổ biến của báo cáo tài chính: nhãn
+dòng ở cột A/B, số liệu bên phải) + field mới `GeometryBlock.row_label`
+(`parser.py::parse_xlsx()` tính sẵn). `resolve_xlsx_anchor()` giờ: tra
+trực tiếp trước, nếu nhãn dòng hiện tại khớp thì trả luôn (fast path);
+nếu lệch → quét lại cùng cột để tìm dòng có nhãn khớp, tự hồi phục — cùng
+ý tưởng với cơ chế table_hash cho DOCX. Test
+`test_xlsx_resolve_self_heals_when_row_inserted_above` dùng
+`ws.insert_rows()` thật của openpyxl để chèn 1 dòng — verify tìm đúng giá
+trị "Net profit" (600) chứ không phải giá trị mới chèn (999). Test
+`test_xlsx_resolve_raises_when_row_label_gone` xác nhận fail sạch khi
+không tìm được (không đoán bừa).
+
+**3. PDF — resolve chỉ test bằng dữ liệu giả lập, chưa test trên tài liệu
+dày đặc thật:** Test mới
+(`test_pdf_resolve_survives_realistic_insertion_on_real_dense_document`)
+dùng **block thật** từ `fixture_report_2.pdf` (32 trang, có boilerplate
+lặp thật) — lấy 1 dòng thật, chèn 1 dòng giả lập vào đúng vị trí trong
+danh sách block thật (mọi trang khác giữ nguyên 100% dữ liệu thật), verify
+resolve vẫn tìm đúng dòng gốc giữa nhiễu thật của tài liệu, không bị
+đánh lừa bởi boilerplate lặp ở trang khác.
+
+**Kết luận sau vòng này:** cả 4 nhánh (DOCX paragraph, DOCX table, XLSX,
+PDF) giờ đều có ít nhất 1 test dùng **dữ liệu thật** (không chỉ giả lập)
+chứng minh resolve sống sót qua drift — không còn nhánh nào "logic đúng
+nhưng chưa thử lửa" như đánh giá trước đó cùng ngày. Gap còn lại vẫn là
+`element_classifier.py` (ngoài scope của anchor).
+
+**Tests:** 32 → **36 passed** (4 test mới: DOCX duplicate_ordinal thật,
+2 XLSX row-drift, 1 PDF real-data drift). Regression: `/api/process`
+sống thật verify lại — vẫn đúng 662/2733/3 mapped, `AnchorXLSX` giờ có
+`row_label_fingerprint` thật trong response JSON.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-14): Sửa element ngay trên UI, ghi trực tiếp vào file output — không cần chạy lại pipeline
+
+**Bối cảnh:** user hỏi có hiểu cơ chế "Profile-driven — sửa nội dung ngay
+trên UI, cập nhật trực tiếp vào file output" không. Đây là ý tưởng đã ghi
+trong `Foundation_Build_Plan_v3.md` §6 (Output Strategy) + endpoint
+`PATCH /documents/{id}/elements/{index}` đã liệt kê trong plan — nhưng
+**chưa hề có code nào** (Elements pane trước đó chỉ đọc, không route PATCH
+nào tồn tại). Đã build xong cả 3 phần user yêu cầu:
+
+**1. `mapping/writeback.py::WritebackEngine.apply_single_patch()`** —
+method mới, khác với `apply_patches_docx/xlsx` cũ (nhận batch string-anchor
+hard-code từ `DEMO_RULES`): nhận thẳng 1 `Anchor` pydantic (AnchorDOCX/
+AnchorXLSX), gọi `perception.anchor_builder.resolve_docx_anchor`/
+`resolve_xlsx_anchor` để tìm đúng vị trí (tận dụng lại toàn bộ ladder +
+self-heal vừa xây), ghi giá trị mới, trả về message tự hồi phục nếu có.
+PDF bị từ chối tường minh (`raise ValueError`) — đúng thiết kế cũ "PDF chỉ
+đọc, không ghi được".
+
+**2. `PATCH /api/elements/<process_id>`** (`api/routes/process.py`) —
+nhận `{anchor, value}`. Tự tìm file đang làm việc: nếu đã có
+`*_patched.docx` (từ lần chạy `DEMO_RULES` trước) thì sửa tiếp lên đó
+(cộng dồn nhiều lần sửa); nếu chưa có (vd 0 rule nào khớp) thì **tự tạo**
+bằng cách clone từ target gốc rồi mới sửa — người dùng luôn sửa được
+ngay cả khi mapping tự động không ra kết quả nào. Chỉ hỗ trợ output DOCX
+(khớp đúng những gì demo hiện tại thực sự sản xuất ra).
+
+**3. Frontend** — `EditableText` component mới (`components/shared/`),
+dùng chung cho `DocumentPane` (click vào đoạn văn/ô bảng) và `ElementsPane`
+(click vào ô "Element"). `workspaceStore.ts` thêm `processId` (trước đây
+không lưu, giờ cần để gọi PATCH), `editTargetElement()` — cập nhật UI
+ngay (optimistic), gọi API, rollback nếu lỗi. Element vừa sửa tay được
+đánh dấu `source: "manual"` (field này **đã có sẵn** trong
+`perception/models.py` từ trước — schema đã lường trước tính năng này) +
+tô nền vàng nhạt để phân biệt với dữ liệu extract tự động.
+
+**Bug thật tìm thấy khi verify qua browser:** CORS preflight chặn PATCH —
+`api/app.py` chỉ khai `Access-Control-Allow-Methods: GET, POST, OPTIONS`,
+thiếu PATCH. Đã sửa. Nếu không verify bằng browser thật (chỉ test bằng
+Flask test client, vốn không chạy CORS preflight) sẽ không phát hiện ra.
+
+**Verify end-to-end qua browser thật** (Playwright, cài tạm rồi gỡ): sửa
+đoạn "Contents" thành "EDITED BY AUTOMATED TEST — Contents" trực tiếp trên
+DOCUMENT pane → tải file `_patched.docx` về → mở lại bằng `python-docx` →
+**xác nhận đúng đoạn đó trong file thật đã đổi**, không phải chỉ đổi trên
+UI. Elements pane cùng lúc hiện đúng giá trị mới + tô vàng, link
+"Download patched DOCX" tự xuất hiện dù trước đó `mapped=0`.
+
+**Giới hạn hiện tại:** chỉ sửa được element có `anchor.format == "docx"`
+(đúng phạm vi output hiện có). Sửa Source (Excel input) chưa hỗ trợ ở
+route level — không nằm trong yêu cầu ("output file"), engine phía dưới
+đã hỗ trợ XLSX rồi nếu sau này cần mở route. Không có undo/lịch sử sửa
+đổi trong UI (mỗi lần sửa ghi đè giá trị cũ trong file, có ghi log nhưng
+chưa hiển thị).
+
+**Tests:** 36 → **46 passed** (10 test mới ở `tests/test_patch_element.py`
+— `apply_single_patch` unit-level cho paragraph/table cell/tích lũy nhiều
+lần sửa/từ chối PDF, route-level qua Flask test client cho cả happy path
+lẫn lỗi 400/404).
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-14, cùng ngày): Bias theo use case GTPS — sửa 2 điểm rủi ro cao nhất
+
+**Bối cảnh:** user chỉ ra đúng — sau khi viết
+`Foundation_UI_User_Behavior_Hypotheses_2026-08-14.md` (giả thuyết hành vi
+user, lưu tại repo root), phát hiện cả UI copy lẫn 1 phần backend đang
+ngầm giả định "Foundation = công cụ cho GTPS", trong khi Foundation được
+định vị là substrate layer dùng chung nhiều function
+(`Foundation_Master_Context.md`). **Không phải vấn đề kiến trúc** —
+`perception/` vốn đã generic, `applications/gpts/` vốn đã cô lập đúng chỗ
+theo "Quy tắc không được phá vỡ" — mà là 2 chỗ thật sự bias:
+
+**1. `sourceFiles` chỉ dùng phần tử đầu tiên (H3 trong file hypotheses):**
+UI cho phép chọn nhiều source file (`multiple` trên input) nhưng
+`applications/gpts/mapping_service.py::run_mapping()` trước đây nhận
+đúng 1 `source_path`, các file sau bị im lặng bỏ qua. Đã sửa:
+- `run_mapping(source_paths: list[str], ...)` — extract + gán anchor cho
+  **từng file riêng**, element index không đụng nhau, gộp chung vào 1
+  `source_map` để rule nào cũng tìm khớp trên toàn bộ input, không chỉ
+  file đầu.
+- `api/routes/process.py`: nhận nhiều file qua `request.files.getlist("source")`
+  (field lặp lại), lưu đè tránh trùng tên bằng prefix index.
+- Frontend: `processDocuments(sources: File[], target)` gửi toàn bộ
+  `sourceFiles`, không chỉ `[0]`.
+- Test mới `test_run_mapping_merges_elements_from_multiple_source_files`
+  + verify qua browser thật (2 file Excel FA&RPT FY2023+FY2024 cùng lúc) —
+  1329 source elements (662+667), mapping vẫn đúng.
+
+**2. AgentPane giả vờ hoạt động (H15):** hiển thị hội thoại mẫu cứng +
+input trông như gõ được, trong khi STATUS.md từ đầu đã ghi rõ ý định gốc
+"nút Gửi disabled có chủ đích". Đã viết lại đúng ý định đó: bỏ hội thoại
+giả, input+nút disabled thật, thông báo rõ "Chat is not connected to an
+AI model yet — this is a placeholder pane."
+
+**3. Copy UI mang giọng Tax/GTPS:** "Upload FA&RPTs (Excel) or PDF
+reports" → "Upload source data — Excel or PDF, any number of files.";
+"Upload the local file template (Word)" → "Upload the target document
+(Word) to map source data into." Không đổi nhãn "Source Documents"/
+"Target Template" (đã đủ trung lập).
+
+**Việc KHÔNG làm (cân nhắc rồi bỏ qua):** không xây hệ thống "profile
+plugin" cho nhiều rule set — hiện chỉ có đúng 1 rule set thật
+(`DEMO_RULES`), xây abstraction cho tương lai giả định là over-engineering.
+Khi có rule set thứ 2 thật (vd cho Audit) mới là lúc tách interface
+chung.
+
+**Tests:** 46 → **47 passed** (1 test mới cho multi-source-file merge).
+`tsc -b` sạch, verify qua browser thật xác nhận cả 2 điểm sửa.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-14, muộn hơn cùng ngày): Undo cho sửa tay + highlight element liên quan giữa các pane
+
+**Bối cảnh:** user yêu cầu 2 việc — (1) nút undo cho tính năng sửa trực
+tiếp mới build, (2) "responsive" cho hành vi user: hover/tương tác ở 1
+pane phải highlight element liên quan ở pane khác. Trong lúc build và tự
+verify bằng browser thật, phát hiện thêm 2 bug thật không liên quan trực
+tiếp tới yêu cầu nhưng chặn đúng tính năng này hoạt động đúng — đã sửa
+luôn thay vì báo cáo suông.
+
+**1. Undo — session-only, mỗi lần undo là 1 PATCH mới với giá trị cũ:**
+`workspaceStore.ts` thêm `editHistory: EditHistoryEntry[]` (index + anchor
++ previousValue, đẩy vào sau mỗi `editTargetElement` thành công) và
+`undoLastEdit()` — pop phần tử cuối, gọi lại `patchElement` với
+`previousValue`. Không phải "undo thật" ở server (không rollback file) —
+là 1 write mới ghi giá trị cũ đè lên, nên **cũng được log lineage** như
+mọi edit khác (`api/routes/process.py` đã thêm log này cùng lúc). Nút
+Undo đặt ở `WorkspaceHeader` (global, luôn thấy được dù đang ở pane nào),
+hiện số lượng edit có thể undo, kèm phím tắt **Ctrl/Cmd+Z** (nhường quyền
+undo gốc của trình duyệt khi đang gõ dở trong 1 ô input/textarea).
+
+**2. Highlight element liên quan — hover 1 nơi, sáng lên ở nơi khác:**
+Thêm `hoveredElementIndex` dùng chung giữa `DocumentPane`, `ElementsPane`,
+`ResultsPane`. Hover 1 đoạn/ô trong Document ↔ đúng dòng trong Elements
+sáng lên **và tự cuộn tới** (dùng `scrollIntoView({block: 'nearest'})` —
+không làm gì nếu phần tử đã hiện sẵn trên màn hình, nên không giật khi
+hover ngay tại pane đang xem).
+
+**Bug thật #1 — bắt được nhờ tự verify, không phải giả định:** hover 1
+dòng "Mapped" trong Results **không** highlight được gì cả. Điều tra ra:
+cả 3 giá trị `DEMO_RULES` map vào đều là **ô trống tại thời điểm parse**
+(số liệu chưa điền) — mà `parse_docx()` cũ **bỏ qua mọi table cell rỗng**
+(`if not cell.text.strip(): continue`), nên các ô đó chưa từng có Element
+nào để mà highlight, **và cũng chưa từng sửa tay được** (không có gì để
+click). Đã sửa: bỏ hẳn điều kiện skip cho table cell (giữ nguyên cho
+paragraph — ô trống trong bảng là placeholder thật cần điền, khác đoạn
+văn trống chỉ là khoảng trắng định dạng). `EditableText` đã có sẵn UI
+"(empty — click to fill in)" cho trường hợp này từ trước (chưa dùng tới
+tới giờ) — tự nhiên khớp đúng.
+
+**Bug thật #2 — sâu hơn, phát hiện sau khi sửa bug #1:** vẫn không
+highlight được, dù ô giờ đã tồn tại. Điều tra bằng cách gọi trực tiếp
+`resolve_table_anchor()`: DEMO_RULES anchor `table:6:376644e1_row:1_col:4`
+**tự hồi phục (self-heal) sang table 4**, không phải table 6 — đúng cơ chế
+anti-drift đã build, nhưng **`table_index` trong chuỗi anchor gốc đã lạc
+hậu** ngay khi self-heal xảy ra. Cách match cũ ở frontend
+(`anchorMatch.ts`, tự parse chuỗi rồi so `table_index` trực tiếp) **không
+biết gì về self-heal**, nên luôn tìm sai/tìm hụt. Sửa đúng gốc: chuyển
+việc resolve này về **backend** — `applications/gpts/mapping_service.py`
+thêm `target_element_index` vào mỗi `MappedEntry`, tính bằng cách tra theo
+`(table_hash, row, col)` thay vì `table_index` (cùng field self-heal đã
+dùng) ngay khi `run_mapping()` build xong `target_elements`. Frontend giờ
+chỉ đọc `mapped[i].target_element_index` có sẵn — đã **xóa hẳn**
+`anchorMatch.ts` (logic sai, không cần nữa) thay vì giữ lại làm fallback.
+Bài học: đừng để 2 nơi (backend + frontend) cùng tự suy luận lại 1 kết quả
+resolve — chỉ nên tính 1 lần ở nơi có đủ thông tin (backend, nơi
+anchor_builder.py sống), rồi truyền thẳng kết quả.
+
+**Tests:** 47 → **48 passed** (`test_parse_docx_keeps_empty_table_cells`
+mới; `test_run_mapping_maps_all_demo_rules` bổ sung assertion mọi
+`MappedEntry.target_element_index` phải resolve ra đúng element thật).
+Verify qua browser thật (Playwright, cài tạm rồi gỡ): undo bằng chuột +
+phím tắt đều đúng, hover Elements↔Document sáng đúng cặp, hover Results
+sáng đúng ô đích (element #633, giá trị "193,729,728,552" — đúng số vừa
+map) — không còn silent-fail.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-14, muộn hơn cùng ngày): Bỏ màn hình Intake riêng — thêm file ngay trong workspace
+
+**Bối cảnh:** user gửi screenshot màn Intake và chỉ ra 2 vấn đề: (1) vẫn
+bias theo GTPS dù đã sửa copy hôm trước — vì **kiến trúc** "Source
+Documents → Target Template → map vào" tự nó chính là hình dạng của use
+case Local File mapping, đổi chữ không đổi được điều đó; (2) nhìn thiếu
+chuyên nghiệp vì quá đơn giản (khung nét đứt nổi giữa khoảng trắng mênh
+mông, không phân cấp thị giác). Sau khi hỏi lại mức độ sửa (chỉ visual
+hay sửa cả mô hình), user chọn hướng triệt để nhất: **bỏ hẳn màn hình
+Intake, đưa document vào ngay trong UI 4-pane qua nút "+" ở pane
+DOCUMENT.**
+
+**Thay đổi kiến trúc:**
+- `App.tsx` không còn switch màn hình — luôn render thẳng
+  `WorkspaceLayout`. Xóa hẳn `components/intake/` (không giữ lại làm dead
+  code).
+- `workspaceStore.ts`: bỏ `currentScreen`/`setScreen`. Thêm
+  `addDocument(file)` — tự động định tuyến file vào `sourceFiles` hay
+  `targetFiles` theo **đuôi file** (`.docx` → target, thay thế target cũ
+  nếu có; `.xlsx`/`.pdf` → source, cộng dồn) — khớp đúng
+  `SOURCE_FORMATS`/`TARGET_FORMATS` đã có ở `api/routes/process.py`,
+  **không cần sửa backend** vì user không còn phải tự phân loại nữa, hệ
+  thống tự biết. Thêm `resetWorkspace()` — dọn sạch toàn bộ state
+  (files/elements/processId/editHistory/...) về trạng thái ban đầu.
+- `DocumentPane.tsx`: khi chưa có `targetElements`, hiện view mới
+  (`DocumentIntake`) — nút "+" tròn mở file picker (`multiple`,
+  `accept=".xlsx,.pdf,.docx"`), danh sách file đã thêm với nhãn màu phân
+  biệt vai trò (tím = Target template, xanh = Source data — tự động, user
+  không cần chọn), báo lỗi inline nếu file sai định dạng, nút "Start
+  Processing" xuất hiện ngay khi đủ điều kiện.
+- `WorkspaceHeader.tsx`: icon Home (trước gọi `setScreen('intake')`, giờ
+  không còn màn đó để quay về) đổi thành icon "New document" gọi
+  `resetWorkspace()`. Thêm trạng thái động thay cho chữ "Ready" tĩnh cũ:
+  "No document loaded" (chưa có gì) / "Processing" (spinner xanh) /
+  "Ready" (xanh lá) / "Error" (đỏ) — phản ánh đúng `processingStatus`
+  thay vì luôn hiện "Ready" kể cả khi chưa xử lý gì.
+- `ResultsPane.tsx`: sửa message rỗng bị sai ngữ cảnh — trước đây dù chưa
+  upload gì cũng hiện "No rule matched this document pair" (ngụ ý đã chạy
+  xử lý rồi), giờ phân biệt rõ theo `processingStatus`: chưa có gì → "Add
+  documents in the Document pane to get started."; lỗi → trỏ về Document
+  pane; đã chạy nhưng 0 rule khớp → giữ nguyên message giải thích cũ.
+- Dọn thêm `editingTargetIndex`/`startEditingTarget` (dead code có sẵn từ
+  trước, không component nào dùng — `EditableText` tự quản lý state sửa
+  cục bộ) trong lúc sửa file này.
+
+**Không đổi gì ở backend** — toàn bộ thay đổi nằm ở frontend, vì
+`POST /api/process` vốn đã nhận đúng shape `source` (nhiều file) +
+`target` (1 file) rồi, chỉ là trước đây UI ép user tự chọn ô nào bỏ file
+nào.
+
+**Verify qua browser thật** (Playwright, cài tạm rồi gỡ): mở app vào
+thẳng workspace (không còn màn hình chờ riêng), thử file sai định dạng →
+báo lỗi đúng chỗ không crash, thêm 2 file qua cùng 1 input "+" → tự phân
+loại đúng nhãn màu, "Start Processing" chỉ hiện khi đủ, xử lý xong hiện
+đúng dữ liệu thật, bấm "New document" ở header → về đúng trạng thái trống
+ban đầu, 0 lỗi console suốt toàn bộ luồng.
+
+**Tests:** không đổi backend nên vẫn 48/48. `tsc -b` sạch.
+
 ---
 
 ## Đã làm được
@@ -195,33 +737,43 @@ họp, không tự ý build.
 ### Code — Layer 2: Detect + Parse (P1)
 | Module | Trạng thái | Ghi chú |
 |---|---|---|
-| `perception/models.py` | ✅ Done (cần bổ sung nhỏ cho v4, xem bảng gap) | Pydantic schemas: `ElementType`, `AnchorDOCX`/`AnchorXLSX`/`AnchorPDF`, `Element`, `ElementIndex`, `Profile`/`ProfileField` |
-| `perception/detector.py` | ✅ Done | `detect_format()` — kiểm tra extension + MIME (libmagic), raise nếu mismatch/corrupt |
-| `perception/parser.py` | ✅ Done, viết lại 2026-08-11 | `parse_docx()` (python-docx), `parse_pdf()` (pdfplumber, text+bbox), `render_pdf_pages()` (pdf2image, cần Poppler — chưa cài), `extract_geometry()` (dispatch theo đuôi file). Docling đã bỏ hoàn toàn. |
+| `perception/models.py` | ✅ Done | Pydantic schemas: `ElementType`, `AnchorDOCX`/`AnchorXLSX`/`AnchorPDF`, `Element`, `ElementIndex`, `Profile`/`ProfileField`. Gap cũ (`text`/`text_normalized`/`source` trên `Element`, `formula` trên `ProfileField`, `paragraph_index` optional + `table_hash` trên `AnchorDOCX`) đã vá hết — xem mục 2026-08-14. |
+| `perception/detector.py` | ⚠️ Done nhưng có gotcha máy dev | `detect_format()` — kiểm tra extension + MIME (libmagic). **2026-08-14: reject cả file `.docx` thật trên máy dev này** (`python-magic-bin` detect sai MIME) — `api/` không dùng hàm này để validate upload, xem mục 2026-08-14. |
+| `perception/parser.py` | ✅ Done, viết lại 2026-08-11, `parse_xlsx()` + `page_width`/`page_height` + `row_label` thêm sau đó | `parse_docx()` (python-docx), `parse_pdf()` (pdfplumber, text+bbox+kích thước trang), `parse_xlsx()` (openpyxl, named ranges, nhãn dòng cho self-heal), `render_pdf_pages()` (pdf2image, cần Poppler — chưa cài), `extract_geometry()` (dispatch theo đuôi file, cả 3 format). Docling đã bỏ hoàn toàn. |
+| `perception/anchor_builder.py` | ✅ Done (2026-08-14, vá thêm cùng ngày) | Locate step thật — assign + resolve Anchor cho DOCX/XLSX/PDF, P3-04 PASS. Trước đó bản table-hash generic nằm sai chỗ ở `mapping/anchor_builder.py`, đã di chuyển đúng chỗ. Vá thêm: `duplicate_ordinal` (DOCX tie-break dưới drift lệch), row-label self-heal (XLSX), test resolve PDF trên dữ liệu thật. Xem 2 mục 2026-08-14 |
+| `applications/gpts/mapping_service.py` | ✅ Done (2026-08-14) | Application layer đầu tiên trong repo — xem mục 2026-08-14 |
+| `api/app.py` + `api/routes/process.py` | ✅ Done (2026-08-14) | Flask access layer đầu tiên trong repo — xem mục 2026-08-14 |
 
-### Tests — đã chạy thật, kết quả 16 passed / 0 failed
+### Tests — đã chạy thật, kết quả 48 passed / 0 failed
 ```
-python -m pytest tests/ -v --tb=short
-============ 16 passed in 3.60s ==============
+cd foundation && .venv/Scripts/python.exe -m pytest tests/ -v --tb=short
+============ 48 passed in ~13-19s ==============
 ```
-(Trước khi bỏ Docling: 12 passed / 1 failed, 174.96s. Sau: 16/16 pass, 3.60s
-— không còn load model/JIT-compile torch.)
+(Trước khi bỏ Docling: 12 passed / 1 failed, 174.96s. Sau khi bỏ: 16/16
+pass, 3.60s. Sau khi thêm `parse_xlsx()` + `mapping_service`: 20/20 pass.
+Sau khi thêm `anchor_builder.py` (`perception/`) + P3-04: 32/32 pass. Sau
+khi vá 3 gap độ tin cậy: 36/36 pass. Sau khi thêm PATCH element + undo +
+generalization + fix empty-cell/self-heal resolution (2026-08-14): 48/48
+pass.)
 
 | File | Trạng thái |
 |---|---|
 | `tests/test_models.py` | ✅ Pass (6 test) |
 | `tests/test_detector.py` | ✅ Pass (4 test) |
-| `tests/test_parser.py` | ✅ Pass (7 test) — viết lại theo API mới, gồm test PDF digital (có bbox), PDF digital multi-page với duplicate-text (mục đích: exercise case Strategy 1 anchor sẽ gặp), PDF scanned (0 block, không crash), dispatch theo đuôi file, reject đuôi file lạ |
+| `tests/test_parser.py` | ✅ Pass (9 test) — viết lại theo API mới, gồm test PDF digital (có bbox), PDF digital multi-page với duplicate-text, PDF scanned (0 block, không crash), XLSX (named range), dispatch theo đuôi file, reject đuôi file lạ, **giữ table cell rỗng (2026-08-14)** |
+| `tests/test_mapping_service.py` | ✅ Pass (3 test) — 1 chạy thật với fixture HMV thật (kèm assertion `target_element_index` resolve đúng qua self-heal), 1 test cặp file bất kỳ → `mapped == []`, 1 test gộp nhiều source file |
+| `tests/test_anchor_builder.py` | ✅ Pass (16 test) — assign sanity DOCX/XLSX/PDF, **P3-04 thật**, **duplicate_ordinal trên file HMV thật**, Strategy 2 fallback, fail sạch khi anchor không resolve được, XLSX named_range priority + self-heal khi chèn dòng thật, PDF Strategy 1+2 + resolve trên block thật từ fixture 32 trang |
+| `tests/test_patch_element.py` | ✅ Pass (10 test, mới 2026-08-14) — `apply_single_patch` unit-level (paragraph/table cell/tích lũy/từ chối PDF), route-level qua Flask test client |
 
 ### Fixtures
 Đã có sẵn trong `tests/fixtures/`:
-- `fixture_bcdt.docx` — **xác nhận 2026-08-11: đây thực chất là file scan, không phải DOCX digital.** `python-docx` chỉ đọc được 2 paragraph có nội dung / 252 paragraph, 0 table — vì file thực chất chứa 65 ảnh trang nhúng (`word/media/image*.png`, kiểm tra qua zip nội bộ), không có text layer thật. **Đã thử thay bằng `BCTC_hop_nhat_Q2.2026_tu_lap_DT_.docx` (do user cung cấp 2026-08-11) — xác nhận trùng MD5 100% với file đang có, tức là cùng 1 file.** Gap DOCX đa dạng (nhiều heading trùng style, có table) **vẫn chưa được giải quyết** — cần fixture DOCX digital thật khác, hoặc build fixture tổng hợp.
+- `fixture_bcdt.docx` — **xác nhận 2026-08-11: đây thực chất là file scan, không phải DOCX digital.** `python-docx` chỉ đọc được 2 paragraph có nội dung / 252 paragraph, 0 table — vì file thực chất chứa 65 ảnh trang nhúng (`word/media/image*.png`, kiểm tra qua zip nội bộ), không có text layer thật. **Đã thử thay bằng `BCTC_hop_nhat_Q2.2026_tu_lap_DT_.docx` (do user cung cấp 2026-08-11) — xác nhận trùng MD5 100% với file đang có, tức là cùng 1 file.** Gap DOCX đa dạng (nhiều heading trùng style) — **đã giải quyết 2026-08-14, không cần fixture riêng**: dùng thẳng file demo GTPS thật (`anonymize client/Demo files/.../HMV-26-Final-Local File.../_drifted.docx`, không nằm trong `tests/fixtures/`, tham chiếu qua path + skipif) — file này tự nhiên có 9 lần lặp caption "Source: TP Cat database" cùng style, đủ để stress-test tie-break thật, xem `test_anchor_builder.py`.
 - `fixture_report.pdf` (PDF scan ảnh, 0 chars mọi trang qua `pdfplumber`, không dùng được cho Geometry Layer tới khi có quyết định OCR) — **xác nhận trùng MD5 với `CBTTDK_BCTC_HN_Q2.26_VIE_sign.pdf` do user cung cấp**, cùng 1 file, cũng là bản scan/ký, không giúp thêm.
 - `fixture_report_2.pdf` (PDF digital thật) — **xác nhận trùng MD5 với `Neweb VN-2025-VND-VN-1903.pdf` do user cung cấp.** Phân tích sâu hơn 2026-08-11: 32 trang, 9691 từ, 968 dòng text, có 40 nhóm dòng lặp lại (vd: "Công ty TNHH NeWeb Việt Nam" lặp 31 lần, "Mẫu B 09 – DN" lặp 22 lần) — **đa dạng hơn đánh giá ban đầu**, đủ tốt để test case anchor PDF bị trùng text/style qua nhiều trang. Đã thêm test `test_parse_pdf_digital_has_realistic_multipage_diversity` khai thác đúng case này.
 
 **Còn thiếu thật sự:**
-- Fixture DOCX digital đa dạng (nhiều heading trùng `style_id`, có table) — vẫn là gap chưa giải quyết, cần cho anchor_builder.py test Strategy 2/3 và table anchor.
-- Fixture XLSX — **KHÔNG còn "không gấp"**, xem mục sửa scope ở trên: demo đầu ("Local file mapping") dùng Excel làm input chính. Cần fixture XLSX thật (named ranges, merged cells, nhiều sheet — kiểu template CIT theo Master Context) trước khi build `parse_xlsx()`.
+- ~~Fixture DOCX digital đa dạng (nhiều heading, có table)~~ — **2026-08-17: đã xong.** `fixture_generic_handbook.docx` (sinh từ `tests/fixtures/_generate_generic_docx.py`, deterministic — 4 heading qua 3 level + 4 đoạn văn + 1 table 3x3) — xem mục "✅ ĐÃ GIẢI QUYẾT (2026-08-17)" bên dưới. **Lưu ý:** đây là fixture generic/phi-tài-chính để chứng minh Geometry Layer không bias về hình dạng BCTC, KHÔNG phải fixture để test anchor Strategy 2/3 (vốn cần heading **trùng** `style_id` để test tie-break — gap đó vẫn còn, khác mục đích với fixture mới này).
+- ~~Fixture XLSX~~ — **2026-08-14: không còn chặn.** `parse_xlsx()` + `test_mapping_service.py` dùng thẳng file demo thật (`anonymize client/Demo files/.../HMV-FA&RPT FY2024.xlsx`) làm fixture, không cần file tổng hợp riêng trong `tests/fixtures/`.
 
 ---
 
@@ -231,15 +783,15 @@ python -m pytest tests/ -v --tb=short
 |---|---|---|---|
 | 1 | Loại bỏ Docling, chuyển Geometry Layer sang pdfplumber+pdf2image (PDF) / python-docx (DOCX) | ✅ Xong 2026-08-11 | `parser.py` viết lại hoàn toàn, 16/16 test pass. **Lưu ý:** đây là quyết định "bỏ Docling", khác với "pivot về DOC-only" của v4 mục 1-2 — team chủ động giữ nhánh PDF (`parse_pdf`/`render_pdf_pages`) chạy song song thay vì gác lại, đây là lựa chọn có chủ đích của team, không phải sai lệch khỏi plan |
 | 2 | `perception/element_classifier.py` (See) | ❌ Chưa | DoclingDocument JSON → `FoundationDocument` typed elements |
-| 3 | `perception/anchor_builder.py` (Locate) + P3-04 anchor stability test | ❌ Chưa | IP quan trọng nhất của project, milestone bắt buộc chưa chạm tới |
+| 3 | `perception/anchor_builder.py` (Locate) + P3-04 anchor stability test | ✅ **Xong (2026-08-14)** | IP quan trọng nhất của project — milestone bắt buộc đã chạm tới. Assign+resolve cho cả DOCX (ladder 3 tầng + table self-heal)/XLSX (named_range/cell_address)/PDF (position+bbox, không content-match). P3-04 PASS thật (insert paragraph → resolve vẫn đúng). Xem mục "✅ ĐÃ GIẢI QUYẾT" 2026-08-14 |
 | 4 | **Normalization Layer** (v4 mục 3) — `NormalizationRule`, hàm `normalize()` | ❌ Chưa — 0 dòng code | Rule tất định (VND/VNĐ→VND, ngày tháng...), tách riêng khỏi Classification |
-| 5 | `Element.text` / `text_normalized` field (v4 mục 4) | ❌ Thiếu | `models.py.Element` hiện chỉ có `name` (nhãn hiển thị), không có field chứa nội dung text gốc để Normalization xử lý |
-| 6 | `ProfileField.formula: str \| None` (v4 mục 8, placeholder cho Template Authoring Phase 2) | ❌ Thiếu | Việc nhỏ, nên thêm ngay để không chặn mở rộng sau, đúng yêu cầu v4 |
-| 7 | Application layer — package `applications/` (v4 mục 6) | ❌ Chưa tồn tại | Chưa vi phạm gì (vì chưa viết use-case nào) nhưng cần nhớ khi bắt đầu extract/translate/summarize |
-| 8 | Module `extract` / `translate` / `summarize` (v4 mục 1, 3 module demo) | ❌ Chưa | Không có gì ngoài Detect+Parse |
-| 9 | Output engine (v4 mục 5) | ❌ Chưa | Không có module nào |
-| 10 | `api/` — Flask routes | ❌ Rỗng | `api/__init__.py` và `api/routes/__init__.py` hoàn toàn trống, chưa có `Flask(__name__)` nào trong code (ngoài site-packages) |
-| 11 | **Frontend thật** (v4 mục 7) | ✅ Scaffold xong 2026-08-11 | Xem "Đã giải quyết" bên dưới — bước 1-3 mục 7.6 done, còn lại (kết nối API thật) vẫn chờ backend |
+| 5 | `Element.text` / `text_normalized` field (v4 mục 4) | ✅ Xong | `text` có sẵn (populated bởi `applications/gpts/mapping_service.py`), `text_normalized` có field nhưng chưa ai ghi vào (chờ #4 Normalization Layer) |
+| 6 | `ProfileField.formula: str \| None` (v4 mục 8, placeholder cho Template Authoring Phase 2) | ✅ Xong | Field đã thêm, chưa có code nào set giá trị (đúng — chỉ là placeholder cho Phase 2) |
+| 7 | Application layer — package `applications/` (v4 mục 6) | ⚠️ Bắt đầu (2026-08-14) | `applications/gpts/mapping_service.py` — chỉ cho use case GTPS/HMV demo. Chưa có `applications/tax/` hay use case tổng quát nào khác |
+| 8 | Module `extract` / `translate` / `summarize` (v4 mục 1, 3 module demo) | ❌ Chưa | Demo thật hiện có là "Local file mapping" (GTPS), không phải extract/translate/summarize — xem mục sửa scope |
+| 9 | Output engine (v4 mục 5) | ⚠️ 1/3 chế độ | "Clone & Replace" qua `mapping/writeback.py::apply_patches_docx/xlsx` (batch, DEMO_RULES) **+ `apply_single_patch()`** (1 element/lần, dùng bởi PATCH live-edit — cùng chế độ, khác đường vào). Chưa có Profile-driven Fill / Task-shaped |
+| 10 | `api/` — Flask routes | ✅ Xong (2026-08-14) | `api/app.py` (`create_app()`, CORS gồm PATCH) + `api/routes/process.py` (`POST /api/process` nhận nhiều source file, `PATCH /api/elements/<id>` sửa trực tiếp, `GET /api/download/<id>`) — chỉ phủ use case GTPS demo, chưa có `/documents/{id}/perceive` v.v. theo đúng v4 §7.5 |
+| 11 | **Frontend thật** (v4 mục 7) | ✅ Nối API thật + sửa trực tiếp (2026-08-14) | **Không còn màn hình Intake riêng** — 1 workspace duy nhất, thêm document qua nút "+" ngay trong pane DOCUMENT (tự phân loại source/target theo đuôi file). Sửa element trực tiếp trên UI ghi thẳng vào output (PATCH), có Undo (session-only, Ctrl/Cmd+Z), hover 1 pane highlight + auto-scroll pane liên quan. Copy đã trung lập hóa, không còn giọng Tax/GTPS. `AgentPane` vẫn honest placeholder, chờ OpenAI/Workbench thật — xem các mục 2026-08-14 |
 | 12 | Digital Gateway/Copilot competitive research (v4 mục 9) | ❌ Chưa | Checklist rỗng, không tìm thấy tài liệu/slide nào trong repo — bắt buộc phải có trước Executive Summary |
 | 13 | Benchmark 3 kịch bản AI (không AI / general / fine-tune local) (v4 mục 0.1-4, mục 11) | ❌ Chưa | Không có benchmark script/kết quả nào |
 | 14 | Hạ tầng thứ 3 — máy local cô lập mạng (v4 mục 10) | ⚠️ Đúng kế hoạch, chưa cần vội | v4 tự xác nhận đây là nghiên cứu song song, không chặn MVP |
@@ -253,24 +805,94 @@ python -m pytest tests/ -v --tb=short
 | # | Việc | Phụ thuộc | Ghi chú |
 |---|---|---|---|
 | 1 | Gửi câu hỏi xác nhận CRADL chính thức cho pdfplumber/pdf2image + Poppler cho anh Quốc | Không | Việc của người, không phải code — quyết định "bỏ Docling" ở trên là quyết định kỹ thuật nội bộ, KHÔNG thay thế việc xác nhận compliance chính thức này |
-| 2 | Research Digital Gateway/Copilot, viết bảng so sánh 3 cột | Không | Bắt buộc trước Partners |
+| 2 | Research Digital Gateway/Copilot, viết bảng so sánh 3 cột | Không | **Deprioritized 2026-08-14 theo yêu cầu user** — tạm gác, không phải bỏ. Vẫn "bắt buộc trước Partners" khi quay lại làm |
 | 3 | ~~Pivot `parser.py`/`detector.py` bỏ Docling~~ | — | ✅ Xong 2026-08-11, xem phần "Đã giải quyết" ở trên |
-| 4 | Fixture XLSX thật (named ranges, merged cells, nhiều sheet) | Không | **Nâng ưu tiên 2026-08-11** — chặn #5, cần trước khi viết `parse_xlsx()` |
-| 5 | `perception/parse_xlsx()` (Geometry Layer, dùng `openpyxl`) + anchor XLSX (`sheet_name+cell_address`/`named_range`, không cần ladder) | #4 | **Critical path mới** — demo đầu ("Local file mapping") dùng Excel làm input chính, xem mục sửa scope ở trên |
-| 6 | `perception/element_classifier.py` → `anchor_builder.py` (DOCX) → **P3-04 PASS** | Không (Docling đã bỏ, không còn block) | Milestone chặn cho nhánh DOCX, không negotiate — vẫn cần vì output có thể là DOCX |
-| 7 | Output write path: DOCX (`python-docx`, đã duyệt) + XLSX (`openpyxl`, đã duyệt) | #5, #6 | Đúng Output Engine 3 chế độ đã định nghĩa ở v3 — chưa module nào viết. Cần cho "Local file mapping" ghi ra output final |
-| 8 | Normalization Layer (`normalize()`, `NormalizationRule`) | #5, #6 (cần element có `text`) | Tất định, dễ test, làm sau khi có element thật |
-| 9 | Thêm field `text`/`text_normalized` vào `Element`, field `formula` vào `ProfileField` | Không | Việc nhỏ, làm sớm để không chặn #8 và #10 |
-| 10 | Module mapping (application layer, package `applications/`) cho "Local file mapping" | #5, #6, #7 | Use case demo đầu thật, thay vì extract/translate/summarize như v4 mục 1 cũ ghi |
-| 11 | `api/` Flask routes | #5, #6, #10 | Access layer, thay FastAPI |
-| 12 | ~~Frontend — bước 1-3 của v4 mục 7.6~~ | — | ✅ Xong 2026-08-11, xem "Đã giải quyết" bên dưới. Bước tiếp theo (mock data thật cho ElementIndexTable/OutputGrid/TraceLog, rồi nối API) vẫn chờ backend/kết quả buổi họp |
-| 13 | Benchmark 3 kịch bản AI | #10 | Đo cả độ chính xác lẫn tốc độ |
+| 4 | ~~Fixture XLSX thật (named ranges, merged cells, nhiều sheet)~~ | — | ✅ Xong — dùng luôn fixture demo thật (`HMV-FA&RPT FY2024.xlsx`) thay vì fixture tổng hợp riêng |
+| 5 | ~~`perception/parse_xlsx()` + anchor XLSX~~ | #4 | ✅ Xong — `parse_xlsx()` (openpyxl, named ranges) + `AnchorXLSX` |
+| 6a | `perception/anchor_builder.py` (DOCX/XLSX/PDF generic) → **P3-04 PASS** | Không (Docling đã bỏ, không còn block) | ✅ **Xong (2026-08-14)** — xem mục "Đã giải quyết" cùng ngày |
+| 6b | `perception/element_classifier.py` | Không (anchor không phụ thuộc classification — nguyên tắc "anchor trước, nhãn sau") | **Vẫn ❌ chưa làm** — tách riêng khỏi #6a từ hôm nay, không còn gộp chung 1 dòng. Cần cho demo/use case ngoài GTPS/HMV |
+| 7 | Output write path: DOCX (`python-docx`, đã duyệt) + XLSX (`openpyxl`, đã duyệt) | #5, #6 | ⚠️ 1/3 — chỉ có "Clone & Replace" (`mapping/writeback.py`). Profile-driven Fill / Task-shaped vẫn chưa |
+| 8 | Normalization Layer (`normalize()`, `NormalizationRule`) | #5, #6 (cần element có `text`) | **Vẫn ❌ chưa làm** — element đã có `text` (xong ở #9) nhưng chưa ai gọi normalize |
+| 9 | ~~Thêm field `text`/`text_normalized` vào `Element`, field `formula` vào `ProfileField`~~ | Không | ✅ Xong |
+| 10 | ~~Module mapping (application layer, package `applications/`) cho "Local file mapping"~~ | #5, #6a, #7 | ✅ Xong (2026-08-14) — `applications/gpts/mapping_service.py`, dùng `mapping/demo_mapper.py`'s `DEMO_RULES` (hard-code 1 client) + `perception/anchor_builder.py`'s `assign_anchors()` (generic, #6a) — #6b (`element_classifier.py`) vẫn là gap thật cho use case khác HMV |
+| 11 | ~~`api/` Flask routes~~ | #5, #6a, #10 | ✅ Xong (2026-08-14) — `api/app.py` + `api/routes/process.py`: `POST /api/process` (nhiều source file), `PATCH /api/elements/<id>` (sửa trực tiếp), `GET /api/download/<id>` — chỉ phủ GTPS demo, chưa theo đúng REST shape v4 §7.5 (`/documents/{id}/...`) |
+| 12 | ~~Frontend — bước 1-3 của v4 mục 7.6~~ | — | ✅ Xong 2026-08-11, dựng lại 2 lần nữa cùng 2026-08-14 (Intake→Workspace, rồi bỏ hẳn Intake — 1 workspace duy nhất, thêm document qua nút "+" tại chỗ). Sửa trực tiếp + Undo + cross-highlight đã có. `AgentPane`/OpenAI vẫn chờ |
+| 13 | Benchmark 3 kịch bản AI | #10 | **Deprioritized 2026-08-14 theo yêu cầu user** — tạm gác, không phải bỏ |
 | 14 | ~~OCR~~ | — | **Xác nhận 2026-08-11: không cần** — "Local file mapping" luôn nhận input Excel digital, không có nguồn scan |
 
 ### Quy tắc không được phá vỡ
-- P3-04 phải PASS trước khi sang Phase 4.
+- P3-04 phải PASS trước khi sang Phase 4. **✅ Đã PASS (2026-08-14)** —
+  xem `tests/test_anchor_builder.py`.
 - Không dùng API ngoài — mọi thứ chạy local/air-gapped.
 - Module nào cần biết "đây là use case Tax/GPTS" thì không được nằm trong
   `perception/`/`adapters/` — đặt ở `applications/tax/`, `applications/gpts/`.
 - Đừng viết "pdfplumber/pdf2image đã bị từ chối" cho tới khi anh Quốc xác nhận lại.
 - Scope MVP1: DOC only. Đừng mở rộng loại file khác trước khi core DOC chứng minh được.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-17): Bỏ `ElementType.GLOSSARY` khỏi core — thay bằng `Element.tags` chung
+
+**Bối cảnh:** `perception/models.py::ElementType` có sẵn giá trị `GLOSSARY =
+"glossary"` — không phải structural primitive (khác `heading`/`table`/
+`cell`/`para`/`picture`), mà là 1 semantic role chỉ liên quan tới use case
+dịch thuật (translation). Vi phạm đúng "Quy tắc không được phá vỡ" ở trên
+("module nào cần biết use case cụ thể thì không được nằm trong
+`perception/`"). Chưa consumer nào dùng giá trị này, xóa an toàn.
+
+**Đã sửa:**
+- `perception/models.py`: bỏ `GLOSSARY` khỏi `ElementType` (giờ chỉ còn 5
+  structural primitive), thêm comment nói rõ enum này CHỈ chứa structural
+  primitive. Thêm field chung `Element.tags: list[str] = Field(default_factory=list)`
+  — nơi application layer tự gán role ngữ nghĩa bất kỳ (vd
+  `applications/gpts/` sau này có thể set `tags=["glossary"]`), core
+  không hard-code tên tag nào.
+- `frontend/src/types/element.ts`: bỏ `'glossary'` khỏi union `ElementType`,
+  thêm `tags?: string[]` vào `ElementRowData` — mirror đúng model Python.
+- `tests/test_models.py`: thêm `test_element_type_has_no_glossary_member`
+  + `test_element_tags_roundtrip` (Element với `tags=["glossary"]` round-trip
+  qua JSON đúng).
+
+**Tests:** 48 → **50 passed** (2 test mới). `tsc -b` chạy sạch, không lỗi.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-17): Fixture DOCX generic/phi-tài-chính — đóng gap "genericity chưa được verify"
+
+**Bối cảnh:** toàn bộ fixture DOCX/PDF/XLSX hiện có (`fixture_bcdt.docx`,
+`fixture_report.pdf`, `fixture_report_2.pdf`, file demo HMV) đều là tài
+liệu tài chính thật. Claim "`perception/` generic, không bias theo domain
+cụ thể" (v3/v4, "Quy tắc không được phá vỡ") vì vậy chưa từng được kiểm
+chứng bằng test — chỉ đúng vì `parser.py`/`anchor_builder.py` tình cờ chưa
+viết logic riêng cho BCTC, không phải vì có test nào chặn regression nếu
+sau này ai đó (vô tình) thêm giả định tài chính vào.
+
+**Đã thêm:**
+- `tests/fixtures/_generate_generic_docx.py` — script deterministic dùng
+  `python-docx` sinh `fixture_generic_handbook.docx`: tài liệu hư cấu hoàn
+  toàn ("Community Garden Member Handbook"), không tên người/công ty thật,
+  không số liệu tài chính. Cấu trúc cố định trong code (nguồn sự thật duy
+  nhất, test import thẳng từ đây, không hard-code lặp lại): 4 heading qua
+  3 level (`Heading 1/2/3`), 4 đoạn văn nội dung, 1 table 3x3 (header +
+  2 dòng data). Cả file `.docx` sinh ra lẫn script sinh nó đều commit —
+  đúng yêu cầu "reproducible from code", không phải blob nhị phân mù mờ.
+- `tests/test_parser_generic.py` — chạy `parse_docx()`/`extract_geometry()`
+  trên fixture này, assert **thuần cấu trúc** (đúng cho bất kỳ DOCX nào,
+  không riêng tài chính): >0 block, đúng số heading + mỗi heading có
+  `style_id` thật (`Heading1/2/3`, không `None`), table có đúng 9 cell ở
+  đúng `table_index`/`row_index`/`col_index` với đúng nội dung, các đoạn
+  văn nội dung được giữ nguyên. Cố tình KHÔNG assert gì liên quan tài
+  chính — đây chính là điểm khác `test_parser.py`.
+- Verify: parser xử lý đúng ngay lần đầu, không tìm thấy bug nào — không
+  có bias tài chính ẩn trong `parse_docx()` tại thời điểm này. Fixture này
+  giờ là **regression guard**: nếu sau này `element_classifier.py` hay
+  `anchor_builder.py` vô tình thêm giả định "shape BCTC" (vd giả định
+  heading luôn là tên khoản mục kế toán), test này sẽ đỏ.
+
+**Không đóng:** gap "heading trùng `style_id`" (cần cho test Strategy 2/3
+của anchor resolve) — khác mục đích, fixture này cố tình mỗi heading dùng
+level/text riêng, không lặp lại như boilerplate BCTC thật. Xem ghi chú
+cập nhật ở mục "Còn thiếu thật sự" phía trên.
+
+**Tests:** 50 → **56 passed** (6 test mới ở `test_parser_generic.py`).
+Không sửa `perception/` — chỉ thêm fixture + test.

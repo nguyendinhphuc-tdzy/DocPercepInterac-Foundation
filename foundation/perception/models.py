@@ -17,20 +17,29 @@ from pydantic import BaseModel, Field
 
 
 class ElementType(str, Enum):
+    """Structural primitives ONLY. Semantic/business roles (e.g. "glossary")
+    belong to the application layer and are assigned via `Element.tags`."""
+
     HEADING = "heading"
     TABLE = "table"
     CELL = "cell"
     PARA = "para"
     PICTURE = "picture"
-    GLOSSARY = "glossary"
 
 
 class AnchorDOCX(BaseModel):
     format: Literal["docx"] = "docx"
-    paragraph_index: int
+    paragraph_index: Optional[int] = None  # None for table-cell anchors
     style_id: str
     text_fingerprint: str  # sha256(text[:50])[:8]
+    # 0-indexed rank among all paragraphs sharing this exact
+    # (style_id, text_fingerprint) signature, top-to-bottom — disambiguates
+    # repeated boilerplate (e.g. a caption reused under every table) when
+    # paragraph_index has drifted unevenly. None for table-cell anchors and
+    # for anchors built before this field existed.
+    duplicate_ordinal: Optional[int] = None
     table_index: Optional[int] = None
+    table_hash: Optional[str] = None
     row_index: Optional[int] = None
     col_index: Optional[int] = None
 
@@ -40,6 +49,12 @@ class AnchorXLSX(BaseModel):
     sheet_name: str
     cell_address: str  # A1 notation, e.g. "B14"
     named_range: Optional[str] = None  # takes priority over cell_address if set
+    # sha256(row label)[:8], where "row label" = this row's leftmost
+    # non-empty cell (the typical financial-statement convention: a line
+    # item name in column A/B, values to the right). Lets resolve_xlsx_anchor
+    # detect and self-heal row insert/delete drift — cell_address alone
+    # can't (see perception/anchor_builder.py).
+    row_label_fingerprint: Optional[str] = None
 
 
 class AnchorPDF(BaseModel):
@@ -59,8 +74,12 @@ class Element(BaseModel):
     section: Optional[str] = None  # parent section, e.g. "Assets", "Notes"
     type: ElementType
     name: str  # human-readable label, e.g. "Table 2", "Note 1: basis"
+    text: str = ""
+    text_normalized: Optional[str] = None
+    source: Literal["text_layer", "ocr", "manual"] = "text_layer"
     anchor: Anchor = Field(discriminator="format")
     confidence: Optional[float] = Field(default=None, ge=0.0, le=1.0)
+    tags: list[str] = Field(default_factory=list)  # application-assigned semantic roles, e.g. ["glossary"]
 
 
 class ElementIndex(BaseModel):
@@ -79,6 +98,7 @@ class ProfileField(BaseModel):
     field_name: str
     match_rule: Literal["label", "structural", "fingerprint"]
     anchor_pattern: dict  # pattern used to recognize this field in same-type documents
+    formula: Optional[str] = None
 
 
 class Profile(BaseModel):

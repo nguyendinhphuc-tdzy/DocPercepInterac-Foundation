@@ -26,6 +26,31 @@ def test_parse_docx_returns_ordered_blocks_with_indices():
         assert is_para != is_cell
 
 
+def test_parse_docx_keeps_empty_table_cells(tmp_path):
+    """Empty table cells are real fill-in placeholders (e.g. a financial
+    figure a mapping rule or a user is meant to write in), not noise —
+    unlike empty paragraphs, they must still become a block so they can
+    be shown/edited in the UI before anything has been written into them.
+    """
+    from docx import Document as DocxDocument
+
+    doc = DocxDocument()
+    table = doc.add_table(rows=1, cols=2)
+    table.rows[0].cells[0].text = "Label"
+    # cells[1] stays empty on purpose
+    path = tmp_path / "doc.docx"
+    doc.save(path)
+
+    blocks = parse_docx(str(path))
+    cell_blocks = [b for b in blocks if b["table_index"] is not None]
+    assert len(cell_blocks) == 2
+
+    empty_block = next(b for b in cell_blocks if b["col_index"] == 1)
+    assert empty_block["text"] == ""
+    assert empty_block["row_index"] == 0
+    assert empty_block["table_index"] == 0
+
+
 def test_parse_docx_under_60s_cpu():
     start = time.monotonic()
     parse_docx(str(FIXTURES / "fixture_bcdt.docx"))
@@ -87,3 +112,31 @@ def test_extract_geometry_rejects_unsupported_extension(tmp_path):
         assert False, "expected ValueError"
     except ValueError:
         pass
+
+
+def test_parse_xlsx_extracts_correct_geometry(tmp_path):
+    import openpyxl
+    file_path = tmp_path / "test.xlsx"
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "TestSheet"
+    ws["A1"] = "Hello"
+    ws["B2"] = "World"
+    
+    # Create named range
+    wb.create_named_range("MyNamedRange", ws, "A1:A1")
+    
+    wb.save(file_path)
+    wb.close()
+    
+    from perception.parser import parse_xlsx
+    blocks = parse_xlsx(str(file_path))
+    assert len(blocks) == 2
+    assert blocks[0]["text"] == "Hello"
+    assert blocks[0]["sheet_name"] == "TestSheet"
+    assert blocks[0]["cell_address"] == "A1"
+    assert blocks[0]["named_range"] == "MyNamedRange"
+    
+    assert blocks[1]["text"] == "World"
+    assert blocks[1]["cell_address"] == "B2"
+    assert blocks[1]["named_range"] is None

@@ -85,6 +85,23 @@ def test_confidence_bounds():
     assert 0.0 <= el.confidence <= 1.0
 
 
+def test_element_type_has_no_glossary_member():
+    assert "GLOSSARY" not in ElementType.__members__
+    assert "glossary" not in {member.value for member in ElementType}
+
+
+def test_element_tags_roundtrip():
+    el = Element(
+        index=0,
+        type=ElementType.PARA,
+        name="Terms",
+        anchor=AnchorDOCX(paragraph_index=0, style_id="Normal", text_fingerprint="abcd1234"),
+        tags=["glossary"],
+    )
+    reloaded = Element.model_validate_json(el.model_dump_json())
+    assert reloaded.tags == ["glossary"]
+
+
 def test_profile_field_and_version():
     profile = Profile(
         profile_id="cit-workpaper-v1",

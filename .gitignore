@@ -34,3 +34,8 @@ Thumbs.db
 foundation/models/*
 !foundation/models/README.md
 *.zip
+
+# Generated at runtime by api/routes/process.py + mapping/lineage.py — uploaded
+# files, patched output, and lineage logs, never source
+foundation/.uploads/
+foundation/.lineage_logs/
