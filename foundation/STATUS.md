@@ -993,3 +993,59 @@ batch cả document trong 1 lần gọi.
 
 **Tests:** 63 → **64 passed** (net +1 — 1 test cũ thay bằng 2 test mới).
 Chưa build model AI nào — đúng scope, chỉ đổi hình dạng seam.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-17, muộn hơn cùng ngày nữa): Harness so sánh Classifier — chỗ verify model AI của user trước khi thay baseline
+
+**Bối cảnh:** seam `Classifier` document-level (mục ngay trên) đã cho phép
+cắm 1 model AI thay `classify_blocks`, nhưng chưa có cách nào để user tự
+kiểm tra model của họ "hợp lý" tới đâu trước khi thật sự dùng nó — không
+có công cụ nào so sánh output của candidate với baseline trên cùng 1 input.
+Việc này xây đúng công cụ đó, **không đụng pipeline mapping** hiện có.
+
+**Đã thêm (package mới `foundation/eval/`, hoàn toàn tách biệt):**
+- `eval/classifier_diff.py` — **chỉ import từ `perception.*`** (+ stdlib),
+  tuyệt đối không đụng `applications/`/`mapping/`/`gpts`, không string
+  use-case nào — công cụ generic, dùng được cho bất kỳ Classifier nào.
+  - `ComparisonReport` (dataclass) — `total_elements`, `count_match`,
+    4 tỉ lệ (`type_agreement`/`name_agreement`/`anchor_preserved`/
+    `exact_agreement`, tính trên các index có mặt ở CẢ HAI phía),
+    `divergences` (list chi tiết từng điểm lệch) + `missing_in_candidate`/
+    `extra_in_candidate` (khi độ dài 2 bên không khớp). Docstring nhấn
+    mạnh rõ: đây là **đồng thuận với baseline, KHÔNG phải "độ chính
+    xác"** — baseline chỉ là heuristic tạm, 1 model tốt có thể **cố tình**
+    lệch (type/section tinh hơn) — phải tự soát `divergences` để phân
+    biệt "tốt hơn" với "sai".
+  - `diff_elements(baseline, candidate) -> ComparisonReport` — **pure
+    function, không I/O**, so khớp theo `Element.index` (không phải vị trí
+    list, để chịu được candidate đánh số lệch), anchor so bằng `==` (đúng
+    invariant: Classifier không được sửa Anchor, chỉ được gán nhãn).
+  - `compare_on_document(path, candidate, baseline=classify_blocks) -> ComparisonReport`
+    — end-to-end thật: `extract_geometry` → `assign_anchors` **1 lần duy
+    nhất**, cả 2 Classifier chạy trên đúng cùng input rồi mới diff.
+  - `render_report(report) -> str` — bảng metric + list divergence (cắt ở
+    50 dòng, có dòng "... and N more").
+  - `candidate_stub(...)` — placeholder, hiện **delegate thẳng sang
+    `classify_blocks`** (đánh dấu rõ bằng comment `# TODO: REPLACE...` nêu
+    đúng chữ ký bắt buộc) — cho phép chạy harness ngay hôm nay, ra
+    100% agreement như 1 phép thử "harness tự nó không tạo diff giả".
+  - `if __name__ == "__main__":` — chạy `compare_on_document` trên
+    `fixture_generic_handbook.docx` (fixture phi-tài-chính, không phải
+    GTPS/HMV) với `candidate_stub`, in `render_report(...)` — verify thật
+    qua `python -m eval.classifier_diff`, ra đúng 17 element, 100% mọi
+    tỉ lệ, "No divergences."
+- `tests/test_classifier_diff.py` (6 test) — 5 test thuần `diff_elements`
+  (không I/O): giống hệt nhau → full agreement; có type/name lệch → đúng
+  số lượng + đúng index divergence; candidate ít phần tử hơn →
+  `count_match=False` + `missing_in_candidate` đúng, chỉ diff phần giao;
+  candidate đổi Anchor → `anchor_preserved<1.0` + `anchor_changed=True`
+  đúng chỗ; `render_report` cắt đúng ở 50 dòng. + 1 smoke test end-to-end
+  (`compare_on_document` trên fixture thật + `candidate_stub` → chạy
+  không lỗi, `exact_agreement == 1.0`).
+
+**Không đụng:** `perception/` (element_classifier/anchor_builder/parser/
+detector/models), `mapping/`, `applications/`, `api/` — chỉ thêm mới
+`eval/` + test tương ứng.
+
+**Tests:** 64 → **70 passed** (6 test mới ở `test_classifier_diff.py`).
