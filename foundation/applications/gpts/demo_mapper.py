@@ -3,11 +3,11 @@ import sys
 from pathlib import Path
 
 # Add foundation to path
-sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from perception.parser import extract_geometry
-from mapping.lineage import LineageLogger
-from mapping.writeback import WritebackEngine
+from output.lineage import LineageLogger
+from output.writeback import WritebackEngine
 
 # Hard-coded rules simulating the GTPS use case:
 # Map specific Excel cells (source) to specific Word tables/paragraphs (target)
@@ -80,10 +80,13 @@ def run_demo_mapping(excel_path: str, docx_path: str):
     print(f"Logs saved to {logger.log_dir}")
 
 if __name__ == "__main__":
-    base = Path(r"c:\Users\PC\Downloads\DocPercepInterac Foundation\anonymize client\Demo files\Demo files")
-    excel = base / "FA&RPTS & Appendix I" / "FA&RPTs" / "HMV-FA&RPT FY2024.xlsx"
-    docx = base / "Compare LF" / "HMV-26-Final-Local File for FY2024-EN-R2901KPMG_drifted.docx"
-    
+    if len(sys.argv) != 3:
+        print("Usage: python -m applications.gpts.demo_mapper <excel_path> <docx_path>")
+        sys.exit(1)
+
+    excel = Path(sys.argv[1])
+    docx = Path(sys.argv[2])
+
     if excel.exists() and docx.exists():
         run_demo_mapping(str(excel), str(docx))
     else:

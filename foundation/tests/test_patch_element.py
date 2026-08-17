@@ -1,5 +1,5 @@
 """Tests for the live-edit path: WritebackEngine.apply_single_patch()
-(mapping/writeback.py) and PATCH /api/elements/<process_id>
+(output/writeback.py) and PATCH /api/elements/<process_id>
 (api/routes/process.py) — writes a new value directly into the output
 document at an element's Anchor, without re-running the full pipeline.
 """
@@ -15,7 +15,7 @@ from docx import Document as DocxDocument  # noqa: E402
 
 from perception.anchor_builder import assign_docx_anchor  # noqa: E402
 from perception.parser import parse_docx  # noqa: E402
-from mapping.writeback import WritebackEngine  # noqa: E402
+from output.writeback import WritebackEngine  # noqa: E402
 
 # --- WritebackEngine.apply_single_patch() — unit level -----------------------
 

@@ -1,6 +1,6 @@
 """POST /api/process, PATCH /api/elements/<process_id>,
 GET /api/download/<process_id> — HTTP surface over
-applications/gpts/mapping_service.py + mapping/writeback.py.
+applications/gpts/mapping_service.py + output/writeback.py.
 """
 from __future__ import annotations
 
@@ -18,8 +18,8 @@ from werkzeug.utils import secure_filename
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from applications.gpts.mapping_service import run_mapping  # noqa: E402
-from mapping.lineage import LineageLogger  # noqa: E402
-from mapping.writeback import WritebackEngine  # noqa: E402
+from output.lineage import LineageLogger  # noqa: E402
+from output.writeback import WritebackEngine  # noqa: E402
 from perception.models import Anchor  # noqa: E402
 
 process_bp = Blueprint("process", __name__)

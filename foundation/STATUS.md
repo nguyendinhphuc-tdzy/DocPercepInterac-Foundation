@@ -1049,3 +1049,65 @@ detector/models), `mapping/`, `applications/`, `api/` — chỉ thêm mới
 `eval/` + test tương ứng.
 
 **Tests:** 64 → **70 passed** (6 test mới ở `test_classifier_diff.py`).
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-17, muộn hơn cùng ngày nữa): Tách `mapping/` — `demo_mapper.py` (GTPS) rời khỏi `writeback.py`/`lineage.py` (core, đổi tên `output/`)
+
+**Bối cảnh:** thư mục `mapping/` gộp chung 3 thứ khác cấp use-case, gây lẫn
+ranh giới:
+- `demo_mapper.py` — `DEMO_RULES` (toạ độ cell của đúng 1 client HMV) +
+  `__main__` hard-code đường dẫn máy cá nhân tới file client → thuộc use
+  case GTPS, không phải Foundation.
+- `writeback.py` (`WritebackEngine`) — ghi giá trị vào file theo Anchor,
+  chỉ import `perception.anchor_builder`, không biết gì về HMV/tax → năng
+  lực Foundation thật (đọc/ghi/xoá/thay theo Anchor).
+- `lineage.py` (`LineageLogger`) — trace generic, không biết use-case nào.
+
+`writeback.py`/`lineage.py` đang được dùng chung bởi `api/routes/process.py`
+**và** `tests/test_patch_element.py` (không chỉ gpts) — nên KHÔNG thể dời
+vào `applications/gpts/` (sẽ buộc `api/` phải import ngược từ `gpts`, sai
+đúng loại lỗi vừa sửa ở `element_classifier.py`). Giải pháp: tách, không
+dời cả cục.
+
+**Đã làm (hành vi runtime giữ nguyên 100%, chỉ đổi vị trí file + import):**
+- `mapping/demo_mapper.py` → `applications/gpts/demo_mapper.py` (dùng
+  `git mv`, giữ lịch sử). Nội dung `DEMO_RULES`/`build_docx_anchor`/
+  `build_xlsx_anchor`/`run_demo_mapping` **không đổi**. `__main__` sửa:
+  bỏ hẳn đường dẫn tuyệt đối hard-code
+  (`c:\Users\PC\Downloads\...\anonymize client\...`) — giờ đọc từ
+  `sys.argv`, in usage + `sys.exit(1)` nếu thiếu tham số
+  (`python -m applications.gpts.demo_mapper <excel_path> <docx_path>`) —
+  không còn đường dẫn máy/client nào nhúng trong code.
+- Đổi tên `mapping/` → `output/` (`git mv`, giữ nguyên nội dung
+  `writeback.py`/`lineage.py`) + `output/__init__.py` mới. Xoá sạch
+  `mapping/` (kể cả `__pycache__` cũ) — không còn thư mục nào tên
+  `mapping` trong repo.
+- Cập nhật import ở mọi nơi dùng tới: `api/routes/process.py`
+  (`mapping.lineage`→`output.lineage`, `mapping.writeback`→
+  `output.writeback`), `tests/test_patch_element.py`
+  (`mapping.writeback`→`output.writeback`),
+  `applications/gpts/mapping_service.py` (`mapping.demo_mapper`→
+  `applications.gpts.demo_mapper`, `mapping.lineage`→`output.lineage`,
+  `mapping.writeback`→`output.writeback`) + sửa docstring/comment nhắc
+  đường dẫn cũ trong 3 file này và `.gitignore` (dòng ghi chú
+  `mapping/lineage.py`→`output/lineage.py`).
+- Grep lại toàn repo xác nhận hết `from mapping`/`import mapping`. Còn
+  đúng 1 chỗ nhắc "mapping/anchor_builder.py" trong comment ở
+  `perception/anchor_builder.py` (dòng 48) — **cố tình để nguyên**: đây là
+  di tích của 1 lần dời khác, từ trước (`mapping/anchor_builder.py` cũ,
+  đã xoá hẳn từ 2026-08-14 khi anchor logic dời vào `perception/`), không
+  liên quan gì tới việc tách `mapping/` hôm nay, và sửa file này vi phạm
+  đúng ràng buộc "không đụng `perception/`" của việc này.
+- Verify ranh giới: `output/writeback.py` chỉ import
+  `perception.anchor_builder` + `docx`/`openpyxl` (khi cần) — không biết
+  `applications`/`demo_mapper`/`DEMO_RULES`. `output/lineage.py` chỉ
+  import `pydantic`/stdlib. Không sửa gì bên trong 2 file này — đã đúng
+  ranh giới từ trước, chỉ cần đổi tên thư mục chứa.
+- Verify thêm: `api/app.py::create_app()` load route bình thường (4 route
+  cũ vẫn nguyên), `python -m applications.gpts.demo_mapper` (không tham
+  số) in đúng usage + exit code 1, không crash.
+
+**Tests:** vẫn **70 passed** (không thêm/bớt test — thuần refactor vị trí
+file, hành vi mapping demo giữ nguyên y hệt, xác nhận qua
+`test_mapping_service.py` + `test_patch_element.py` pass nguyên).

@@ -3,7 +3,7 @@ against uploaded files and return structured results (for api/routes/process.py)
 
 Architecture note (STATUS.md "Quy tắc không được phá vỡ"): this module is the
 only place that knows about the GTPS/HMV-specific DEMO_RULES. It calls into
-perception/ (geometry extraction) and mapping/ (lineage + write-back), never
+perception/ (geometry extraction) and output/ (lineage + write-back), never
 the other way around.
 """
 from __future__ import annotations
@@ -20,9 +20,9 @@ from perception.anchor_builder import assign_anchors, parse_anchor_v2  # noqa: E
 from perception.element_classifier import classify_blocks  # noqa: E402
 from perception.models import Element  # noqa: E402
 from perception.parser import extract_geometry  # noqa: E402
-from mapping.demo_mapper import DEMO_RULES, build_xlsx_anchor  # noqa: E402
-from mapping.lineage import LineageLogger  # noqa: E402
-from mapping.writeback import WritebackEngine  # noqa: E402
+from applications.gpts.demo_mapper import DEMO_RULES, build_xlsx_anchor  # noqa: E402
+from output.lineage import LineageLogger  # noqa: E402
+from output.writeback import WritebackEngine  # noqa: E402
 
 
 @dataclass
