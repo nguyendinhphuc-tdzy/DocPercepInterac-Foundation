@@ -822,7 +822,11 @@ pass.)
 
 ### Quy tắc không được phá vỡ
 - P3-04 phải PASS trước khi sang Phase 4. **✅ Đã PASS (2026-08-14)** —
-  xem `tests/test_anchor_builder.py`.
+  xem `tests/test_anchor_builder.py`. **2026-08-17: coverage giờ không còn
+  điều kiện** — `tests/test_anchor_p304_synthetic.py` chạy P3-04 (kể cả
+  nhánh `duplicate_ordinal` dưới drift lệch) trên fixture tổng hợp phi-tài-
+  chính, không `skipif`, không phụ thuộc file thật nào. Xem mục "✅ ĐÃ GIẢI
+  QUYẾT" 2026-08-17.
 - Không dùng API ngoài — mọi thứ chạy local/air-gapped.
 - Module nào cần biết "đây là use case Tax/GPTS" thì không được nằm trong
   `perception/`/`adapters/` — đặt ở `applications/tax/`, `applications/gpts/`.
@@ -1111,3 +1115,52 @@ dời cả cục.
 **Tests:** vẫn **70 passed** (không thêm/bớt test — thuần refactor vị trí
 file, hành vi mapping demo giữ nguyên y hệt, xác nhận qua
 `test_mapping_service.py` + `test_patch_element.py` pass nguyên).
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-17, muộn hơn cùng ngày nữa): P3-04 (`duplicate_ordinal`) — coverage không còn phụ thuộc file thật/`skipif`
+
+**Bối cảnh:** `test_p304_docx_duplicate_ordinal_survives_uneven_drift_on_real_document`
+(`tests/test_anchor_builder.py`) — bài test P3-04 quan trọng nhất
+(disambiguation qua `duplicate_ordinal` khi có drift lệch giữa các
+occurrence trùng chữ ký) — chỉ chạy được khi có file HMV thật trên máy
+(`@requires_real_docx`, `skipif` nếu thiếu). Trên 1 checkout sạch hoặc CI
+không có file này, test **bị skip âm thầm** — nghĩa là guarantee quan
+trọng nhất của anchor system có thể có **0% coverage thật** mà không ai
+biết, và fixture cũ cũng không neutral (1 tài liệu tài chính duy nhất).
+
+**Đã thêm (không sửa `perception/anchor_builder.py` — logic đã đúng từ
+trước, chỉ thêm fixture + test):**
+- `tests/fixtures/_generate_anchor_stress_docx.py` — script deterministic
+  sinh `fixture_anchor_stress.docx`: tài liệu hư cấu hoàn toàn ("sổ tay
+  thư viện dụng cụ khu phố"), không tên client/số liệu tài chính nào.
+  Tái tạo đúng ambiguity thật của P3-04: caption `"See the note at the end
+  of this section."` lặp lại **8 lần** (≥6 theo yêu cầu), luôn cùng style
+  `Normal` — cùng chữ ký `(style_id, text_fingerprint)` mà
+  `assign_docx_anchor` group theo — mỗi lần cách nhau đúng 1 heading + 1
+  đoạn văn riêng (nội dung khác nhau, vị trí biết trước: occurrence thứ k
+  luôn ở `paragraph_index = 3k + 4`). Cả file `.docx` sinh ra lẫn script
+  sinh nó đều commit.
+- `tests/test_anchor_p304_synthetic.py` (3 test, **không `skipif` nào**):
+  - `test_fixture_exists` + `test_synthetic_fixture_has_duplicate_caption_signature_and_correct_ordinals`
+    — guard: fixture có đúng 8 occurrence cùng chữ ký (≥6), `assign_anchors`
+    gán đúng `duplicate_ordinal == k` cho occurrence thứ k (test cả k=0,
+    k=4 — occurrence giữa, và k cuối).
+  - `test_p304_synthetic_duplicate_ordinal_survives_uneven_drift_between_occurrences`
+    — bài test lõi: chèn 50 paragraph filler ngay trước occurrence #4
+    (không phải đầu file) → occurrence #4 dịch +50, nhưng occurrence #3
+    liền trước **đứng yên hoàn toàn** và trở thành "gần" record cũ hơn
+    (cách 3) so với target thật (cách 50). **Sanity/false-pass guard**:
+    assert tường minh 1 chiến lược nearest-`paragraph_index` ngây thơ SẼ
+    chọn sai (chọn occurrence #3, không phải target) — chứng minh kịch
+    bản test không tầm thường. Sau đó `resolve_docx_anchor` qua
+    `duplicate_ordinal` phải trả **đúng** occurrence #4 (verify bằng
+    object identity `resolved._p is expected._p`), `message is None`
+    (Strategy 1, không cảnh báo).
+  - Verify: cùng 1 phiên chạy, `tests/test_anchor_builder.py`'s
+    `@requires_real_docx` test (máy này có sẵn file HMV thật) vẫn PASS
+    song song, không đổi/không xoá — coverage thật giờ có ở **cả 2 nguồn**
+    (thật khi có file, tổng hợp luôn luôn có).
+
+**Tests:** 70 → **73 passed, 0 skipped** (3 test mới, xác nhận chạy thật —
+không nằm trong danh sách skip của pytest run này).
