@@ -782,7 +782,7 @@ pass.)
 | # | Việc theo v4 | Trạng thái code | Ghi chú |
 |---|---|---|---|
 | 1 | Loại bỏ Docling, chuyển Geometry Layer sang pdfplumber+pdf2image (PDF) / python-docx (DOCX) | ✅ Xong 2026-08-11 | `parser.py` viết lại hoàn toàn, 16/16 test pass. **Lưu ý:** đây là quyết định "bỏ Docling", khác với "pivot về DOC-only" của v4 mục 1-2 — team chủ động giữ nhánh PDF (`parse_pdf`/`render_pdf_pages`) chạy song song thay vì gác lại, đây là lựa chọn có chủ đích của team, không phải sai lệch khỏi plan |
-| 2 | `perception/element_classifier.py` (See) | ❌ Chưa | DoclingDocument JSON → `FoundationDocument` typed elements |
+| 2 | `perception/element_classifier.py` (See) | ✅ **Xong (2026-08-17)** | `classify_block()`/`classify_blocks()` — deterministic baseline (di dời từ `applications/gpts/mapping_service.py::geometry_block_to_element`, hành vi giữ nguyên y hệt) + seam `Classifier` protocol để cắm AI model của user sau này. Xem mục "✅ ĐÃ GIẢI QUYẾT" 2026-08-17 |
 | 3 | `perception/anchor_builder.py` (Locate) + P3-04 anchor stability test | ✅ **Xong (2026-08-14)** | IP quan trọng nhất của project — milestone bắt buộc đã chạm tới. Assign+resolve cho cả DOCX (ladder 3 tầng + table self-heal)/XLSX (named_range/cell_address)/PDF (position+bbox, không content-match). P3-04 PASS thật (insert paragraph → resolve vẫn đúng). Xem mục "✅ ĐÃ GIẢI QUYẾT" 2026-08-14 |
 | 4 | **Normalization Layer** (v4 mục 3) — `NormalizationRule`, hàm `normalize()` | ❌ Chưa — 0 dòng code | Rule tất định (VND/VNĐ→VND, ngày tháng...), tách riêng khỏi Classification |
 | 5 | `Element.text` / `text_normalized` field (v4 mục 4) | ✅ Xong | `text` có sẵn (populated bởi `applications/gpts/mapping_service.py`), `text_normalized` có field nhưng chưa ai ghi vào (chờ #4 Normalization Layer) |
@@ -810,7 +810,7 @@ pass.)
 | 4 | ~~Fixture XLSX thật (named ranges, merged cells, nhiều sheet)~~ | — | ✅ Xong — dùng luôn fixture demo thật (`HMV-FA&RPT FY2024.xlsx`) thay vì fixture tổng hợp riêng |
 | 5 | ~~`perception/parse_xlsx()` + anchor XLSX~~ | #4 | ✅ Xong — `parse_xlsx()` (openpyxl, named ranges) + `AnchorXLSX` |
 | 6a | `perception/anchor_builder.py` (DOCX/XLSX/PDF generic) → **P3-04 PASS** | Không (Docling đã bỏ, không còn block) | ✅ **Xong (2026-08-14)** — xem mục "Đã giải quyết" cùng ngày |
-| 6b | `perception/element_classifier.py` | Không (anchor không phụ thuộc classification — nguyên tắc "anchor trước, nhãn sau") | **Vẫn ❌ chưa làm** — tách riêng khỏi #6a từ hôm nay, không còn gộp chung 1 dòng. Cần cho demo/use case ngoài GTPS/HMV |
+| 6b | `perception/element_classifier.py` | Không (anchor không phụ thuộc classification — nguyên tắc "anchor trước, nhãn sau") | ✅ **Xong (2026-08-17)** — baseline tất định + seam `Classifier` cho AI model tương lai. Chưa build model AI thật (ngoài scope việc này) — vẫn cần cho demo/use case ngoài GTPS/HMV khi nào có model |
 | 7 | Output write path: DOCX (`python-docx`, đã duyệt) + XLSX (`openpyxl`, đã duyệt) | #5, #6 | ⚠️ 1/3 — chỉ có "Clone & Replace" (`mapping/writeback.py`). Profile-driven Fill / Task-shaped vẫn chưa |
 | 8 | Normalization Layer (`normalize()`, `NormalizationRule`) | #5, #6 (cần element có `text`) | **Vẫn ❌ chưa làm** — element đã có `text` (xong ở #9) nhưng chưa ai gọi normalize |
 | 9 | ~~Thêm field `text`/`text_normalized` vào `Element`, field `formula` vào `ProfileField`~~ | Không | ✅ Xong |
@@ -896,3 +896,57 @@ cập nhật ở mục "Còn thiếu thật sự" phía trên.
 
 **Tests:** 50 → **56 passed** (6 test mới ở `test_parser_generic.py`).
 Không sửa `perception/` — chỉ thêm fixture + test.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-17, cùng ngày): `perception/element_classifier.py` (See step) — thăng cấp từ GTPS lên core, thêm seam cho AI classifier
+
+**Bối cảnh:** `geometry_block_to_element()` — hàm gán `ElementType`/tên hiển
+thị cho 1 `GeometryBlock` — nằm ở `applications/gpts/mapping_service.py`,
+nhưng docstring của chính nó từ trước đã ghi rõ đây là stand-in tạm cho
+`perception/element_classifier.py` (milestone #2 ở bảng "Chưa làm", chưa
+build). Đây là năng lực core generic (See step, v3 §9.2) bị mắc kẹt trong
+module use-case cụ thể — nếu Audit/Advisory sau này cần typed elements, sẽ
+phải import từ `gpts` (phá "Quy tắc không được phá vỡ") hoặc viết lại.
+
+**Đã làm:**
+- Tạo `perception/element_classifier.py` — **chỉ import
+  `perception.models` + `typing`**, không đụng `mapping/`/`applications/`,
+  không có string GTPS/HMV/tax nào. Gồm:
+  - `classify_block(block, index, fmt, anchor) -> Element` — baseline tất
+    định, logic **giữ nguyên y hệt** `geometry_block_to_element()` cũ (dời
+    nguyên khối, không đổi hành vi): DOCX heading/para theo `style_id`
+    prefix, table cell theo `table_index`, XLSX luôn CELL theo
+    `named_range`/`cell_address`, PDF luôn PARA theo dòng text.
+  - `classify_blocks(blocks, fmt, anchors, start_index=0, classifier=classify_block) -> list[Element]`
+    — hàm assembly xây cả Element Index cho 1 document, đánh số từ
+    `start_index` (để caller gộp nhiều source file vẫn giữ 1 dải index
+    liên tục).
+  - `Classifier` — `Protocol` định nghĩa chữ ký `(block, index, fmt, anchor) -> Element`.
+    `classify_blocks` nhận `classifier` tuỳ chọn (mặc định là baseline) —
+    **đây là seam cho Classification Layer AI thật (model do user cung
+    cấp, không phải OpenAI/Workbench) cắm vào sau này**, không cần sửa
+    `classify_blocks` hay bất kỳ caller nào. Chưa build model AI nào —
+    đúng scope việc này chỉ là seam.
+- `applications/gpts/mapping_service.py`: xoá hẳn
+  `geometry_block_to_element()` cục bộ, import + gọi
+  `classify_blocks()` từ `perception.element_classifier` (cả cho
+  `target_elements` lẫn vòng lặp nhiều `source_paths`, vẫn giữ đúng dải
+  index liên tục qua `start_index`). `run_mapping()` không đổi hành vi —
+  `test_mapping_service.py` (3 test, gồm cả test multi-source-file merge)
+  vẫn pass nguyên, xác nhận `source_elements`/`target_elements`/`mapped`
+  giống hệt trước.
+- `tests/test_element_classifier.py` (7 test mới) — dùng
+  `fixture_generic_handbook.docx` (fixture phi-tài-chính, xem mục ngay
+  trên): heading → `ElementType.HEADING` (đúng số lượng + có `style_id`),
+  para → `PARA`, table cell → `CELL` (đúng 9 cell, đủ
+  `table_index`/`row_index`/`col_index`), `start_index` offset đúng,
+  `classify_block` khớp `classify_blocks` từng phần tử, **và 1 test chứng
+  minh seam hoạt động thật**: truyền 1 mock classifier luôn trả về `PARA`
+  — assert `classify_blocks` dùng đúng mock đó (không phải baseline), kèm
+  sanity-check baseline KHÔNG trả toàn `PARA` để loại trừ khả năng test
+  pass "ngẫu nhiên".
+
+**Tests:** 56 → **63 passed** (7 test mới ở `test_element_classifier.py`).
+Không sửa `anchor_builder.py`/`parser.py`/`detector.py`, không thêm
+dependency mới.

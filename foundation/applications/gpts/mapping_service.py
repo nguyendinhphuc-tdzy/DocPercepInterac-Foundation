@@ -17,41 +17,12 @@ from typing import Any, Optional
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from perception.anchor_builder import assign_anchors, parse_anchor_v2  # noqa: E402
-from perception.models import Anchor, Element, ElementType  # noqa: E402
+from perception.element_classifier import classify_blocks  # noqa: E402
+from perception.models import Element  # noqa: E402
 from perception.parser import extract_geometry  # noqa: E402
 from mapping.demo_mapper import DEMO_RULES, build_xlsx_anchor  # noqa: E402
 from mapping.lineage import LineageLogger  # noqa: E402
 from mapping.writeback import WritebackEngine  # noqa: E402
-
-
-def geometry_block_to_element(block: dict, index: int, fmt: str, anchor: Anchor) -> Element:
-    """Labels a GeometryBlock with a display type/name for the Element
-    Index. The Anchor itself is core IP (perception/anchor_builder.py) —
-    this heuristic is not: it's a minimal, explicit stand-in (style_id
-    prefix / presence of table_index) for the real Classification Layer
-    (perception/element_classifier.py), which is a separate, not-yet-built
-    milestone per STATUS.md.
-    """
-    text = block.get("text") or ""
-
-    if fmt == "xlsx":
-        name = block.get("named_range") or f"{block['sheet_name']}!{block['cell_address']}"
-        etype = ElementType.CELL
-    elif fmt == "docx":
-        if block.get("table_index") is not None:
-            etype = ElementType.CELL
-            name = f"Table {block['table_index']} · R{block['row_index']}C{block['col_index']}"
-        else:
-            style_id = block.get("style_id") or ""
-            etype = ElementType.HEADING if style_id.lower().startswith("heading") else ElementType.PARA
-            name = text[:60] if text else f"Paragraph {block['paragraph_index']}"
-    elif fmt == "pdf":
-        etype = ElementType.PARA
-        name = text[:60] if text else f"Page {block['page']} line"
-    else:
-        raise ValueError(f"Unsupported format for element mapping: {fmt}")
-
-    return Element(index=index, type=etype, name=name, text=text, anchor=anchor, confidence=1.0)
 
 
 @dataclass
@@ -137,10 +108,7 @@ def run_mapping(source_paths: list[str], target_path: str, output_dir: str) -> M
     target_blocks = extract_geometry(target_path)
     target_fmt = Path(target_path).suffix.lower().lstrip(".")
     target_anchors = assign_anchors(target_blocks, target_fmt)
-    target_elements = [
-        geometry_block_to_element(b, i, target_fmt, a)
-        for i, (b, a) in enumerate(zip(target_blocks, target_anchors))
-    ]
+    target_elements = classify_blocks(target_blocks, target_fmt, target_anchors)
 
     source_elements: list[Element] = []
     source_map: dict[str, Any] = {}
@@ -150,9 +118,9 @@ def run_mapping(source_paths: list[str], target_path: str, output_dir: str) -> M
         blocks = extract_geometry(source_path)
         fmt = Path(source_path).suffix.lower().lstrip(".")
         anchors = assign_anchors(blocks, fmt)
-        for block, anchor in zip(blocks, anchors):
-            source_elements.append(geometry_block_to_element(block, index, fmt, anchor))
-            index += 1
+        elements = classify_blocks(blocks, fmt, anchors, start_index=index)
+        source_elements.extend(elements)
+        index += len(elements)
         for block in blocks:
             if block.get("sheet_name"):
                 key = build_xlsx_anchor(block)
