@@ -9,12 +9,34 @@ function extensionOf(file: File): string {
   return file.name.split('.').pop()?.toLowerCase() ?? '';
 }
 
+export type AppView = 'home' | 'new-task' | 'workspace' | 'history' | 'settings';
+export type WorkspacePreset = 'agent' | 'inspect' | 'review' | 'compare';
+
+export interface TaskHistoryEntry {
+  id: string;
+  name: string;
+  fileCount: number;
+  elementCount: number;
+  timestamp: string;
+  status: 'done' | 'error';
+}
+
 interface WorkspaceState {
-  // Document intake — no separate screen: files are added directly from
-  // DocumentPane's empty state via addDocument(), which routes each file
-  // to source or target by extension (matches api/routes/process.py's own
-  // SOURCE_FORMATS/TARGET_FORMATS) so the user never has to categorize
-  // anything by hand.
+  // ── Navigation ──
+  currentView: AppView;
+  setCurrentView: (view: AppView) => void;
+
+  // ── Workspace layout ──
+  workspacePreset: WorkspacePreset;
+  setWorkspacePreset: (preset: WorkspacePreset) => void;
+  activeFileIndex: number;
+  setActiveFileIndex: (index: number) => void;
+
+  // ── Task history (localStorage-backed) ──
+  taskHistory: TaskHistoryEntry[];
+  addTaskToHistory: (entry: TaskHistoryEntry) => void;
+
+  // ── Document intake ──
   sourceFiles: File[];
   targetFiles: File[];
   intakeError: string | null;
@@ -23,7 +45,7 @@ interface WorkspaceState {
   removeTargetFile: (index: number) => void;
   resetWorkspace: () => void;
 
-  // Processing (POST /api/process) — see src/api/client.ts
+  // ── Processing (POST /api/process) ──
   processId: string | null;
   processingStatus: 'idle' | 'processing' | 'done' | 'error';
   processingError: string | null;
@@ -33,28 +55,43 @@ interface WorkspaceState {
   downloadUrl: string | null;
   runProcessing: () => Promise<void>;
 
-  // Live editing (PATCH /api/elements/<id>) — writes directly into the
-  // output document at the edited element's Anchor. Editing UI state
-  // (which cell is open) lives locally in EditableText, not here.
+  // ── Live editing (PATCH /api/elements/<id>) ──
   editError: string | null;
   editTargetElement: (index: number, newValue: string) => Promise<void>;
 
-  // Undo — session-only stack of prior values (see EditHistoryEntry).
-  // Each undo is itself just another PATCH with the previous value, so it
-  // gets its own lineage record too (mapping/lineage.py) — this stack
-  // only exists to know what "previous" means, not as the source of truth.
+  // ── Undo ──
   editHistory: EditHistoryEntry[];
   isUndoing: boolean;
   undoLastEdit: () => Promise<void>;
 
-  // Cross-pane "related element" highlighting — set on hover in
-  // DocumentPane/ElementsPane/ResultsPane, read by all three so hovering
-  // one view highlights (and scrolls to) the same element elsewhere.
+  // ── Cross-pane highlighting ──
   hoveredElementIndex: number | null;
   setHoveredElement: (index: number | null) => void;
 }
 
+// Load task history from localStorage
+function loadTaskHistory(): TaskHistoryEntry[] {
+  try {
+    const raw = localStorage.getItem('foundation_task_history');
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+function saveTaskHistory(history: TaskHistoryEntry[]) {
+  try {
+    localStorage.setItem('foundation_task_history', JSON.stringify(history.slice(0, 20)));
+  } catch {
+    // Ignore localStorage errors
+  }
+}
+
 const initialWorkspaceState = {
+  currentView: 'home' as AppView,
+  workspacePreset: 'agent' as WorkspacePreset,
+  activeFileIndex: 0,
+  taskHistory: loadTaskHistory(),
   sourceFiles: [] as File[],
   targetFiles: [] as File[],
   intakeError: null as string | null,
@@ -74,13 +111,29 @@ const initialWorkspaceState = {
 export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   ...initialWorkspaceState,
 
+  // ── Navigation ──
+  setCurrentView: (view) => set({ currentView: view }),
+  setWorkspacePreset: (preset) => set({ workspacePreset: preset }),
+  setActiveFileIndex: (index) => set({ activeFileIndex: index }),
+
+  // ── Task history ──
+  addTaskToHistory: (entry) => {
+    const updated = [entry, ...get().taskHistory.filter(t => t.id !== entry.id)].slice(0, 20);
+    set({ taskHistory: updated });
+    saveTaskHistory(updated);
+  },
+
+  // ── Document intake ──
   addDocument: (file) => {
     const ext = extensionOf(file);
     if (TARGET_EXTENSIONS.includes(ext)) {
-      // Only one target at a time — a new one replaces the previous
-      // pending selection (matches the backend: exactly one docx output).
       set({ targetFiles: [file], intakeError: null });
     } else if (SOURCE_EXTENSIONS.includes(ext)) {
+      const { sourceFiles } = get();
+      if (sourceFiles.length >= 10) {
+        set({ intakeError: 'You\'ve reached the recommended limit of 10 files.' });
+        return;
+      }
       set((state) => ({ sourceFiles: [...state.sourceFiles, file], intakeError: null }));
     } else {
       set({
@@ -94,8 +147,13 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   removeTargetFile: (index) => set((state) => ({
     targetFiles: state.targetFiles.filter((_, i) => i !== index)
   })),
-  resetWorkspace: () => set({ ...initialWorkspaceState }),
+  resetWorkspace: () => set({
+    ...initialWorkspaceState,
+    currentView: get().currentView,
+    taskHistory: get().taskHistory,
+  }),
 
+  // ── Processing ──
   runProcessing: async () => {
     const { sourceFiles, targetFiles } = get();
     if (sourceFiles.length === 0 || targetFiles.length === 0) return;
@@ -110,6 +168,16 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
         targetElements: result.target_elements,
         mapped: result.mapped,
         downloadUrl: result.download_url,
+        currentView: 'workspace',
+      });
+      // Save to history
+      get().addTaskToHistory({
+        id: result.process_id,
+        name: targetFiles[0].name,
+        fileCount: sourceFiles.length + targetFiles.length,
+        elementCount: result.target_elements.length,
+        timestamp: new Date().toISOString(),
+        status: 'done',
       });
     } catch (err) {
       set({
@@ -119,6 +187,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     }
   },
 
+  // ── Live editing ──
   editTargetElement: async (index, newValue) => {
     const { processId, targetElements } = get();
     const element = targetElements[index];
@@ -140,7 +209,6 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
         editHistory: [...state.editHistory, { index, anchor: element.anchor, previousValue }],
       }));
     } catch (err) {
-      // Revert the optimistic update — the output file was never written.
       set({
         targetElements: previousElements,
         editError: err instanceof ApiError ? err.message : 'Failed to save edit.',
@@ -148,6 +216,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     }
   },
 
+  // ── Undo ──
   undoLastEdit: async () => {
     const { editHistory, targetElements, processId, isUndoing } = get();
     if (editHistory.length === 0 || !processId || isUndoing) return;
@@ -170,7 +239,6 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       const result = await patchElement(processId, last.anchor, last.previousValue);
       set({ downloadUrl: result.download_url, isUndoing: false });
     } catch (err) {
-      // Revert the optimistic undo and put the entry back so it can be retried.
       set((state) => ({
         targetElements: state.targetElements.map((el, i) =>
           i === last.index ? { ...el, text: valueBeforeUndo } : el

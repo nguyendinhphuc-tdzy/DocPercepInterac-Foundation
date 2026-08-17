@@ -1,28 +1,32 @@
 import React, { useEffect } from 'react';
-import { useWorkspaceStore } from '../../state/workspaceStore';
-import { Settings, Command, Activity, FilePlus, Undo2, Loader2, AlertCircle } from 'lucide-react';
+import { Undo2, Download, Layout } from 'lucide-react';
+import { useWorkspaceStore, type WorkspacePreset } from '../../state/workspaceStore';
+import { StatusBadge } from '../shared/StatusBadge';
+import { downloadUrlFor } from '../../api/client';
 
-const STATUS_DISPLAY = {
-  idle: { icon: Activity, color: 'text-gray-400', label: 'No document loaded' },
-  processing: { icon: Loader2, color: 'text-blue-600', label: 'Processing', spin: true },
-  done: { icon: Activity, color: 'text-green-600', label: 'Ready' },
-  error: { icon: AlertCircle, color: 'text-red-600', label: 'Error' },
-} as const;
+const PRESET_LABELS: Record<WorkspacePreset, string> = {
+  agent: 'Agent',
+  inspect: 'Inspect',
+  review: 'Review',
+  compare: 'Compare',
+};
 
 export const WorkspaceHeader: React.FC = () => {
-  const { targetFiles, processingStatus, resetWorkspace, editHistory, isUndoing, undoLastEdit } = useWorkspaceStore();
+  const {
+    targetFiles, processingStatus, targetElements, downloadUrl,
+    editHistory, isUndoing, undoLastEdit,
+    workspacePreset, setWorkspacePreset,
+  } = useWorkspaceStore();
 
   const targetName = targetFiles.length > 0 ? targetFiles[0].name : 'Untitled';
   const canUndo = editHistory.length > 0 && !isUndoing;
-  const status = STATUS_DISPLAY[processingStatus];
-  const StatusIcon = status.icon;
+  const elementCount = targetElements.length;
 
+  // Global Ctrl/Cmd+Z undo
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent) => {
       const target = e.target as HTMLElement | null;
       const isEditingText = target?.tagName === 'TEXTAREA' || target?.tagName === 'INPUT';
-      // Let native undo run inside a field actively being edited — only
-      // take over Ctrl/Cmd+Z once the user isn't mid-keystroke in one.
       if (isEditingText) return;
       if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'z') {
         e.preventDefault();
@@ -33,49 +37,128 @@ export const WorkspaceHeader: React.FC = () => {
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [undoLastEdit]);
 
+  const statusType = (() => {
+    switch (processingStatus) {
+      case 'idle': return 'idle' as const;
+      case 'processing': return 'processing' as const;
+      case 'done': return 'ready' as const;
+      case 'error': return 'error' as const;
+    }
+  })();
+
+  const [presetMenuOpen, setPresetMenuOpen] = React.useState(false);
+
   return (
-    <div className="flex items-center justify-between px-4 py-2 border-b border-gray-200 bg-gray-50 text-sm">
-      <div className="flex items-center space-x-4">
-        <button
-          onClick={() => resetWorkspace()}
-          className="text-gray-500 hover:text-gray-900 transition-colors"
-          title="New document — clears the current workspace"
-        >
-          <FilePlus size={16} />
-        </button>
-        <div className="font-semibold text-gray-900">Foundation</div>
-        <div className="text-gray-400">·</div>
-        <div className="text-gray-600 truncate max-w-md">{targetName}</div>
+    <div className="workspace-header">
+      <div className="workspace-header-left">
+        <span className="workspace-title">Foundation</span>
+        <span className="workspace-separator">·</span>
+        <span className="workspace-subtitle" title={targetName}>{targetName}</span>
+        <StatusBadge status={statusType} />
+        {elementCount > 0 && (
+          <span style={{
+            fontSize: 'var(--text-xs)',
+            color: 'var(--text-tertiary)',
+          }}>
+            {elementCount.toLocaleString()} elements
+          </span>
+        )}
       </div>
 
-      <div className="flex items-center space-x-6">
+      <div className="workspace-header-right">
+        {/* Workspace preset selector */}
+        <div style={{ position: 'relative' }}>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => setPresetMenuOpen(!presetMenuOpen)}
+            title="Change workspace layout"
+          >
+            <Layout size={13} />
+            <span>{PRESET_LABELS[workspacePreset]}</span>
+          </button>
+          {presetMenuOpen && (
+            <>
+              <div
+                style={{ position: 'fixed', inset: 0, zIndex: 40 }}
+                onClick={() => setPresetMenuOpen(false)}
+              />
+              <div style={{
+                position: 'absolute',
+                right: 0,
+                top: '100%',
+                marginTop: 4,
+                background: 'var(--bg-surface)',
+                border: '1px solid var(--border)',
+                borderRadius: 'var(--radius-lg)',
+                boxShadow: 'var(--shadow-lg)',
+                padding: 'var(--space-1)',
+                zIndex: 50,
+                minWidth: 160,
+              }}>
+                <div style={{
+                  padding: 'var(--space-2) var(--space-3)',
+                  fontSize: 'var(--text-xxs)',
+                  fontWeight: 600,
+                  color: 'var(--text-tertiary)',
+                  textTransform: 'uppercase',
+                  letterSpacing: '0.04em',
+                }}>Workspace</div>
+                {(Object.keys(PRESET_LABELS) as WorkspacePreset[]).map((preset) => (
+                  <button
+                    key={preset}
+                    onClick={() => { setWorkspacePreset(preset); setPresetMenuOpen(false); }}
+                    style={{
+                      display: 'flex',
+                      alignItems: 'center',
+                      gap: 'var(--space-2)',
+                      width: '100%',
+                      padding: 'var(--space-2) var(--space-3)',
+                      background: 'none',
+                      border: 'none',
+                      borderRadius: 'var(--radius-md)',
+                      cursor: 'pointer',
+                      fontSize: 'var(--text-sm)',
+                      color: workspacePreset === preset ? 'var(--accent)' : 'var(--text-primary)',
+                      fontWeight: workspacePreset === preset ? 600 : 400,
+                      textAlign: 'left',
+                    }}
+                    onMouseEnter={(e) => { e.currentTarget.style.background = 'var(--bg-hover)'; }}
+                    onMouseLeave={(e) => { e.currentTarget.style.background = 'none'; }}
+                  >
+                    <span style={{
+                      width: 14,
+                      fontSize: 'var(--text-xs)',
+                    }}>{workspacePreset === preset ? '●' : '○'}</span>
+                    <span>{PRESET_LABELS[preset]}</span>
+                  </button>
+                ))}
+              </div>
+            </>
+          )}
+        </div>
+
+        {/* Undo */}
         <button
-          onClick={() => undoLastEdit()}
+          className="btn btn-secondary btn-sm"
+          onClick={undoLastEdit}
           disabled={!canUndo}
-          title={canUndo ? `Undo last edit (${editHistory.length} in this session)` : 'No edits to undo'}
-          className={`flex items-center space-x-1.5 px-2 py-1 text-xs rounded border ${
-            canUndo
-              ? 'text-gray-700 bg-white border-gray-200 hover:bg-gray-50'
-              : 'text-gray-300 bg-gray-50 border-gray-100 cursor-not-allowed'
-          }`}
+          title={canUndo ? `Undo last edit (${editHistory.length})` : 'No edits to undo'}
         >
           <Undo2 size={13} />
           <span>Undo{editHistory.length > 0 ? ` (${editHistory.length})` : ''}</span>
         </button>
 
-        <div className={`flex items-center space-x-2 ${status.color}`}>
-          <StatusIcon size={14} className={'spin' in status && status.spin ? 'animate-spin' : ''} />
-          <span className="text-xs font-medium">{status.label}</span>
-        </div>
-
-        <button className="flex items-center space-x-2 px-2 py-1 text-xs text-gray-500 bg-white border border-gray-200 rounded hover:bg-gray-50">
-          <Command size={12} />
-          <span>K</span>
-        </button>
-
-        <button className="text-gray-500 hover:text-gray-900">
-          <Settings size={16} />
-        </button>
+        {/* Download */}
+        {downloadUrl && (
+          <a
+            href={downloadUrlFor(downloadUrl)}
+            className="btn btn-primary btn-sm"
+            style={{ textDecoration: 'none' }}
+          >
+            <Download size={13} />
+            <span>Download</span>
+          </a>
+        )}
       </div>
     </div>
   );

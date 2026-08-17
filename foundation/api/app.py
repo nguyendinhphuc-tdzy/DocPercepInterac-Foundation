@@ -12,11 +12,13 @@ from flask import Flask, request
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from api.routes.process import process_bp  # noqa: E402
+from api.routes.agent import agent_bp  # noqa: E402
 
 
 def create_app() -> Flask:
     app = Flask(__name__)
     app.register_blueprint(process_bp)
+    app.register_blueprint(agent_bp)
 
     @app.after_request
     def add_cors_headers(response):
