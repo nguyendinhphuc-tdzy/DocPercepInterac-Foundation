@@ -10,11 +10,22 @@ import { EmptyState } from '../shared/EmptyState';
 // as a side effect of uploading documents. Its GTPS-shaped language here
 // is correct: unlike the generic panes, this one IS application-scoped.
 export const ResultsPane: React.FC = () => {
-  const { documents, gptsMapping, hoveredElementIndex, setHoveredElement } = useWorkspaceStore();
+  const { documents, gptsMapping, hoveredElementId, setHoveredElement } = useWorkspaceStore();
   const [expanded, setExpanded] = useState<Set<number>>(new Set());
 
   const sourceNames = new Map(documents.map((d) => [d.clientId, d.file.name]));
-  const targetName = documents.find((d) => d.clientId === gptsMapping.targetDocClientId)?.file.name ?? null;
+  const targetDoc = documents.find((d) => d.clientId === gptsMapping.targetDocClientId);
+  const targetName = targetDoc?.file.name ?? null;
+  // `target_element_index` (GTPS's own response shape — untouched) is
+  // translated to the canonical `element_id` here, at the point of use,
+  // via the target document's already-loaded elements — no GTPS backend
+  // change, no second identity system: cross-pane hover still shares one
+  // `element_id`-keyed store with every other pane (Foundation Document
+  // Perception & Renderer Contract Hardening phase).
+  const elementIdForTargetIndex = (targetIndex: number | null): string | null => {
+    if (targetIndex == null) return null;
+    return targetDoc?.elements?.find((el) => el.index === targetIndex)?.element_id ?? null;
+  };
   const hasOutput = gptsMapping.downloadUrl != null;
   const mappedCount = gptsMapping.mapped.length;
 
@@ -109,7 +120,8 @@ export const ResultsPane: React.FC = () => {
             {/* Result Cards */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
               {gptsMapping.mapped.map((m, i) => {
-                const isHighlighted = m.target_element_index != null && hoveredElementIndex === m.target_element_index;
+                const targetElementId = elementIdForTargetIndex(m.target_element_index);
+                const isHighlighted = targetElementId != null && hoveredElementId === targetElementId;
                 const isExpanded = expanded.has(i);
                 const sourceDocName = gptsMapping.sourceDocClientIds
                   .map((id) => sourceNames.get(id))
@@ -118,8 +130,8 @@ export const ResultsPane: React.FC = () => {
                   <div
                     key={i}
                     className={`result-card ${isHighlighted ? 'highlighted' : ''}`}
-                    onMouseEnter={() => m.target_element_index != null && setHoveredElement(m.target_element_index)}
-                    onMouseLeave={() => m.target_element_index != null && setHoveredElement(null)}
+                    onMouseEnter={() => targetElementId != null && setHoveredElement(targetElementId)}
+                    onMouseLeave={() => targetElementId != null && setHoveredElement(null)}
                   >
                     <div className="result-source" title={m.source_anchor}>
                       {m.target_anchor}

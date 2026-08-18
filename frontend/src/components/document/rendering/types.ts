@@ -5,6 +5,16 @@ import type { ElementRowData } from '../../../types/element';
 // syncStore) and must not know how any given format is actually rendered —
 // see rendering/DocxRenderer.tsx, XlsxRenderer.tsx, PdfRenderer.tsx.
 //
+// Identity contract (Foundation Document Perception & Renderer Contract
+// Hardening phase): every interaction here is keyed by `element_id` — the
+// backend's deterministic, content-derived identity (perception/
+// element_classifier.py::_stable_element_id) — never by `index` (array
+// position, ordering metadata only, not identity) and never by a
+// renderer's own DOM/array position. A renderer resolves `element_id` to
+// its OWN internal render location however it needs to (a DOM node, a grid
+// cell, a canvas overlay box) — that resolution is renderer-local and must
+// never leak back out as the identity itself.
+//
 // `source` is a byte source, not a browser File specifically: DocumentPane
 // fetches it from the generic per-document download endpoint (which always
 // serves the document's current — patched if edited, else pristine — file,
@@ -22,12 +32,29 @@ export interface DocumentRendererProps {
   sessionId: string;
   docId: string;
   elements: ElementRowData[];
-  selectedElementIndex: number | null;
-  hoveredElementIndex: number | null;
-  onSelectElement: (index: number) => void;
-  onHoverElement: (index: number | null) => void;
-  onEditElement: (index: number, newValue: string) => void;
+  selectedElementId: string | null;
+  hoveredElementId: string | null;
+  onSelectElement: (elementId: string) => void;
+  onHoverElement: (elementId: string | null) => void;
+  onEditElement: (elementId: string, newValue: string) => void;
   editable: boolean;
+  // Populated once mapping resolution has run — lets the pane show a
+  // non-blocking coverage summary without any renderer having to expose
+  // its own diagnostics UI (see DocumentPane.tsx's dev-only panel).
+  onMappingReport?: (report: MappingReport) => void;
 }
 
 export type RenderStatus = 'loading' | 'ready' | 'error';
+
+// Per-element mapping outcome — deliberately NOT a single document-level
+// boolean. "available" elements stay fully interactive even when other
+// elements in the same document are "unavailable"/"ambiguous" (failure
+// isolation is a hard requirement of this phase — one paragraph's mapping
+// failing must never disable an unrelated image or table).
+export type MappingStatus = 'available' | 'partial' | 'unavailable' | 'ambiguous';
+
+export interface MappingReport {
+  total: number;
+  byStatus: Record<MappingStatus, number>;
+  byType: Record<string, { total: number; available: number }>;
+}

@@ -1,6 +1,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AlertTriangle, Loader2 } from 'lucide-react';
 import { EmptyState } from '../../shared/EmptyState';
+import { downloadUrlFor } from '../../../api/client';
 import { buildDocxElementMap, type DocxElementMap } from './docxAnchorMapping';
 import type { DocumentRendererProps } from './types';
 
@@ -32,16 +33,22 @@ function sanitizeRenderedLinks(container: HTMLElement) {
 }
 
 export const DocxRenderer: React.FC<DocumentRendererProps> = ({
-  source, elements, selectedElementIndex, hoveredElementIndex,
+  source, elements, selectedElementId, hoveredElementId,
   onSelectElement, onHoverElement, onEditElement, editable,
+  sessionId, docId, onMappingReport,
 }) => {
   const bodyRef = useRef<HTMLDivElement>(null);
   const styleRef = useRef<HTMLDivElement>(null);
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
   const [error, setError] = useState<string | null>(null);
   const mapRef = useRef<DocxElementMap | null>(null);
+  // Reverse index (rendered node -> element_id), built once alongside the
+  // forward map — an O(1) lookup for every mouseover/click instead of
+  // scanning the whole nodeByElementId map on every event (this phase's
+  // explicit performance requirement).
+  const nodeToElementId = useRef(new Map<HTMLElement, string>());
   const [mapReady, setMapReady] = useState(false);
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
+  const [editingElementId, setEditingElementId] = useState<string | null>(null);
   const [editValue, setEditValue] = useState('');
 
   // Render once per `source` — docx-preview builds real DOM nodes directly
@@ -55,6 +62,7 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
     setError(null);
     setMapReady(false);
     mapRef.current = null;
+    nodeToElementId.current = new Map();
 
     (async () => {
       try {
@@ -74,7 +82,23 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
         });
         if (cancelled || !bodyRef.current) return;
         sanitizeRenderedLinks(bodyRef.current);
-        mapRef.current = buildDocxElementMap(bodyRef.current, elements);
+
+        const fetchMediaBytes = async (mediaId: string): Promise<ArrayBuffer | null> => {
+          if (!sessionId || !docId) return null;
+          try {
+            const res = await fetch(downloadUrlFor(`/api/documents/${sessionId}/media/${docId}/${mediaId}`));
+            if (!res.ok) return null;
+            return await res.arrayBuffer();
+          } catch {
+            return null;
+          }
+        };
+
+        const map = await buildDocxElementMap(bodyRef.current, elements, fetchMediaBytes);
+        if (cancelled) return;
+        mapRef.current = map;
+        for (const [elementId, node] of map.nodeByElementId) nodeToElementId.current.set(node, elementId);
+        onMappingReport?.(map.report);
         setMapReady(true);
         setStatus('ready');
       } catch (err) {
@@ -86,58 +110,62 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
     })();
 
     return () => { cancelled = true; };
-    // eslint-disable-next-line react-hooks/exhaustive-deps -- `elements` intentionally excluded: the map is rebuilt from the same render pass, not on every element-array identity change (which happens on every edit/select and would force a full re-render otherwise).
-  }, [source]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- `elements`/`onMappingReport` intentionally excluded: the map is rebuilt from the same render pass, not on every element-array identity change (which happens on every edit/select and would force a full re-render otherwise).
+  }, [source, sessionId, docId]);
 
   // Apply/clear highlight classes without touching anything else in the
   // rendered document — the overlay is a class toggle on already-rendered
-  // nodes, never a re-render.
+  // nodes, never a re-render. Only iterates elements that actually have a
+  // resolved RenderRegion (nodeByElementId) — an unmapped element simply
+  // has nothing to highlight, which is exactly the failure-isolation
+  // behavior this phase requires (it never blocks highlighting others).
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !mapReady) return;
-    for (const [, node] of map.nodeByIndex) {
+    for (const node of map.nodeByElementId.values()) {
       node.classList.remove('docx-el-selected', 'docx-el-hovered');
     }
-    if (selectedElementIndex != null) {
-      map.nodeByIndex.get(selectedElementIndex)?.classList.add('docx-el-selected');
+    if (selectedElementId != null) {
+      map.nodeByElementId.get(selectedElementId)?.classList.add('docx-el-selected');
     }
-    if (hoveredElementIndex != null && hoveredElementIndex !== selectedElementIndex) {
-      map.nodeByIndex.get(hoveredElementIndex)?.classList.add('docx-el-hovered');
+    if (hoveredElementId != null && hoveredElementId !== selectedElementId) {
+      map.nodeByElementId.get(hoveredElementId)?.classList.add('docx-el-hovered');
     }
-    if (selectedElementIndex != null) {
-      map.nodeByIndex.get(selectedElementIndex)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    if (selectedElementId != null) {
+      map.nodeByElementId.get(selectedElementId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
-  }, [mapReady, selectedElementIndex, hoveredElementIndex]);
+  }, [mapReady, selectedElementId, hoveredElementId]);
 
   // Delegated interaction: one listener per event type on the container,
-  // resolved back to a Foundation element index via the map — rather than
-  // one handler per rendered node (there can be hundreds in a real
-  // document).
+  // resolved back to a Foundation `element_id` via the reverse index —
+  // O(1) per event, never a scan, and never DOM/array position.
   useEffect(() => {
-    const map = mapRef.current;
     const container = bodyRef.current;
-    if (!map || !mapReady || !container) return;
+    if (!mapReady || !container) return;
 
-    const indexForNode = (node: HTMLElement | null): number | null => {
-      for (const [index, mapped] of map.nodeByIndex) {
-        if (mapped === node || mapped.contains(node)) return index;
+    const elementIdForNode = (node: HTMLElement | null): string | null => {
+      let current: HTMLElement | null = node;
+      while (current && current !== container) {
+        const id = nodeToElementId.current.get(current);
+        if (id) return id;
+        current = current.parentElement;
       }
       return null;
     };
 
-    const handleOver = (e: MouseEvent) => onHoverElement(indexForNode(e.target as HTMLElement));
+    const handleOver = (e: MouseEvent) => onHoverElement(elementIdForNode(e.target as HTMLElement));
     const handleOut = () => onHoverElement(null);
     const handleClick = (e: MouseEvent) => {
-      const index = indexForNode(e.target as HTMLElement);
-      if (index == null) return;
-      onSelectElement(index);
-      const el = elements.find((el) => el.index === index);
+      const elementId = elementIdForNode(e.target as HTMLElement);
+      if (elementId == null) return;
+      onSelectElement(elementId);
+      const el = elements.find((el) => (el.element_id ?? String(el.index)) === elementId);
       // Per-element capability, not just the document-level `editable`
       // flag — an image/chart/drawing is selectable but never editable
       // (see perception/element_classifier.py's capabilities), so clicking
       // one must select it without popping open a text-edit box.
       if (editable && (el?.capabilities?.editable ?? true)) {
-        setEditingIndex(index);
+        setEditingElementId(elementId);
         setEditValue(el?.text ?? '');
       }
     };
@@ -153,13 +181,16 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
   }, [mapReady, editable, elements, onHoverElement, onSelectElement]);
 
   const commitEdit = () => {
-    if (editingIndex != null) onEditElement(editingIndex, editValue);
-    setEditingIndex(null);
+    if (editingElementId != null) onEditElement(editingElementId, editValue);
+    setEditingElementId(null);
   };
 
-  const editingNode = editingIndex != null ? mapRef.current?.nodeByIndex.get(editingIndex) ?? null : null;
+  const editingNode = editingElementId != null ? mapRef.current?.nodeByElementId.get(editingElementId) ?? null : null;
   const editingRect = editingNode?.getBoundingClientRect();
   const containerRect = bodyRef.current?.getBoundingClientRect();
+
+  const report = mapRef.current?.report;
+  const unmappedCount = report ? report.byStatus.unavailable + report.byStatus.ambiguous : 0;
 
   return (
     <div style={{ position: 'relative', height: '100%', overflow: 'auto' }}>
@@ -169,10 +200,12 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
       {status === 'error' && (
         <EmptyState icon={AlertTriangle} title="Unable to render document" description={error ?? 'This document could not be rendered.'} />
       )}
-      {mapReady && !mapRef.current?.reliable && (
+      {mapReady && report && unmappedCount > Math.max(2, report.total * 0.05) && (
         <div className="renderer-notice">
           <AlertTriangle size={12} />
-          <span>Element highlighting isn't available for this document — {mapRef.current?.reason}</span>
+          <span>
+            {unmappedCount} of {report.total} elements can't be linked to the rendered document — everything else remains interactive.
+          </span>
         </div>
       )}
       <div ref={styleRef} style={{ display: 'none' }} />
@@ -180,7 +213,7 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
         ref={bodyRef}
         style={{ visibility: status === 'ready' ? 'visible' : 'hidden', padding: 'var(--space-4) 0' }}
       />
-      {editingIndex != null && editingRect && containerRect && (
+      {editingElementId != null && editingRect && containerRect && (
         <div
           style={{
             position: 'absolute',
@@ -198,7 +231,7 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
             onBlur={commitEdit}
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); commitEdit(); }
-              if (e.key === 'Escape') { e.preventDefault(); setEditingIndex(null); }
+              if (e.key === 'Escape') { e.preventDefault(); setEditingElementId(null); }
             }}
           />
         </div>

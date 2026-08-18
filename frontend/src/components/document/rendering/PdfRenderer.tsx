@@ -3,6 +3,7 @@ import { AlertTriangle, Loader2 } from 'lucide-react';
 import { EmptyState } from '../../shared/EmptyState';
 import type { DocumentRendererProps } from './types';
 import type { AnchorPDF } from '../../../types/element';
+import { idOf } from '../../../utils/elementId';
 
 const RENDER_SCALE = 1.5; // fixed render scale — crisp on standard displays without full devicePixelRatio-sized canvases for every page.
 
@@ -20,8 +21,28 @@ interface PageState {
 // requirement; off-screen pages keep a correctly-sized placeholder so
 // scroll height stays stable.
 export const PdfRenderer: React.FC<DocumentRendererProps> = ({
-  source, elements, selectedElementIndex, hoveredElementIndex, onSelectElement, onHoverElement,
+  source, elements, selectedElementId, hoveredElementId, onSelectElement, onHoverElement, onMappingReport,
 }) => {
+  // PDF identity is ALREADY page + bbox — source-derived geometry, never
+  // DOM order (see perception/anchor_builder.py::assign_pdf_anchors) — so
+  // every element with a pdf-format anchor maps unambiguously; no
+  // positional zip, nothing to isolate per-element.
+  useEffect(() => {
+    if (!onMappingReport) return;
+    const byType: Record<string, { total: number; available: number }> = {};
+    for (const el of elements) {
+      const t = byType[el.type] ?? { total: 0, available: 0 };
+      t.total += 1;
+      t.available += 1;
+      byType[el.type] = t;
+    }
+    onMappingReport({
+      total: elements.length,
+      byStatus: { available: elements.length, partial: 0, unavailable: 0, ambiguous: 0 },
+      byType,
+    });
+  }, [elements, onMappingReport]);
+
   const containerRef = useRef<HTMLDivElement>(null);
   const canvasRefs = useRef(new Map<number, HTMLCanvasElement>());
   const pageRefs = useRef(new Map<number, HTMLDivElement>());
@@ -121,11 +142,11 @@ export const PdfRenderer: React.FC<DocumentRendererProps> = ({
   }, [elements]);
 
   useEffect(() => {
-    if (selectedElementIndex == null) return;
-    const el = elements.find((e) => e.index === selectedElementIndex);
+    if (selectedElementId == null) return;
+    const el = elements.find((e) => idOf(e) === selectedElementId);
     if (el?.anchor.format !== 'pdf') return;
     pageRefs.current.get(el.anchor.page)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  }, [selectedElementIndex, elements]);
+  }, [selectedElementId, elements]);
 
   if (status === 'loading') {
     return <EmptyState icon={Loader2} iconClassName="animate-spin" title="Rendering document…" description="" />;
@@ -156,11 +177,12 @@ export const PdfRenderer: React.FC<DocumentRendererProps> = ({
               // negative/zero-sized boxes (verified against a real fixture
               // before landing this).
               const [x, y, w, h] = anchor.bbox_relative;
-              const isSelected = selectedElementIndex === el.index;
-              const isHovered = hoveredElementIndex === el.index;
+              const elId = idOf(el);
+              const isSelected = selectedElementId === elId;
+              const isHovered = hoveredElementId === elId;
               return (
                 <div
-                  key={el.index}
+                  key={elId}
                   className={`pdf-el-box ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
                   style={{
                     position: 'absolute',
@@ -169,9 +191,9 @@ export const PdfRenderer: React.FC<DocumentRendererProps> = ({
                     width: `${w * 100}%`,
                     height: `${h * 100}%`,
                   }}
-                  onMouseEnter={() => onHoverElement(el.index)}
+                  onMouseEnter={() => onHoverElement(elId)}
                   onMouseLeave={() => onHoverElement(null)}
-                  onClick={() => onSelectElement(el.index)}
+                  onClick={() => onSelectElement(elId)}
                   title={el.text}
                 />
               );

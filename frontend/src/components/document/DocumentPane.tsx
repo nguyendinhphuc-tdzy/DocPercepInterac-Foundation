@@ -8,8 +8,9 @@ import { DocxRenderer } from './rendering/DocxRenderer';
 import { XlsxRenderer } from './rendering/XlsxRenderer';
 import { PdfRenderer } from './rendering/PdfRenderer';
 import { useDocumentBytes } from './rendering/useDocumentBytes';
-import type { DocumentRendererProps } from './rendering/types';
+import type { DocumentRendererProps, MappingReport } from './rendering/types';
 import type { AnchorDOCX, ElementRowData } from '../../types/element';
+import { idOf } from '../../utils/elementId';
 
 function isDocxAnchor(anchor: ElementRowData['anchor']): anchor is AnchorDOCX {
   return anchor.format === 'docx';
@@ -64,13 +65,13 @@ type ViewMode = 'original' | 'elements' | 'split';
 
 interface ElementViewProps {
   elements: ElementRowData[];
-  hoveredElementIndex: number | null;
-  selectedIndex: number | null;
-  setHoveredElement: (i: number | null) => void;
-  onSelect: (index: number) => void;
-  registerNode: (index: number, node: HTMLElement | null) => void;
+  hoveredElementId: string | null;
+  selectedElementId: string | null;
+  setHoveredElement: (id: string | null) => void;
+  onSelect: (id: string) => void;
+  registerNode: (id: string, node: HTMLElement | null) => void;
   canEdit: boolean;
-  onEdit: (index: number, newValue: string) => void;
+  onEdit: (elementId: string, newValue: string) => void;
 }
 
 function cellHighlightStyle(isSelected: boolean, isHighlighted: boolean): React.CSSProperties {
@@ -85,7 +86,7 @@ function cellHighlightStyle(isSelected: boolean, isHighlighted: boolean): React.
 // (below) renders the actual uploaded document bytes instead — see
 // rendering/DocxRenderer.tsx, XlsxRenderer.tsx, PdfRenderer.tsx. ──
 const ElementsFlowView: React.FC<ElementViewProps> = ({
-  elements, hoveredElementIndex, selectedIndex, setHoveredElement, onSelect, registerNode, canEdit, onEdit,
+  elements, hoveredElementId, selectedElementId, setHoveredElement, onSelect, registerNode, canEdit, onEdit,
 }) => {
   const blocks = useMemo(() => buildDocumentBlocks(elements), [elements]);
 
@@ -94,15 +95,16 @@ const ElementsFlowView: React.FC<ElementViewProps> = ({
       {blocks.map((block) => {
         if (block.kind === 'element') {
           const el = block.el;
-          const isHighlighted = hoveredElementIndex === el.index;
-          const isSelected = selectedIndex === el.index;
+          const elId = idOf(el);
+          const isHighlighted = hoveredElementId === elId;
+          const isSelected = selectedElementId === elId;
           return (
             <div
-              key={el.index}
-              ref={(node) => registerNode(el.index, node)}
-              onMouseEnter={() => setHoveredElement(el.index)}
+              key={elId}
+              ref={(node) => registerNode(elId, node)}
+              onMouseEnter={() => setHoveredElement(elId)}
               onMouseLeave={() => setHoveredElement(null)}
-              onClick={() => onSelect(el.index)}
+              onClick={() => onSelect(elId)}
               style={{
                 padding: 'var(--space-1) var(--space-2)',
                 borderRadius: 'var(--radius-md)',
@@ -112,7 +114,7 @@ const ElementsFlowView: React.FC<ElementViewProps> = ({
             >
               <EditableText
                 value={el.text}
-                onSave={(newValue) => onEdit(el.index, newValue)}
+                onSave={(newValue) => onEdit(elId, newValue)}
                 disabled={!canEdit}
                 multiline
                 className={`block ${
@@ -151,15 +153,16 @@ const ElementsFlowView: React.FC<ElementViewProps> = ({
                     <tr key={r} style={{ borderBottom: '1px solid var(--border-light)' }}>
                       {Array.from({ length: colCount }, (_, c) => {
                         const cellEl = group.rows.get(r)?.get(c);
-                        const isHighlighted = !!cellEl && hoveredElementIndex === cellEl.index;
-                        const isSelected = !!cellEl && selectedIndex === cellEl.index;
+                        const cellElId = cellEl ? idOf(cellEl) : null;
+                        const isHighlighted = !!cellEl && hoveredElementId === cellElId;
+                        const isSelected = !!cellEl && selectedElementId === cellElId;
                         return (
                           <td
                             key={c}
-                            ref={(node) => cellEl && registerNode(cellEl.index, node)}
-                            onMouseEnter={() => cellEl && setHoveredElement(cellEl.index)}
-                            onMouseLeave={() => cellEl && setHoveredElement(null)}
-                            onClick={() => cellEl && onSelect(cellEl.index)}
+                            ref={(node) => { if (cellElId) registerNode(cellElId, node); }}
+                            onMouseEnter={() => cellElId && setHoveredElement(cellElId)}
+                            onMouseLeave={() => cellElId && setHoveredElement(null)}
+                            onClick={() => cellElId && onSelect(cellElId)}
                             style={{
                               padding: 'var(--space-1) var(--space-2)',
                               borderRight: '1px solid var(--border-light)',
@@ -171,7 +174,7 @@ const ElementsFlowView: React.FC<ElementViewProps> = ({
                             {cellEl ? (
                               <EditableText
                                 value={cellEl.text}
-                                onSave={(newValue) => onEdit(cellEl.index, newValue)}
+                                onSave={(newValue) => cellElId && onEdit(cellElId, newValue)}
                                 disabled={!canEdit}
                                 className={cellEl.source === 'manual' ? 'bg-amber-50' : ''}
                                 title={cellEl.source === 'manual' ? 'Manually edited' : 'Click to edit'}
@@ -231,47 +234,54 @@ const OriginalRenderer: React.FC<{
 export const DocumentPane: React.FC = () => {
   const {
     documents, activeDocClientId, editError, sessionId, editHistory,
-    editElement, hoveredElementIndex, setHoveredElement,
+    editElement, hoveredElementId, setHoveredElement,
   } = useWorkspaceStore();
-  const { activeElementId, setActive } = useSyncStore();
+  const { selectedElementId, setSelectedElementId } = useSyncStore();
   const activeDoc = documents.find((d) => d.clientId === activeDocClientId) ?? null;
   const docName = activeDoc?.file.name ?? null;
   const activeElements = activeDoc?.elements ?? EMPTY_ELEMENTS;
   const canEdit = activeDoc?.status === 'ready' && activeDoc.elements !== null;
   const [viewMode, setViewMode] = useState<ViewMode>('original');
+  const [mappingReport, setMappingReport] = useState<MappingReport | null>(null);
 
-  const nodeRefs = useRef(new Map<number, HTMLElement>());
-  const registerNode = (index: number, node: HTMLElement | null) => {
-    if (node) nodeRefs.current.set(index, node);
-    else nodeRefs.current.delete(index);
+  // Reset the coverage summary whenever the active document changes so a
+  // stale report from document A never displays while document B is shown.
+  useEffect(() => { setMappingReport(null); }, [activeDoc?.docId]);
+
+  const nodeRefs = useRef(new Map<string, HTMLElement>());
+  const registerNode = (elementId: string, node: HTMLElement | null) => {
+    if (node) nodeRefs.current.set(elementId, node);
+    else nodeRefs.current.delete(elementId);
   };
 
   useEffect(() => {
-    const idx = hoveredElementIndex;
-    if (idx == null) return;
-    nodeRefs.current.get(idx)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-  }, [hoveredElementIndex]);
+    if (hoveredElementId == null) return;
+    nodeRefs.current.get(hoveredElementId)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [hoveredElementId]);
 
   useEffect(() => {
-    if (!activeElementId) return;
-    const idx = parseInt(activeElementId);
-    if (!isNaN(idx)) {
-      nodeRefs.current.get(idx)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-  }, [activeElementId]);
+    if (!selectedElementId) return;
+    nodeRefs.current.get(selectedElementId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [selectedElementId]);
 
-  const selectedIndex = activeElementId ? parseInt(activeElementId) : null;
-
-  const onEdit = (index: number, newValue: string) => {
-    if (activeDocClientId) editElement(activeDocClientId, index, newValue);
+  // `editElement()`'s existing signature is array-position-based (it looks
+  // up the element's current Anchor to build the PATCH body — see
+  // workspaceStore.ts) — that's an implementation detail of locating the
+  // element to persist, not an identity claim, so it stays index-keyed
+  // internally. Every INTERACTION-facing surface (selection, hover,
+  // highlight, the renderer contract) is element_id-keyed; this is the one
+  // translation point between the two.
+  const onEdit = (elementId: string, newValue: string) => {
+    const el = activeElements.find((e) => idOf(e) === elementId);
+    if (activeDocClientId && el) editElement(activeDocClientId, el.index, newValue);
   };
 
   const viewProps: ElementViewProps = {
     elements: activeElements,
-    hoveredElementIndex,
-    selectedIndex,
+    hoveredElementId,
+    selectedElementId,
     setHoveredElement,
-    onSelect: (index) => setActive(String(index)),
+    onSelect: setSelectedElementId,
     registerNode,
     canEdit,
     onEdit,
@@ -282,12 +292,13 @@ export const DocumentPane: React.FC = () => {
     sessionId: sessionId ?? '',
     docId: activeDoc?.docId ?? '',
     elements: activeElements,
-    selectedElementIndex: selectedIndex,
-    hoveredElementIndex,
-    onSelectElement: (index) => setActive(String(index)),
+    selectedElementId,
+    hoveredElementId,
+    onSelectElement: setSelectedElementId,
     onHoverElement: setHoveredElement,
     onEditElement: onEdit,
     editable: canEdit,
+    onMappingReport: setMappingReport,
   };
 
   // No documents at all — the Documents panel (FileRail) owns upload; this
@@ -421,6 +432,32 @@ export const DocumentPane: React.FC = () => {
           </div>
         </div>
       </div>
+
+      {/* Non-blocking coverage notice — a mapping shortfall never hides the
+          document or disables mapped elements (failure isolation, per the
+          Renderer Contract Hardening phase); this is purely informational.
+          Only shown once enough of the document is affected to be worth
+          surfacing, not for a couple of ambiguous notes/comments. */}
+      {mappingReport && (mappingReport.byStatus.unavailable + mappingReport.byStatus.ambiguous) > Math.max(2, mappingReport.total * 0.05) && (
+        <div className="renderer-notice">
+          <AlertTriangle size={12} />
+          <span>
+            Some document elements can't be linked to the document view yet
+            ({mappingReport.byStatus.unavailable + mappingReport.byStatus.ambiguous} of {mappingReport.total}).
+            Everything else remains interactive.
+          </span>
+        </div>
+      )}
+      {import.meta.env.DEV && mappingReport && (
+        <div style={{
+          padding: 'var(--space-1) var(--space-3)', fontSize: 'var(--text-xxs)', color: 'var(--text-tertiary)',
+          borderBottom: '1px solid var(--border)', fontFamily: 'monospace',
+        }}>
+          mapping: {mappingReport.total} total · {mappingReport.byStatus.available} available · {mappingReport.byStatus.partial} partial · {mappingReport.byStatus.unavailable} unavailable · {mappingReport.byStatus.ambiguous} ambiguous
+          {' · '}
+          {Object.entries(mappingReport.byType).map(([t, c]) => `${t}: ${c.available}/${c.total}`).join(', ')}
+        </div>
+      )}
 
       {editError && (
         <div style={{

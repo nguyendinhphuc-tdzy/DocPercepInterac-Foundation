@@ -5,6 +5,7 @@ import { useSyncStore } from '../../state/syncStore';
 import { ConfidenceBadge } from '../shared/ConfidenceBadge';
 import { EmptyState } from '../shared/EmptyState';
 import type { ElementRowData } from '../../types/element';
+import { idOf } from '../../utils/elementId';
 
 interface ElementGroup {
   label: string;
@@ -82,13 +83,13 @@ function groupElements(elements: ElementRowData[]): ElementGroup[] {
 }
 
 export const ElementsPane: React.FC = () => {
-  const { documents, activeDocClientId, hoveredElementIndex, setHoveredElement } = useWorkspaceStore();
+  const { documents, activeDocClientId, hoveredElementId, setHoveredElement } = useWorkspaceStore();
   const activeDoc = documents.find((d) => d.clientId === activeDocClientId) ?? null;
   const activeElements = activeDoc?.elements ?? EMPTY_ELEMENTS;
-  const { activeElementId, setActive } = useSyncStore();
+  const { selectedElementId, setSelectedElementId } = useSyncStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
-  const itemRefs = useRef(new Map<number, HTMLButtonElement>());
+  const itemRefs = useRef(new Map<string, HTMLButtonElement>());
 
   // Auto-expand all groups initially
   const groups = useMemo(() => groupElements(activeElements), [activeElements]);
@@ -99,21 +100,18 @@ export const ElementsPane: React.FC = () => {
 
   // Scroll to hovered element
   useEffect(() => {
-    if (hoveredElementIndex != null) {
-      itemRefs.current.get(hoveredElementIndex)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    if (hoveredElementId != null) {
+      itemRefs.current.get(hoveredElementId)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
-  }, [hoveredElementIndex]);
+  }, [hoveredElementId]);
 
   // Reverse cross-pane sync: clicking an element in the Document viewer
-  // selects it here too (same syncStore, same element index) — reveal it
+  // selects it here too (same syncStore, same element_id) — reveal it
   // even if its group wasn't already scrolled into view.
   useEffect(() => {
-    if (!activeElementId) return;
-    const idx = parseInt(activeElementId);
-    if (!isNaN(idx)) {
-      itemRefs.current.get(idx)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
-  }, [activeElementId]);
+    if (!selectedElementId) return;
+    itemRefs.current.get(selectedElementId)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }, [selectedElementId]);
 
   const filteredGroups = useMemo(() => {
     if (!searchQuery.trim()) return groups;
@@ -139,7 +137,9 @@ export const ElementsPane: React.FC = () => {
     });
   };
 
-  const selectedIndex = activeElementId ? parseInt(activeElementId) : null;
+  const selectedElement = selectedElementId != null
+    ? activeElements.find((el) => idOf(el) === selectedElementId) ?? null
+    : null;
 
   return (
     <div className="pane-container">
@@ -232,18 +232,19 @@ export const ElementsPane: React.FC = () => {
                   </button>
 
                   {isExpanded && group.elements.map((el) => {
-                    const isSelected = selectedIndex === el.index;
-                    const isHighlighted = hoveredElementIndex === el.index;
+                    const elId = idOf(el);
+                    const isSelected = selectedElementId === elId;
+                    const isHighlighted = hoveredElementId === elId;
                     return (
                       <button
-                        key={el.index}
+                        key={elId}
                         ref={(node) => {
-                          if (node) itemRefs.current.set(el.index, node);
-                          else itemRefs.current.delete(el.index);
+                          if (node) itemRefs.current.set(elId, node);
+                          else itemRefs.current.delete(elId);
                         }}
                         className={`element-tree-item ${isSelected ? 'selected' : ''} ${isHighlighted ? 'highlighted' : ''}`}
-                        onClick={() => setActive(String(el.index))}
-                        onMouseEnter={() => setHoveredElement(el.index)}
+                        onClick={() => setSelectedElementId(elId)}
+                        onMouseEnter={() => setHoveredElement(elId)}
                         onMouseLeave={() => setHoveredElement(null)}
                         aria-selected={isSelected}
                       >
@@ -271,8 +272,8 @@ export const ElementsPane: React.FC = () => {
       </div>
 
       {/* Inspector (inline when element selected) */}
-      {selectedIndex != null && activeElements[selectedIndex] && (
-        <ElementInspectorInline element={activeElements[selectedIndex]} />
+      {selectedElement && (
+        <ElementInspectorInline element={selectedElement} />
       )}
     </div>
   );
@@ -334,7 +335,7 @@ const ElementInspectorInline: React.FC<{ element: ElementRowData }> = ({ element
         )}
         <button
           className="btn btn-secondary btn-sm"
-          onClick={() => setHoveredElement(element.index)}
+          onClick={() => setHoveredElement(idOf(element))}
           style={{ alignSelf: 'flex-start' }}
         >
           <Eye size={13} />

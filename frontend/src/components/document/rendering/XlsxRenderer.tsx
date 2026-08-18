@@ -1,10 +1,11 @@
-import React, { useMemo, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutGrid, Image as ImageIcon, BarChart3 } from 'lucide-react';
 import { EmptyState } from '../../shared/EmptyState';
 import { EditableText } from '../../shared/EditableText';
 import { downloadUrlFor } from '../../../api/client';
 import type { DocumentRendererProps } from './types';
 import type { ElementRowData } from '../../../types/element';
+import { idOf } from '../../../utils/elementId';
 
 // The XLSX grid keeps Foundation's element anchors (sheet_name +
 // cell_address) as its data source, unlike DOCX/PDF — this is a deliberate
@@ -65,20 +66,21 @@ const DrawingBadge: React.FC<{
   docId: string;
   isSelected: boolean;
   isHovered: boolean;
-  onHover: (index: number | null) => void;
-  onSelect: (index: number) => void;
+  onHover: (elementId: string | null) => void;
+  onSelect: (elementId: string) => void;
 }> = ({ element, sessionId, docId, isSelected, isHovered, onHover, onSelect }) => {
   const mediaId = element.anchor.format === 'xlsx' ? element.anchor.media_id : null;
   const imgSrc = mediaId && sessionId && docId
     ? downloadUrlFor(`/api/documents/${sessionId}/media/${docId}/${mediaId}`)
     : null;
+  const elId = idOf(element);
 
   return (
     <div
       className={`xlsx-drawing-badge ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
-      onMouseEnter={() => onHover(element.index)}
+      onMouseEnter={() => onHover(elId)}
       onMouseLeave={() => onHover(null)}
-      onClick={(e) => { e.stopPropagation(); onSelect(element.index); }}
+      onClick={(e) => { e.stopPropagation(); onSelect(elId); }}
       title={element.name}
     >
       {element.type === 'image' && imgSrc ? (
@@ -93,9 +95,31 @@ const DrawingBadge: React.FC<{
 };
 
 export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
-  elements, hoveredElementIndex, selectedElementIndex, onHoverElement, onSelectElement, editable, onEditElement,
-  sessionId, docId,
+  elements, hoveredElementId, selectedElementId, onHoverElement, onSelectElement, editable, onEditElement,
+  sessionId, docId, onMappingReport,
 }) => {
+  // XLSX cell/drawing identity is ALREADY source-derived (sheet_name +
+  // cell_address for cells; drawing_id/from_cell for images/charts — see
+  // perception/anchor_builder.py) rather than array/DOM position, so every
+  // element here maps unambiguously — no positional zip, no per-element
+  // failure mode to isolate. Reported as "available" uniformly; still a
+  // real per-element report, not a hardcoded document-level flag.
+  useEffect(() => {
+    if (!onMappingReport) return;
+    const byType: Record<string, { total: number; available: number }> = {};
+    for (const el of elements) {
+      const t = byType[el.type] ?? { total: 0, available: 0 };
+      t.total += 1;
+      t.available += 1;
+      byType[el.type] = t;
+    }
+    onMappingReport({
+      total: elements.length,
+      byStatus: { available: elements.length, partial: 0, unavailable: 0, ambiguous: 0 },
+      byType,
+    });
+  }, [elements, onMappingReport]);
+
   const sheets = useMemo(() => {
     const bySheet = new Map<string, { el: (typeof elements)[number]; row: number; col: number }[]>();
     for (const el of elements) {
@@ -201,12 +225,12 @@ export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
           <table
             style={{ borderCollapse: 'collapse', fontSize: 'var(--text-xs)' }}
             onMouseOver={(e) => {
-              const cell = (e.target as HTMLElement).closest<HTMLElement>('[data-el-index]');
-              if (cell) onHoverElement(Number(cell.dataset.elIndex));
+              const cell = (e.target as HTMLElement).closest<HTMLElement>('[data-el-id]');
+              if (cell?.dataset.elId) onHoverElement(cell.dataset.elId);
             }}
             onMouseOut={(e) => {
               const related = e.relatedTarget as HTMLElement | null;
-              if (!related?.closest('[data-el-index]')) onHoverElement(null);
+              if (!related?.closest('[data-el-id]')) onHoverElement(null);
             }}
           >
             <thead>
@@ -227,21 +251,22 @@ export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
                   {Array.from({ length: maxCol }, (_, ci) => {
                     const c = ci + 1;
                     const cellEl = byPosition.get(`${r},${c}`);
-                    const isHighlighted = !!cellEl && hoveredElementIndex === cellEl.index;
-                    const isSelected = !!cellEl && selectedElementIndex === cellEl.index;
+                    const cellElId = cellEl ? idOf(cellEl) : null;
+                    const isHighlighted = !!cellEl && hoveredElementId === cellElId;
+                    const isSelected = !!cellEl && selectedElementId === cellElId;
                     const drawings = currentSheet ? drawingsByPosition.get(`${currentSheet}:${r},${c}`) : undefined;
                     return (
                       <td
                         key={c}
                         className="xlsx-grid-cell"
-                        data-el-index={cellEl ? cellEl.index : undefined}
-                        onClick={() => cellEl && onSelectElement(cellEl.index)}
+                        data-el-id={cellElId ?? undefined}
+                        onClick={() => cellElId && onSelectElement(cellElId)}
                         style={{ ...cellHighlightStyle(isSelected, isHighlighted), position: drawings ? 'relative' : undefined }}
                       >
-                        {cellEl ? (
+                        {cellEl && cellElId ? (
                           <EditableText
                             value={cellEl.text}
-                            onSave={(newValue) => onEditElement(cellEl.index, newValue)}
+                            onSave={(newValue) => onEditElement(cellElId, newValue)}
                             disabled={!editable}
                             className={cellEl.source === 'manual' ? 'bg-amber-50' : ''}
                             title={cellEl.source === 'manual' ? 'Manually edited' : 'Click to edit'}
@@ -249,12 +274,12 @@ export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
                         ) : ''}
                         {drawings?.map((d) => (
                           <DrawingBadge
-                            key={d.index}
+                            key={idOf(d)}
                             element={d}
                             sessionId={sessionId}
                             docId={docId}
-                            isSelected={selectedElementIndex === d.index}
-                            isHovered={hoveredElementIndex === d.index}
+                            isSelected={selectedElementId === idOf(d)}
+                            isHovered={hoveredElementId === idOf(d)}
                             onHover={onHoverElement}
                             onSelect={onSelectElement}
                           />

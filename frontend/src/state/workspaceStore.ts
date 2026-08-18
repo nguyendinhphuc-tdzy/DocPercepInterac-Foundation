@@ -131,9 +131,10 @@ interface WorkspaceState {
   isUndoing: boolean;
   undoLastEdit: () => Promise<void>;
 
-  // ── Cross-pane highlighting ──
-  hoveredElementIndex: number | null;
-  setHoveredElement: (index: number | null) => void;
+  // ── Cross-pane highlighting — keyed by `element_id` (see syncStore.ts's
+  // parallel `selectedElementId`), never by array index. ──
+  hoveredElementId: string | null;
+  setHoveredElement: (elementId: string | null) => void;
 }
 
 function loadTaskHistory(): TaskHistoryEntry[] {
@@ -206,7 +207,7 @@ const initialWorkspaceState = {
   editError: null as string | null,
   editHistory: [] as EditHistoryEntry[],
   isUndoing: false,
-  hoveredElementIndex: null as number | null,
+  hoveredElementId: null as string | null,
 };
 
 export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
@@ -295,11 +296,12 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   setActiveDocClientId: (clientId) => {
     set({ activeDocClientId: clientId });
     if (clientId) get().ensureElementsLoaded(clientId);
-    // Element indices are per-document (both start at 0), so a selection
-    // made in document A can otherwise coincidentally "select" an unrelated
-    // element in document B after switching — clear it at the one place
-    // document switching actually happens.
-    useSyncStore.getState().setActive(null);
+    // element_id is globally unique (derived from full anchor content —
+    // see perception/element_classifier.py), so this isn't strictly needed
+    // for correctness anymore the way it was when selection was keyed by
+    // per-document array index; kept anyway so switching documents doesn't
+    // leave an unrelated element from the previous document highlighted.
+    useSyncStore.getState().setSelectedElementId(null);
   },
 
   ensureElementsLoaded: async (clientId) => {
@@ -464,15 +466,15 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     }
   },
 
-  // Guarded: a no-op when the index hasn't actually changed. Without this,
+  // Guarded: a no-op when the id hasn't actually changed. Without this,
   // every hover-driven set() produces a new store snapshot (even for an
-  // unchanged index) and re-renders every subscriber — including panes
-  // that scroll-into-view in response, which can shift layout under a
+  // unchanged id) and re-renders every subscriber — including panes that
+  // scroll-into-view in response, which can shift layout under a
   // stationary cursor, fire a new native mouseenter, and cascade into a
   // genuine render loop (seen with dense grids like the XLSX viewer under
   // simultaneously-mounted Document + Elements panes).
-  setHoveredElement: (index) => {
-    if (get().hoveredElementIndex === index) return;
-    set({ hoveredElementIndex: index });
+  setHoveredElement: (elementId) => {
+    if (get().hoveredElementId === elementId) return;
+    set({ hoveredElementId: elementId });
   },
 }));
