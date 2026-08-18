@@ -39,6 +39,9 @@ import type {
 // SUPPORTED_FORMATS.)
 const SUPPORTED_FORMATS: DocumentFormat[] = ['docx', 'xlsx', 'pdf'];
 
+// UI Spec §6 — a product/UX recommendation, not a backend limit.
+const MAX_DOCUMENTS_PER_TASK = 10;
+
 function formatOf(file: File): DocumentFormat | null {
   const ext = file.name.split('.').pop()?.toLowerCase();
   return (SUPPORTED_FORMATS as string[]).includes(ext ?? '') ? (ext as DocumentFormat) : null;
@@ -225,6 +228,16 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     if (format === null) {
       set({
         intakeError: `"${file.name}" isn't a supported type — Foundation can perceive .docx, .xlsx, or .pdf.`,
+      });
+      return;
+    }
+
+    // A UX soft limit only — not an architectural constraint (the backend
+    // accepts any number of documents per session). Generic: applies to
+    // every document uniformly, no source/target distinction.
+    if (get().documents.length >= MAX_DOCUMENTS_PER_TASK) {
+      set({
+        intakeError: `You've reached the recommended limit of ${MAX_DOCUMENTS_PER_TASK} files. You can continue with another task.`,
       });
       return;
     }
@@ -444,5 +457,15 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     }
   },
 
-  setHoveredElement: (index) => set({ hoveredElementIndex: index }),
+  // Guarded: a no-op when the index hasn't actually changed. Without this,
+  // every hover-driven set() produces a new store snapshot (even for an
+  // unchanged index) and re-renders every subscriber — including panes
+  // that scroll-into-view in response, which can shift layout under a
+  // stationary cursor, fire a new native mouseenter, and cascade into a
+  // genuine render loop (seen with dense grids like the XLSX viewer under
+  // simultaneously-mounted Document + Elements panes).
+  setHoveredElement: (index) => {
+    if (get().hoveredElementIndex === index) return;
+    set({ hoveredElementIndex: index });
+  },
 }));

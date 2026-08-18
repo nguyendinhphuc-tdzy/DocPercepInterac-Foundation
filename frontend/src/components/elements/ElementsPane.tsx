@@ -1,5 +1,5 @@
 import React, { useMemo, useState, useEffect, useRef } from 'react';
-import { Layers, Search, ChevronRight, ChevronDown, Eye } from 'lucide-react';
+import { Layers, Search, ChevronRight, ChevronDown, Eye, Loader2 } from 'lucide-react';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 import { useSyncStore } from '../../state/syncStore';
 import { ConfidenceBadge } from '../shared/ConfidenceBadge';
@@ -8,41 +8,61 @@ import type { ElementRowData } from '../../types/element';
 
 interface ElementGroup {
   label: string;
-  type: 'section' | 'table';
+  type: 'section' | 'table' | 'sheet' | 'page';
   elements: ElementRowData[];
 }
 
+// A stable reference for "no elements yet" (e.g. a document mid-fetch,
+// where `elements` is `null`). `?? []` alone would allocate a NEW empty
+// array on every render, making any useMemo/useEffect keyed on that value
+// recompute every render too — which previously cascaded into a genuine
+// infinite render loop (groups -> setExpandedGroups -> re-render -> new
+// `[]` -> new groups -> ...) for any document still loading its elements.
+const EMPTY_ELEMENTS: ElementRowData[] = [];
+
+// Semantic grouping, format-aware: DOCX groups by heading section + table
+// (structural, matches how the document actually reads); XLSX groups by
+// sheet; PDF groups by page. Every format gets SOME real grouping instead
+// of one giant flat "Document" bucket — this is what keeps the Element
+// Explorer a genuine "trust & verification layer" (spec §17-19) rather
+// than a raw table dump, regardless of source format.
 function groupElements(elements: ElementRowData[]): ElementGroup[] {
   const groups: ElementGroup[] = [];
   let currentSection: ElementGroup | null = null;
 
-  for (const el of elements) {
-    if (el.type === 'heading') {
-      if (currentSection && currentSection.elements.length > 0) {
-        groups.push(currentSection);
-      }
-      currentSection = { label: el.text || `Section ${el.index}`, type: 'section', elements: [el] };
-    } else if (el.type === 'table' || (el.type === 'cell' && el.anchor.format === 'docx' && 'table_index' in el.anchor)) {
-      // Group table cells by table_index
-      const tableIndex = el.anchor.format === 'docx' && 'table_index' in el.anchor
-        ? (el.anchor as any).table_index
-        : null;
+  const closeCurrentSection = () => {
+    if (currentSection && currentSection.elements.length > 0) groups.push(currentSection);
+    currentSection = null;
+  };
 
-      if (tableIndex !== null) {
-        const tableLabel = `Table ${tableIndex}`;
-        const existing = groups.find(g => g.label === tableLabel && g.type === 'table');
-        if (existing) {
-          existing.elements.push(el);
-        } else {
-          if (currentSection && currentSection.elements.length > 0) {
-            groups.push(currentSection);
-            currentSection = null;
-          }
-          groups.push({ label: tableLabel, type: 'table', elements: [el] });
-        }
-      } else {
-        if (currentSection) currentSection.elements.push(el);
-      }
+  const pushOrAppend = (label: string, type: ElementGroup['type'], el: ElementRowData) => {
+    const existing = groups.find((g) => g.label === label && g.type === type);
+    if (existing) {
+      existing.elements.push(el);
+    } else {
+      closeCurrentSection();
+      groups.push({ label, type, elements: [el] });
+    }
+  };
+
+  for (const el of elements) {
+    if (el.anchor.format === 'xlsx') {
+      pushOrAppend(el.anchor.sheet_name, 'sheet', el);
+      continue;
+    }
+
+    if (el.anchor.format === 'pdf') {
+      pushOrAppend(`Page ${el.anchor.page}`, 'page', el);
+      continue;
+    }
+
+    // DOCX: heading-delimited sections, with tables grouped by table_index
+    // (1-indexed for display — table_index itself is 0-indexed internally).
+    if (el.type === 'heading') {
+      closeCurrentSection();
+      currentSection = { label: el.text || `Section ${el.index}`, type: 'section', elements: [el] };
+    } else if (el.type === 'cell' && el.anchor.table_index !== null && el.anchor.table_index !== undefined) {
+      pushOrAppend(`Table ${el.anchor.table_index + 1}`, 'table', el);
     } else {
       if (!currentSection) {
         currentSection = { label: 'Document', type: 'section', elements: [] };
@@ -51,9 +71,7 @@ function groupElements(elements: ElementRowData[]): ElementGroup[] {
     }
   }
 
-  if (currentSection && currentSection.elements.length > 0) {
-    groups.push(currentSection);
-  }
+  closeCurrentSection();
 
   // If no groups were created, make one flat group
   if (groups.length === 0 && elements.length > 0) {
@@ -66,7 +84,7 @@ function groupElements(elements: ElementRowData[]): ElementGroup[] {
 export const ElementsPane: React.FC = () => {
   const { documents, activeDocClientId, hoveredElementIndex, setHoveredElement } = useWorkspaceStore();
   const activeDoc = documents.find((d) => d.clientId === activeDocClientId) ?? null;
-  const activeElements = activeDoc?.elements ?? [];
+  const activeElements = activeDoc?.elements ?? EMPTY_ELEMENTS;
   const { activeElementId, setActive } = useSyncStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
@@ -167,12 +185,17 @@ export const ElementsPane: React.FC = () => {
       <div className="pane-content">
         {activeElements.length === 0 ? (
           <EmptyState
-            icon={Layers}
-            title="No elements extracted"
-            description={
+            icon={activeDoc?.status === 'perceiving' || (!!activeDoc && activeDoc.elements === null) ? Loader2 : Layers}
+            iconClassName={activeDoc?.status === 'perceiving' || (!!activeDoc && activeDoc.elements === null) ? 'animate-spin' : undefined}
+            title={
               activeDoc?.status === 'perceiving'
                 ? 'Reading document…'
-                : 'Add a document to see its extracted elements.'
+                : activeDoc && activeDoc.elements === null
+                  ? 'Loading elements…'
+                  : 'No elements extracted'
+            }
+            description={
+              activeDoc ? '' : 'Add a document to see its extracted elements.'
             }
           />
         ) : (
@@ -217,7 +240,13 @@ export const ElementsPane: React.FC = () => {
                           {el.text || '(empty)'}
                         </span>
                         <span className="element-type">{el.type}</span>
-                        {el.confidence != null && (
+                        {/* Deterministic perception is uniformly 100% confident — showing
+                            that identical number next to every single row is the exact
+                            "visual noise" UI Spec §25 warns against. Only surface the
+                            badge here when it's actually informative (i.e. not full
+                            confidence); the exact value always remains visible in the
+                            Inspector below for any selected element. */}
+                        {el.confidence != null && el.confidence < 0.999 && (
                           <ConfidenceBadge confidence={el.confidence} />
                         )}
                       </button>

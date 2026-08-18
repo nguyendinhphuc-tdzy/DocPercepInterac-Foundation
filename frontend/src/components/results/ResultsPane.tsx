@@ -1,5 +1,5 @@
-import React from 'react';
-import { CheckCircle, Download, FileOutput } from 'lucide-react';
+import React, { useState } from 'react';
+import { CheckCircle, ChevronDown, ChevronRight, Download, FileOutput } from 'lucide-react';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 import { downloadUrlFor } from '../../api/client';
 import { ConfidenceBadge } from '../shared/ConfidenceBadge';
@@ -11,10 +11,20 @@ import { EmptyState } from '../shared/EmptyState';
 // is correct: unlike the generic panes, this one IS application-scoped.
 export const ResultsPane: React.FC = () => {
   const { documents, gptsMapping, hoveredElementIndex, setHoveredElement } = useWorkspaceStore();
+  const [expanded, setExpanded] = useState<Set<number>>(new Set());
 
+  const sourceNames = new Map(documents.map((d) => [d.clientId, d.file.name]));
   const targetName = documents.find((d) => d.clientId === gptsMapping.targetDocClientId)?.file.name ?? null;
   const hasOutput = gptsMapping.downloadUrl != null;
   const mappedCount = gptsMapping.mapped.length;
+
+  const toggleExpanded = (i: number) => {
+    setExpanded((prev) => {
+      const next = new Set(prev);
+      if (next.has(i)) next.delete(i); else next.add(i);
+      return next;
+    });
+  };
 
   return (
     <div className="pane-container">
@@ -100,6 +110,10 @@ export const ResultsPane: React.FC = () => {
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
               {gptsMapping.mapped.map((m, i) => {
                 const isHighlighted = m.target_element_index != null && hoveredElementIndex === m.target_element_index;
+                const isExpanded = expanded.has(i);
+                const sourceDocName = gptsMapping.sourceDocClientIds
+                  .map((id) => sourceNames.get(id))
+                  .find(Boolean);
                 return (
                   <div
                     key={i}
@@ -121,6 +135,47 @@ export const ResultsPane: React.FC = () => {
                         ← {m.source_anchor}
                       </span>
                     </div>
+
+                    <button
+                      className="result-provenance-toggle"
+                      onClick={(e) => { e.stopPropagation(); toggleExpanded(i); }}
+                    >
+                      {isExpanded ? <ChevronDown size={11} /> : <ChevronRight size={11} />}
+                      <span>Provenance</span>
+                    </button>
+
+                    {isExpanded && (
+                      <div className="provenance-chain">
+                        <div className="provenance-step">
+                          <div>
+                            <div className="provenance-step-label">Output</div>
+                            <div className="provenance-step-detail">{m.target_value}</div>
+                          </div>
+                        </div>
+                        <div className="provenance-step">
+                          <div>
+                            <div className="provenance-step-label">Mapped to</div>
+                            <div className="provenance-step-detail">{m.target_anchor}{targetName ? ` · ${targetName}` : ''}</div>
+                          </div>
+                        </div>
+                        <div className="provenance-step">
+                          <div>
+                            <div className="provenance-step-label">Source</div>
+                            <div className="provenance-step-detail">
+                              {m.source_anchor}{sourceDocName ? ` · ${sourceDocName}` : ''}
+                            </div>
+                          </div>
+                        </div>
+                        <div className="provenance-step">
+                          <div>
+                            <div className="provenance-step-label">Confidence &amp; time</div>
+                            <div className="provenance-step-detail">
+                              {Math.round(m.confidence * 100)}% · {new Date(m.timestamp).toLocaleString()}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 );
               })}

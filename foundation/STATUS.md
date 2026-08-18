@@ -1377,3 +1377,113 @@ route nào khác — chỉ thêm tài liệu tường minh + 1 test mới.
 
 **Tests:** 90 → **91 passed**. `tsc -b` sạch. Playwright cài tạm đã gỡ,
 không còn trong `package.json`/`package-lock.json`.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-18, muộn hơn cùng ngày nữa): Triển khai `Foundation_UI_Spec_v1.0.md` — workspace AI-native thật, không chỉ đổi kiến trúc phía sau
+
+**Bối cảnh:** kiến trúc generic (Perceive → user nêu ý định → Execute) đã
+xong và verify kỹ ở các mục trên — phiên này là **frontend/UX thuần**,
+triển khai `Foundation_UI_Spec_v1.0.md` (root repo) trên NỀN kiến trúc đó,
+không đụng backend, không tái phá vỡ bất kỳ invariant nào đã chốt.
+
+**Audit trước khi sửa:** phần lớn design token system (`index.css` — màu
+sắc/typography khớp gần như y hệt §30-31 của spec), `HomePage`,
+`StatusBadge`, `ConfidenceBadge` (đã có sẵn dải High/Medium/Low theo §25),
+`AgentMessage` (đã render đúng pattern progress-steps ✓ theo §9/§34), 4
+preset workspace (Agent/Inspect/Review/Compare) — **đã được 1 phiên trước
+xây sẵn khớp spec** (thấy rõ qua comment "Palette per UI Spec §30" trong
+`index.css`). Việc phiên này là đóng các gap CÒN LẠI, không xây lại từ đầu.
+
+**Đã triển khai:**
+- **Document Viewer format-aware (§16-17, gap lớn nhất):** trước đây CHỈ 1
+  view phẳng cho mọi định dạng — XLSX/PDF thậm chí không được nhóm (không
+  lưới, không trang). Thêm bộ chuyển chế độ Original/Elements/Split
+  (`components/document/DocumentPane.tsx`):
+  - **Original — XLSX:** lưới hàng/cột thật, parse từ `cell_address`
+    (`parseCellAddress`/`colLetter`), nhóm theo sheet, header cột A/B/C...
+    + số dòng, giống spreadsheet thật — không cần thư viện mới.
+  - **Original — PDF:** nhóm theo `page`, đúng thứ tự `reading_order_index`,
+    dạng "Page N" card — ghi rõ minh bạch "Page image preview isn't
+    available in this deployment" (Poppler chưa cài, theo đúng STATUS.md
+    cũ) thay vì giả vờ render ảnh trang.
+  - **Original — DOCX:** flow hiện có, bọc trong page-card trắng có bóng,
+    giống trang tài liệu thật hơn.
+  - **Elements** = flow hiện có giữ nguyên (mọi định dạng). **Split** = 2
+    view cạnh nhau.
+  - CSS mới: `.view-mode-switch`, `.xlsx-grid-*`, `.document-page-card`,
+    `.pdf-page-card`.
+- **Element Explorer semantic hierarchy (§17-19):** `ElementsPane.tsx`'s
+  `groupElements()` trước đây CHỈ nhóm DOCX (heading/table) — XLSX/PDF rơi
+  hết vào 1 nhóm "Document" phẳng (662/968 phần tử dồn 1 chỗ). Sửa: XLSX
+  nhóm theo sheet, PDF nhóm theo page — cùng logic ngữ nghĩa với Document
+  Viewer's Original mode.
+- **Giảm nhiễu confidence (§25):** trích xuất tất định → confidence luôn
+  100%, hiển thị "100%" lặp lại ở MỌI dòng (662+ lần) đúng là "visual
+  noise" spec cảnh báo. Ẩn badge trong danh sách khi confidence ≥ 99.9%
+  (chỉ ẩn ở list — Inspector vẫn hiện đầy đủ khi chọn 1 phần tử).
+- **Provenance/Trace (§23):** CSS `.provenance-chain`/`.provenance-step`
+  đã có sẵn trong `index.css` từ trước nhưng **chưa từng được dùng ở đâu**
+  — nay dùng thật trong `ResultsPane.tsx`: mỗi mapped-value card có nút
+  "Provenance" mở chuỗi Output → Mapped to → Source → Confidence & time.
+- **Giới hạn 10 file (§6):** bị rớt mất khi viết lại `workspaceStore.ts` ở
+  phiên refactor kiến trúc trước — thêm lại, generic (không phân biệt
+  role), đúng câu chữ spec ("You've reached the recommended limit...").
+- **Agent composer context chip (§12):** thêm dòng "N documents in
+  context" — CHỈ hiện thông tin có thật (số tài liệu), cố tình KHÔNG thêm
+  chip "Elements"/"Context" giả vờ chọn được phần tử cụ thể, vì Agent chưa
+  thật sự hỗ trợ retrieval đó — trung thực đúng nguyên tắc đã theo suốt dự
+  án ("AgentPane honest placeholder").
+- Sửa nhỏ: "Table 0" → "Table 1" (hiển thị 1-indexed, index nội bộ vẫn
+  0-indexed).
+
+**2 bug thật bắt được khi tự verify bằng browser (không phải chỉ tin
+build/tsc xanh):**
+1. **Infinite render loop thật** (`Maximum update depth exceeded`), chỉ lộ
+   ra khi: tài liệu XLSX/PDF đang active + preset "Inspect" (Document +
+   Elements cùng mount) + đúng lúc elements đang fetch (`elements ===
+   null`, do cơ chế lazy-load đã xây ở phiên trước). Nguyên nhân gốc:
+   `activeDoc?.elements ?? []` tạo mảng rỗng MỚI mỗi lần render khi
+   `elements` là `null` → `useMemo`/`useEffect` (groups →
+   `setExpandedGroups`) trong `ElementsPane` coi là dependency đổi liên
+   tục → loop thật. Sửa bằng hằng số `EMPTY_ELEMENTS` dùng chung (tham
+   chiếu ổn định) ở cả `ElementsPane.tsx` và `DocumentPane.tsx`. Kèm sửa
+   phòng thủ thêm: `setHoveredElement` trong `workspaceStore.ts` giờ
+   no-op nếu index không đổi (tránh render thừa khi hover), và lưới XLSX
+   chuyển từ hàng nghìn handler `onMouseEnter`/`onMouseLeave` riêng lẻ mỗi
+   ô sang **event delegation** (1 handler trên `<table>`, tra `data-el-index`)
+   — vừa đúng nguyên nhân vừa tốt hơn về hiệu năng.
+2. **Trạng thái "loading" hiển thị sai thành "trống vĩnh viễn":** trong lúc
+   elements đang fetch (header đã hiện "Ready · N elements" nhưng
+   Document/Elements pane vẫn `null`), UI cũ hiện "No document loaded"/
+   "No elements extracted" — sai, vì elements THỰC SỰ sẽ tới, chỉ đang
+   tải. Thêm trạng thái loading riêng ("Reading document…"/"Loading
+   elements…", icon xoay) phân biệt rõ với "sẽ không bao giờ có gì" —
+   thêm `iconClassName` prop cho `EmptyState.tsx` để hỗ trợ icon xoay.
+
+**Verify bằng browser thật** (Playwright, cài tạm rồi gỡ đúng quy ước):
+chụp toàn bộ luồng Home → New Task (3 file PDF+XLSX+DOCX thật) → Workspace
+(Agent preset mặc định, Document ở chế độ Original) → chuyển Inspect
+preset → đổi Original/Elements/Split cho cả 3 định dạng → chọn phần tử
+(xác nhận đồng bộ Document ↔ Elements ↔ Inspector) → mở Applications
+menu (GTPS) — **0 lỗi console** ở lần chạy cuối cùng, xác nhận từng ảnh
+chụp màn hình bằng mắt.
+
+**Không đụng:** backend (`api/`, `applications/`, `output/`,
+`perception/`), kiến trúc generic document/session/task đã chốt ở các mục
+trên, `GptsMappingState`/`runGptsMappingTask` vẫn nằm trong
+`workspaceStore.ts` (technical debt đã biết, không di dời phiên này vì
+không bắt buộc cho việc UI).
+
+**Còn thiếu / deferred có chủ đích (P1/P2 theo spec, không phải bị bỏ
+sót):** docking kéo-thả/nổi/snap thật (mới có resize qua
+`react-resizable-panels`, gọi là "basic docking" theo đúng mức spec yêu
+cầu P0); render pixel-chính-xác DOCX/XLSX/PDF (không có rendering engine
+trong stack, dùng layout suy ra từ Anchor thay thế, đúng cho phép của
+spec); Compare mode thật (vẫn placeholder "Source A/B"); History/Settings/
+Diagnostics thật; command menu (Cmd+K); saved layouts/preset
+customize-reset-save.
+
+**Tests:** 91 → **91 passed** (không đổi test backend — phiên này thuần
+frontend). `tsc -b` sạch, `npm run build` sạch, verify bằng browser thật
+xác nhận 0 lỗi console qua toàn bộ luồng.

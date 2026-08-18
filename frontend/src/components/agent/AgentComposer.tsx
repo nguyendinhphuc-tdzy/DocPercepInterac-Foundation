@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
-import { ArrowUp } from 'lucide-react';
+import { ArrowUp, Paperclip } from 'lucide-react';
 import { useAgentStore } from '../../state/agentStore';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 
@@ -12,7 +12,8 @@ export const AgentComposer: React.FC = () => {
   // Gated on Perceive (>=1 document ready), never on a task/execution
   // state — this is what lets the user state a request BEFORE any
   // application workflow runs (Perceive -> user states intent -> Execute).
-  const hasReadyDocument = documents.some((d) => d.status === 'ready');
+  const readyDocuments = documents.filter((d) => d.status === 'ready');
+  const hasReadyDocument = readyDocuments.length > 0;
   const isSending = status === 'preparing' || status === 'processing';
   const canSend = input.trim().length > 0 && !isSending && hasReadyDocument;
 
@@ -67,6 +68,17 @@ export const AgentComposer: React.FC = () => {
           <ArrowUp size={16} />
         </button>
       </div>
+      {/* Honest context indicator — reflects what the Agent's request
+          context actually includes (file names + element counts, see
+          agentStore.ts::sendMessage). No "Elements"/"Context" chips here:
+          the Agent doesn't yet support selecting specific elements as
+          context, so a chip implying otherwise would be dishonest. */}
+      {hasReadyDocument && (
+        <div className="agent-composer-context">
+          <Paperclip size={11} />
+          <span>{readyDocuments.length} document{readyDocuments.length === 1 ? '' : 's'} in context</span>
+        </div>
+      )}
     </div>
   );
 };

@@ -133,7 +133,7 @@ export const NewTaskPage: React.FC = () => {
               <span style={{
                 fontSize: 'var(--text-xs)',
                 color: 'var(--text-tertiary)',
-              }}>{totalFiles}</span>
+              }}>{totalFiles} / 10</span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
