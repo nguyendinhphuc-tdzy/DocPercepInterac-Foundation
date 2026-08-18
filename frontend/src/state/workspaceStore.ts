@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import {
   uploadDocument, fetchDocumentElements, patchElement, runGptsMapping, ApiError,
 } from '../api/client';
+import { useSyncStore } from './syncStore';
 import type {
   DocumentFormat, EditHistoryEntry, ElementRowData, GptsMappingResult, MappedEntry,
 } from '../types/element';
@@ -293,6 +294,11 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   setActiveDocClientId: (clientId) => {
     set({ activeDocClientId: clientId });
     if (clientId) get().ensureElementsLoaded(clientId);
+    // Element indices are per-document (both start at 0), so a selection
+    // made in document A can otherwise coincidentally "select" an unrelated
+    // element in document B after switching — clear it at the one place
+    // document switching actually happens.
+    useSyncStore.getState().setActive(null);
   },
 
   ensureElementsLoaded: async (clientId) => {

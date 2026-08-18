@@ -10,7 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "docx-preview": "^0.4.0",
     "lucide-react": "^1.31.0",
+    "pdfjs-dist": "^6.2.108",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-resizable-panels": "^4.12.2",

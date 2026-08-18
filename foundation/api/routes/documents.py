@@ -280,6 +280,13 @@ def patch_document_element(session_id: str, doc_id: str):
 
 @documents_bp.get("/api/documents/<session_id>/download/<doc_id>")
 def download_document(session_id: str, doc_id: str):
+    """Serves the document's current file — the live-edited (`_patched`)
+    version if one exists, otherwise the pristine upload — via the same
+    `_current_path_for()` resolution `get_document_elements` already uses.
+    This is also the byte source the frontend's document renderers fetch
+    for `Original` mode, so it must never be limited to "only once a patch
+    exists": a freshly-uploaded, never-edited document is still a valid
+    document to render or download."""
     session_dir = UPLOAD_ROOT / secure_filename(session_id)
     if not session_dir.is_dir():
         return jsonify({"error": "Unknown session_id"}), 404
@@ -289,9 +296,8 @@ def download_document(session_id: str, doc_id: str):
     if entry is None:
         return jsonify({"error": "Unknown doc_id"}), 404
 
-    stored_path = session_dir / entry["stored_filename"]
-    patched_path = stored_path.with_name(f"{stored_path.stem}_patched{stored_path.suffix}")
-    if not patched_path.exists():
-        return jsonify({"error": "No patched output for this document"}), 404
+    current_path = _current_path_for(session_dir, entry)
+    if not current_path.exists():
+        return jsonify({"error": "No file available for this document"}), 404
 
-    return send_file(patched_path, as_attachment=True, download_name=patched_path.name)
+    return send_file(current_path, as_attachment=True, download_name=current_path.name)
