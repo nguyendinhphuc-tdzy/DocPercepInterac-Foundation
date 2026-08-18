@@ -104,6 +104,17 @@ export const ElementsPane: React.FC = () => {
     }
   }, [hoveredElementIndex]);
 
+  // Reverse cross-pane sync: clicking an element in the Document viewer
+  // selects it here too (same syncStore, same element index) — reveal it
+  // even if its group wasn't already scrolled into view.
+  useEffect(() => {
+    if (!activeElementId) return;
+    const idx = parseInt(activeElementId);
+    if (!isNaN(idx)) {
+      itemRefs.current.get(idx)?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [activeElementId]);
+
   const filteredGroups = useMemo(() => {
     if (!searchQuery.trim()) return groups;
     const q = searchQuery.toLowerCase();

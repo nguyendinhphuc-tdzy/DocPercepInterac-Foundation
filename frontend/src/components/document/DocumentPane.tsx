@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { FileText, AlertTriangle, LayoutGrid, Rows3, Columns2, Loader2, Plus } from 'lucide-react';
+import { FileText, AlertTriangle, LayoutGrid, Rows3, Columns2, Loader2 } from 'lucide-react';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 import { useSyncStore } from '../../state/syncStore';
 import { EditableText } from '../shared/EditableText';
@@ -21,6 +21,52 @@ interface TableGroup {
   rows: Map<number, Map<number, ElementRowData>>;
 }
 
+type DocBlock =
+  | { kind: 'element'; el: ElementRowData }
+  | { kind: 'table'; group: TableGroup };
+
+// Single pass over the already-in-reading-order elements array that merges
+// each DOCX table's cells into one block at the position its first cell
+// appears. Without this, a naive "collect paragraphs, then collect tables"
+// split (the previous approach) renders every table AFTER every paragraph
+// regardless of where it actually sits in the document — losing reading
+// order entirely. Shared by both Elements and Original views so both stay
+// order-correct.
+function buildDocumentBlocks(elements: ElementRowData[]): DocBlock[] {
+  const blocks: DocBlock[] = [];
+  const tablePosition = new Map<number, number>();
+
+  for (const el of elements) {
+    if (el.type === 'cell' && isDocxAnchor(el.anchor) && el.anchor.table_index !== null && el.anchor.table_index !== undefined) {
+      const tIdx = el.anchor.table_index;
+      const rIdx = el.anchor.row_index ?? 0;
+      const cIdx = el.anchor.col_index ?? 0;
+      let pos = tablePosition.get(tIdx);
+      if (pos === undefined) {
+        pos = blocks.length;
+        blocks.push({ kind: 'table', group: { tableIndex: tIdx, rows: new Map() } });
+        tablePosition.set(tIdx, pos);
+      }
+      const block = blocks[pos] as { kind: 'table'; group: TableGroup };
+      if (!block.group.rows.has(rIdx)) block.group.rows.set(rIdx, new Map());
+      block.group.rows.get(rIdx)!.set(cIdx, el);
+    } else {
+      blocks.push({ kind: 'element', el });
+    }
+  }
+  return blocks;
+}
+
+// Word style IDs like "Heading1"/"Heading2" carry the heading level used
+// for document typography — falls back to a mid-weight level for a
+// heading-classified element with no numbered style (e.g. "Title").
+function headingLevel(styleId: string | undefined): number {
+  const m = /heading\s*(\d)/i.exec(styleId ?? '');
+  if (m) return Math.min(parseInt(m[1], 10), 4);
+  if (/title/i.test(styleId ?? '')) return 1;
+  return 2;
+}
+
 type ViewMode = 'original' | 'elements' | 'split';
 
 // Shared per-element interaction wiring passed down to whichever view(s)
@@ -31,6 +77,11 @@ interface ElementViewProps {
   hoveredElementIndex: number | null;
   selectedIndex: number | null;
   setHoveredElement: (i: number | null) => void;
+  // Reverse cross-pane sync (Document → Elements): clicking an element in
+  // the viewer selects the same element identity (its existing index) in
+  // the Elements pane, via the same syncStore used for the Elements→Document
+  // direction — no second element-ID system.
+  onSelect: (index: number) => void;
   registerNode: (index: number, node: HTMLElement | null) => void;
   canEdit: boolean;
   onEdit: (index: number, newValue: string) => void;
@@ -47,32 +98,15 @@ function cellHighlightStyle(isSelected: boolean, isHighlighted: boolean): React.
 // formats (XLSX/PDF elements simply have no table grouping, so they
 // render as a flat flow). ──
 const ElementsFlowView: React.FC<ElementViewProps> = ({
-  elements, hoveredElementIndex, selectedIndex, setHoveredElement, registerNode, canEdit, onEdit,
+  elements, hoveredElementIndex, selectedIndex, setHoveredElement, onSelect, registerNode, canEdit, onEdit,
 }) => {
-  const { flowElements, tableGroups } = useMemo(() => {
-    const flow: ElementRowData[] = [];
-    const tables = new Map<number, TableGroup>();
-
-    for (const el of elements) {
-      if (el.type === 'cell' && isDocxAnchor(el.anchor) && el.anchor.table_index !== null && el.anchor.table_index !== undefined) {
-        const tIdx = el.anchor.table_index;
-        const rIdx = el.anchor.row_index ?? 0;
-        const cIdx = el.anchor.col_index ?? 0;
-        if (!tables.has(tIdx)) tables.set(tIdx, { tableIndex: tIdx, rows: new Map() });
-        const group = tables.get(tIdx)!;
-        if (!group.rows.has(rIdx)) group.rows.set(rIdx, new Map());
-        group.rows.get(rIdx)!.set(cIdx, el);
-      } else {
-        flow.push(el);
-      }
-    }
-    return { flowElements: flow, tableGroups: Array.from(tables.values()) };
-  }, [elements]);
+  const blocks = useMemo(() => buildDocumentBlocks(elements), [elements]);
 
   return (
-    <div style={{ padding: 'var(--space-4)' }}>
-      <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-        {flowElements.map((el) => {
+    <div style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
+      {blocks.map((block) => {
+        if (block.kind === 'element') {
+          const el = block.el;
           const isHighlighted = hoveredElementIndex === el.index;
           const isSelected = selectedIndex === el.index;
           return (
@@ -81,6 +115,7 @@ const ElementsFlowView: React.FC<ElementViewProps> = ({
               ref={(node) => registerNode(el.index, node)}
               onMouseEnter={() => setHoveredElement(el.index)}
               onMouseLeave={() => setHoveredElement(null)}
+              onClick={() => onSelect(el.index)}
               style={{
                 padding: 'var(--space-1) var(--space-2)',
                 borderRadius: 'var(--radius-md)',
@@ -102,17 +137,16 @@ const ElementsFlowView: React.FC<ElementViewProps> = ({
               />
             </div>
           );
-        })}
-      </div>
+        }
 
-      {tableGroups.map((group) => {
+        const group = block.group;
         const rowIndices = Array.from(group.rows.keys()).sort((a, b) => a - b);
         const colCount = Math.max(
           0,
           ...rowIndices.map((r) => Math.max(0, ...Array.from(group.rows.get(r)!.keys())) + 1)
         );
         return (
-          <div key={group.tableIndex} style={{
+          <div key={`table-${group.tableIndex}`} style={{
             border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)',
             overflow: 'hidden', marginTop: 'var(--space-3)',
           }}>
@@ -138,6 +172,7 @@ const ElementsFlowView: React.FC<ElementViewProps> = ({
                             ref={(node) => cellEl && registerNode(cellEl.index, node)}
                             onMouseEnter={() => cellEl && setHoveredElement(cellEl.index)}
                             onMouseLeave={() => cellEl && setHoveredElement(null)}
+                            onClick={() => cellEl && onSelect(cellEl.index)}
                             style={{
                               padding: 'var(--space-1) var(--space-2)',
                               borderRight: '1px solid var(--border-light)',
@@ -194,7 +229,7 @@ function colLetter(col: number): string {
 }
 
 const XlsxGridView: React.FC<ElementViewProps> = ({
-  elements, hoveredElementIndex, selectedIndex, setHoveredElement, registerNode, canEdit, onEdit,
+  elements, hoveredElementIndex, selectedIndex, setHoveredElement, onSelect, registerNode, canEdit, onEdit,
 }) => {
   const sheets = useMemo(() => {
     const bySheet = new Map<string, { el: ElementRowData; row: number; col: number }[]>();
@@ -209,90 +244,109 @@ const XlsxGridView: React.FC<ElementViewProps> = ({
     return bySheet;
   }, [elements]);
 
+  const sheetNames = useMemo(() => Array.from(sheets.keys()), [sheets]);
+  const [activeSheet, setActiveSheet] = useState<string | null>(null);
+  // Keep the active tab valid as the element set changes (new doc, elements
+  // just finished loading, etc.) without stomping a deliberate user choice.
+  const currentSheet = activeSheet && sheets.has(activeSheet) ? activeSheet : sheetNames[0] ?? null;
+
   if (sheets.size === 0) {
     return <EmptyState icon={LayoutGrid} title="No spreadsheet cells" description="This document has no XLSX cell data to display as a grid." />;
   }
 
-  return (
-    <div style={{ padding: 'var(--space-4)', display: 'flex', flexDirection: 'column', gap: 'var(--space-5)' }}>
-      {Array.from(sheets.entries()).map(([sheetName, cells]) => {
-        const maxRow = Math.max(...cells.map((c) => c.row));
-        const maxCol = Math.max(...cells.map((c) => c.col));
-        const byPosition = new Map(cells.map((c) => [`${c.row},${c.col}`, c.el]));
-        // Guard against pathologically sparse/huge sheets blowing up the DOM.
-        const cappedRow = Math.min(maxRow, 500);
-        const cappedCol = Math.min(maxCol, 60);
+  const cells = currentSheet ? sheets.get(currentSheet)! : [];
+  const maxRow = Math.max(...cells.map((c) => c.row));
+  const maxCol = Math.max(...cells.map((c) => c.col));
+  const byPosition = new Map(cells.map((c) => [`${c.row},${c.col}`, c.el]));
+  // Guard against pathologically sparse/huge sheets blowing up the DOM.
+  const cappedRow = Math.min(maxRow, 500);
+  const cappedCol = Math.min(maxCol, 60);
 
-        return (
-          <div key={sheetName}>
-            <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}>
-              {sheetName}
-            </div>
-            <div style={{ overflow: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', maxHeight: 560 }}>
-              <table
-                style={{ borderCollapse: 'collapse', fontSize: 'var(--text-xs)' }}
-                onMouseOver={(e) => {
-                  const cell = (e.target as HTMLElement).closest<HTMLElement>('[data-el-index]');
-                  if (cell) setHoveredElement(Number(cell.dataset.elIndex));
-                }}
-                onMouseOut={(e) => {
-                  const related = e.relatedTarget as HTMLElement | null;
-                  if (!related?.closest('[data-el-index]')) setHoveredElement(null);
-                }}
-              >
-                <thead>
-                  <tr>
-                    <th className="xlsx-grid-corner" />
-                    {Array.from({ length: cappedCol }, (_, i) => (
-                      <th key={i} className="xlsx-grid-colhead">{colLetter(i + 1)}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {Array.from({ length: cappedRow }, (_, ri) => {
-                    const r = ri + 1;
-                    return (
-                      <tr key={r}>
-                        <th className="xlsx-grid-rowhead">{r}</th>
-                        {Array.from({ length: cappedCol }, (_, ci) => {
-                          const c = ci + 1;
-                          const cellEl = byPosition.get(`${r},${c}`);
-                          const isHighlighted = !!cellEl && hoveredElementIndex === cellEl.index;
-                          const isSelected = !!cellEl && selectedIndex === cellEl.index;
-                          return (
-                            <td
-                              key={c}
-                              ref={(node) => cellEl && registerNode(cellEl.index, node)}
-                              className="xlsx-grid-cell"
-                              data-el-index={cellEl ? cellEl.index : undefined}
-                              style={cellHighlightStyle(isSelected, isHighlighted)}
-                            >
-                              {cellEl ? (
-                                <EditableText
-                                  value={cellEl.text}
-                                  onSave={(newValue) => onEdit(cellEl.index, newValue)}
-                                  disabled={!canEdit}
-                                  className={cellEl.source === 'manual' ? 'bg-amber-50' : ''}
-                                  title={cellEl.source === 'manual' ? 'Manually edited' : 'Click to edit'}
-                                />
-                              ) : ''}
-                            </td>
-                          );
-                        })}
-                      </tr>
-                    );
-                  })}
-                </tbody>
-              </table>
-            </div>
-            {(maxRow > cappedRow || maxCol > cappedCol) && (
-              <div style={{ fontSize: 'var(--text-xxs)', color: 'var(--text-tertiary)', marginTop: 'var(--space-1)' }}>
-                Grid truncated to {cappedRow} rows × {cappedCol} columns for display — switch to Elements view for the full list.
-              </div>
-            )}
+  return (
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      {sheetNames.length > 1 && (
+        <div className="sheet-tabs">
+          {sheetNames.map((name) => (
+            <button
+              key={name}
+              className={`sheet-tab ${name === currentSheet ? 'active' : ''}`}
+              onClick={() => setActiveSheet(name)}
+            >
+              {name}
+            </button>
+          ))}
+        </div>
+      )}
+      <div style={{ padding: 'var(--space-4)', flex: 1, overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        {sheetNames.length <= 1 && currentSheet && (
+          <div style={{ fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-secondary)', marginBottom: 'var(--space-2)' }}>
+            {currentSheet}
           </div>
-        );
-      })}
+        )}
+        <div style={{ overflow: 'auto', border: '1px solid var(--border)', borderRadius: 'var(--radius-lg)', flex: 1 }}>
+          <table
+            style={{ borderCollapse: 'collapse', fontSize: 'var(--text-xs)' }}
+            onMouseOver={(e) => {
+              const cell = (e.target as HTMLElement).closest<HTMLElement>('[data-el-index]');
+              if (cell) setHoveredElement(Number(cell.dataset.elIndex));
+            }}
+            onMouseOut={(e) => {
+              const related = e.relatedTarget as HTMLElement | null;
+              if (!related?.closest('[data-el-index]')) setHoveredElement(null);
+            }}
+          >
+            <thead>
+              <tr>
+                <th className="xlsx-grid-corner" />
+                {Array.from({ length: cappedCol }, (_, i) => (
+                  <th key={i} className="xlsx-grid-colhead">{colLetter(i + 1)}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {Array.from({ length: cappedRow }, (_, ri) => {
+                const r = ri + 1;
+                return (
+                  <tr key={r}>
+                    <th className="xlsx-grid-rowhead">{r}</th>
+                    {Array.from({ length: cappedCol }, (_, ci) => {
+                      const c = ci + 1;
+                      const cellEl = byPosition.get(`${r},${c}`);
+                      const isHighlighted = !!cellEl && hoveredElementIndex === cellEl.index;
+                      const isSelected = !!cellEl && selectedIndex === cellEl.index;
+                      return (
+                        <td
+                          key={c}
+                          ref={(node) => cellEl && registerNode(cellEl.index, node)}
+                          className="xlsx-grid-cell"
+                          data-el-index={cellEl ? cellEl.index : undefined}
+                          onClick={() => cellEl && onSelect(cellEl.index)}
+                          style={cellHighlightStyle(isSelected, isHighlighted)}
+                        >
+                          {cellEl ? (
+                            <EditableText
+                              value={cellEl.text}
+                              onSave={(newValue) => onEdit(cellEl.index, newValue)}
+                              disabled={!canEdit}
+                              className={cellEl.source === 'manual' ? 'bg-amber-50' : ''}
+                              title={cellEl.source === 'manual' ? 'Manually edited' : 'Click to edit'}
+                            />
+                          ) : ''}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        </div>
+        {(maxRow > cappedRow || maxCol > cappedCol) && (
+          <div style={{ fontSize: 'var(--text-xxs)', color: 'var(--text-tertiary)', marginTop: 'var(--space-1)' }}>
+            Grid truncated to {cappedRow} rows × {cappedCol} columns for display — switch to Elements view for the full list.
+          </div>
+        )}
+      </div>
     </div>
   );
 };
@@ -301,7 +355,7 @@ const XlsxGridView: React.FC<ElementViewProps> = ({
 // closest practical page-oriented view without page-image rendering
 // (Poppler is not installed on this deployment; see STATUS.md). ──
 const PdfPageView: React.FC<ElementViewProps> = ({
-  elements, hoveredElementIndex, selectedIndex, setHoveredElement, registerNode, canEdit, onEdit,
+  elements, hoveredElementIndex, selectedIndex, setHoveredElement, onSelect, registerNode, canEdit, onEdit,
 }) => {
   const pages = useMemo(() => {
     const byPage = new Map<number, ElementRowData[]>();
@@ -343,6 +397,7 @@ const PdfPageView: React.FC<ElementViewProps> = ({
                   ref={(node) => registerNode(el.index, node)}
                   onMouseEnter={() => setHoveredElement(el.index)}
                   onMouseLeave={() => setHoveredElement(null)}
+                  onClick={() => onSelect(el.index)}
                   style={{
                     padding: 'var(--space-1) var(--space-2)', borderRadius: 'var(--radius-md)',
                     ...cellHighlightStyle(isSelected, isHighlighted),
@@ -366,16 +421,122 @@ const PdfPageView: React.FC<ElementViewProps> = ({
   );
 };
 
+const HEADING_CLASSES: Record<number, string> = {
+  1: 'text-2xl font-bold text-gray-900',
+  2: 'text-xl font-semibold text-gray-900',
+  3: 'text-lg font-semibold text-gray-800',
+  4: 'text-base font-semibold text-gray-800',
+};
+const BODY_PARA_CLASSES = 'text-[15px] leading-7 text-gray-700';
+
+// ── "Original" mode, DOCX: a genuinely document-shaped view — this is a
+// deliberately different component from ElementsFlowView (used by
+// "Elements"), not a restyled copy of it. Real heading hierarchy, body
+// paragraph typography, and full-bordered tables so the page reads as "the
+// actual document", not as an extracted element list. Same block order,
+// same highlight/select/edit wiring as Elements — only the presentation
+// differs, per the Original/Elements split this phase requires. ──
+const DocxOriginalView: React.FC<ElementViewProps> = ({
+  elements, hoveredElementIndex, selectedIndex, setHoveredElement, onSelect, registerNode, canEdit, onEdit,
+}) => {
+  const blocks = useMemo(() => buildDocumentBlocks(elements), [elements]);
+
+  return (
+    <div className="document-page-card">
+      <div style={{ padding: 'var(--space-8) var(--space-6)' }}>
+        {blocks.map((block) => {
+          if (block.kind === 'element') {
+            const el = block.el;
+            const isHighlighted = hoveredElementIndex === el.index;
+            const isSelected = selectedIndex === el.index;
+            const isHeading = el.type === 'heading';
+            const level = isHeading ? headingLevel(isDocxAnchor(el.anchor) ? el.anchor.style_id : undefined) : 0;
+            const typographyClass = isHeading ? (HEADING_CLASSES[level] ?? HEADING_CLASSES[2]) : BODY_PARA_CLASSES;
+            return (
+              <div
+                key={el.index}
+                ref={(node) => registerNode(el.index, node)}
+                onMouseEnter={() => setHoveredElement(el.index)}
+                onMouseLeave={() => setHoveredElement(null)}
+                onClick={() => onSelect(el.index)}
+                style={{
+                  padding: '2px var(--space-2)',
+                  margin: '0 calc(-1 * var(--space-2))',
+                  marginTop: isHeading ? 'var(--space-5)' : 0,
+                  marginBottom: isHeading ? 'var(--space-2)' : 'var(--space-3)',
+                  borderRadius: 'var(--radius-md)',
+                  transition: 'background var(--transition-fast)',
+                  ...cellHighlightStyle(isSelected, isHighlighted),
+                }}
+              >
+                <EditableText
+                  value={el.text}
+                  onSave={(newValue) => onEdit(el.index, newValue)}
+                  disabled={!canEdit}
+                  multiline
+                  className={`block ${typographyClass}${el.source === 'manual' ? ' bg-amber-50' : ''}`}
+                  title={el.source === 'manual' ? 'Manually edited' : 'Click to edit'}
+                />
+              </div>
+            );
+          }
+
+          const group = block.group;
+          const rowIndices = Array.from(group.rows.keys()).sort((a, b) => a - b);
+          const colCount = Math.max(
+            0,
+            ...rowIndices.map((r) => Math.max(0, ...Array.from(group.rows.get(r)!.keys())) + 1)
+          );
+          return (
+            <table
+              key={`table-${group.tableIndex}`}
+              className="w-full text-[14px] border-collapse"
+              style={{ margin: 'var(--space-4) 0' }}
+            >
+              <tbody>
+                {rowIndices.map((r) => (
+                  <tr key={r}>
+                    {Array.from({ length: colCount }, (_, c) => {
+                      const cellEl = group.rows.get(r)?.get(c);
+                      const isHighlighted = !!cellEl && hoveredElementIndex === cellEl.index;
+                      const isSelected = !!cellEl && selectedIndex === cellEl.index;
+                      return (
+                        <td
+                          key={c}
+                          ref={(node) => cellEl && registerNode(cellEl.index, node)}
+                          onMouseEnter={() => cellEl && setHoveredElement(cellEl.index)}
+                          onMouseLeave={() => cellEl && setHoveredElement(null)}
+                          onClick={() => cellEl && onSelect(cellEl.index)}
+                          className="border border-gray-300 px-2 py-1.5 align-top"
+                          style={cellHighlightStyle(isSelected, isHighlighted)}
+                        >
+                          {cellEl ? (
+                            <EditableText
+                              value={cellEl.text}
+                              onSave={(newValue) => onEdit(cellEl.index, newValue)}
+                              disabled={!canEdit}
+                              className={`text-gray-700 ${cellEl.source === 'manual' ? 'bg-amber-50' : ''}`}
+                              title={cellEl.source === 'manual' ? 'Manually edited' : 'Click to edit'}
+                            />
+                          ) : ''}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          );
+        })}
+      </div>
+    </div>
+  );
+};
+
 const OriginalView: React.FC<ElementViewProps> = (props) => {
   if (props.format === 'xlsx') return <XlsxGridView {...props} />;
   if (props.format === 'pdf') return <PdfPageView {...props} />;
-  // DOCX: the flowing view already reads close to the source document —
-  // present it inside a page-styled card rather than a bare list.
-  return (
-    <div className="document-page-card">
-      <ElementsFlowView {...props} />
-    </div>
-  );
+  return <DocxOriginalView {...props} />;
 };
 
 const VIEW_MODES: { mode: ViewMode; label: string; icon: React.ElementType }[] = [
@@ -384,51 +545,17 @@ const VIEW_MODES: { mode: ViewMode; label: string; icon: React.ElementType }[] =
   { mode: 'split', label: 'Split', icon: Columns2 },
 ];
 
-// Document Pane owns document intake — this is the only file input in the
-// app; there is no separate upload page. Shared by every branch below so
-// "Upload documents" (empty state) and "Add documents" (header, once
-// documents already exist) both open the same picker.
-const ACCEPTED_EXTENSIONS = '.xlsx,.pdf,.docx';
-
 export const DocumentPane: React.FC = () => {
   const {
-    documents, activeDocClientId, editError, intakeError,
-    editElement, hoveredElementIndex, setHoveredElement, addDocument,
+    documents, activeDocClientId, editError,
+    editElement, hoveredElementIndex, setHoveredElement,
   } = useWorkspaceStore();
-  const { activeElementId } = useSyncStore();
+  const { activeElementId, setActive } = useSyncStore();
   const activeDoc = documents.find((d) => d.clientId === activeDocClientId) ?? null;
   const docName = activeDoc?.file.name ?? null;
   const activeElements = activeDoc?.elements ?? EMPTY_ELEMENTS;
   const canEdit = activeDoc?.status === 'ready' && activeDoc.elements !== null;
   const [viewMode, setViewMode] = useState<ViewMode>('original');
-
-  const fileInputRef = useRef<HTMLInputElement>(null);
-  const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
-    Array.from(e.target.files ?? []).forEach((f) => addDocument(f));
-    e.target.value = '';
-  };
-  const hiddenFileInput = (
-    <input
-      ref={fileInputRef}
-      type="file"
-      multiple
-      accept={ACCEPTED_EXTENSIONS}
-      style={{ display: 'none' }}
-      onChange={handleFilesSelected}
-      aria-label="Upload documents"
-    />
-  );
-  const intakeErrorBanner = intakeError && (
-    <div style={{
-      display: 'flex', alignItems: 'center', gap: 'var(--space-2)',
-      padding: 'var(--space-2) var(--space-3)', background: 'var(--error-light)',
-      border: '1px solid var(--error-border)', borderRadius: 'var(--radius-md)',
-      fontSize: 'var(--text-xs)', color: 'var(--error)', margin: 'var(--space-3)',
-    }}>
-      <AlertTriangle size={12} style={{ flexShrink: 0 }} />
-      <span>{intakeError}</span>
-    </div>
-  );
 
   const nodeRefs = useRef(new Map<number, HTMLElement>());
   const registerNode = (index: number, node: HTMLElement | null) => {
@@ -462,15 +589,15 @@ export const DocumentPane: React.FC = () => {
     hoveredElementIndex,
     selectedIndex,
     setHoveredElement,
+    onSelect: (index) => setActive(String(index)),
     registerNode,
     canEdit,
     onEdit,
   };
 
-  // No documents at all — this is the primary upload surface (there is no
-  // separate intake page). Distinguished from "documents exist but none
-  // active/ready yet" below: showing the same copy for both would say
-  // "no document loaded" while FileRail is visibly reading real files.
+  // No documents at all — the Documents panel (FileRail) owns upload; this
+  // pane never renders an upload control, so its layout never depends on
+  // that control's width (per this phase's toolbar/intake separation).
   if (documents.length === 0) {
     return (
       <div className="pane-container">
@@ -481,14 +608,11 @@ export const DocumentPane: React.FC = () => {
           </div>
         </div>
         <div className="pane-content">
-          {hiddenFileInput}
           <EmptyState
             icon={FileText}
             title="No document loaded"
-            description="Upload a document to get started."
-            action={{ label: 'Upload documents', onClick: () => fileInputRef.current?.click() }}
+            description="Add a document from the Documents panel to view it here."
           />
-          {intakeErrorBanner}
         </div>
       </div>
     );
@@ -507,13 +631,8 @@ export const DocumentPane: React.FC = () => {
             <FileText size={14} />
             <span>Document</span>
           </div>
-          <button className="btn btn-secondary btn-sm" onClick={() => fileInputRef.current?.click()}>
-            <Plus size={12} />
-            <span>Add documents</span>
-          </button>
         </div>
         <div className="pane-content">
-          {hiddenFileInput}
           {activeDoc?.status === 'error' ? (
             <EmptyState
               icon={AlertTriangle}
@@ -528,7 +647,6 @@ export const DocumentPane: React.FC = () => {
               description="This will just take a moment."
             />
           )}
-          {intakeErrorBanner}
         </div>
       </div>
     );
@@ -542,20 +660,14 @@ export const DocumentPane: React.FC = () => {
             <FileText size={14} />
             <span>Document</span>
           </div>
-          <button className="btn btn-secondary btn-sm" onClick={() => fileInputRef.current?.click()}>
-            <Plus size={12} />
-            <span>Add documents</span>
-          </button>
         </div>
         <div className="pane-content">
-          {hiddenFileInput}
           <EmptyState
             icon={Loader2}
             iconClassName="animate-spin"
             title={activeDoc.status === 'perceiving' ? 'Reading document…' : 'Loading elements…'}
             description={docName ?? ''}
           />
-          {intakeErrorBanner}
         </div>
       </div>
     );
@@ -569,19 +681,13 @@ export const DocumentPane: React.FC = () => {
             <FileText size={14} />
             <span>Document</span>
           </div>
-          <button className="btn btn-secondary btn-sm" onClick={() => fileInputRef.current?.click()}>
-            <Plus size={12} />
-            <span>Add documents</span>
-          </button>
         </div>
         <div className="pane-content">
-          {hiddenFileInput}
           <EmptyState
             icon={FileText}
             title="No elements in this document"
             description="Foundation didn't extract any elements from this file."
           />
-          {intakeErrorBanner}
         </div>
       </div>
     );
@@ -616,15 +722,8 @@ export const DocumentPane: React.FC = () => {
               </button>
             ))}
           </div>
-          <button className="btn btn-secondary btn-sm" onClick={() => fileInputRef.current?.click()}>
-            <Plus size={12} />
-            <span>Add</span>
-          </button>
         </div>
       </div>
-
-      {hiddenFileInput}
-      {intakeErrorBanner}
 
       {editError && (
         <div style={{
