@@ -1,5 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { FileText, AlertTriangle, LayoutGrid, Rows3, Columns2, Loader2 } from 'lucide-react';
+import { FileText, AlertTriangle, LayoutGrid, Rows3, Columns2, Loader2, Plus } from 'lucide-react';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 import { useSyncStore } from '../../state/syncStore';
 import { EditableText } from '../shared/EditableText';
@@ -384,10 +384,16 @@ const VIEW_MODES: { mode: ViewMode; label: string; icon: React.ElementType }[] =
   { mode: 'split', label: 'Split', icon: Columns2 },
 ];
 
+// Document Pane owns document intake — this is the only file input in the
+// app; there is no separate upload page. Shared by every branch below so
+// "Upload documents" (empty state) and "Add documents" (header, once
+// documents already exist) both open the same picker.
+const ACCEPTED_EXTENSIONS = '.xlsx,.pdf,.docx';
+
 export const DocumentPane: React.FC = () => {
   const {
-    documents, activeDocClientId, editError,
-    editElement, hoveredElementIndex, setHoveredElement,
+    documents, activeDocClientId, editError, intakeError,
+    editElement, hoveredElementIndex, setHoveredElement, addDocument,
   } = useWorkspaceStore();
   const { activeElementId } = useSyncStore();
   const activeDoc = documents.find((d) => d.clientId === activeDocClientId) ?? null;
@@ -395,6 +401,34 @@ export const DocumentPane: React.FC = () => {
   const activeElements = activeDoc?.elements ?? EMPTY_ELEMENTS;
   const canEdit = activeDoc?.status === 'ready' && activeDoc.elements !== null;
   const [viewMode, setViewMode] = useState<ViewMode>('original');
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
+    Array.from(e.target.files ?? []).forEach((f) => addDocument(f));
+    e.target.value = '';
+  };
+  const hiddenFileInput = (
+    <input
+      ref={fileInputRef}
+      type="file"
+      multiple
+      accept={ACCEPTED_EXTENSIONS}
+      style={{ display: 'none' }}
+      onChange={handleFilesSelected}
+      aria-label="Upload documents"
+    />
+  );
+  const intakeErrorBanner = intakeError && (
+    <div style={{
+      display: 'flex', alignItems: 'center', gap: 'var(--space-2)',
+      padding: 'var(--space-2) var(--space-3)', background: 'var(--error-light)',
+      border: '1px solid var(--error-border)', borderRadius: 'var(--radius-md)',
+      fontSize: 'var(--text-xs)', color: 'var(--error)', margin: 'var(--space-3)',
+    }}>
+      <AlertTriangle size={12} style={{ flexShrink: 0 }} />
+      <span>{intakeError}</span>
+    </div>
+  );
 
   const nodeRefs = useRef(new Map<number, HTMLElement>());
   const registerNode = (index: number, node: HTMLElement | null) => {
@@ -433,6 +467,33 @@ export const DocumentPane: React.FC = () => {
     onEdit,
   };
 
+  // No documents at all — this is the primary upload surface (there is no
+  // separate intake page). Distinguished from "documents exist but none
+  // active/ready yet" below: showing the same copy for both would say
+  // "no document loaded" while FileRail is visibly reading real files.
+  if (documents.length === 0) {
+    return (
+      <div className="pane-container">
+        <div className="pane-header">
+          <div className="pane-header-title">
+            <FileText size={14} />
+            <span>Document</span>
+          </div>
+        </div>
+        <div className="pane-content">
+          {hiddenFileInput}
+          <EmptyState
+            icon={FileText}
+            title="No document loaded"
+            description="Upload a document to get started."
+            action={{ label: 'Upload documents', onClick: () => fileInputRef.current?.click() }}
+          />
+          {intakeErrorBanner}
+        </div>
+      </div>
+    );
+  }
+
   // Distinguish "nothing will ever be here" from "still loading" — showing
   // the same empty state for both is misleading, especially once the
   // header already reports "Ready · N elements" while this pane is still
@@ -446,13 +507,28 @@ export const DocumentPane: React.FC = () => {
             <FileText size={14} />
             <span>Document</span>
           </div>
+          <button className="btn btn-secondary btn-sm" onClick={() => fileInputRef.current?.click()}>
+            <Plus size={12} />
+            <span>Add documents</span>
+          </button>
         </div>
         <div className="pane-content">
-          <EmptyState
-            icon={FileText}
-            title="No document loaded"
-            description="Add a document to preview its content here."
-          />
+          {hiddenFileInput}
+          {activeDoc?.status === 'error' ? (
+            <EmptyState
+              icon={AlertTriangle}
+              title="Couldn't read this document"
+              description={activeDoc.error ?? 'An error occurred while reading this file.'}
+            />
+          ) : (
+            <EmptyState
+              icon={Loader2}
+              iconClassName="animate-spin"
+              title="Reading documents…"
+              description="This will just take a moment."
+            />
+          )}
+          {intakeErrorBanner}
         </div>
       </div>
     );
@@ -466,14 +542,20 @@ export const DocumentPane: React.FC = () => {
             <FileText size={14} />
             <span>Document</span>
           </div>
+          <button className="btn btn-secondary btn-sm" onClick={() => fileInputRef.current?.click()}>
+            <Plus size={12} />
+            <span>Add documents</span>
+          </button>
         </div>
         <div className="pane-content">
+          {hiddenFileInput}
           <EmptyState
             icon={Loader2}
             iconClassName="animate-spin"
             title={activeDoc.status === 'perceiving' ? 'Reading document…' : 'Loading elements…'}
             description={docName ?? ''}
           />
+          {intakeErrorBanner}
         </div>
       </div>
     );
@@ -487,13 +569,19 @@ export const DocumentPane: React.FC = () => {
             <FileText size={14} />
             <span>Document</span>
           </div>
+          <button className="btn btn-secondary btn-sm" onClick={() => fileInputRef.current?.click()}>
+            <Plus size={12} />
+            <span>Add documents</span>
+          </button>
         </div>
         <div className="pane-content">
+          {hiddenFileInput}
           <EmptyState
             icon={FileText}
             title="No elements in this document"
             description="Foundation didn't extract any elements from this file."
           />
+          {intakeErrorBanner}
         </div>
       </div>
     );
@@ -528,8 +616,15 @@ export const DocumentPane: React.FC = () => {
               </button>
             ))}
           </div>
+          <button className="btn btn-secondary btn-sm" onClick={() => fileInputRef.current?.click()}>
+            <Plus size={12} />
+            <span>Add</span>
+          </button>
         </div>
       </div>
+
+      {hiddenFileInput}
+      {intakeErrorBanner}
 
       {editError && (
         <div style={{

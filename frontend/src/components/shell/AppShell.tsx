@@ -4,7 +4,6 @@ import { useWorkspaceStore } from '../../state/workspaceStore';
 
 // Lazy imports — pages
 import { HomePage } from '../../pages/HomePage';
-import { NewTaskPage } from '../../pages/NewTaskPage';
 import { WorkspaceView } from '../workspace/WorkspaceView';
 
 export const AppShell: React.FC = () => {
@@ -15,7 +14,6 @@ export const AppShell: React.FC = () => {
   const activeRoute: NavRoute = (() => {
     switch (currentView) {
       case 'home': return 'home';
-      case 'new-task': return 'home';
       case 'workspace': return 'workspace';
       case 'history': return 'history';
       case 'settings': return 'settings';
@@ -23,28 +21,17 @@ export const AppShell: React.FC = () => {
     }
   })();
 
+  // Workspace always opens WorkspaceView, with or without documents — the
+  // Workspace itself decides whether to show an empty state or document
+  // context. There is no separate upload page to route through first.
   const handleNavigate = useCallback((route: NavRoute) => {
-    if (route === 'home') {
-      setCurrentView('home');
-    } else if (route === 'workspace') {
-      // If any document has been added, go to workspace; otherwise new task.
-      const state = useWorkspaceStore.getState();
-      if (state.documents.length > 0) {
-        setCurrentView('workspace');
-      } else {
-        setCurrentView('new-task');
-      }
-    } else {
-      setCurrentView(route as any);
-    }
+    setCurrentView(route);
   }, [setCurrentView]);
 
   const renderPage = () => {
     switch (currentView) {
       case 'home':
         return <HomePage />;
-      case 'new-task':
-        return <NewTaskPage />;
       case 'workspace':
         return <WorkspaceView />;
       case 'history':

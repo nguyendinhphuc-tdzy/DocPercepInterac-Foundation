@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels';
 import { GitCompare } from 'lucide-react';
 import { WorkspaceHeader } from './WorkspaceHeader';
@@ -10,16 +10,11 @@ import { DocumentPane } from '../document/DocumentPane';
 import { EmptyState } from '../shared/EmptyState';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 
+// Workspace is the primary entry surface regardless of document count — it
+// decides for itself whether to show an empty state or document context.
+// It must never bounce the user to a separate upload page.
 export const WorkspaceView: React.FC = () => {
-  const { workspacePreset, setCurrentView } = useWorkspaceStore();
-
-  // If no documents have been added, redirect to new-task.
-  useEffect(() => {
-    const { documents } = useWorkspaceStore.getState();
-    if (documents.length === 0) {
-      setCurrentView('new-task');
-    }
-  }, [setCurrentView]);
+  const { workspacePreset } = useWorkspaceStore();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>

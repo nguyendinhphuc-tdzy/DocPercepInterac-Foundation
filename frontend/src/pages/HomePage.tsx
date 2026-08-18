@@ -1,5 +1,5 @@
 import React from 'react';
-import { Plus, FileText, Clock } from 'lucide-react';
+import { FolderOpen, FileText, Clock } from 'lucide-react';
 import { useWorkspaceStore } from '../state/workspaceStore';
 
 export const HomePage: React.FC = () => {
@@ -23,14 +23,15 @@ export const HomePage: React.FC = () => {
             color: 'var(--text-secondary)',
             lineHeight: 1.6,
           }}>
-            Upload documents, describe what you need, and let Foundation handle the complexity.
+            Bring documents into a workspace, then tell Foundation what you need.
           </p>
         </div>
 
-        {/* Primary CTA */}
+        {/* Primary CTA — opens Workspace directly; documents are added there,
+            not through a separate intake page. */}
         <button
           className="btn btn-primary btn-lg"
-          onClick={() => setCurrentView('new-task')}
+          onClick={() => setCurrentView('workspace')}
           style={{
             width: '100%',
             justifyContent: 'center',
@@ -40,8 +41,8 @@ export const HomePage: React.FC = () => {
             marginBottom: 'var(--space-8)',
           }}
         >
-          <Plus size={20} />
-          <span>New Task</span>
+          <FolderOpen size={20} />
+          <span>Open Workspace</span>
         </button>
 
         {/* Recent Work */}
@@ -68,8 +69,9 @@ export const HomePage: React.FC = () => {
                 <button
                   key={task.id}
                   onClick={() => {
-                    // For now, navigate to new task (reopening requires persisted data)
-                    setCurrentView('new-task');
+                    // Reopening a past task's exact document set isn't implemented yet —
+                    // this just returns to the workspace, same as the primary CTA.
+                    setCurrentView('workspace');
                   }}
                   style={{
                     display: 'flex',

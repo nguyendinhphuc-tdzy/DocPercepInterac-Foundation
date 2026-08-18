@@ -47,7 +47,7 @@ function formatOf(file: File): DocumentFormat | null {
   return (SUPPORTED_FORMATS as string[]).includes(ext ?? '') ? (ext as DocumentFormat) : null;
 }
 
-export type AppView = 'home' | 'new-task' | 'workspace' | 'history' | 'settings';
+export type AppView = 'home' | 'workspace' | 'history' | 'settings';
 export type WorkspacePreset = 'agent' | 'inspect' | 'review' | 'compare';
 
 export interface TaskHistoryEntry {
@@ -237,7 +237,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     // every document uniformly, no source/target distinction.
     if (get().documents.length >= MAX_DOCUMENTS_PER_TASK) {
       set({
-        intakeError: `You've reached the recommended limit of ${MAX_DOCUMENTS_PER_TASK} files. You can continue with another task.`,
+        intakeError: `You've reached the recommended limit of ${MAX_DOCUMENTS_PER_TASK} files. Remove a document to add another.`,
       });
       return;
     }
