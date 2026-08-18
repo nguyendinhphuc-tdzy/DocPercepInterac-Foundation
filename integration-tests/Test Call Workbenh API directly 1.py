@@ -21,6 +21,10 @@ environment only):
     WORKBENCH_SUBSCRIPTION_KEY   Ocp-Apim-Subscription-Key for Workbench
     WORKBENCH_CHARGE_CODE        x-kpmg-charge-code for Workbench
 
+These can be set in the shell, or placed in a git-ignored `.env` file at
+the repository root (copy `.env.example` to `.env` and fill in real
+values) — this script loads that `.env` automatically via python-dotenv.
+
 The script fails fast with a clear message if either is unset. No
 env var value is ever printed. TLS verification is never disabled.
 
@@ -37,8 +41,12 @@ from __future__ import annotations
 import json
 import os
 import sys
+from pathlib import Path
 
 import requests
+from dotenv import load_dotenv
+
+load_dotenv(Path(__file__).resolve().parent.parent / ".env")
 
 # --- Fixed Workbench configuration (per KPMG Workbench API contract) --------
 

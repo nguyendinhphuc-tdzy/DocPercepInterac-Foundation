@@ -1,11 +1,13 @@
 import React, { useEffect } from 'react';
 import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels';
+import { GitCompare } from 'lucide-react';
 import { WorkspaceHeader } from './WorkspaceHeader';
 import { FileRail } from './FileRail';
 import { AgentPane } from '../agent/AgentPane';
 import { ElementsPane } from '../elements/ElementsPane';
 import { ResultsPane } from '../results/ResultsPane';
 import { DocumentPane } from '../document/DocumentPane';
+import { EmptyState } from '../shared/EmptyState';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 
 export const WorkspaceView: React.FC = () => {
@@ -76,21 +78,22 @@ const ReviewPresetLayout: React.FC = () => (
   </PanelGroup>
 );
 
-/** Compare: Source A + Source B (placeholder) */
+/** Compare: not implemented yet — shown honestly rather than as a
+ * functional-looking two-document picker that has no wiring behind it. */
 const ComparePresetLayout: React.FC = () => (
-  <PanelGroup orientation="horizontal">
-    <Panel defaultSize={50} minSize={30}>
-      <div className="empty-state">
-        <div className="empty-title">Source A</div>
-        <div className="empty-description">Select a document to compare.</div>
+  <div className="pane-container">
+    <div className="pane-header">
+      <div className="pane-header-title">
+        <GitCompare size={14} />
+        <span>Compare</span>
       </div>
-    </Panel>
-    <PanelResizeHandle className="resize-handle" data-orientation="horizontal" />
-    <Panel defaultSize={50} minSize={30}>
-      <div className="empty-state">
-        <div className="empty-title">Source B</div>
-        <div className="empty-description">Select a document to compare.</div>
-      </div>
-    </Panel>
-  </PanelGroup>
+    </div>
+    <div className="pane-content">
+      <EmptyState
+        icon={GitCompare}
+        title="Compare mode isn't available yet"
+        description="Document comparison is planned but not implemented. Use Inspect or Review to work with one document at a time."
+      />
+    </div>
+  </div>
 );
