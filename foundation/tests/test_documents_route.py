@@ -23,6 +23,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 FIXTURE_GENERIC_DOCX = Path(__file__).resolve().parent / "fixtures" / "fixture_generic_handbook.docx"
+FIXTURE_PDF = Path(__file__).resolve().parent / "fixtures" / "fixture_report_2.pdf"
 
 DEMO_ROOT = Path(__file__).resolve().parents[2] / "anonymize client" / "Demo files" / "Demo files"
 SOURCE_XLSX = DEMO_ROOT / "FA&RPTS & Appendix I" / "FA&RPTs" / "HMV-FA&RPT FY2024.xlsx"
@@ -102,6 +103,88 @@ def test_second_upload_with_same_session_id_accumulates_documents(client):
     # doc_ids are stable, distinct identities — never derived from upload
     # order/filename/position.
     assert docs[0]["doc_id"] != docs[1]["doc_id"]
+
+
+def test_three_arbitrary_formats_share_one_session_with_independent_status(client, tmp_path):
+    """The explicit multi-file session-lifecycle acceptance scenario: a PDF,
+    an XLSX, and a DOCX — uploaded one at a time, each joining the session
+    established by the first — must all end up addressable under the SAME
+    session_id, each with its own independent status, in NO particular
+    role or order. This is the scenario
+    frontend/src/state/workspaceStore.ts's `pendingSessionPromise`
+    specifically exists to guarantee client-side (a real concurrency bug —
+    two uploads racing before either had a session_id, landing in two
+    separate sessions — was caught via a live browser run and fixed
+    there); this test locks down the SERVER half of that contract: passing
+    the session_id back always joins the same session, regardless of
+    upload order or format mix.
+    """
+    import openpyxl
+
+    wb = openpyxl.Workbook()
+    wb.active.title = "Notes"
+    wb.active["A1"] = "Volunteer shift log"  # deliberately non-financial
+    xlsx_bytes = io.BytesIO()
+    wb.save(xlsx_bytes)
+    xlsx_bytes.seek(0)
+
+    # 1) DOCX first — establishes the session.
+    docx_resp = _upload(client, FIXTURE_GENERIC_DOCX)
+    session_id = docx_resp.get_json()["session_id"]
+    docx_doc_id = docx_resp.get_json()["doc_id"]
+
+    # 2) XLSX second — must explicitly join the same session.
+    xlsx_resp = client.post(
+        "/api/documents",
+        data={"file": (xlsx_bytes, "notes.xlsx"), "session_id": session_id},
+        content_type="multipart/form-data",
+    )
+    xlsx_doc_id = xlsx_resp.get_json()["doc_id"]
+    assert xlsx_resp.get_json()["session_id"] == session_id
+
+    # 3) PDF third — same requirement.
+    pdf_resp = _upload(client, FIXTURE_PDF, session_id=session_id)
+    pdf_doc_id = pdf_resp.get_json()["doc_id"]
+    assert pdf_resp.get_json()["session_id"] == session_id
+
+    # All three land in exactly one session, each with a distinct doc_id.
+    listing = client.get(f"/api/documents/{session_id}").get_json()
+    docs_by_id = {d["doc_id"]: d for d in listing["documents"]}
+    assert set(docs_by_id) == {docx_doc_id, xlsx_doc_id, pdf_doc_id}
+    assert len(docs_by_id) == 3  # no accidental merging/collision either
+
+    # Independent status per document, independent format, no role field
+    # anywhere in the listing.
+    assert docs_by_id[docx_doc_id]["format"] == "docx"
+    assert docs_by_id[xlsx_doc_id]["format"] == "xlsx"
+    assert docs_by_id[pdf_doc_id]["format"] == "pdf"
+    assert all(d["status"] == "ready" for d in docs_by_id.values())
+    raw = json.dumps(listing).lower()
+    for forbidden in ("source", "target", "mapped", "mapping", "gtps", "hmv"):
+        assert forbidden not in raw
+
+    # Each document's elements are independently addressable by its own
+    # doc_id, regardless of upload order.
+    for doc_id in (pdf_doc_id, docx_doc_id, xlsx_doc_id):  # deliberately out of upload order
+        elements_resp = client.get(f"/api/documents/{session_id}/elements/{doc_id}")
+        assert elements_resp.status_code == 200
+        assert len(elements_resp.get_json()["elements"]) == docs_by_id[doc_id]["element_count"]
+
+    # An explicit application action can reference any combination of this
+    # session's doc_ids — addressability doesn't depend on upload order or
+    # on which formats were involved. (DEMO_RULES won't match this
+    # content, so `mapped` is expected to be empty — the point here is
+    # that the doc_ids resolve at all, not that they map to anything.)
+    map_resp = client.post(
+        "/api/gpts/map",
+        json={
+            "session_id": session_id,
+            "source_doc_ids": [xlsx_doc_id, pdf_doc_id],
+            "target_doc_id": docx_doc_id,
+        },
+    )
+    assert map_resp.status_code == 200
+    assert map_resp.get_json()["mapped"] == []
 
 
 def test_failed_upload_does_not_affect_other_documents_in_the_session(client, tmp_path):

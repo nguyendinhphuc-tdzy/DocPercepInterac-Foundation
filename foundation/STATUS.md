@@ -1314,3 +1314,66 @@ cụ thể không được nằm ngoài `applications/`" giờ áp dụng rõ r�
 **Tests:** 73 → **90 passed** (11 test mới `test_documents_route.py` + test
 XLSX patch mới + test agent route cập nhật). `tsc -b` sạch, `npm run
 build` sạch. Frontend verify bằng browser thật, không chỉ type-check.
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-18, muộn hơn cùng ngày): Chốt tường minh vòng đời multi-document session — điểm review #13
+
+**Bối cảnh:** sau khi duyệt refactor ở mục trên (kèm 12 điểm review), user
+nêu thêm 1 điểm quan trọng: contract `session_id` giữa nhiều lần upload
+cần **tường minh** — nhiều tài liệu bất kỳ (PDF/XLSX/DOCX...) upload cùng
+lúc, tuần tự, hay bổ sung sau đều phải rơi vào **đúng 1 session** duy
+nhất, không được vô tình tách thành nhiều session (`Session A → File 1,
+Session B → File 2...`). Yêu cầu: chọn 1 API contract rõ ràng, ghi tài
+liệu tường minh, và có test khoá lại hành vi này trước khi tiếp tục.
+
+**Thực ra bug đúng kịch bản này đã bắt được và sửa ở mục trên** (2 file
+upload gần như đồng thời → 2 request đều thấy `sessionId` là `null` →
+backend tự tạo 2 session khác nhau → `/api/gpts/map` báo `404 Unknown
+doc_id`) — sửa bằng `pendingSessionPromise` phía frontend. Nhưng đúng như
+user chỉ ra: **verify lúc đó chỉ là 1 script Playwright thủ công, xoá đi
+ngay sau khi chạy** — không có test tự động nào khoá lại invariant này,
+và tài liệu (docstring) chưa nêu rõ ràng 3 khái niệm Document/Session/Task
+tách biệt theo đúng thuật ngữ user dùng.
+
+**Đã đóng gap:**
+- `api/routes/documents.py`: viết lại phần đầu docstring thành 1 "glossary"
+  tường minh — `Document` = 1 artifact đã upload/perceive (`doc_id`),
+  `Session` = context chứa 0+ document (`session_id`), `Task` = thao tác
+  do user yêu cầu tường minh (**không tồn tại trong module này**, chỉ tồn
+  tại ở `api/routes/gpts.py`). Có sơ đồ ASCII
+  `Session -> Document A/B/C -> Elements/Anchors` đúng hình dạng user mô
+  tả. Ghi rõ: **route này chỉ giữ đúng nửa hợp đồng đơn giản** ("cho
+  `session_id` thì join, không cho thì tạo mới") — nửa còn lại (không bao
+  giờ gửi 2 request "chưa có session" cùng lúc) là trách nhiệm của
+  caller/frontend, và trỏ thẳng tới nơi frontend thực hiện điều đó
+  (`pendingSessionPromise`).
+- `state/workspaceStore.ts`: thêm khối comment glossary tương tự ở đầu
+  file, cùng thuật ngữ Document/Session/Task, cùng sơ đồ ASCII — để 2 phía
+  backend/frontend mô tả đúng 1 mental model, không lệch nhau.
+- `tests/test_documents_route.py` — test mới
+  `test_three_arbitrary_formats_share_one_session_with_independent_status`:
+  upload **1 PDF thật + 1 XLSX phi-tài-chính (sinh inline) + 1 DOCX generic
+  đã có** tuần tự vào cùng 1 session, xác nhận: cả 3 nằm đúng 1
+  `session_id`, mỗi `doc_id` riêng biệt không trùng/không gộp nhầm, mỗi
+  document có `status`/`format` độc lập, response liệt kê không chứa từ
+  khoá GTPS nào, mỗi document lấy được elements riêng theo đúng `doc_id`
+  **không theo thứ tự upload**, và cuối cùng gọi `/api/gpts/map` tham
+  chiếu tổ hợp bất kỳ 2-trong-3 `doc_id` này làm source + 1 làm target —
+  xác nhận addressability không phụ thuộc thứ tự/định dạng upload (đúng
+  yêu cầu #6 của user).
+- **Verify lại bằng browser thật** (Playwright, cài tạm rồi gỡ đúng quy
+  ước), lần này bám sát **đúng kịch bản chấp nhận user viết ra**: chọn
+  cùng lúc 3 file PDF + XLSX + DOCX qua 1 lần chọn file (đúng path thực tế
+  từng gây ra race trước đây) → xác nhận từng điểm một: cả 3 file đều lên
+  "ready", cả 3 response upload trả về **đúng cùng 1 `session_id`**,
+  không có chữ "Source"/"Target" nào, không có chữ "GTPS" nào trên màn
+  hình upload, sang workspace thì Agent **đã mở khoá ngay**, Output pane
+  vẫn "No output yet" (chưa chạy gì), FileRail liệt kê đủ cả 3 tài liệu
+  riêng biệt, 0 lỗi console.
+
+**Không đụng:** logic `applications/gpts/mapping_service.py` hay bất kỳ
+route nào khác — chỉ thêm tài liệu tường minh + 1 test mới.
+
+**Tests:** 90 → **91 passed**. `tsc -b` sạch. Playwright cài tạm đã gỡ,
+không còn trong `package.json`/`package-lock.json`.

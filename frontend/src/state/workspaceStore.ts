@@ -6,6 +6,33 @@ import type {
   DocumentFormat, EditHistoryEntry, ElementRowData, GptsMappingResult, MappedEntry,
 } from '../types/element';
 
+// Three concepts, kept strictly separate (mirrors api/routes/documents.py's
+// own docstring):
+//
+//   Document = one uploaded/perceived artifact (`WorkspaceDocument`,
+//              identified by `docId` once known — see below).
+//   Session  = the workspace context that owns every document added so
+//              far (`sessionId` — one per workspace, shared by all of
+//              them, never one-per-file).
+//   Task     = an explicit user-requested operation. Does not exist in
+//              this slice at all until `runGptsMappingTask` is called —
+//              `gptsMapping` is the ONLY task-shaped state in this store,
+//              and nothing here ever sets it as a side effect of upload.
+//
+// Shape:
+//
+//   sessionId
+//     |
+//     +-- documents[0] (docId) -- status: ready      -- elements
+//     +-- documents[1] (docId) -- status: perceiving
+//     +-- documents[2] (docId) -- status: error
+//     +-- ...
+//
+// Uploading/perceiving documents never assigns them a role and never
+// implies a task should run — see addDocument() below and
+// runGptsMappingTask() further down (the one and only place roles are
+// ever assigned, always from an explicit call).
+
 // Perception layer: what formats the Foundation can even parse. This is
 // NOT a source/target distinction — every format here is treated
 // identically at upload time. (Mirrors api/routes/documents.py's

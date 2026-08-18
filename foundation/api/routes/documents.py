@@ -14,19 +14,50 @@ source_elements, target_elements, ...). Role assignment + any application
 workflow (e.g. GTPS mapping) lives entirely in api/routes/gpts.py, which
 is the only place under api/ allowed to import applications.gpts.*.
 
+Three concepts, kept strictly separate (this module only ever knows the
+first two — the third is defined here purely to say what this module is
+NOT):
+
+    Document  = one uploaded/perceived artifact (`doc_id`).
+    Session   = the workspace context that owns 0+ documents (`session_id`).
+    Task      = an explicit user-requested operation (e.g. a GTPS mapping
+                run). Does not exist anywhere in this module. Uploading or
+                perceiving a document never implicitly creates one — see
+                api/routes/gpts.py, the only place a task is ever created,
+                and only in response to an explicit call.
+
+Shape:
+
+    Session (session_id)
+      |
+      +-- Document A (doc_id) -- status: ready   -- Elements / Anchors
+      +-- Document B (doc_id) -- status: perceiving
+      +-- Document C (doc_id) -- status: error
+      +-- ...
+
 Session/document model:
   - A "session" (`session_id`) is just a directory under `.uploads/` that
     accumulates independently-uploaded documents plus a small
     `manifest.json` recording their stable `doc_id` -> metadata. The first
-    upload with no `session_id` creates one; subsequent uploads pass it
-    back to add more documents to the same session.
+    upload with no `session_id` creates one; every subsequent upload MUST
+    pass that same `session_id` back to land in the same session — this
+    route has no way to merge two sessions after the fact, so the caller
+    (the frontend) is responsible for never firing a second "no session_id
+    yet" upload while a first one is still in flight (see
+    frontend/src/state/workspaceStore.ts's `pendingSessionPromise`, which
+    exists specifically to serialize a batch of uploads through exactly one
+    session-creating call). This module's contract is intentionally the
+    simple half of that: "give me a session_id and I'll add to it; give me
+    none and I'll mint a new one" — it does not attempt to deduplicate or
+    coordinate concurrent session-less uploads itself.
   - A "document" (`doc_id`, a fresh uuid4 minted at upload time — never a
     filename, array index, or upload-order position) is perceived
     synchronously on upload and gets an explicit per-document status
     ("ready" or "error"), independent of every other document in the
-    session — there is no single workspace-wide processing flag.
-  - No "task" exists here at all. A task (e.g. a GTPS mapping run) is only
-    ever created by an explicit call to a route like POST /api/gpts/map.
+    session — there is no single workspace-wide processing flag. Any
+    combination of a session's `doc_id`s can later be referenced by an
+    explicit application action (e.g. POST /api/gpts/map's
+    `source_doc_ids`/`target_doc_id`) regardless of upload order.
 """
 from __future__ import annotations
 
