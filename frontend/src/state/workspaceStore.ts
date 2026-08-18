@@ -4,7 +4,7 @@ import {
 } from '../api/client';
 import { useSyncStore } from './syncStore';
 import type {
-  DocumentFormat, EditHistoryEntry, ElementRowData, GptsMappingResult, MappedEntry,
+  DocumentFormat, EditHistoryEntry, ElementRowData, GptsMappingResult, MappedEntry, MediaAsset,
 } from '../types/element';
 
 // Three concepts, kept strictly separate (mirrors api/routes/documents.py's
@@ -74,6 +74,7 @@ export interface WorkspaceDocument {
   docId: string | null;
   elementCount: number;
   elements: ElementRowData[] | null; // fetched lazily — see ensureElementsLoaded
+  media: MediaAsset[]; // embedded-image manifest, arrives alongside elements — see ensureElementsLoaded
   error: string | null;
   // Whether a patched version exists on the server yet — from a manual
   // edit or (for a target doc) a completed GTPS mapping run. Gates whether
@@ -246,7 +247,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     const clientId = newClientId();
     const doc: WorkspaceDocument = {
       clientId, file, format, status: 'perceiving', docId: null, elementCount: 0,
-      elements: null, error: null, hasPatch: false,
+      elements: null, media: [], error: null, hasPatch: false,
     };
     set((state) => ({ documents: [...state.documents, doc], intakeError: null }));
 
@@ -310,7 +311,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       const result = await fetchDocumentElements(sessionId, doc.docId);
       set((state) => ({
         documents: state.documents.map((d) => d.clientId === clientId
-          ? { ...d, elements: result.elements }
+          ? { ...d, elements: result.elements, media: result.media }
           : d),
       }));
     } catch (err) {

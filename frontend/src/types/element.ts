@@ -1,12 +1,34 @@
 // Mirrors foundation/perception/models.py — keep in sync manually until the
 // API contract (v4 §7.5) is wired up and these can be generated instead.
 
+// Mirrors foundation/perception/models.py::ElementType exactly (wire
+// values). Not every value is fully extracted/rendered/editable for every
+// element that carries it — check `ElementRowData.capabilities`, never
+// assume from `type` alone (see the Comprehensive Document Perception
+// phase report for the taxonomy matrix).
 export type ElementType =
-  | 'heading'
-  | 'table'
-  | 'cell'
-  | 'para'
-  | 'picture';
+  | 'document' | 'page' | 'section'
+  | 'heading' | 'para' | 'run' | 'list' | 'list_item' | 'hyperlink' | 'bookmark'
+  | 'table' | 'table_row' | 'cell'
+  | 'picture' | 'image' | 'chart' | 'drawing' | 'shape' | 'text_box' | 'embedded_object'
+  | 'header' | 'footer' | 'footnote' | 'endnote' | 'comment' | 'page_break' | 'section_break'
+  | 'annotation' | 'form_field'
+  | 'unknown';
+
+export type ExtractionLevel = 'full' | 'partial' | 'none';
+
+// What Foundation actually knows how to do with THIS element instance —
+// distinct per instance, not implied by `type` (e.g. a DOCX chart is
+// extracted="partial" while an XLSX cell is "full"). `rendered: null` means
+// "not applicable to this element in this renderer" rather than "known not
+// to render" (e.g. a comment isn't a visually-locatable region yet).
+export interface ElementCapabilities {
+  detected: boolean;
+  extracted: ExtractionLevel;
+  rendered: boolean | null;
+  selectable: boolean;
+  editable: boolean;
+}
 
 export interface AnchorDOCX {
   format: 'docx';
@@ -18,6 +40,12 @@ export interface AnchorDOCX {
   table_hash?: string | null;
   row_index?: number | null;
   col_index?: number | null;
+  // Media/drawing identity (images/charts/unrecognized drawings) — an
+  // extension of this same anchor shape, not a second "docx" variant (see
+  // perception/models.py::AnchorDOCX for why).
+  relationship_id?: string | null;
+  drawing_id?: string | null;
+  media_id?: string | null;
 }
 
 export interface AnchorXLSX {
@@ -26,6 +54,11 @@ export interface AnchorXLSX {
   cell_address: string;
   named_range?: string | null;
   row_label_fingerprint?: string | null;
+  // Drawing identity (images/charts) — extends this same anchor shape.
+  drawing_id?: string | null;
+  from_cell?: string | null;
+  to_cell?: string | null;
+  media_id?: string | null;
 }
 
 export interface AnchorPDF {
@@ -41,6 +74,8 @@ export type ElementSource = 'text_layer' | 'ocr' | 'manual';
 
 export interface ElementRowData {
   index: number;
+  element_id?: string;
+  parent_id?: string | null;
   section?: string | null;
   type: ElementType;
   name: string;
@@ -49,6 +84,31 @@ export interface ElementRowData {
   confidence?: number | null;
   source?: ElementSource;
   tags?: string[];
+  capabilities?: ElementCapabilities;
+}
+
+// Mirrors foundation/perception/models.py::MediaAsset — metadata only,
+// never the binary. `media_id` resolves via
+// GET /api/documents/<session_id>/media/<doc_id>/<media_id>.
+export interface MediaAsset {
+  media_id: string;
+  type: 'image' | 'chart';
+  mime_type: string;
+  width?: number | null;
+  height?: number | null;
+  source_reference: string;
+}
+
+// Mirrors foundation/perception/models.py::WorksheetMetadata — sheet-level
+// display facts (not a perceivable object) an XLSX renderer needs.
+export interface WorksheetMetadata {
+  sheet_name: string;
+  merged_ranges: string[];
+  hidden_rows: number[];
+  hidden_columns: string[];
+  row_heights: Record<number, number>;
+  column_widths: Record<string, number>;
+  freeze_panes: string | null;
 }
 
 export type TraceStage =
@@ -89,6 +149,7 @@ export interface DocumentSummary {
 export interface DocumentElementsResult {
   doc_id: string;
   elements: ElementRowData[];
+  media: MediaAsset[];
 }
 
 export interface PatchElementResult {

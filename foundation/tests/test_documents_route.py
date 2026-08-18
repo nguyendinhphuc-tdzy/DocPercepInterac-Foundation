@@ -215,10 +215,13 @@ def test_get_document_elements_is_lazy_and_matches_upload_count(client):
     assert elements_response.status_code == 200
     elements = elements_response.get_json()["elements"]
     assert len(elements) == body["element_count"]
-    # generic element shape only — no GTPS fields.
+    # generic element shape only — no GTPS fields. `element_id`,
+    # `parent_id`, and `capabilities` were added by the Comprehensive
+    # Document Perception phase (stable identity + detected/extracted/
+    # rendered/selectable/editable metadata) — still no GTPS-shaped fields.
     assert set(elements[0].keys()) <= {
-        "index", "section", "type", "name", "text", "text_normalized",
-        "source", "anchor", "confidence", "tags",
+        "index", "element_id", "parent_id", "section", "type", "name", "text", "text_normalized",
+        "source", "anchor", "confidence", "tags", "capabilities",
     }
 
 

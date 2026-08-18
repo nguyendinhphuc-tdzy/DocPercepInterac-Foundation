@@ -131,8 +131,12 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
       const index = indexForNode(e.target as HTMLElement);
       if (index == null) return;
       onSelectElement(index);
-      if (editable) {
-        const el = elements.find((el) => el.index === index);
+      const el = elements.find((el) => el.index === index);
+      // Per-element capability, not just the document-level `editable`
+      // flag — an image/chart/drawing is selectable but never editable
+      // (see perception/element_classifier.py's capabilities), so clicking
+      // one must select it without popping open a text-edit box.
+      if (editable && (el?.capabilities?.editable ?? true)) {
         setEditingIndex(index);
         setEditValue(el?.text ?? '');
       }

@@ -1,8 +1,10 @@
 import React, { useMemo, useRef, useState } from 'react';
-import { LayoutGrid } from 'lucide-react';
+import { LayoutGrid, Image as ImageIcon, BarChart3 } from 'lucide-react';
 import { EmptyState } from '../../shared/EmptyState';
 import { EditableText } from '../../shared/EditableText';
+import { downloadUrlFor } from '../../../api/client';
 import type { DocumentRendererProps } from './types';
+import type { ElementRowData } from '../../../types/element';
 
 // The XLSX grid keeps Foundation's element anchors (sheet_name +
 // cell_address) as its data source, unlike DOCX/PDF — this is a deliberate
@@ -51,13 +53,54 @@ function cellHighlightStyle(isSelected: boolean, isHighlighted: boolean): React.
   return {};
 }
 
+// One drawing (image or chart) anchored to its from_cell — see the
+// drawingsByPosition comment above for why this isn't a free-floating
+// pixel overlay. Images render their actual thumbnail via the media
+// endpoint; charts show a placeholder icon (no chart-rendering library
+// integrated this phase — see perception/element_classifier.py's
+// `rendered=False` on chart Elements, which this honestly matches).
+const DrawingBadge: React.FC<{
+  element: ElementRowData;
+  sessionId: string;
+  docId: string;
+  isSelected: boolean;
+  isHovered: boolean;
+  onHover: (index: number | null) => void;
+  onSelect: (index: number) => void;
+}> = ({ element, sessionId, docId, isSelected, isHovered, onHover, onSelect }) => {
+  const mediaId = element.anchor.format === 'xlsx' ? element.anchor.media_id : null;
+  const imgSrc = mediaId && sessionId && docId
+    ? downloadUrlFor(`/api/documents/${sessionId}/media/${docId}/${mediaId}`)
+    : null;
+
+  return (
+    <div
+      className={`xlsx-drawing-badge ${isSelected ? 'selected' : ''} ${isHovered ? 'hovered' : ''}`}
+      onMouseEnter={() => onHover(element.index)}
+      onMouseLeave={() => onHover(null)}
+      onClick={(e) => { e.stopPropagation(); onSelect(element.index); }}
+      title={element.name}
+    >
+      {element.type === 'image' && imgSrc ? (
+        <img src={imgSrc} alt={element.name} />
+      ) : element.type === 'image' ? (
+        <ImageIcon size={14} />
+      ) : (
+        <BarChart3 size={14} />
+      )}
+    </div>
+  );
+};
+
 export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
   elements, hoveredElementIndex, selectedElementIndex, onHoverElement, onSelectElement, editable, onEditElement,
+  sessionId, docId,
 }) => {
   const sheets = useMemo(() => {
     const bySheet = new Map<string, { el: (typeof elements)[number]; row: number; col: number }[]>();
     for (const el of elements) {
       if (el.anchor.format !== 'xlsx') continue;
+      if (el.type === 'image' || el.type === 'chart') continue; // drawings, positioned separately below — not a cell value
       const parsed = parseCellAddress(el.anchor.cell_address);
       if (!parsed) continue;
       const list = bySheet.get(el.anchor.sheet_name) ?? [];
@@ -65,6 +108,30 @@ export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
       bySheet.set(el.anchor.sheet_name, list);
     }
     return bySheet;
+  }, [elements]);
+
+  // Drawing layer (images/charts): positioned by anchor.from_cell rather
+  // than free-floating pixel coordinates — this grid's columns are
+  // CSS-auto-sized by content (a real spreadsheet's variable column
+  // widths), so a pixel-accurate floating overlay would need to track
+  // actual rendered column boundaries through scroll/resize. Anchoring the
+  // badge inside its actual from_cell's <td> gets correct position for
+  // free from the table's own layout instead, at the cost of not visually
+  // spanning to `to_cell` the way a real spreadsheet app would stretch an
+  // image across multiple cells — see phase report.
+  const drawingsByPosition = useMemo(() => {
+    const map = new Map<string, (typeof elements)[number][]>();
+    for (const el of elements) {
+      if (el.anchor.format !== 'xlsx' || (el.type !== 'image' && el.type !== 'chart')) continue;
+      const fromCell = el.anchor.from_cell ?? el.anchor.cell_address;
+      const parsed = parseCellAddress(fromCell);
+      if (!parsed) continue;
+      const key = `${el.anchor.sheet_name}:${parsed.row},${parsed.col}`;
+      const list = map.get(key) ?? [];
+      list.push(el);
+      map.set(key, list);
+    }
+    return map;
   }, [elements]);
 
   const sheetNames = useMemo(() => Array.from(sheets.keys()), [sheets]);
@@ -80,8 +147,18 @@ export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
   }
 
   const cells = currentSheet ? sheets.get(currentSheet)! : [];
-  const maxRow = Math.max(...cells.map((c) => c.row));
-  const maxCol = Math.max(...cells.map((c) => c.col));
+  // A drawing anchored past the last populated cell (e.g. a chart placed
+  // in a blank column to the right of the data table — a completely
+  // normal real-spreadsheet layout) must still expand the rendered grid
+  // far enough to actually contain its badge; bounding only by cell
+  // positions made drawings past that range structurally unreachable.
+  const drawingPositions = currentSheet
+    ? Array.from(drawingsByPosition.keys())
+        .filter((k) => k.startsWith(`${currentSheet}:`))
+        .map((k) => k.split(':')[1].split(',').map(Number) as [number, number])
+    : [];
+  const maxRow = Math.max(1, ...cells.map((c) => c.row), ...drawingPositions.map(([r]) => r));
+  const maxCol = Math.max(1, ...cells.map((c) => c.col), ...drawingPositions.map(([, c]) => c));
   const byPosition = new Map(cells.map((c) => [`${c.row},${c.col}`, c.el]));
 
   const firstVisibleRow = Math.max(1, Math.floor(scrollTop / ROW_HEIGHT) - OVERSCAN_ROWS);
@@ -152,13 +229,14 @@ export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
                     const cellEl = byPosition.get(`${r},${c}`);
                     const isHighlighted = !!cellEl && hoveredElementIndex === cellEl.index;
                     const isSelected = !!cellEl && selectedElementIndex === cellEl.index;
+                    const drawings = currentSheet ? drawingsByPosition.get(`${currentSheet}:${r},${c}`) : undefined;
                     return (
                       <td
                         key={c}
                         className="xlsx-grid-cell"
                         data-el-index={cellEl ? cellEl.index : undefined}
                         onClick={() => cellEl && onSelectElement(cellEl.index)}
-                        style={cellHighlightStyle(isSelected, isHighlighted)}
+                        style={{ ...cellHighlightStyle(isSelected, isHighlighted), position: drawings ? 'relative' : undefined }}
                       >
                         {cellEl ? (
                           <EditableText
@@ -169,6 +247,18 @@ export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
                             title={cellEl.source === 'manual' ? 'Manually edited' : 'Click to edit'}
                           />
                         ) : ''}
+                        {drawings?.map((d) => (
+                          <DrawingBadge
+                            key={d.index}
+                            element={d}
+                            sessionId={sessionId}
+                            docId={docId}
+                            isSelected={selectedElementIndex === d.index}
+                            isHovered={hoveredElementIndex === d.index}
+                            onHover={onHoverElement}
+                            onSelect={onSelectElement}
+                          />
+                        ))}
                       </td>
                     );
                   })}

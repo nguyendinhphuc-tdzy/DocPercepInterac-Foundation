@@ -120,12 +120,18 @@ def _text_fingerprint(text: str) -> str:
 # --- Assign: GeometryBlock -> Anchor -----------------------------------------
 
 
+_DOCX_MEDIA_KINDS = {"image", "chart", "drawing"}
+_DOCX_CHROME_KINDS = {"header", "footer", "footnote", "endnote", "comment"}
+
+
 def assign_docx_anchor(
     block: "GeometryBlock", all_blocks: "Optional[list[GeometryBlock]]" = None
 ) -> AnchorDOCX:
-    """Paragraph anchor (paragraph_index+style_id+text_fingerprint) or
-    table-cell anchor (table_index+table_hash+row_index+col_index), per
-    whether the block came from a paragraph or a table cell.
+    """Paragraph anchor (paragraph_index+style_id+text_fingerprint), table-
+    cell anchor (table_index+table_hash+row_index+col_index), or a media/
+    chrome anchor — per the block's `kind` (falling back to the pre-`kind`
+    inference — table_index presence — for callers passing an older block
+    shape, though extract_geometry always sets `kind` now).
 
     `all_blocks`, when given (assign_anchors passes the full document's
     blocks), lets a paragraph anchor also record `duplicate_ordinal` — its
@@ -137,6 +143,38 @@ def assign_docx_anchor(
     shift by the same amount. Ordinal rank is immune to that: insertions
     elsewhere don't reorder the existing occurrences of the same signature.
     """
+    kind = block.get("kind")
+    extra = block.get("extra") or {}
+
+    if kind in _DOCX_MEDIA_KINDS:
+        # Identity is the OOXML relationship (survives a re-save far more
+        # reliably than paragraph position — see AnchorDOCX field comment).
+        # media_id == relationship_id for images specifically — that IS the
+        # docx media manifest's key (see parser.py::_docx_media_manifest) —
+        # so a consumer never needs to know the two happen to coincide.
+        rel_id = extra.get("relationship_id")
+        return AnchorDOCX(
+            paragraph_index=block.get("paragraph_index"),
+            style_id="",
+            text_fingerprint="",
+            relationship_id=rel_id,
+            drawing_id=str(extra.get("drawing_id")) if extra.get("drawing_id") is not None else None,
+            media_id=rel_id if kind == "image" else None,
+        )
+
+    if kind in _DOCX_CHROME_KINDS:
+        # Headers/footers/footnotes/endnotes/comments live in separate OOXML
+        # parts, outside body paragraph order — text_fingerprint is still
+        # their most stable identity (there is no body paragraph_index for
+        # them), disambiguated by drawing_id carrying the note/comment id.
+        note_id = extra.get("note_id")
+        return AnchorDOCX(
+            paragraph_index=None,
+            style_id=kind,  # repurposed as a coarse type tag for this anchor family — never compared against a real Word style
+            text_fingerprint=_text_fingerprint(block.get("text") or ""),
+            drawing_id=str(note_id) if note_id is not None else None,
+        )
+
     fingerprint = _text_fingerprint(block.get("text") or "")
     if block.get("table_index") is not None:
         return AnchorDOCX(
@@ -154,6 +192,8 @@ def assign_docx_anchor(
     if all_blocks is not None:
         ordinal = 0
         for b in all_blocks:
+            if b.get("kind") not in (None, "paragraph"):
+                continue
             if b.get("table_index") is not None:
                 continue
             if (b.get("style_id") or "") != style_id:
@@ -175,6 +215,19 @@ def assign_docx_anchor(
 
 def assign_xlsx_anchor(block: "GeometryBlock") -> AnchorXLSX:
     row_label = block.get("row_label")
+    extra = block.get("extra") or {}
+    if block.get("kind") in ("image", "chart"):
+        drawing_id = extra.get("drawing_id")
+        return AnchorXLSX(
+            sheet_name=block["sheet_name"],
+            cell_address=block["cell_address"],
+            drawing_id=drawing_id,
+            from_cell=extra.get("from_cell"),
+            to_cell=extra.get("to_cell"),
+            # drawing_id IS the xlsx media manifest key for images (see
+            # parser.py::_xlsx_media_manifest) — charts have no manifest entry.
+            media_id=drawing_id if block.get("kind") == "image" else None,
+        )
     return AnchorXLSX(
         sheet_name=block["sheet_name"],
         cell_address=block["cell_address"],

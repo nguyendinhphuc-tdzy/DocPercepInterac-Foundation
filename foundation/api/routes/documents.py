@@ -67,7 +67,7 @@ import uuid
 from pathlib import Path
 from typing import Annotated, Any
 
-from flask import Blueprint, jsonify, request, send_file
+from flask import Blueprint, Response, jsonify, request, send_file
 from pydantic import Field, TypeAdapter, ValidationError
 from werkzeug.utils import secure_filename
 
@@ -76,7 +76,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from perception.anchor_builder import assign_anchors  # noqa: E402
 from perception.element_classifier import classify_blocks  # noqa: E402
 from perception.models import Anchor  # noqa: E402
-from perception.parser import extract_geometry  # noqa: E402
+from perception.parser import extract_geometry, extract_media_manifest, resolve_media_bytes  # noqa: E402
 from output.lineage import LineageLogger  # noqa: E402
 from output.writeback import WritebackEngine  # noqa: E402
 
@@ -220,7 +220,12 @@ def get_document_elements(session_id: str, doc_id: str):
 
     path = _current_path_for(session_dir, entry)
     elements = _perceive_file(str(path), entry["format"])
-    return jsonify({"doc_id": doc_id, "elements": [_element_to_dict(e) for e in elements]})
+    media = extract_media_manifest(str(path), entry["format"])
+    return jsonify({
+        "doc_id": doc_id,
+        "elements": [_element_to_dict(e) for e in elements],
+        "media": [m.model_dump(mode="json") for m in media],
+    })
 
 
 @documents_bp.patch("/api/documents/<session_id>/elements/<doc_id>")
@@ -301,3 +306,31 @@ def download_document(session_id: str, doc_id: str):
         return jsonify({"error": "No file available for this document"}), 404
 
     return send_file(current_path, as_attachment=True, download_name=current_path.name)
+
+
+@documents_bp.get("/api/documents/<session_id>/media/<doc_id>/<media_id>")
+def get_document_media(session_id: str, doc_id: str, media_id: str):
+    """Serves one embedded image's raw bytes — never a filesystem path, and
+    never anything the client supplies beyond an opaque `media_id` that
+    only resolves against a manifest freshly computed from this document's
+    own current file (see perception/parser.py::resolve_media_bytes). A
+    `media_id` for a document/session it doesn't belong to, or one that no
+    longer resolves (e.g. stale after an edit removed the image), 404s
+    rather than falling back to guessing — same "never silently return the
+    wrong thing" posture as anchor resolution elsewhere in this module."""
+    session_dir = UPLOAD_ROOT / secure_filename(session_id)
+    if not session_dir.is_dir():
+        return jsonify({"error": "Unknown session_id"}), 404
+
+    manifest = _load_manifest(session_dir)
+    entry = manifest["documents"].get(doc_id)
+    if entry is None:
+        return jsonify({"error": "Unknown doc_id"}), 404
+
+    path = _current_path_for(session_dir, entry)
+    resolved = resolve_media_bytes(str(path), entry["format"], media_id)
+    if resolved is None:
+        return jsonify({"error": "Unknown or unresolvable media_id"}), 404
+
+    data, mime_type = resolved
+    return Response(data, mimetype=mime_type)

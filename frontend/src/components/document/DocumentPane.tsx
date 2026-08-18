@@ -279,6 +279,8 @@ export const DocumentPane: React.FC = () => {
 
   const rendererProps: DocumentRendererProps = {
     source: new ArrayBuffer(0), // overwritten by OriginalRenderer for docx/pdf; unused by XlsxRenderer
+    sessionId: sessionId ?? '',
+    docId: activeDoc?.docId ?? '',
     elements: activeElements,
     selectedElementIndex: selectedIndex,
     hoveredElementIndex,

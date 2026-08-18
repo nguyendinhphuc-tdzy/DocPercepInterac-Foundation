@@ -46,26 +46,51 @@ export interface DocxElementMap {
 export function buildDocxElementMap(container: HTMLElement, elements: ElementRowData[]): DocxElementMap {
   const nodeByIndex = new Map<number, HTMLElement>();
 
-  const nonTableElements = elements.filter(
-    (el) => !(el.type === 'cell' && isDocxAnchor(el.anchor) && el.anchor.table_index !== null && el.anchor.table_index !== undefined)
-  );
+  // Only text-flow elements (heading/para) participate in the paragraph
+  // zip below — NOT every non-cell element. Images/charts/drawings/
+  // headers/footers/footnotes/endnotes/comments are separate content
+  // (images below; the rest have no DOM region this phase maps to at all,
+  // matching their honest `capabilities.selectable=false` from the backend
+  // — see perception/element_classifier.py).
+  const textFlowElements = elements.filter((el) => el.type === 'heading' || el.type === 'para');
 
   const allParaLike = Array.from(
     container.querySelectorAll<HTMLElement>('p, h1, h2, h3, h4, h5, h6')
-  ).filter((node) => !node.closest('table'));
+  ).filter((node) => !node.closest('table') && node.querySelector('img') == null);
   const nonEmptyParaLike = allParaLike.filter((node) => (node.textContent ?? '').trim().length > 0);
 
-  if (nonEmptyParaLike.length !== nonTableElements.length) {
+  if (nonEmptyParaLike.length !== textFlowElements.length) {
     return {
       nodeByIndex,
       reliable: false,
-      reason: `Rendered paragraph count (${nonEmptyParaLike.length}) does not match Foundation's non-table element count (${nonTableElements.length}) — mapping would be guesswork.`,
+      reason: `Rendered paragraph count (${nonEmptyParaLike.length}) does not match Foundation's heading/paragraph count (${textFlowElements.length}) — mapping would be guesswork.`,
     };
   }
 
-  nonTableElements.forEach((el, i) => {
+  textFlowElements.forEach((el, i) => {
     nodeByIndex.set(el.index, nonEmptyParaLike[i]);
   });
+
+  // Images: Foundation's IMAGE elements are already in true document order
+  // (parser.py interleaves them at their actual paragraph position — see
+  // its module docstring), and docx-preview renders one <img> per picture
+  // in that same order, so a positional zip is reliable under the same
+  // "counts must match" guard as everything else here. Rendered as <img>
+  // specifically because DocxRenderer.tsx passes `useBase64URL: true`.
+  const imageElements = elements.filter((el) => el.type === 'image' && isDocxAnchor(el.anchor));
+  const renderedImages = Array.from(container.querySelectorAll<HTMLImageElement>('img')).filter((img) => !img.closest('table'));
+  let imagesReliable = true;
+  let imagesReason: string | undefined;
+  if (imageElements.length > 0) {
+    if (renderedImages.length !== imageElements.length) {
+      imagesReliable = false;
+      imagesReason = `Rendered image count (${renderedImages.length}) does not match Foundation's image element count (${imageElements.length}) — images in this document will not be interactive.`;
+    } else {
+      imageElements.forEach((el, i) => {
+        nodeByIndex.set(el.index, renderedImages[i]);
+      });
+    }
+  }
 
   // Tables: group Foundation cell elements by table_index (preserving row/col),
   // then zip against the Nth rendered <table> in document order.
@@ -83,7 +108,10 @@ export function buildDocxElementMap(container: HTMLElement, elements: ElementRow
   if (renderedTables.length !== orderedTableIndices.length) {
     // Paragraph mapping can still be trusted even if table mapping can't —
     // but tables in this document won't be interactive. Not fatal overall.
-    return { nodeByIndex, reliable: nonEmptyParaLike.length === nonTableElements.length, reason: orderedTableIndices.length > 0 ? `Rendered table count (${renderedTables.length}) does not match Foundation table count (${orderedTableIndices.length}) — tables in this document will not be interactive.` : undefined };
+    const tableReason = orderedTableIndices.length > 0
+      ? `Rendered table count (${renderedTables.length}) does not match Foundation table count (${orderedTableIndices.length}) — tables in this document will not be interactive.`
+      : undefined;
+    return { nodeByIndex, reliable: imagesReliable, reason: imagesReason ?? tableReason };
   }
 
   orderedTableIndices.forEach((tableIndex, tablePos) => {
@@ -100,5 +128,5 @@ export function buildDocxElementMap(container: HTMLElement, elements: ElementRow
     }
   });
 
-  return { nodeByIndex, reliable: true };
+  return { nodeByIndex, reliable: imagesReliable, reason: imagesReason };
 }

@@ -18,9 +18,16 @@ def test_parse_docx_returns_ordered_blocks_with_indices():
     blocks = parse_docx(str(FIXTURES / "fixture_bcdt.docx"))
     assert isinstance(blocks, list)
     assert len(blocks) > 0
-    assert all(b["text"].strip() for b in blocks)
-    # every block is either a paragraph or a table-cell block, not both
-    for b in blocks:
+    # Text non-emptiness and the paragraph-xor-cell invariant only hold for
+    # the original two block kinds — the Comprehensive Document Perception
+    # phase added kinds that are legitimate exceptions by design: an image
+    # has no text at all, and headers/footers/footnotes/endnotes/comments
+    # have neither a body paragraph_index nor a table_index (they live
+    # outside body reading order entirely) — see perception/parser.py.
+    text_blocks = [b for b in blocks if b["kind"] in ("paragraph", "table_cell")]
+    assert text_blocks, "fixture should still contain at least one paragraph/table-cell block"
+    assert all(b["text"].strip() for b in text_blocks)
+    for b in text_blocks:
         is_para = b["paragraph_index"] is not None
         is_cell = b["table_index"] is not None
         assert is_para != is_cell

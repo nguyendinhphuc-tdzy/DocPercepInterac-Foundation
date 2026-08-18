@@ -14,6 +14,13 @@ import type { ElementRowData } from '../../../types/element';
 // browser upload or a server round-trip.
 export interface DocumentRendererProps {
   source: ArrayBuffer;
+  // Needed to build media URLs (GET /api/documents/<session_id>/media/<doc_id>/<media_id>)
+  // for embedded-image drawings — currently only XlsxRenderer uses these
+  // (DOCX images render inline via docx-preview's own base64 embedding;
+  // PDF pages render their own images directly via pdf.js), but they're on
+  // the shared contract since any renderer could need them.
+  sessionId: string;
+  docId: string;
   elements: ElementRowData[];
   selectedElementIndex: number | null;
   hoveredElementIndex: number | null;
