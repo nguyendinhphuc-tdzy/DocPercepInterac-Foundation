@@ -1,8 +1,12 @@
 """POST /api/agent/chat — AI Agent endpoint that proxies user requests
-to the KPMG Workbench, enriched with Foundation document context.
+to the KPMG Workbench, enriched with generic Foundation document context.
 
-Architecture note: this route calls applications/gpts/workbench_client.py
-(application layer). It does NOT import from perception/, output/, or eval/.
+Architecture note: this route calls applications/workbench_client.py — a
+shared, use-case-agnostic Workbench proxy (NOT applications/gpts/, which is
+GTPS-specific). It does NOT import from perception/, output/, or eval/, and
+must not import anything from applications/gpts/ either: the context this
+route builds is deliberately generic (file names + element counts), never
+GTPS-shaped (no source/target/mapped fields).
 """
 from __future__ import annotations
 
@@ -14,7 +18,7 @@ from flask import Blueprint, jsonify, request
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from applications.gpts.workbench_client import (  # noqa: E402
+from applications.workbench_client import (  # noqa: E402
     WorkbenchApiError,
     WorkbenchConfigError,
     chat_completion,
@@ -24,7 +28,11 @@ agent_bp = Blueprint("agent", __name__)
 
 
 def _build_system_prompt(context: dict) -> str:
-    """Construct a system prompt that gives the model Foundation context."""
+    """Construct a system prompt that gives the model generic Foundation
+    document context — file names and element counts only. Deliberately has
+    no notion of "mapped"/"source"/"target": any application-specific
+    enrichment (e.g. GTPS mapping results) is that application's concern,
+    not this generic route's."""
     parts = [
         "You are the Foundation Document Intelligence Agent.",
         "You help users analyze, compare, update, and extract information from enterprise documents.",
@@ -38,19 +46,6 @@ def _build_system_prompt(context: dict) -> str:
     element_count = context.get("element_count", 0)
     if element_count > 0:
         parts.append(f"Total extracted elements: {element_count}")
-
-    mapped_count = context.get("mapped_count", 0)
-    if mapped_count > 0:
-        parts.append(f"Mapped values: {mapped_count}")
-        mapped_summary = context.get("mapped_summary", [])
-        if mapped_summary:
-            summary_lines = []
-            for m in mapped_summary[:10]:
-                summary_lines.append(
-                    f"  - {m['target_anchor']}: {m['target_value']} "
-                    f"(confidence: {m['confidence']:.0%})"
-                )
-            parts.append("Sample mapped values:\n" + "\n".join(summary_lines))
 
     parts.extend([
         "\nBe helpful, precise, and reference specific document elements when possible.",
@@ -69,7 +64,10 @@ def agent_chat():
         return jsonify({"error": "Message is required."}), 400
 
     context = body.get("context", {})
-    process_id = body.get("process_id")
+    # session_id: accepted for forward-compatibility (e.g. a future tool-
+    # calling agent referencing the caller's document session) — not used
+    # by this route today.
+    _session_id = body.get("session_id")
 
     system_prompt = _build_system_prompt(context)
 
@@ -120,11 +118,6 @@ def agent_chat():
     if context.get("element_count", 0) > 0:
         steps.append({
             "label": f"Analyzed {context['element_count']} elements",
-            "status": "done",
-        })
-    if context.get("mapped_count", 0) > 0:
-        steps.append({
-            "label": f"Referenced {context['mapped_count']} mapped values",
             "status": "done",
         })
     steps.append({"label": "Generated response", "status": "done"})

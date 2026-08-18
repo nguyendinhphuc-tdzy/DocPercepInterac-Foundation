@@ -5,12 +5,16 @@ import { downloadUrlFor } from '../../api/client';
 import { ConfidenceBadge } from '../shared/ConfidenceBadge';
 import { EmptyState } from '../shared/EmptyState';
 
+// This pane is the GTPS application's own results view — it only ever
+// populates after an explicit GTPS mapping run (components/gpts/), never
+// as a side effect of uploading documents. Its GTPS-shaped language here
+// is correct: unlike the generic panes, this one IS application-scoped.
 export const ResultsPane: React.FC = () => {
-  const { mapped, downloadUrl, processingStatus, targetFiles, hoveredElementIndex, setHoveredElement } = useWorkspaceStore();
+  const { documents, gptsMapping, hoveredElementIndex, setHoveredElement } = useWorkspaceStore();
 
-  const targetName = targetFiles.length > 0 ? targetFiles[0].name : null;
-  const hasOutput = downloadUrl != null;
-  const mappedCount = mapped.length;
+  const targetName = documents.find((d) => d.clientId === gptsMapping.targetDocClientId)?.file.name ?? null;
+  const hasOutput = gptsMapping.downloadUrl != null;
+  const mappedCount = gptsMapping.mapped.length;
 
   return (
     <div className="pane-container">
@@ -18,16 +22,16 @@ export const ResultsPane: React.FC = () => {
       <div className="pane-header">
         <div className="pane-header-title">
           <FileOutput size={14} />
-          <span>Output</span>
+          <span>GTPS Mapping Output</span>
         </div>
-        {hasOutput && (
+        {hasOutput && gptsMapping.downloadUrl && (
           <a
-            href={downloadUrlFor(downloadUrl)}
+            href={downloadUrlFor(gptsMapping.downloadUrl)}
             className="btn btn-primary btn-sm"
             style={{ textDecoration: 'none' }}
           >
             <Download size={12} />
-            <span>Download DOCX</span>
+            <span>Download</span>
           </a>
         )}
       </div>
@@ -38,13 +42,13 @@ export const ResultsPane: React.FC = () => {
             icon={FileOutput}
             title="No output yet"
             description={
-              processingStatus === 'processing'
+              gptsMapping.status === 'running'
                 ? 'Mapping in progress…'
-                : processingStatus === 'idle'
-                  ? 'Upload and analyze documents to generate output.'
-                  : processingStatus === 'done'
+                : gptsMapping.status === 'idle'
+                  ? 'Run GTPS Local File Mapping (Applications menu) to see output here.'
+                  : gptsMapping.status === 'done'
                     ? 'No mapping rules matched this document pair.'
-                    : 'Processing failed — check the error above.'
+                    : (gptsMapping.error ?? 'Mapping failed — try again.')
             }
           />
         ) : (
@@ -71,7 +75,7 @@ export const ResultsPane: React.FC = () => {
                 </div>
                 {targetName && (
                   <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)', marginBottom: 'var(--space-1)' }}>
-                    {targetName.replace('.docx', '_patched.docx')}
+                    {targetName.replace(/\.docx$/, '_patched.docx')}
                   </div>
                 )}
                 <div style={{ fontSize: 'var(--text-sm)', color: 'var(--text-secondary)' }}>
@@ -94,7 +98,7 @@ export const ResultsPane: React.FC = () => {
 
             {/* Result Cards */}
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-              {mapped.map((m, i) => {
+              {gptsMapping.mapped.map((m, i) => {
                 const isHighlighted = m.target_element_index != null && hoveredElementIndex === m.target_element_index;
                 return (
                   <div

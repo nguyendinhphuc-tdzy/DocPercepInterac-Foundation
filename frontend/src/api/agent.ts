@@ -3,14 +3,12 @@ import type { ElementRowData } from '../types/element';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000';
 
 export interface AgentChatRequest {
-  process_id: string | null;
+  session_id: string | null;
   message: string;
   context: {
     file_names: string[];
     selected_element: ElementRowData | null;
     element_count: number;
-    mapped_count: number;
-    mapped_summary: { target_anchor: string; target_value: string; confidence: number }[];
   };
 }
 

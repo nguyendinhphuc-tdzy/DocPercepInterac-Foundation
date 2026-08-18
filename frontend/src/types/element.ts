@@ -65,33 +65,66 @@ export interface TraceItemData {
   message: string;
 }
 
-// Response shape of POST /api/process (foundation/api/routes/process.py) —
-// applications/gpts/mapping_service.py's MappingResult, JSON-serialized.
+// ── Generic document layer — mirrors api/routes/documents.py ──
+// Use-case agnostic: no "source"/"target" role, no mapping concept. A
+// document is just something that was uploaded and perceived.
+
+export type DocumentFormat = 'docx' | 'xlsx' | 'pdf';
+
+// Response shape of POST /api/documents and GET /api/documents/<session_id>
+// (one entry per document). Deliberately has no role/mapping fields.
+export interface DocumentSummary {
+  session_id: string;
+  doc_id: string;
+  filename: string;
+  format: DocumentFormat;
+  status: 'ready' | 'error';
+  element_count: number;
+  error: string | null;
+}
+
+// Response shape of GET /api/documents/<session_id>/elements/<doc_id> —
+// elements are fetched lazily, per document, not inlined into the upload
+// response (perception/api boundary keeps this a separate, cheap call).
+export interface DocumentElementsResult {
+  doc_id: string;
+  elements: ElementRowData[];
+}
+
+export interface PatchElementResult {
+  status: 'ok';
+  message: string | null;
+  download_url: string;
+}
+
+// One entry per live edit made via
+// PATCH /api/documents/<session_id>/elements/<doc_id> — lets
+// workspaceStore.ts::undoLastEdit() write the previous value back for the
+// document it belongs to.
+export interface EditHistoryEntry {
+  docClientId: string;
+  index: number;
+  anchor: Anchor;
+  previousValue: string;
+}
+
+// ── GTPS-specific — mirrors api/routes/gpts.py (POST /api/gpts/map) ──
+// This shape is GTPS-shaped on purpose: it only ever describes the result
+// of an explicit GTPS mapping run, never the generic document layer above.
+
 export interface MappedEntry {
   source_anchor: string;
   target_anchor: string;
   target_value: string;
   confidence: number;
   timestamp: string;
-  // Resolved server-side (applications/gpts/mapping_service.py) with the
-  // same table-hash self-healing perception/anchor_builder.py uses — do
-  // not re-derive this client-side from target_anchor's table_index,
-  // which can be stale after drift self-heals to a different table.
   target_element_index: number | null;
 }
 
-export interface ProcessResult {
-  process_id: string;
+export interface GptsMappingResult {
+  session_id: string;
   source_elements: ElementRowData[];
   target_elements: ElementRowData[];
   mapped: MappedEntry[];
   download_url: string | null;
-}
-
-// One entry per live edit made via PATCH /api/elements/<id> — lets
-// workspaceStore.ts::undoLastEdit() write the previous value back.
-export interface EditHistoryEntry {
-  index: number;
-  anchor: Anchor;
-  previousValue: string;
 }

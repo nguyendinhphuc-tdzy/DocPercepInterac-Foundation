@@ -2,8 +2,11 @@
 endpoint through the Workbench gateway.
 
 Architecture note (STATUS.md, Foundation_UI_Spec_v1.0.md §36):
-  - This module lives in applications/gpts/ (application layer), NOT in
-    foundation/perception/ or foundation/output/ (core).
+  - This module lives in applications/ (application layer, but shared across
+    every application — not GTPS-specific), NOT in foundation/perception/ or
+    foundation/output/ (core). It moved out of applications/gpts/ because
+    nothing in it references GTPS/HMV/DEMO_RULES — any application (or the
+    generic Agent route) can use it.
   - Credentials are read from environment variables — never hardcoded.
   - The browser never calls Workbench directly; Flask proxies via this client.
 

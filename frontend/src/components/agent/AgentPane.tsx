@@ -8,7 +8,7 @@ import { EmptyState } from '../shared/EmptyState';
 
 export const AgentPane: React.FC = () => {
   const { messages, status } = useAgentStore();
-  const { processingStatus } = useWorkspaceStore();
+  const { documents } = useWorkspaceStore();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   // Auto-scroll to bottom on new messages
@@ -18,7 +18,10 @@ export const AgentPane: React.FC = () => {
     }
   }, [messages]);
 
-  const isWorkspaceReady = processingStatus === 'done';
+  // Gated on Perceive (>=1 document ready), NOT on any task/execution
+  // state — the Agent must be usable BEFORE any application workflow
+  // (e.g. GTPS mapping) runs, so a user can state a request first.
+  const hasReadyDocument = documents.some((d) => d.status === 'ready');
 
   return (
     <div className="agent-pane">
@@ -46,11 +49,11 @@ export const AgentPane: React.FC = () => {
         {messages.length === 0 ? (
           <EmptyState
             icon={Sparkles}
-            title={isWorkspaceReady ? 'Ask Foundation anything' : 'Upload documents to get started'}
+            title={hasReadyDocument ? 'Ask Foundation anything' : 'Upload a document to get started'}
             description={
-              isWorkspaceReady
+              hasReadyDocument
                 ? 'Describe what you need — analyze, compare, update, or extract information from your documents.'
-                : 'Add source and target documents, then analyze them to enable the Agent.'
+                : 'Add a document — the Agent is ready as soon as it has been read.'
             }
           />
         ) : (

@@ -7,10 +7,14 @@ export const AgentComposer: React.FC = () => {
   const [input, setInput] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
   const { sendMessage, status } = useAgentStore();
-  const { processingStatus } = useWorkspaceStore();
+  const { documents } = useWorkspaceStore();
 
+  // Gated on Perceive (>=1 document ready), never on a task/execution
+  // state — this is what lets the user state a request BEFORE any
+  // application workflow runs (Perceive -> user states intent -> Execute).
+  const hasReadyDocument = documents.some((d) => d.status === 'ready');
   const isSending = status === 'preparing' || status === 'processing';
-  const canSend = input.trim().length > 0 && !isSending;
+  const canSend = input.trim().length > 0 && !isSending && hasReadyDocument;
 
   const handleSubmit = useCallback(() => {
     if (!canSend) return;
@@ -45,11 +49,11 @@ export const AgentComposer: React.FC = () => {
           onChange={handleInput}
           onKeyDown={handleKeyDown}
           placeholder={
-            processingStatus === 'done'
+            hasReadyDocument
               ? 'Write your request...'
-              : 'Upload and analyze documents first...'
+              : 'Add a document first...'
           }
-          disabled={processingStatus !== 'done'}
+          disabled={!hasReadyDocument}
           rows={1}
           aria-label="Agent message input"
         />

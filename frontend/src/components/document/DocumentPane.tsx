@@ -17,12 +17,14 @@ interface TableGroup {
 
 export const DocumentPane: React.FC = () => {
   const {
-    targetFiles, targetElements, processingStatus, editError,
-    editTargetElement, hoveredElementIndex, setHoveredElement,
+    documents, activeDocClientId, editError,
+    editElement, hoveredElementIndex, setHoveredElement,
   } = useWorkspaceStore();
   const { activeElementId } = useSyncStore();
-  const targetName = targetFiles.length > 0 ? targetFiles[0].name : null;
-  const canEdit = processingStatus === 'done';
+  const activeDoc = documents.find((d) => d.clientId === activeDocClientId) ?? null;
+  const docName = activeDoc?.file.name ?? null;
+  const activeElements = activeDoc?.elements ?? [];
+  const canEdit = activeDoc?.status === 'ready' && activeDoc.elements !== null;
 
   const nodeRefs = useRef(new Map<number, HTMLElement>());
 
@@ -48,7 +50,7 @@ export const DocumentPane: React.FC = () => {
     const flow: ElementRowData[] = [];
     const tables = new Map<number, TableGroup>();
 
-    for (const el of targetElements) {
+    for (const el of activeElements) {
       if (el.type === 'cell' && isDocxAnchor(el.anchor) && el.anchor.table_index !== null && el.anchor.table_index !== undefined) {
         const tIdx = el.anchor.table_index;
         const rIdx = el.anchor.row_index ?? 0;
@@ -63,9 +65,9 @@ export const DocumentPane: React.FC = () => {
     }
 
     return { flowElements: flow, tableGroups: Array.from(tables.values()) };
-  }, [targetElements]);
+  }, [activeElements]);
 
-  if (targetElements.length === 0) {
+  if (activeElements.length === 0) {
     return (
       <div className="pane-container">
         <div className="pane-header">
@@ -78,7 +80,7 @@ export const DocumentPane: React.FC = () => {
           <EmptyState
             icon={FileText}
             title="No document loaded"
-            description="Upload and analyze documents to preview their content here."
+            description="Add a document to preview its content here."
           />
         </div>
       </div>
@@ -92,7 +94,7 @@ export const DocumentPane: React.FC = () => {
           <FileText size={14} />
           <span>Document</span>
         </div>
-        {targetName && (
+        {docName && (
           <span style={{
             fontSize: 'var(--text-xs)',
             color: 'var(--text-tertiary)',
@@ -100,8 +102,8 @@ export const DocumentPane: React.FC = () => {
             overflow: 'hidden',
             textOverflow: 'ellipsis',
             whiteSpace: 'nowrap',
-          }} title={targetName}>
-            {targetName}
+          }} title={docName}>
+            {docName}
           </span>
         )}
       </div>
@@ -152,7 +154,7 @@ export const DocumentPane: React.FC = () => {
               >
                 <EditableText
                   value={el.text}
-                  onSave={(newValue) => editTargetElement(el.index, newValue)}
+                  onSave={(newValue) => activeDocClientId && editElement(activeDocClientId, el.index, newValue)}
                   disabled={!canEdit}
                   multiline
                   className={`block ${
@@ -225,7 +227,7 @@ export const DocumentPane: React.FC = () => {
                               {cellEl ? (
                                 <EditableText
                                   value={cellEl.text}
-                                  onSave={(newValue) => editTargetElement(cellEl.index, newValue)}
+                                  onSave={(newValue) => activeDocClientId && editElement(activeDocClientId, cellEl.index, newValue)}
                                   disabled={!canEdit}
                                   className={cellEl.source === 'manual' ? 'bg-amber-50' : ''}
                                   title={cellEl.source === 'manual' ? 'Manually edited' : 'Click to edit'}

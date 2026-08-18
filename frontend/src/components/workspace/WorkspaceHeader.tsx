@@ -1,8 +1,9 @@
 import React, { useEffect } from 'react';
-import { Undo2, Download, Layout } from 'lucide-react';
+import { Undo2, Download, Layout, LayoutGrid } from 'lucide-react';
 import { useWorkspaceStore, type WorkspacePreset } from '../../state/workspaceStore';
 import { StatusBadge } from '../shared/StatusBadge';
 import { downloadUrlFor } from '../../api/client';
+import { GptsMappingAction } from '../gpts/GptsMappingAction';
 
 const PRESET_LABELS: Record<WorkspacePreset, string> = {
   agent: 'Agent',
@@ -13,14 +14,15 @@ const PRESET_LABELS: Record<WorkspacePreset, string> = {
 
 export const WorkspaceHeader: React.FC = () => {
   const {
-    targetFiles, processingStatus, targetElements, downloadUrl,
+    documents, activeDocClientId, downloadUrlForActiveDoc,
     editHistory, isUndoing, undoLastEdit,
     workspacePreset, setWorkspacePreset,
-  } = useWorkspaceStore();
+  } = useWorkspaceStoreExtras();
 
-  const targetName = targetFiles.length > 0 ? targetFiles[0].name : 'Untitled';
+  const activeDoc = documents.find((d) => d.clientId === activeDocClientId) ?? null;
+  const docName = activeDoc?.file.name ?? 'No document selected';
   const canUndo = editHistory.length > 0 && !isUndoing;
-  const elementCount = targetElements.length;
+  const elementCount = activeDoc?.elementCount ?? 0;
 
   // Global Ctrl/Cmd+Z undo
   useEffect(() => {
@@ -38,22 +40,23 @@ export const WorkspaceHeader: React.FC = () => {
   }, [undoLastEdit]);
 
   const statusType = (() => {
-    switch (processingStatus) {
-      case 'idle': return 'idle' as const;
-      case 'processing': return 'processing' as const;
-      case 'done': return 'ready' as const;
+    switch (activeDoc?.status) {
+      case undefined: return 'idle' as const;
+      case 'perceiving': return 'processing' as const;
+      case 'ready': return 'ready' as const;
       case 'error': return 'error' as const;
     }
   })();
 
   const [presetMenuOpen, setPresetMenuOpen] = React.useState(false);
+  const [appsMenuOpen, setAppsMenuOpen] = React.useState(false);
 
   return (
     <div className="workspace-header">
       <div className="workspace-header-left">
         <span className="workspace-title">Foundation</span>
         <span className="workspace-separator">·</span>
-        <span className="workspace-subtitle" title={targetName}>{targetName}</span>
+        <span className="workspace-subtitle" title={docName}>{docName}</span>
         <StatusBadge status={statusType} />
         {elementCount > 0 && (
           <span style={{
@@ -66,6 +69,21 @@ export const WorkspaceHeader: React.FC = () => {
       </div>
 
       <div className="workspace-header-right">
+        {/* Applications — secondary, opt-in application entry points. GTPS
+            mapping lives here, not as a default workspace action, so
+            uploading documents never implies running it. */}
+        <div style={{ position: 'relative' }}>
+          <button
+            className="btn btn-secondary btn-sm"
+            onClick={() => setAppsMenuOpen(!appsMenuOpen)}
+            title="Application actions"
+          >
+            <LayoutGrid size={13} />
+            <span>Applications</span>
+          </button>
+          {appsMenuOpen && <GptsMappingAction onClose={() => setAppsMenuOpen(false)} />}
+        </div>
+
         {/* Workspace preset selector */}
         <div style={{ position: 'relative' }}>
           <button
@@ -137,7 +155,7 @@ export const WorkspaceHeader: React.FC = () => {
           )}
         </div>
 
-        {/* Undo */}
+        {/* Undo — undoes the active document's last edit */}
         <button
           className="btn btn-secondary btn-sm"
           onClick={undoLastEdit}
@@ -148,10 +166,13 @@ export const WorkspaceHeader: React.FC = () => {
           <span>Undo{editHistory.length > 0 ? ` (${editHistory.length})` : ''}</span>
         </button>
 
-        {/* Download */}
-        {downloadUrl && (
+        {/* Download — the active document's own patched output, if any
+            (works whether the patch came from a manual edit or a GTPS
+            mapping run: both write to the same generic per-document
+            download endpoint). */}
+        {downloadUrlForActiveDoc && (
           <a
-            href={downloadUrlFor(downloadUrl)}
+            href={downloadUrlFor(downloadUrlForActiveDoc)}
             className="btn btn-primary btn-sm"
             style={{ textDecoration: 'none' }}
           >
@@ -163,3 +184,16 @@ export const WorkspaceHeader: React.FC = () => {
     </div>
   );
 };
+
+// Small convenience wrapper: derives the active document's download URL
+// (available once it has a docId — the generic download route resolves
+// whether a patch actually exists) from store fields, without adding a
+// dedicated store field just for this header.
+function useWorkspaceStoreExtras() {
+  const state = useWorkspaceStore();
+  const activeDoc = state.documents.find((d) => d.clientId === state.activeDocClientId) ?? null;
+  const downloadUrlForActiveDoc = activeDoc?.docId && activeDoc.hasPatch && state.sessionId
+    ? `/api/documents/${state.sessionId}/download/${activeDoc.docId}`
+    : null;
+  return { ...state, downloadUrlForActiveDoc };
+}

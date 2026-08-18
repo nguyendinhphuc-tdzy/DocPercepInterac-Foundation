@@ -12,7 +12,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from api.app import create_app  # noqa: E402
-from applications.gpts.workbench_client import (  # noqa: E402
+from applications.workbench_client import (  # noqa: E402
     WorkbenchConfigError,
     WorkbenchResponse,
     chat_completion,
@@ -63,10 +63,6 @@ def test_agent_chat_success_mocked(client, monkeypatch):
                 "context": {
                     "file_names": ["report.docx", "data.xlsx"],
                     "element_count": 42,
-                    "mapped_count": 5,
-                    "mapped_summary": [
-                        {"target_anchor": "table:0:0:0", "target_value": "100", "confidence": 0.99}
-                    ],
                 },
             },
         )

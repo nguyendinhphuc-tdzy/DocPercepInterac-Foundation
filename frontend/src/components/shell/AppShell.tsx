@@ -27,9 +27,9 @@ export const AppShell: React.FC = () => {
     if (route === 'home') {
       setCurrentView('home');
     } else if (route === 'workspace') {
-      // If we have a process, go to workspace; otherwise go to new task
+      // If any document has been added, go to workspace; otherwise new task.
       const state = useWorkspaceStore.getState();
-      if (state.processingStatus === 'done' || state.sourceFiles.length > 0) {
+      if (state.documents.length > 0) {
         setCurrentView('workspace');
       } else {
         setCurrentView('new-task');

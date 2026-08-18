@@ -8,21 +8,8 @@ function formatFileSize(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(1)} MB`;
 }
 
-function getFileExtension(name: string): string {
-  return name.split('.').pop()?.toLowerCase() ?? '';
-}
-
-function getFileTypeLabel(ext: string): string {
-  switch (ext) {
-    case 'xlsx': return 'Source';
-    case 'pdf': return 'Source';
-    case 'docx': return 'Target';
-    default: return 'File';
-  }
-}
-
-function FileTypeIcon({ ext }: { ext: string }) {
-  switch (ext) {
+function FileTypeIcon({ format }: { format: string | null }) {
+  switch (format) {
     case 'xlsx': return <Sheet size={16} />;
     case 'pdf': return <FileIcon size={16} />;
     case 'docx': return <FileText size={16} />;
@@ -32,20 +19,15 @@ function FileTypeIcon({ ext }: { ext: string }) {
 
 export const NewTaskPage: React.FC = () => {
   const {
-    sourceFiles, targetFiles, intakeError, processingStatus, processingError,
-    addDocument, removeSourceFile, removeTargetFile, runProcessing,
+    documents, intakeError, addDocument, removeDocument, setCurrentView,
   } = useWorkspaceStore();
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [dragOver, setDragOver] = useState(false);
 
-  const allFiles = [
-    ...targetFiles.map((f, i) => ({ file: f, type: 'target' as const, index: i })),
-    ...sourceFiles.map((f, i) => ({ file: f, type: 'source' as const, index: i })),
-  ];
-  const totalFiles = sourceFiles.length + targetFiles.length;
-  const isReady = sourceFiles.length > 0 && targetFiles.length > 0;
-  const isProcessing = processingStatus === 'processing';
+  const totalFiles = documents.length;
+  const isPerceiving = documents.some((d) => d.status === 'perceiving');
+  const hasReadyDocument = documents.some((d) => d.status === 'ready');
 
   const handleDrop = useCallback((e: React.DragEvent) => {
     e.preventDefault();
@@ -77,7 +59,7 @@ export const NewTaskPage: React.FC = () => {
           textAlign: 'center',
           marginBottom: 'var(--space-6)',
         }}>
-          What would you like to work with?
+          Add documents to get started — Foundation reads them right away.
         </p>
 
         {/* Drop Zone */}
@@ -114,7 +96,7 @@ export const NewTaskPage: React.FC = () => {
         </div>
 
         {/* Error */}
-        {(intakeError || (processingStatus === 'error' && processingError)) && (
+        {intakeError && (
           <div style={{
             display: 'flex',
             alignItems: 'flex-start',
@@ -128,7 +110,7 @@ export const NewTaskPage: React.FC = () => {
             color: 'var(--error)',
           }}>
             <AlertTriangle size={14} style={{ flexShrink: 0, marginTop: 2 }} />
-            <span>{intakeError ?? processingError}</span>
+            <span>{intakeError}</span>
           </div>
         )}
 
@@ -147,48 +129,50 @@ export const NewTaskPage: React.FC = () => {
                 color: 'var(--text-tertiary)',
                 textTransform: 'uppercase',
                 letterSpacing: '0.04em',
-              }}>Files</span>
+              }}>Documents</span>
               <span style={{
                 fontSize: 'var(--text-xs)',
                 color: 'var(--text-tertiary)',
-              }}>{totalFiles} / 10</span>
+              }}>{totalFiles}</span>
             </div>
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
-              {allFiles.map(({ file, type, index }) => {
-                const ext = getFileExtension(file.name);
-                return (
-                  <div key={`${type}-${index}`} className="file-row">
-                    <div className={`file-icon ${ext}`}>
-                      <FileTypeIcon ext={ext} />
-                    </div>
-                    <div className="file-info">
-                      <div className="file-name">{file.name}</div>
-                      <div className="file-meta">
-                        {getFileTypeLabel(ext)} · {formatFileSize(file.size)}
-                      </div>
-                    </div>
-                    <button
-                      className="file-remove"
-                      onClick={() => type === 'source' ? removeSourceFile(index) : removeTargetFile(index)}
-                      title="Remove file"
-                      aria-label={`Remove ${file.name}`}
-                    >
-                      <X size={14} />
-                    </button>
+              {documents.map((doc) => (
+                <div key={doc.clientId} className="file-row">
+                  <div className={`file-icon ${doc.format ?? ''}`}>
+                    <FileTypeIcon format={doc.format} />
                   </div>
-                );
-              })}
+                  <div className="file-info">
+                    <div className="file-name">{doc.file.name}</div>
+                    <div className="file-meta">
+                      {doc.status === 'perceiving' && 'Reading…'}
+                      {doc.status === 'ready' && `${doc.elementCount} elements · ${formatFileSize(doc.file.size)}`}
+                      {doc.status === 'error' && (doc.error ?? 'Failed to read')}
+                    </div>
+                  </div>
+                  <button
+                    className="file-remove"
+                    onClick={() => removeDocument(doc.clientId)}
+                    title="Remove file"
+                    aria-label={`Remove ${doc.file.name}`}
+                  >
+                    <X size={14} />
+                  </button>
+                </div>
+              ))}
             </div>
           </div>
         )}
 
-        {/* Analyze Button */}
+        {/* Continue — Perceive already ran automatically per document above;
+            this just moves to the workspace to view/inspect/edit them. Any
+            further task (e.g. GTPS mapping) is a separate, explicit
+            application action inside the workspace, not gated here. */}
         {totalFiles > 0 && (
           <button
-            className={`btn ${isReady ? 'btn-primary' : 'btn-secondary'} btn-lg`}
-            onClick={() => isReady && runProcessing()}
-            disabled={!isReady || isProcessing}
+            className={`btn ${hasReadyDocument ? 'btn-primary' : 'btn-secondary'} btn-lg`}
+            onClick={() => hasReadyDocument && setCurrentView('workspace')}
+            disabled={!hasReadyDocument}
             style={{
               width: '100%',
               justifyContent: 'center',
@@ -196,20 +180,16 @@ export const NewTaskPage: React.FC = () => {
               borderRadius: 'var(--radius-xl)',
             }}
           >
-            {isProcessing ? (
+            {isPerceiving && !hasReadyDocument ? (
               <>
                 <Loader2 size={18} className="animate-spin" />
-                <span>Processing…</span>
-              </>
-            ) : isReady ? (
-              <>
-                <span>Analyze Documents</span>
-                <ArrowRight size={16} />
+                <span>Reading documents…</span>
               </>
             ) : (
-              <span>
-                Add a {targetFiles.length === 0 ? 'target document (.docx)' : 'source file (.xlsx/.pdf)'} to continue
-              </span>
+              <>
+                <span>Open Workspace</span>
+                <ArrowRight size={16} />
+              </>
             )}
           </button>
         )}

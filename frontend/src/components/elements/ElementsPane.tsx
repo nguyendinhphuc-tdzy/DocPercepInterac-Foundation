@@ -64,14 +64,16 @@ function groupElements(elements: ElementRowData[]): ElementGroup[] {
 }
 
 export const ElementsPane: React.FC = () => {
-  const { targetElements, processingStatus, hoveredElementIndex, setHoveredElement } = useWorkspaceStore();
+  const { documents, activeDocClientId, hoveredElementIndex, setHoveredElement } = useWorkspaceStore();
+  const activeDoc = documents.find((d) => d.clientId === activeDocClientId) ?? null;
+  const activeElements = activeDoc?.elements ?? [];
   const { activeElementId, setActive } = useSyncStore();
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedGroups, setExpandedGroups] = useState<Set<string>>(new Set());
   const itemRefs = useRef(new Map<number, HTMLButtonElement>());
 
   // Auto-expand all groups initially
-  const groups = useMemo(() => groupElements(targetElements), [targetElements]);
+  const groups = useMemo(() => groupElements(activeElements), [activeElements]);
 
   useEffect(() => {
     setExpandedGroups(new Set(groups.map(g => g.label)));
@@ -119,13 +121,13 @@ export const ElementsPane: React.FC = () => {
         </div>
         <div className="pane-header-actions">
           <span style={{ fontSize: 'var(--text-xxs)', color: 'var(--text-tertiary)' }}>
-            {targetElements.length.toLocaleString()}
+            {activeElements.length.toLocaleString()}
           </span>
         </div>
       </div>
 
       {/* Search */}
-      {targetElements.length > 0 && (
+      {activeElements.length > 0 && (
         <div style={{
           padding: 'var(--space-2) var(--space-3)',
           borderBottom: '1px solid var(--border)',
@@ -163,14 +165,14 @@ export const ElementsPane: React.FC = () => {
 
       {/* Content */}
       <div className="pane-content">
-        {targetElements.length === 0 ? (
+        {activeElements.length === 0 ? (
           <EmptyState
             icon={Layers}
             title="No elements extracted"
             description={
-              processingStatus === 'processing'
-                ? 'Extracting elements…'
-                : 'Upload and analyze documents to see extracted elements.'
+              activeDoc?.status === 'perceiving'
+                ? 'Reading document…'
+                : 'Add a document to see its extracted elements.'
             }
           />
         ) : (
@@ -229,8 +231,8 @@ export const ElementsPane: React.FC = () => {
       </div>
 
       {/* Inspector (inline when element selected) */}
-      {selectedIndex != null && targetElements[selectedIndex] && (
-        <ElementInspectorInline element={targetElements[selectedIndex]} />
+      {selectedIndex != null && activeElements[selectedIndex] && (
+        <ElementInspectorInline element={activeElements[selectedIndex]} />
       )}
     </div>
   );

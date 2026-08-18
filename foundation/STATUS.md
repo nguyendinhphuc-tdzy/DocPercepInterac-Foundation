@@ -1164,3 +1164,153 @@ trước, chỉ thêm fixture + test):**
 
 **Tests:** 70 → **73 passed, 0 skipped** (3 test mới, xác nhận chạy thật —
 không nằm trong danh sách skip của pytest run này).
+
+---
+
+## ✅ ĐÃ GIẢI QUYẾT (2026-08-18): Sửa lệch kiến trúc lớn — bỏ giả định GTPS khỏi lớp upload/task chung, tách Perceive khỏi Execute
+
+**Bối cảnh:** user chỉ ra đúng lỗi kiến trúc nghiêm trọng nhất từ trước tới
+giờ — lớp "generic" upload/task (`api/routes/process.py` cũ,
+`workspaceStore.ts`, mọi pane dựng trên đó) thực chất mã hoá cứng **1 luồng
+GTPS duy nhất** xuyên suốt: `upload → (đuôi file suy ra vai trò
+source/target) → tự động POST vào route CHÍNH LÀ
+applications/gpts/mapping_service.run_mapping → response CÓ HÌNH DẠNG
+source_elements/target_elements/mapped`. Không có ranh giới nào giữa
+**Perceive** (trích xuất + phân loại, generic) và **Execute** (chạy mapping
+GTPS, thuộc application). Phát hiện nghiêm trọng nhất: **`AgentComposer`
+khoá ô chat cho tới khi `processingStatus === 'done'`** — nghĩa là nơi
+DUY NHẤT user có thể "nêu yêu cầu" lại nằm SAU bước Execute nó lẽ ra phải
+đi trước — đảo ngược hoàn toàn nguyên tắc `Perceive → user nêu ý định →
+Execute`.
+
+**Audit trước khi sửa (leakage report đầy đủ đã trình bày cho user):** liệt
+kê từng leak với file:line cụ thể ở cả backend (`api/routes/process.py`)
+và frontend (`workspaceStore.ts`, `NewTaskPage.tsx`, `FileRail.tsx`,
+`AgentPane.tsx`/`AgentComposer.tsx`, `DocumentPane.tsx`/`ElementsPane.tsx`/
+`ResultsPane.tsx`, `agentStore.ts`, `api/client.ts`) — bao gồm đúng câu chữ
+user trích dẫn `"Add a target document (.docx) to continue"`
+(`NewTaskPage.tsx:211`).
+
+**Kiến trúc mới (đã lên plan mode, user duyệt kèm 12 điểm refinement):**
+
+**Backend:**
+- `api/routes/process.py` **xoá hẳn**, thay bằng 2 route file tách biệt
+  theo đúng ranh giới:
+  - `api/routes/documents.py` — **hoàn toàn generic, không import
+    `applications.*` nào**: `POST /api/documents` (1 file/lần — không phải
+    batch, để mỗi tài liệu có trạng thái độc lập thật sự
+    `perceiving`/`ready`/`error`, không phải 1 cờ workspace chung),
+    `GET /api/documents/<session_id>`, `GET .../elements/<doc_id>` (lazy —
+    không nhét sẵn elements vào response upload, tự thiết kế lại theo yêu
+    cầu review #3), `PATCH .../elements/<doc_id>` (sửa được **bất kỳ**
+    tài liệu nào, không chỉ "target" — tiện thể sửa luôn bug thật: XLSX
+    trước đây bị chặn sửa dù `WritebackEngine.apply_single_patch` vốn đã
+    hỗ trợ), `GET .../download/<doc_id>`. Có `manifest.json` per-session
+    (`doc_id` uuid4 — không bao giờ dùng filename/index/thứ tự upload làm
+    identity, đúng yêu cầu review #8).
+  - `api/routes/gpts.py` (mới) — **route DUY NHẤT dưới `api/` được phép
+    import `applications.gpts.*`**: `POST /api/gpts/map` nhận
+    `session_id` + `source_doc_ids`/`target_doc_id` **do caller khai báo
+    tường minh**, gọi thẳng `run_mapping()` **không đổi 1 dòng logic**.
+  - `applications/gpts/workbench_client.py` → di dời thành
+    `applications/workbench_client.py` (grep lại toàn repo trước khi dời —
+    đúng 2 nơi tham chiếu: `api/routes/agent.py`,
+    `tests/test_agent_route.py`, cả 2 đã cập nhật) — module này thật ra
+    generic (proxy Workbench), không phải riêng GTPS, bị đặt sai chỗ từ
+    trước.
+  - `api/routes/agent.py::_build_system_prompt` bỏ nhánh
+    `mapped_count`/`mapped_summary` — route Agent phải generic hoàn toàn,
+    enrichment riêng GTPS không thuộc về đây.
+- Test mới `tests/test_documents_route.py` (11 test) — gồm 1 test grep
+  tường minh xác nhận response `/api/documents` **không chứa** bất kỳ từ
+  khoá GTPS nào (`source_elements`, `mapped`, `gtps`, `hmv`,
+  `demo_rules`...), và 1 test end-to-end xác nhận `/api/gpts/map` vẫn ra
+  đúng 3 giá trị mapped y hệt `test_mapping_service.py` (chứng minh tách
+  route không đổi hành vi `run_mapping`). `tests/test_patch_element.py`
+  viết lại theo route mới + thêm test XLSX patch thật (mở lại file bằng
+  `openpyxl`, xác nhận đúng giá trị + file gốc không đổi — theo yêu cầu
+  review #7, không chỉ check HTTP 200).
+- **Bug thật bắt được khi viết test** (không phải leak, bug logic Python):
+  `api/routes/gpts.py` ban đầu viết `from api.routes.documents import
+  UPLOAD_ROOT` — import kiểu này đông cứng giá trị tại thời điểm import
+  đầu tiên; test monkeypatch `documents_module.UPLOAD_ROOT` sau đó không
+  ảnh hưởng tới `gpts.py` vì đây là 2 binding độc lập. Sửa bằng cách import
+  cả module (`from api.routes import documents as documents_module`) và
+  luôn đọc `documents_module.UPLOAD_ROOT` — tra cứu động tại thời điểm
+  gọi, không đông cứng.
+
+**Frontend:**
+- `state/workspaceStore.ts` viết lại hoàn toàn: bỏ hẳn `sourceFiles`/
+  `targetFiles`, thay bằng `documents: WorkspaceDocument[]` generic (mỗi
+  doc có `clientId` ổn định + `status` độc lập). `addDocument()` không suy
+  luận vai trò gì từ đuôi file. State `gptsMapping` tách hẳn riêng — đây
+  chính là khái niệm "task" (theo review #1), chỉ được tạo khi gọi
+  `runGptsMappingTask()` tường minh, không bao giờ tự động.
+- **Sửa quan trọng nhất (review #12):** `AgentComposer`/`AgentPane` giờ mở
+  khoá dựa trên "**có ≥1 document đã perceive xong**"
+  (`documents.some(d => d.status === 'ready')`), KHÔNG còn dựa vào trạng
+  thái xử lý GTPS — đúng thứ tự `Perceive → Agent sẵn sàng → user nêu yêu
+  cầu → Execute`.
+- `NewTaskPage.tsx` bỏ hẳn CTA `"Add a target document (.docx) to
+  continue"` và mọi gate 2-vai-trò — chỉ cần ≥1 file perceive xong là vào
+  được workspace.
+- Hành động GTPS mới, **cố tình phụ (secondary)** theo đúng review #5:
+  `components/gpts/GptsMappingAction.tsx` (thư mục riêng, soi gương
+  `applications/gpts/` bên backend) — chỉ xuất hiện qua menu "Applications"
+  phụ trong `WorkspaceHeader`, không phải CTA mặc định nào trên màn hình
+  upload. User tự chọn tài liệu nào là source/target ngay trong panel này
+  — đây là nơi DUY NHẤT vai trò được gán, luôn luôn tường minh.
+- `FileRail.tsx` bỏ nhãn "Target"/"Source", chỉ còn tên file + icon định
+  dạng + trạng thái perceive. `DocumentPane.tsx`/`ElementsPane.tsx` đọc
+  theo tài liệu đang active (`activeDocClientId`) thay vì `targetElements`
+  cứng — giờ xem/sửa được bất kỳ tài liệu nào, không chỉ "target".
+  `ResultsPane.tsx` đọc từ `gptsMapping` (đúng là view riêng của GTPS,
+  ngôn ngữ GTPS ở đây hợp lệ vì đã tường minh scoped, không phải leak).
+- **Bug thật bắt được qua browser thật (Playwright, cài tạm rồi gỡ đúng
+  quy ước cũ):** upload 2 file cùng lúc → `addDocument()` gọi
+  `uploadDocument()` cho từng file gần như đồng thời, cả 2 đều đọc
+  `get().sessionId` là `null` trước khi request đầu tiên kịp trả về →
+  BACKEND TỰ TẠO 2 SESSION KHÁC NHAU thay vì 1 session dùng chung. Hệ quả
+  thật thấy được: gọi `/api/gpts/map` báo `404 Unknown doc_id` dù UI vẫn
+  hiện đúng tên file. Sửa bằng `pendingSessionPromise` (module-level) —
+  lệnh upload đầu tiên trong 1 batch đồng bộ mới được tạo session mới,
+  các lệnh upload còn lại trong batch phải đợi promise đó rồi mới gọi API
+  với đúng `session_id`. Không phát hiện được nếu chỉ chạy `tsc`/pytest —
+  cần trình duyệt thật mới lộ ra (đúng lý do phải verify UI bằng browser
+  thật thay vì chỉ tin type-check).
+- **Bug thật thứ 2, cũng chỉ browser thật mới bắt được:** nút "Download" ở
+  `WorkspaceHeader` hiện ra ngay khi tài liệu active có `docId` — bất kể
+  đã từng sửa/patch gì chưa — bấm vào sẽ 404. Thêm field `hasPatch` vào
+  `WorkspaceDocument`, chỉ bật `true` sau khi `editElement`/`undoLastEdit`
+  hoặc `runGptsMappingTask` thành công; nút Download giờ chỉ hiện khi
+  `hasPatch === true`.
+
+**Verify thật qua browser (Playwright, cài tạm rồi gỡ — không còn trong
+`package.json`):**
+1. Upload 1 file `.docx` bất kỳ, không ghép cặp gì → không còn chữ "target
+   document (.docx)"/"Source"/"Target" nào trên màn hình upload → nút
+   "Open Workspace" xuất hiện ngay (không cần file thứ 2) → vào workspace
+   → **ô chat Agent đã mở khoá ngay**, chưa hề chạy hành động GTPS nào → 0
+   lỗi console.
+2. Upload cả 2 file demo HMV thật (source xlsx + target docx) — xác nhận
+   Output pane vẫn "No output yet" (chưa tự chạy gì) → mở menu
+   "Applications" (menu phụ, không phải CTA chính) → chọn GTPS Local File
+   Mapping → tự chọn vai trò source/target → bấm Run → **"Done — 3
+   elements mapped"**, Output pane hiện đúng 3 mapped value + đúng anchor
+   (`RPTs!E8`, `RPTs!F8`, `Financial Analysis!D7`) — khớp 100% với
+   `test_mapping_service.py`/`test_documents_route.py`'s regression test —
+   Download link xuất hiện đúng lúc, tải được, 0 lỗi console.
+
+**Không đụng:** `perception/`, `output/`, `eval/`,
+`applications/gpts/mapping_service.py`/`demo_mapper.py` (logic giữ
+nguyên 100%, chỉ đổi nơi gọi vào).
+
+**Cập nhật "Quy tắc không được phá vỡ":** ranh giới "module biết use-case
+cụ thể không được nằm ngoài `applications/`" giờ áp dụng rõ ràng luôn cho
+`api/` — chỉ đúng 1 file (`api/routes/gpts.py`) được phép import
+`applications.gpts.*`; mọi route khác dưới `api/` phải generic hoặc dùng
+`applications/` dùng chung (`applications/workbench_client.py`).
+
+**Tests:** 73 → **90 passed** (11 test mới `test_documents_route.py` + test
+XLSX patch mới + test agent route cập nhật). `tsc -b` sạch, `npm run
+build` sạch. Frontend verify bằng browser thật, không chỉ type-check.

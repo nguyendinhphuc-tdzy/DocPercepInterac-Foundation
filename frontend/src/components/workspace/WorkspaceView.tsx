@@ -9,15 +9,15 @@ import { DocumentPane } from '../document/DocumentPane';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 
 export const WorkspaceView: React.FC = () => {
-  const { workspacePreset, processingStatus, setCurrentView } = useWorkspaceStore();
+  const { workspacePreset, setCurrentView } = useWorkspaceStore();
 
-  // If no files loaded, redirect to new-task
+  // If no documents have been added, redirect to new-task.
   useEffect(() => {
-    const { sourceFiles, targetFiles } = useWorkspaceStore.getState();
-    if (sourceFiles.length === 0 && targetFiles.length === 0 && processingStatus === 'idle') {
+    const { documents } = useWorkspaceStore.getState();
+    if (documents.length === 0) {
       setCurrentView('new-task');
     }
-  }, [processingStatus, setCurrentView]);
+  }, [setCurrentView]);
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>

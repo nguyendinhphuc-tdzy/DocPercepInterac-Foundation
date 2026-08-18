@@ -1,5 +1,5 @@
 """Unit tests for applications/gpts/mapping_service.py — the orchestration
-layer behind POST /api/process.
+layer behind POST /api/gpts/map.
 """
 import sys
 from pathlib import Path

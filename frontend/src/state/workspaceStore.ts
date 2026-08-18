@@ -1,12 +1,20 @@
 import { create } from 'zustand';
-import { processDocuments, patchElement, ApiError } from '../api/client';
-import type { EditHistoryEntry, ElementRowData, MappedEntry } from '../types/element';
+import {
+  uploadDocument, fetchDocumentElements, patchElement, runGptsMapping, ApiError,
+} from '../api/client';
+import type {
+  DocumentFormat, EditHistoryEntry, ElementRowData, GptsMappingResult, MappedEntry,
+} from '../types/element';
 
-const SOURCE_EXTENSIONS = ['xlsx', 'pdf'];
-const TARGET_EXTENSIONS = ['docx'];
+// Perception layer: what formats the Foundation can even parse. This is
+// NOT a source/target distinction — every format here is treated
+// identically at upload time. (Mirrors api/routes/documents.py's
+// SUPPORTED_FORMATS.)
+const SUPPORTED_FORMATS: DocumentFormat[] = ['docx', 'xlsx', 'pdf'];
 
-function extensionOf(file: File): string {
-  return file.name.split('.').pop()?.toLowerCase() ?? '';
+function formatOf(file: File): DocumentFormat | null {
+  const ext = file.name.split('.').pop()?.toLowerCase();
+  return (SUPPORTED_FORMATS as string[]).includes(ext ?? '') ? (ext as DocumentFormat) : null;
 }
 
 export type AppView = 'home' | 'new-task' | 'workspace' | 'history' | 'settings';
@@ -21,6 +29,39 @@ export interface TaskHistoryEntry {
   status: 'done' | 'error';
 }
 
+// A single perceived (or perceiving) document. No role — nothing here
+// says "source" or "target". `clientId` is the stable identity used by the
+// UI before/independent of the server's `docId` (e.g. while a upload is
+// still in flight); once perceive resolves, `docId` is the identity used
+// for every server call (PATCH, elements fetch, download), per the
+// invariant that identity must never be a filename/array-index/upload-order.
+export interface WorkspaceDocument {
+  clientId: string;
+  file: File;
+  format: DocumentFormat | null;
+  status: 'perceiving' | 'ready' | 'error';
+  docId: string | null;
+  elementCount: number;
+  elements: ElementRowData[] | null; // fetched lazily — see ensureElementsLoaded
+  error: string | null;
+  // Whether a patched version exists on the server yet — from a manual
+  // edit or (for a target doc) a completed GTPS mapping run. Gates whether
+  // the download link is shown at all, so it never points at a 404.
+  hasPatch: boolean;
+}
+
+// The one and only place role assignment + task execution happens for the
+// GTPS application. This is a "task" (Context refinement #1) — distinct
+// from `documents` (Perceive-only) and never created implicitly by upload.
+interface GptsMappingState {
+  status: 'idle' | 'running' | 'done' | 'error';
+  sourceDocClientIds: string[];
+  targetDocClientId: string | null;
+  mapped: MappedEntry[];
+  downloadUrl: string | null;
+  error: string | null;
+}
+
 interface WorkspaceState {
   // ── Navigation ──
   currentView: AppView;
@@ -29,35 +70,29 @@ interface WorkspaceState {
   // ── Workspace layout ──
   workspacePreset: WorkspacePreset;
   setWorkspacePreset: (preset: WorkspacePreset) => void;
-  activeFileIndex: number;
-  setActiveFileIndex: (index: number) => void;
 
   // ── Task history (localStorage-backed) ──
   taskHistory: TaskHistoryEntry[];
   addTaskToHistory: (entry: TaskHistoryEntry) => void;
 
-  // ── Document intake ──
-  sourceFiles: File[];
-  targetFiles: File[];
+  // ── Session + documents (generic — Perceive only, no roles) ──
+  sessionId: string | null;
+  documents: WorkspaceDocument[];
+  activeDocClientId: string | null;
   intakeError: string | null;
   addDocument: (file: File) => void;
-  removeSourceFile: (index: number) => void;
-  removeTargetFile: (index: number) => void;
+  removeDocument: (clientId: string) => void;
+  setActiveDocClientId: (clientId: string | null) => void;
+  ensureElementsLoaded: (clientId: string) => Promise<void>;
   resetWorkspace: () => void;
 
-  // ── Processing (POST /api/process) ──
-  processId: string | null;
-  processingStatus: 'idle' | 'processing' | 'done' | 'error';
-  processingError: string | null;
-  sourceElements: ElementRowData[];
-  targetElements: ElementRowData[];
-  mapped: MappedEntry[];
-  downloadUrl: string | null;
-  runProcessing: () => Promise<void>;
+  // ── GTPS application (explicit action only — see components/gpts/) ──
+  gptsMapping: GptsMappingState;
+  runGptsMappingTask: (sourceDocClientIds: string[], targetDocClientId: string) => Promise<void>;
 
-  // ── Live editing (PATCH /api/elements/<id>) ──
+  // ── Live editing (PATCH /api/documents/<session_id>/elements/<doc_id>) ──
   editError: string | null;
-  editTargetElement: (index: number, newValue: string) => Promise<void>;
+  editElement: (clientId: string, index: number, newValue: string) => Promise<void>;
 
   // ── Undo ──
   editHistory: EditHistoryEntry[];
@@ -69,7 +104,6 @@ interface WorkspaceState {
   setHoveredElement: (index: number | null) => void;
 }
 
-// Load task history from localStorage
 function loadTaskHistory(): TaskHistoryEntry[] {
   try {
     const raw = localStorage.getItem('foundation_task_history');
@@ -87,21 +121,56 @@ function saveTaskHistory(history: TaskHistoryEntry[]) {
   }
 }
 
+// Coordinates concurrent uploads within the same synchronous batch (e.g.
+// selecting multiple files at once) so only ONE of them establishes the
+// shared session — see addDocument(). Module-level by design: it is pure
+// upload-sequencing plumbing, not UI state that any component reads.
+let pendingSessionPromise: Promise<string> | null = null;
+
+function applyUploadSummary(
+  set: (fn: (state: WorkspaceState) => Partial<WorkspaceState>) => void,
+  get: () => WorkspaceState,
+  clientId: string,
+  summary: { session_id: string; doc_id: string; status: 'ready' | 'error'; element_count: number; error: string | null },
+) {
+  set((state) => ({
+    sessionId: state.sessionId ?? summary.session_id,
+    documents: state.documents.map((d) => d.clientId === clientId
+      ? { ...d, docId: summary.doc_id, status: summary.status, elementCount: summary.element_count, error: summary.error }
+      : d),
+    // First successfully-perceived document becomes active automatically
+    // so panes have something to show without an extra click.
+    activeDocClientId: state.activeDocClientId ?? (summary.status === 'ready' ? clientId : null),
+  }));
+  if (summary.status === 'ready' && get().activeDocClientId === clientId) {
+    get().ensureElementsLoaded(clientId);
+  }
+}
+
+function newClientId(): string {
+  return typeof crypto !== 'undefined' && 'randomUUID' in crypto
+    ? crypto.randomUUID()
+    : `doc-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
+const idleGptsMapping: GptsMappingState = {
+  status: 'idle',
+  sourceDocClientIds: [],
+  targetDocClientId: null,
+  mapped: [],
+  downloadUrl: null,
+  error: null,
+};
+
 const initialWorkspaceState = {
   currentView: 'home' as AppView,
   workspacePreset: 'agent' as WorkspacePreset,
-  activeFileIndex: 0,
   taskHistory: loadTaskHistory(),
-  sourceFiles: [] as File[],
-  targetFiles: [] as File[],
+  sessionId: null as string | null,
+  documents: [] as WorkspaceDocument[],
+  activeDocClientId: null as string | null,
   intakeError: null as string | null,
-  processId: null as string | null,
-  processingStatus: 'idle' as const,
-  processingError: null as string | null,
-  sourceElements: [] as ElementRowData[],
-  targetElements: [] as ElementRowData[],
-  mapped: [] as MappedEntry[],
-  downloadUrl: null as string | null,
+  gptsMapping: idleGptsMapping,
   editError: null as string | null,
   editHistory: [] as EditHistoryEntry[],
   isUndoing: false,
@@ -114,7 +183,6 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   // ── Navigation ──
   setCurrentView: (view) => set({ currentView: view }),
   setWorkspacePreset: (preset) => set({ workspacePreset: preset }),
-  setActiveFileIndex: (index) => set({ activeFileIndex: index }),
 
   // ── Task history ──
   addTaskToHistory: (entry) => {
@@ -123,126 +191,225 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     saveTaskHistory(updated);
   },
 
-  // ── Document intake ──
+  // ── Documents: upload establishes context only, then Perceive runs
+  // automatically (extract + anchor + classify — no roles, no task) ──
   addDocument: (file) => {
-    const ext = extensionOf(file);
-    if (TARGET_EXTENSIONS.includes(ext)) {
-      set({ targetFiles: [file], intakeError: null });
-    } else if (SOURCE_EXTENSIONS.includes(ext)) {
-      const { sourceFiles } = get();
-      if (sourceFiles.length >= 10) {
-        set({ intakeError: 'You\'ve reached the recommended limit of 10 files.' });
-        return;
-      }
-      set((state) => ({ sourceFiles: [...state.sourceFiles, file], intakeError: null }));
-    } else {
+    const format = formatOf(file);
+    if (format === null) {
       set({
-        intakeError: `"${file.name}" isn't a supported type — use .xlsx/.pdf for source data or .docx for the target document.`,
+        intakeError: `"${file.name}" isn't a supported type — Foundation can perceive .docx, .xlsx, or .pdf.`,
       });
+      return;
+    }
+
+    const clientId = newClientId();
+    const doc: WorkspaceDocument = {
+      clientId, file, format, status: 'perceiving', docId: null, elementCount: 0,
+      elements: null, error: null, hasPatch: false,
+    };
+    set((state) => ({ documents: [...state.documents, doc], intakeError: null }));
+
+    (async () => {
+      try {
+        // Several documents can be added in the same synchronous batch
+        // (e.g. selecting multiple files at once) before any of their
+        // uploads has resolved — so `get().sessionId` may still be null
+        // for every one of them. Coordinate through `pendingSessionPromise`
+        // so only the first upload in a batch establishes the session;
+        // every other upload in the same batch waits for that session_id
+        // and then joins it explicitly, instead of each one silently
+        // minting its own separate session.
+        let sessionId = get().sessionId;
+        if (!sessionId) {
+          if (!pendingSessionPromise) {
+            pendingSessionPromise = uploadDocument(file, null).then((summary) => {
+              applyUploadSummary(set, get, clientId, summary);
+              return summary.session_id;
+            });
+            await pendingSessionPromise;
+            pendingSessionPromise = null;
+            return; // this document's own upload already applied above
+          }
+          sessionId = await pendingSessionPromise;
+        }
+
+        const summary = await uploadDocument(file, sessionId);
+        applyUploadSummary(set, get, clientId, summary);
+      } catch (err) {
+        set((state) => ({
+          documents: state.documents.map((d) => d.clientId === clientId
+            ? { ...d, status: 'error', error: err instanceof ApiError ? err.message : 'Upload failed.' }
+            : d),
+        }));
+      }
+    })();
+  },
+
+  removeDocument: (clientId) => set((state) => ({
+    documents: state.documents.filter((d) => d.clientId !== clientId),
+    activeDocClientId: state.activeDocClientId === clientId ? null : state.activeDocClientId,
+  })),
+
+  setActiveDocClientId: (clientId) => {
+    set({ activeDocClientId: clientId });
+    if (clientId) get().ensureElementsLoaded(clientId);
+  },
+
+  ensureElementsLoaded: async (clientId) => {
+    const { sessionId, documents } = get();
+    const doc = documents.find((d) => d.clientId === clientId);
+    if (!doc || !sessionId || !doc.docId || doc.status !== 'ready' || doc.elements !== null) return;
+
+    try {
+      const result = await fetchDocumentElements(sessionId, doc.docId);
+      set((state) => ({
+        documents: state.documents.map((d) => d.clientId === clientId
+          ? { ...d, elements: result.elements }
+          : d),
+      }));
+    } catch (err) {
+      set((state) => ({
+        documents: state.documents.map((d) => d.clientId === clientId
+          ? { ...d, error: err instanceof ApiError ? err.message : 'Failed to load elements.' }
+          : d),
+      }));
     }
   },
-  removeSourceFile: (index) => set((state) => ({
-    sourceFiles: state.sourceFiles.filter((_, i) => i !== index)
-  })),
-  removeTargetFile: (index) => set((state) => ({
-    targetFiles: state.targetFiles.filter((_, i) => i !== index)
-  })),
+
   resetWorkspace: () => set({
     ...initialWorkspaceState,
     currentView: get().currentView,
     taskHistory: get().taskHistory,
   }),
 
-  // ── Processing ──
-  runProcessing: async () => {
-    const { sourceFiles, targetFiles } = get();
-    if (sourceFiles.length === 0 || targetFiles.length === 0) return;
+  // ── GTPS application: the only place that ever assigns source/target
+  // roles, and only ever in response to an explicit call (see
+  // components/gpts/GptsMappingAction.tsx) — never automatic. ──
+  runGptsMappingTask: async (sourceDocClientIds, targetDocClientId) => {
+    const { sessionId, documents } = get();
+    const sourceDocs = sourceDocClientIds
+      .map((id) => documents.find((d) => d.clientId === id))
+      .filter((d): d is WorkspaceDocument => !!d && d.docId !== null);
+    const targetDoc = documents.find((d) => d.clientId === targetDocClientId);
+    if (!sessionId || sourceDocs.length === 0 || !targetDoc?.docId) return;
 
-    set({ processingStatus: 'processing', processingError: null });
+    set({
+      gptsMapping: {
+        ...idleGptsMapping,
+        status: 'running',
+        sourceDocClientIds,
+        targetDocClientId,
+      },
+    });
+
     try {
-      const result = await processDocuments(sourceFiles, targetFiles[0]);
+      const result: GptsMappingResult = await runGptsMapping(
+        sessionId,
+        sourceDocs.map((d) => d.docId as string),
+        targetDoc.docId,
+      );
       set({
-        processingStatus: 'done',
-        processId: result.process_id,
-        sourceElements: result.source_elements,
-        targetElements: result.target_elements,
-        mapped: result.mapped,
-        downloadUrl: result.download_url,
-        currentView: 'workspace',
+        gptsMapping: {
+          status: 'done',
+          sourceDocClientIds,
+          targetDocClientId,
+          mapped: result.mapped,
+          downloadUrl: result.download_url,
+          error: null,
+        },
       });
-      // Save to history
       get().addTaskToHistory({
-        id: result.process_id,
-        name: targetFiles[0].name,
-        fileCount: sourceFiles.length + targetFiles.length,
+        id: sessionId,
+        name: targetDoc.file.name,
+        fileCount: sourceDocs.length + 1,
         elementCount: result.target_elements.length,
         timestamp: new Date().toISOString(),
         status: 'done',
       });
+      // The GTPS run may have patched the target document's file on disk —
+      // drop the cached elements so the next view re-fetches the current
+      // (patched) content instead of the stale pre-mapping snapshot, and
+      // mark it as having a patch so the download link becomes visible.
+      if (result.download_url) {
+        set((state) => ({
+          documents: state.documents.map((d) => d.clientId === targetDocClientId
+            ? { ...d, elements: null, hasPatch: true }
+            : d),
+        }));
+      }
     } catch (err) {
-      set({
-        processingStatus: 'error',
-        processingError: err instanceof ApiError ? err.message : 'Unexpected error while processing documents.',
-      });
+      set((state) => ({
+        gptsMapping: {
+          ...state.gptsMapping,
+          status: 'error',
+          error: err instanceof ApiError ? err.message : 'GTPS mapping failed.',
+        },
+      }));
     }
   },
 
   // ── Live editing ──
-  editTargetElement: async (index, newValue) => {
-    const { processId, targetElements } = get();
-    const element = targetElements[index];
-    if (!processId || !element || newValue === element.text) return;
+  editElement: async (clientId, index, newValue) => {
+    const { sessionId, documents } = get();
+    const doc = documents.find((d) => d.clientId === clientId);
+    if (!sessionId || !doc?.docId || !doc.elements) return;
+    const element = doc.elements[index];
+    if (!element || newValue === element.text) return;
 
-    const previousElements = targetElements;
+    const previousElements = doc.elements;
     const previousValue = element.text;
-    set({
-      targetElements: targetElements.map((el, i) =>
-        i === index ? { ...el, text: newValue, source: 'manual' } : el
-      ),
+    set((state) => ({
+      documents: state.documents.map((d) => d.clientId === clientId
+        ? { ...d, elements: d.elements!.map((el, i) => i === index ? { ...el, text: newValue, source: 'manual' } : el) }
+        : d),
       editError: null,
-    });
+    }));
 
     try {
-      const result = await patchElement(processId, element.anchor, newValue);
+      await patchElement(sessionId, doc.docId, element.anchor, newValue);
       set((state) => ({
-        downloadUrl: result.download_url,
-        editHistory: [...state.editHistory, { index, anchor: element.anchor, previousValue }],
+        editHistory: [...state.editHistory, { docClientId: clientId, index, anchor: element.anchor, previousValue }],
+        documents: state.documents.map((d) => d.clientId === clientId ? { ...d, hasPatch: true } : d),
       }));
     } catch (err) {
-      set({
-        targetElements: previousElements,
+      set((state) => ({
+        documents: state.documents.map((d) => d.clientId === clientId
+          ? { ...d, elements: previousElements }
+          : d),
         editError: err instanceof ApiError ? err.message : 'Failed to save edit.',
-      });
+      }));
     }
   },
 
   // ── Undo ──
   undoLastEdit: async () => {
-    const { editHistory, targetElements, processId, isUndoing } = get();
-    if (editHistory.length === 0 || !processId || isUndoing) return;
+    const { editHistory, documents, sessionId, isUndoing } = get();
+    if (editHistory.length === 0 || !sessionId || isUndoing) return;
 
     const last = editHistory[editHistory.length - 1];
-    const element = targetElements[last.index];
+    const doc = documents.find((d) => d.clientId === last.docClientId);
+    if (!doc?.docId || !doc.elements) return;
+    const element = doc.elements[last.index];
     if (!element) return;
 
     const valueBeforeUndo = element.text;
-    set({
+    set((state) => ({
       editHistory: editHistory.slice(0, -1),
       isUndoing: true,
       editError: null,
-      targetElements: targetElements.map((el, i) =>
-        i === last.index ? { ...el, text: last.previousValue, source: 'manual' } : el
-      ),
-    });
+      documents: state.documents.map((d) => d.clientId === last.docClientId
+        ? { ...d, elements: d.elements!.map((el, i) => i === last.index ? { ...el, text: last.previousValue, source: 'manual' } : el) }
+        : d),
+    }));
 
     try {
-      const result = await patchElement(processId, last.anchor, last.previousValue);
-      set({ downloadUrl: result.download_url, isUndoing: false });
+      await patchElement(sessionId, doc.docId, last.anchor, last.previousValue);
+      set({ isUndoing: false });
     } catch (err) {
       set((state) => ({
-        targetElements: state.targetElements.map((el, i) =>
-          i === last.index ? { ...el, text: valueBeforeUndo } : el
-        ),
+        documents: state.documents.map((d) => d.clientId === last.docClientId
+          ? { ...d, elements: d.elements!.map((el, i) => i === last.index ? { ...el, text: valueBeforeUndo } : el) }
+          : d),
         editHistory: [...state.editHistory, last],
         editError: err instanceof ApiError ? err.message : 'Failed to undo edit.',
         isUndoing: false,

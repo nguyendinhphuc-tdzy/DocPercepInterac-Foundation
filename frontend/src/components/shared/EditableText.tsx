@@ -10,8 +10,8 @@ interface EditableTextProps {
 }
 
 // Click-to-edit text used by DocumentPane/ElementsPane for live edits that
-// write directly into the output document (PATCH /api/elements/<id>, see
-// state/workspaceStore.ts::editTargetElement).
+// write directly into the document (PATCH /api/documents/<session_id>/elements/<doc_id>,
+// see state/workspaceStore.ts::editElement).
 export const EditableText: React.FC<EditableTextProps> = ({
   value,
   onSave,

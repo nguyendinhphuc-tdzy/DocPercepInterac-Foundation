@@ -46,29 +46,25 @@ export const useAgentStore = create<AgentState>((set) => ({
       error: null,
     }));
 
-    // Gather context from workspace store
+    // Gather generic context from the workspace store — file names +
+    // element counts only. No source/target/mapped fields: the Agent route
+    // is deliberately use-case agnostic (api/routes/agent.py), and any
+    // GTPS-specific enrichment is that application's concern, not this
+    // generic chat's.
     const ws = useWorkspaceStore.getState();
-    const fileNames = [
-      ...ws.targetFiles.map(f => f.name),
-      ...ws.sourceFiles.map(f => f.name),
-    ];
+    const fileNames = ws.documents.map(d => d.file.name);
+    const totalElementCount = ws.documents.reduce((sum, d) => sum + d.elementCount, 0);
 
     try {
       set({ status: 'processing' });
 
       const response = await sendAgentChat({
-        process_id: ws.processId,
+        session_id: ws.sessionId,
         message: content.trim(),
         context: {
           file_names: fileNames,
           selected_element: null,
-          element_count: ws.targetElements.length,
-          mapped_count: ws.mapped.length,
-          mapped_summary: ws.mapped.slice(0, 20).map(m => ({
-            target_anchor: m.target_anchor,
-            target_value: m.target_value,
-            confidence: m.confidence,
-          })),
+          element_count: totalElementCount,
         },
       });
 
