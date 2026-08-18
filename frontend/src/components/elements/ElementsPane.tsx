@@ -8,7 +8,17 @@ import type { ElementRowData } from '../../types/element';
 import { idOf } from '../../utils/elementId';
 
 interface ElementGroup {
+  // Display label — NOT unique (e.g. multiple non-contiguous stretches of
+  // body content with no enclosing heading all read "Document"; a real 847-
+  // element KPMG fixture hits this: intro content before the first
+  // heading, then trailing footer/footnote content after the last one).
   label: string;
+  // Stable, unique per group instance — the actual React key / expand-
+  // collapse identity. Using `label` for both (the previous behavior)
+  // caused a real bug beyond the React "duplicate key" console warning:
+  // two same-labeled groups shared one Set entry in `expandedGroups`, so
+  // expanding one silently expanded/collapsed the other too.
+  key: string;
   type: 'section' | 'table' | 'sheet' | 'page';
   elements: ElementRowData[];
 }
@@ -30,19 +40,28 @@ const EMPTY_ELEMENTS: ElementRowData[] = [];
 function groupElements(elements: ElementRowData[]): ElementGroup[] {
   const groups: ElementGroup[] = [];
   let currentSection: ElementGroup | null = null;
+  let nextKey = 0;
+  const newKey = () => `g${nextKey++}`;
 
   const closeCurrentSection = () => {
     if (currentSection && currentSection.elements.length > 0) groups.push(currentSection);
     currentSection = null;
   };
 
+  // Only sheets/tables/pages ever get re-opened by label (a later element
+  // returning to the same sheet/table/page); DOCX's fallback "Document"
+  // section deliberately does NOT search-and-reuse an earlier same-labeled
+  // group — see the loop below, where a non-contiguous run always starts a
+  // fresh `currentSection` — so this only needs to dedupe within one
+  // contiguous run, which `groups.find` naturally handles since a new
+  // group is pushed (and `currentSection` cleared) the moment the run ends.
   const pushOrAppend = (label: string, type: ElementGroup['type'], el: ElementRowData) => {
     const existing = groups.find((g) => g.label === label && g.type === type);
     if (existing) {
       existing.elements.push(el);
     } else {
       closeCurrentSection();
-      groups.push({ label, type, elements: [el] });
+      groups.push({ label, key: newKey(), type, elements: [el] });
     }
   };
 
@@ -61,12 +80,17 @@ function groupElements(elements: ElementRowData[]): ElementGroup[] {
     // (1-indexed for display — table_index itself is 0-indexed internally).
     if (el.type === 'heading') {
       closeCurrentSection();
-      currentSection = { label: el.text || `Section ${el.index}`, type: 'section', elements: [el] };
+      currentSection = { label: el.text || `Section ${el.index}`, key: newKey(), type: 'section', elements: [el] };
     } else if (el.type === 'cell' && el.anchor.table_index !== null && el.anchor.table_index !== undefined) {
       pushOrAppend(`Table ${el.anchor.table_index + 1}`, 'table', el);
     } else {
       if (!currentSection) {
-        currentSection = { label: 'Document', type: 'section', elements: [] };
+        // Deliberately a FRESH group every time a non-contiguous run of
+        // "no enclosing heading" content starts (e.g. intro content before
+        // the first heading, then unrelated trailing footer/footnote
+        // content after the last one — both genuinely read "Document",
+        // but must not become the same, or even a merged, group).
+        currentSection = { label: 'Document', key: newKey(), type: 'section', elements: [] };
       }
       currentSection.elements.push(el);
     }
@@ -76,7 +100,7 @@ function groupElements(elements: ElementRowData[]): ElementGroup[] {
 
   // If no groups were created, make one flat group
   if (groups.length === 0 && elements.length > 0) {
-    groups.push({ label: 'All Elements', type: 'section', elements });
+    groups.push({ label: 'All Elements', key: newKey(), type: 'section', elements });
   }
 
   return groups;
@@ -95,7 +119,7 @@ export const ElementsPane: React.FC = () => {
   const groups = useMemo(() => groupElements(activeElements), [activeElements]);
 
   useEffect(() => {
-    setExpandedGroups(new Set(groups.map(g => g.label)));
+    setExpandedGroups(new Set(groups.map(g => g.key)));
   }, [groups]);
 
   // Scroll to hovered element
@@ -128,11 +152,11 @@ export const ElementsPane: React.FC = () => {
       .filter(g => g.elements.length > 0);
   }, [groups, searchQuery]);
 
-  const toggleGroup = (label: string) => {
+  const toggleGroup = (key: string) => {
     setExpandedGroups(prev => {
       const next = new Set(prev);
-      if (next.has(label)) next.delete(label);
-      else next.add(label);
+      if (next.has(key)) next.delete(key);
+      else next.add(key);
       return next;
     });
   };
@@ -212,12 +236,12 @@ export const ElementsPane: React.FC = () => {
         ) : (
           <div className="element-tree">
             {filteredGroups.map((group) => {
-              const isExpanded = expandedGroups.has(group.label);
+              const isExpanded = expandedGroups.has(group.key);
               return (
-                <div key={group.label} className="element-tree-group">
+                <div key={group.key} className="element-tree-group">
                   <button
                     className="element-tree-group-header"
-                    onClick={() => toggleGroup(group.label)}
+                    onClick={() => toggleGroup(group.key)}
                     aria-expanded={isExpanded}
                   >
                     {isExpanded ? <ChevronDown size={14} /> : <ChevronRight size={14} />}

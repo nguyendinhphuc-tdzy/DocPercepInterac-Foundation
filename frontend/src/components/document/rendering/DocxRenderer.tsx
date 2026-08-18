@@ -15,6 +15,42 @@ import type { DocumentRendererProps } from './types';
 // separate image sanitization is needed here.
 const ALLOWED_LINK_SCHEMES = ['http:', 'https:', 'mailto:'];
 
+// Pre-layout raw text of a docx-preview element (its parsed `elem`, before
+// any DOM/CSS is applied) — mirrors python-docx's `Run.text`/`Paragraph.text`
+// semantics EXACTLY, verified empirically against a real fixture (a KPMG
+// Local File template, 314 top-level paragraphs) before this was written,
+// not assumed from reading either library's source alone:
+//   - <w:t>            -> its text
+//   - <w:tab/>         -> '\t'          (python-docx: same)
+//   - <w:noBreakHyphen/> -> '-'         (python-docx: same, confirmed via a
+//     real STYLEREF/SEQ field construct in the fixture, even though
+//     python-docx's own docstring doesn't mention it)
+//   - <w:br> (line break only) -> '\n'  (python-docx: same; page/column
+//     breaks are NOT text and are excluded, matching python-docx)
+//   - deletedText / instruction (field codes) -> '' (python-docx: `.text`
+//     is built from direct-child `<w:r>` only — CT_P.r_lst is
+//     `ZeroOrMore("w:r")`, and lxml's plain-tag `findall` matches direct
+//     children only, so text wrapped in `<w:ins>`/`<w:del>` a level deeper
+//     is invisible to python-docx regardless; instruction text was never
+//     visible content to begin with)
+//   - drawing / vmlPicture -> '' and NEVER recursed into — python-docx's
+//     Run.text docstring explicitly ignores `<w:drawing>`, and empirically
+//     docx-preview falls back to VML (`vmlPicture`, not `drawing`) for at
+//     least "wps" text-box shapes; recursing into either would pull a text
+//     box's own nested paragraphs into the host paragraph's text, which is
+//     exactly the discrepancy this function exists to avoid.
+function rawTextOf(node: any): string {
+  if (!node) return '';
+  if (node.type === 'text') return node.text ?? '';
+  if (node.type === 'tab') return '\t';
+  if (node.type === 'noBreakHyphen') return '-';
+  if (node.type === 'break') return node.break === 'textWrapping' ? '\n' : '';
+  if (node.type === 'deletedText' || node.type === 'instruction') return '';
+  if (node.type === 'drawing' || node.type === 'vmlPicture') return '';
+  if (Array.isArray(node.children)) return node.children.map(rawTextOf).join('');
+  return '';
+}
+
 function sanitizeRenderedLinks(container: HTMLElement) {
   for (const a of Array.from(container.querySelectorAll('a[href]'))) {
     const href = a.getAttribute('href') ?? '';
@@ -70,6 +106,16 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
         if (cancelled || !bodyRef.current || !styleRef.current) return;
         bodyRef.current.innerHTML = '';
         styleRef.current.innerHTML = '';
+        // `onElementRendered` is our own addition (patches/docx-preview+0.4.0.patch
+        // — see patch-package), not part of docx-preview's upstream Options
+        // type, hence the cast. Only stamps <p> nodes: `data-el-style` /
+        // `data-el-rawtext` become the (styleId, text[:50]) matching key
+        // docxAnchorMapping.ts's post-pass resolves against the backend's
+        // own anchor.style_id + el.text — computed from the SAME pre-layout
+        // `elem` docx-preview is about to render, never from `.textContent`
+        // after layout (which is what produced the 526/847 regression this
+        // replaces). No `closest()` here — the node isn't attached to the
+        // document tree yet at this point in rendering.
         await docxPreview.renderAsync(source, bodyRef.current, styleRef.current, {
           className: 'docx-render',
           inWrapper: true,
@@ -79,7 +125,12 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
           renderFootnotes: true,
           renderEndnotes: true,
           useBase64URL: true,
-        });
+          onElementRendered: (elem: any, node: HTMLElement) => {
+            if (node.tagName !== 'P') return;
+            node.setAttribute('data-el-style', elem.styleName ?? 'Normal');
+            node.setAttribute('data-el-rawtext', rawTextOf(elem).trim().slice(0, 50));
+          },
+        } as Parameters<typeof docxPreview.renderAsync>[3]);
         if (cancelled || !bodyRef.current) return;
         sanitizeRenderedLinks(bodyRef.current);
 

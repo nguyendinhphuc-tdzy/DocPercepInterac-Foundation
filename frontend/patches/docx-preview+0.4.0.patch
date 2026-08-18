@@ -1,0 +1,23 @@
+diff --git a/node_modules/docx-preview/dist/docx-preview.mjs b/node_modules/docx-preview/dist/docx-preview.mjs
+index 97fe1ba..bc2628b 100644
+--- a/node_modules/docx-preview/dist/docx-preview.mjs
++++ b/node_modules/docx-preview/dist/docx-preview.mjs
+@@ -3392,6 +3392,18 @@ section.${c}>footer { z-index: 1; }
+         }
+     }
+     renderElement(elem) {
++        const __node = this.renderElementInner(elem);
++        const __cb = this.options && this.options.onElementRendered;
++        if (__cb) {
++            if (Array.isArray(__node)) {
++                for (const __n of __node) if (__n && __n.nodeType === 1) __cb(elem, __n);
++            } else if (__node && __node.nodeType === 1) {
++                __cb(elem, __node);
++            }
++        }
++        return __node;
++    }
++    renderElementInner(elem) {
+         switch (elem.type) {
+             case DomType.Paragraph:
+                 return this.renderParagraph(elem);
