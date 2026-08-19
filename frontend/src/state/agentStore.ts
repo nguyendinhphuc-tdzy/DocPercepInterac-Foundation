@@ -1,6 +1,13 @@
 import { create } from 'zustand';
-import { sendAgentChat } from '../api/agent';
+import {
+  sendAgentChat,
+  executeAgentAction,
+  type AgentStep,
+  type Citation,
+  type ProposedAction,
+} from '../api/agent';
 import { useWorkspaceStore } from './workspaceStore';
+import { useSyncStore } from './syncStore';
 
 export type AgentStatus = 'idle' | 'preparing' | 'processing' | 'completed' | 'error';
 
@@ -9,7 +16,9 @@ export interface AgentMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
-  steps?: { label: string; status: 'done' | 'active' | 'pending' }[];
+  steps?: AgentStep[];
+  citations?: Citation[];
+  proposedActions?: ProposedAction[];
 }
 
 interface AgentState {
@@ -17,6 +26,8 @@ interface AgentState {
   status: AgentStatus;
   error: string | null;
   sendMessage: (content: string) => Promise<void>;
+  confirmAction: (messageId: string, actionId: string) => Promise<void>;
+  rejectAction: (messageId: string, actionId: string) => void;
   clearMessages: () => void;
 }
 
@@ -46,13 +57,10 @@ export const useAgentStore = create<AgentState>((set) => ({
       error: null,
     }));
 
-    // Gather generic context from the workspace store — file names +
-    // element counts only. No source/target/mapped fields: the Agent route
-    // is deliberately use-case agnostic (api/routes/agent.py), and any
-    // GTPS-specific enrichment is that application's concern, not this
-    // generic chat's.
     const ws = useWorkspaceStore.getState();
-    const fileNames = ws.documents.map(d => d.file.name);
+    const sync = useSyncStore.getState();
+    const activeDoc = ws.documents.find((d) => d.clientId === ws.activeDocClientId);
+    const fileNames = ws.documents.map((d) => d.file.name);
     const totalElementCount = ws.documents.reduce((sum, d) => sum + d.elementCount, 0);
 
     try {
@@ -62,8 +70,9 @@ export const useAgentStore = create<AgentState>((set) => ({
         session_id: ws.sessionId,
         message: content.trim(),
         context: {
+          active_doc_id: activeDoc?.docId ?? null,
+          selected_element_id: sync.selectedElementId,
           file_names: fileNames,
-          selected_element: null,
           element_count: totalElementCount,
         },
       });
@@ -74,6 +83,8 @@ export const useAgentStore = create<AgentState>((set) => ({
         content: response.response,
         timestamp: new Date().toISOString(),
         steps: response.steps,
+        citations: response.citations,
+        proposedActions: response.proposed_actions,
       };
 
       set((state) => ({
@@ -82,7 +93,7 @@ export const useAgentStore = create<AgentState>((set) => ({
       }));
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'An unexpected error occurred.';
-      
+
       const errorAssistantMsg: AgentMessage = {
         id: nextId(),
         role: 'assistant',
@@ -98,5 +109,70 @@ export const useAgentStore = create<AgentState>((set) => ({
     }
   },
 
+  confirmAction: async (messageId: string, actionId: string) => {
+    const ws = useWorkspaceStore.getState();
+    if (!ws.sessionId) return;
+
+    try {
+      const result = await executeAgentAction({
+        session_id: ws.sessionId,
+        action_id: actionId,
+      });
+
+      if (result.status === 'success') {
+        // Refresh active document from Foundation backend
+        const targetDoc = ws.documents.find((d) => d.docId === result.doc_id);
+        if (targetDoc && targetDoc.elements) {
+          const updatedElements = targetDoc.elements.map((el) => {
+            if (el.element_id === result.element_id) {
+              return { ...el, text: result.new_value, value: result.new_value };
+            }
+            return el;
+          });
+          useWorkspaceStore.setState((s) => ({
+            documents: s.documents.map((d) =>
+              d.clientId === targetDoc.clientId
+                ? { ...d, elements: updatedElements, hasPatch: true }
+                : d
+            ),
+          }));
+        }
+
+        // Mark action as applied in message state
+        set((state) => ({
+          messages: state.messages.map((m) =>
+            m.id === messageId && m.proposedActions
+              ? {
+                  ...m,
+                  proposedActions: m.proposedActions.map((a) =>
+                    a.action_id === actionId ? { ...a, status: 'applied' } : a
+                  ),
+                }
+              : m
+          ),
+        }));
+      }
+    } catch (err) {
+      const errorMsg = err instanceof Error ? err.message : 'Action execution failed.';
+      alert(`Could not execute action: ${errorMsg}`);
+    }
+  },
+
+  rejectAction: (messageId: string, actionId: string) => {
+    set((state) => ({
+      messages: state.messages.map((m) =>
+        m.id === messageId && m.proposedActions
+          ? {
+              ...m,
+              proposedActions: m.proposedActions.map((a) =>
+                a.action_id === actionId ? { ...a, status: 'rejected' } : a
+              ),
+            }
+          : m
+      ),
+    }));
+  },
+
   clearMessages: () => set({ messages: [], status: 'idle', error: null }),
 }));
+
