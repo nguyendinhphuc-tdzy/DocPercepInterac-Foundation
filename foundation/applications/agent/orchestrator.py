@@ -60,7 +60,19 @@ class AgentOrchestrator:
         # SLICE 4: PROPOSED EDIT / MUTATION INTENT
         # ====================================================================
         is_edit_request = any(k in msg_lower for k in ["change", "update", "modify", "replace", "set ", "edit "])
-        if is_edit_request and context.selected_element and session_id:
+        if is_edit_request and session_id:
+            if not context.selected_element:
+                steps.append(AgentStep(label="Detected edit request without target selection", status="done"))
+                return AgentResponse(
+                    response="To propose an edit or update a value, please select the target element (cell or paragraph) in the document canvas first, then specify the new value.",
+                    status="success",
+                    run_id=run_id,
+                    intent="clarify_target",
+                    steps=steps,
+                    citations=[],
+                    proposed_actions=[],
+                )
+
             sel = context.selected_element
             doc_id = sel["doc_id"]
             el_id = sel["element_id"]
@@ -187,17 +199,20 @@ class AgentOrchestrator:
         # ====================================================================
         # SLICE 2: SEARCH / INSPECT ACROSS ELEMENTS
         # ====================================================================
-        search_keywords = ["find", "search", "list", "show me", "locate", "where is", "revenue", "table", "tax"]
-        if session_id and context.active_doc_id and any(k in msg_lower for k in search_keywords):
+        search_keywords = ["find", "search", "list", "show me", "locate", "where is", "where are", "revenue", "table", "tax"]
+        is_search = any(k in msg_lower for k in search_keywords)
+        if session_id and context.active_doc_id and is_search:
             # Extract query term
             query_term = message
-            for prefix in ["find ", "search for ", "search ", "list ", "show me ", "where is "]:
+            for prefix in ["find ", "search for ", "search ", "list ", "show me ", "where is ", "where are ", "locate "]:
                 if msg_lower.startswith(prefix):
                     query_term = message[len(prefix):].strip()
                     break
 
-            # Strip trailing context phrases
+            # Strip trailing context phrases and question marks
             query_term = re.sub(r"\s+in\s+(this\s+|the\s+)?(document|file|sheet|section|table|report).*$", "", query_term, flags=re.IGNORECASE).strip()
+            query_term = re.sub(r"\s+(located|found)\??$", "", query_term, flags=re.IGNORECASE).strip()
+            query_term = query_term.rstrip("?.! ")
 
             search_results = ContextBuilder.search_elements(
                 session_id=session_id,
@@ -239,11 +254,35 @@ class AgentOrchestrator:
                     citations=citations,
                     proposed_actions=[],
                 )
+            else:
+                steps.append(AgentStep(label=f"Searched document for '{query_term}' (0 matches)", status="done"))
+                return AgentResponse(
+                    response=f"No elements matching **'{query_term}'** were found in the active document.",
+                    status="success",
+                    run_id=run_id,
+                    intent="search_elements",
+                    steps=steps,
+                    citations=[],
+                    proposed_actions=[],
+                )
 
         # ====================================================================
         # SLICE 3: CROSS-DOCUMENT COMPARE
         # ====================================================================
-        if "compare" in msg_lower and len(context.available_documents) >= 2:
+        if "compare" in msg_lower:
+            if len(context.available_documents) < 2:
+                steps.append(AgentStep(label="Evaluated comparison prerequisites", status="done"))
+                doc_avail = len(context.available_documents)
+                return AgentResponse(
+                    response=f"Cross-document comparison requires at least 2 documents in the workspace. Currently, {doc_avail} document is loaded. Please add another document to compare.",
+                    status="success",
+                    run_id=run_id,
+                    intent="clarify_comparison",
+                    steps=steps,
+                    citations=[],
+                    proposed_actions=[],
+                )
+
             steps.append(AgentStep(label=f"Analyzed {len(context.available_documents)} documents for comparison", status="done"))
             for doc in context.available_documents[:2]:
                 # Add top-level citation per document
