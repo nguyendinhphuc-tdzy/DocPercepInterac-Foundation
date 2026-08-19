@@ -5,6 +5,9 @@ provenance Citation generation, and governed action proposals.
 """
 from __future__ import annotations
 
+import hashlib
+import json
+from pathlib import Path
 import re
 import uuid
 from typing import Any, Optional
@@ -24,6 +27,8 @@ from applications.workbench_client import (
     WorkbenchConfigError,
     chat_completion,
 )
+
+UPLOAD_ROOT = Path(__file__).resolve().parents[2] / ".uploads"
 
 
 class AgentOrchestrator:
@@ -113,7 +118,26 @@ class AgentOrchestrator:
                     proposed_actions=[],
                 )
 
-            # Create Governed ProposedAction
+            # Compute SHA-256 document hash and value fingerprint for tamper-proof freshness
+            doc_hash = None
+            session_dir = UPLOAD_ROOT / session_id
+            manifest_path = session_dir / "manifest.json"
+            if manifest_path.exists():
+                try:
+                    manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                    entry = manifest.get("documents", {}).get(doc_id)
+                    if entry:
+                        stored_path = session_dir / entry["stored_filename"]
+                        patched = stored_path.with_name(f"{stored_path.stem}_patched{stored_path.suffix}")
+                        curr = patched if patched.exists() else stored_path
+                        if curr.exists():
+                            doc_hash = hashlib.sha256(curr.read_bytes()).hexdigest()
+                except Exception:
+                    pass
+
+            val_fp = hashlib.sha256(current_val.strip().encode("utf-8")).hexdigest()[:16]
+
+            # Create Governed ProposedAction with anchor and hash
             proposal = ProposedAction(
                 doc_id=doc_id,
                 doc_name=sel.get("doc_name", ""),
@@ -124,6 +148,9 @@ class AgentOrchestrator:
                 rationale=f"User requested change via prompt: '{message}'",
                 requires_confirmation=True,
                 status="proposed",
+                doc_hash=doc_hash,
+                value_fingerprint=val_fp,
+                target_anchor=sel.get("anchor"),
             )
             ProposalStore.save_proposal(session_id, proposal)
             proposed_actions.append(proposal)
@@ -201,70 +228,84 @@ class AgentOrchestrator:
         # ====================================================================
         search_keywords = ["find", "search", "list", "show me", "locate", "where is", "where are", "revenue", "table", "tax"]
         is_search = any(k in msg_lower for k in search_keywords)
-        if session_id and context.active_doc_id and is_search:
-            # Extract query term
-            query_term = message
-            for prefix in ["find ", "search for ", "search ", "list ", "show me ", "where is ", "where are ", "locate "]:
-                if msg_lower.startswith(prefix):
-                    query_term = message[len(prefix):].strip()
-                    break
-
-            # Strip trailing context phrases and question marks
-            query_term = re.sub(r"\s+in\s+(this\s+|the\s+)?(document|file|sheet|section|table|report).*$", "", query_term, flags=re.IGNORECASE).strip()
-            query_term = re.sub(r"\s+(located|found)\??$", "", query_term, flags=re.IGNORECASE).strip()
-            query_term = query_term.rstrip("?.! ")
-
-            search_results = ContextBuilder.search_elements(
-                session_id=session_id,
-                doc_id=context.active_doc_id,
-                query=query_term,
-                limit=5,
-            )
-
-            if search_results:
-                steps.append(AgentStep(label=f"Searched document for '{query_term}' ({len(search_results)} matches)", status="done"))
-                for res in search_results:
-                    citations.append(
-                        Citation(
-                            doc_id=res["doc_id"],
-                            doc_name=res.get("doc_name"),
-                            element_id=res["element_id"],
-                            element_name=res.get("name", ""),
-                            type=res.get("type", "element"),
-                            text_snippet=res.get("text", "")[:100],
-                        )
-                    )
-
-                llm_text = cls._call_workbench_or_fallback(
-                    message=message,
-                    system_prompt=cls._build_search_prompt(context, search_results),
-                    fallback_text=(
-                        f"Found **{len(search_results)}** matching elements for **'{query_term}'** in document:\n\n"
-                        + "\n".join([f"- **{r['name']}** (`{r['type']}`): {r['text'][:120]}" for r in search_results])
-                    ),
-                )
-                steps.append(AgentStep(label="Generated provenance answer", status="done"))
-
+        if session_id and is_search:
+            # Check for ambiguous document context
+            if not context.active_doc_id and len(context.available_documents) > 1:
+                steps.append(AgentStep(label="Ambiguous active document context", status="done"))
                 return AgentResponse(
-                    response=llm_text,
+                    response="Multiple documents are loaded in the workspace. Please select or specify which document you would like to search.",
                     status="success",
                     run_id=run_id,
-                    intent="search_elements",
-                    steps=steps,
-                    citations=citations,
-                    proposed_actions=[],
-                )
-            else:
-                steps.append(AgentStep(label=f"Searched document for '{query_term}' (0 matches)", status="done"))
-                return AgentResponse(
-                    response=f"No elements matching **'{query_term}'** were found in the active document.",
-                    status="success",
-                    run_id=run_id,
-                    intent="search_elements",
+                    intent="clarify_document",
                     steps=steps,
                     citations=[],
                     proposed_actions=[],
                 )
+
+            if context.active_doc_id:
+                # Extract query term
+                query_term = message
+                for prefix in ["find ", "search for ", "search ", "list ", "show me ", "where is ", "where are ", "locate "]:
+                    if msg_lower.startswith(prefix):
+                        query_term = message[len(prefix):].strip()
+                        break
+
+                # Strip trailing context phrases and question marks
+                query_term = re.sub(r"\s+in\s+(this\s+|the\s+)?(document|file|sheet|section|table|report).*$", "", query_term, flags=re.IGNORECASE).strip()
+                query_term = re.sub(r"\s+(located|found)\??$", "", query_term, flags=re.IGNORECASE).strip()
+                query_term = query_term.rstrip("?.! ")
+
+                search_results = ContextBuilder.search_elements(
+                    session_id=session_id,
+                    doc_id=context.active_doc_id,
+                    query=query_term,
+                    limit=5,
+                )
+
+                if search_results:
+                    steps.append(AgentStep(label=f"Searched document for '{query_term}' ({len(search_results)} matches)", status="done"))
+                    for res in search_results:
+                        citations.append(
+                            Citation(
+                                doc_id=res["doc_id"],
+                                doc_name=res.get("doc_name"),
+                                element_id=res["element_id"],
+                                element_name=res.get("name", ""),
+                                type=res.get("type", "element"),
+                                text_snippet=res.get("text", "")[:100],
+                            )
+                        )
+
+                    llm_text = cls._call_workbench_or_fallback(
+                        message=message,
+                        system_prompt=cls._build_search_prompt(context, search_results),
+                        fallback_text=(
+                            f"Found **{len(search_results)}** matching elements for **'{query_term}'** in document:\n\n"
+                            + "\n".join([f"- **{r['name']}** (`{r['type']}`): {r['text'][:120]}" for r in search_results])
+                        ),
+                    )
+                    steps.append(AgentStep(label="Generated provenance answer", status="done"))
+
+                    return AgentResponse(
+                        response=llm_text,
+                        status="success",
+                        run_id=run_id,
+                        intent="search_elements",
+                        steps=steps,
+                        citations=citations,
+                        proposed_actions=[],
+                    )
+                else:
+                    steps.append(AgentStep(label=f"Searched document for '{query_term}' (0 matches)", status="done"))
+                    return AgentResponse(
+                        response=f"No elements matching **'{query_term}'** were found in the active document.",
+                        status="success",
+                        run_id=run_id,
+                        intent="search_elements",
+                        steps=steps,
+                        citations=[],
+                        proposed_actions=[],
+                    )
 
         # ====================================================================
         # SLICE 3: CROSS-DOCUMENT COMPARE

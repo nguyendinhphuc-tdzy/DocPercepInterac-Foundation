@@ -20,7 +20,7 @@ export interface ProposedAction {
   proposed_value: string;
   rationale: string;
   requires_confirmation: boolean;
-  status: 'proposed' | 'applied' | 'rejected' | 'stale';
+  status: 'proposed' | 'applied' | 'rejected' | 'expired' | 'stale' | 'failed';
 }
 
 export interface AgentStep {
@@ -64,6 +64,17 @@ export interface ExecuteActionResponse {
   new_value: string;
   download_url?: string;
   self_heal?: string | null;
+  error?: string;
+}
+
+export interface RejectActionRequest {
+  session_id: string;
+  action_id: string;
+}
+
+export interface RejectActionResponse {
+  status: 'rejected';
+  action_id: string;
   error?: string;
 }
 
@@ -111,5 +122,28 @@ export async function executeAgentAction(request: ExecuteActionRequest): Promise
   }
 
   return body as ExecuteActionResponse;
+}
+
+export async function rejectAgentAction(request: RejectActionRequest): Promise<RejectActionResponse> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/agent/action/reject`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(request),
+    });
+  } catch {
+    throw new Error(
+      `Could not reach the Foundation API at ${API_BASE_URL}. Is the Flask server running?`
+    );
+  }
+
+  const body = await response.json().catch(() => null);
+
+  if (!response.ok) {
+    throw new Error(body?.error ?? `Action rejection failed (HTTP ${response.status})`);
+  }
+
+  return body as RejectActionResponse;
 }
 

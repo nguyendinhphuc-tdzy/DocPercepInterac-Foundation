@@ -29,7 +29,7 @@ BASE_URL = "https://api.workbench.kpmg/genai/azure/openai"
 MODEL = "gpt-5-4-2026-03-05-gs-ae"
 API_VERSION = "2024-12-01-preview"
 REGION_OVERRIDE = "australiaeast"
-REQUEST_TIMEOUT = 300  # seconds
+REQUEST_TIMEOUT = 60  # seconds
 
 
 class WorkbenchConfigError(Exception):
@@ -37,7 +37,7 @@ class WorkbenchConfigError(Exception):
 
 
 class WorkbenchApiError(Exception):
-    """Raised when the Workbench API returns a non-success status."""
+    """Raised when the Workbench API returns a non-success status or times out."""
 
 
 @dataclass
@@ -83,7 +83,7 @@ def chat_completion(
 
     Raises:
         WorkbenchConfigError: Missing credentials.
-        WorkbenchApiError: Non-success HTTP response.
+        WorkbenchApiError: Non-success HTTP response or timeout.
         requests.exceptions.*: Network-level failures.
     """
     subscription_key, charge_code = _get_credentials()
@@ -103,9 +103,14 @@ def chat_completion(
         "temperature": temperature,
     }
 
-    response = requests.post(
-        url, headers=headers, params=params, json=json_body, timeout=REQUEST_TIMEOUT
-    )
+    try:
+        response = requests.post(
+            url, headers=headers, params=params, json=json_body, timeout=REQUEST_TIMEOUT
+        )
+    except requests.Timeout as exc:
+        raise WorkbenchApiError(f"Workbench request timed out after {REQUEST_TIMEOUT}s.") from exc
+    except requests.RequestException as exc:
+        raise WorkbenchApiError(f"Network error connecting to Workbench: {exc}") from exc
 
     if not response.ok:
         # Build a helpful error message without leaking credentials

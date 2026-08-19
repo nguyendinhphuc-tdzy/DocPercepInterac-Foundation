@@ -88,11 +88,15 @@ class ContextBuilder:
                 "element_count": entry.get("element_count", 0),
             })
 
-        # If active doc is not explicitly specified, default to first ready document
+        # If active doc is not explicitly specified, default to first document ONLY if exactly 1 document is loaded
         effective_doc_id = active_doc_id
-        if not effective_doc_id and context.available_documents:
-            effective_doc_id = context.available_documents[0]["doc_id"]
-            context.active_doc_id = effective_doc_id
+        if not effective_doc_id:
+            if len(context.available_documents) == 1:
+                effective_doc_id = context.available_documents[0]["doc_id"]
+                context.active_doc_id = effective_doc_id
+            else:
+                # Ambiguous document context when multiple documents are present without selection
+                context.active_doc_id = None
 
         # Resolve selected element if requested
         if effective_doc_id and selected_element_id:

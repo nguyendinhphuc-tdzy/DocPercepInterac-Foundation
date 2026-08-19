@@ -5,6 +5,7 @@ display metadata and is never used to address or execute targets.
 """
 from __future__ import annotations
 
+from datetime import datetime, timezone
 import uuid
 from typing import Any, Literal, Optional
 from pydantic import BaseModel, Field
@@ -38,7 +39,12 @@ class ProposedAction(BaseModel):
     proposed_value: str
     rationale: str
     requires_confirmation: bool = True
-    status: Literal["proposed", "applied", "rejected", "stale"] = "proposed"
+    status: Literal["proposed", "executing", "applied", "rejected", "expired", "stale", "failed"] = "proposed"
+    created_at: str = Field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    ttl_seconds: int = 86400
+    doc_hash: Optional[str] = None
+    value_fingerprint: Optional[str] = None
+    target_anchor: Optional[dict[str, Any]] = None
 
 
 class AgentIntent(BaseModel):

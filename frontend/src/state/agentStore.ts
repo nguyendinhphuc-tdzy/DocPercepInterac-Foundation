@@ -2,6 +2,7 @@ import { create } from 'zustand';
 import {
   sendAgentChat,
   executeAgentAction,
+  rejectAgentAction,
   type AgentStep,
   type Citation,
   type ProposedAction,
@@ -27,13 +28,15 @@ interface AgentState {
   error: string | null;
   sendMessage: (content: string) => Promise<void>;
   confirmAction: (messageId: string, actionId: string) => Promise<void>;
-  rejectAction: (messageId: string, actionId: string) => void;
+  rejectAction: (messageId: string, actionId: string) => Promise<void>;
   clearMessages: () => void;
 }
 
-let messageCounter = 0;
 function nextId(): string {
-  return `msg-${++messageCounter}-${Date.now()}`;
+  if (typeof crypto !== 'undefined' && typeof crypto.randomUUID === 'function') {
+    return crypto.randomUUID();
+  }
+  return `msg-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
 export const useAgentStore = create<AgentState>((set) => ({
@@ -158,7 +161,19 @@ export const useAgentStore = create<AgentState>((set) => ({
     }
   },
 
-  rejectAction: (messageId: string, actionId: string) => {
+  rejectAction: async (messageId: string, actionId: string) => {
+    const ws = useWorkspaceStore.getState();
+    if (ws.sessionId) {
+      try {
+        await rejectAgentAction({
+          session_id: ws.sessionId,
+          action_id: actionId,
+        });
+      } catch (err) {
+        console.error('Failed to persist action rejection on server:', err);
+      }
+    }
+
     set((state) => ({
       messages: state.messages.map((m) =>
         m.id === messageId && m.proposedActions

@@ -77,6 +77,10 @@ def agent_chat():
         }), 500
 
 
+UPLOAD_ROOT = Path(__file__).resolve().parents[2] / ".uploads"
+from applications.agent.proposal_store import ProposalStore  # noqa: E402
+
+
 @agent_bp.post("/api/agent/action/execute")
 def execute_action():
     """Executes a user-confirmed governed action proposal.
@@ -86,10 +90,12 @@ def execute_action():
     session_id = body.get("session_id")
     action_id = body.get("action_id")
 
-    if not session_id:
-        return jsonify({"error": "session_id is required."}), 400
-    if not action_id:
-        return jsonify({"error": "action_id is required."}), 400
+    if not session_id or not action_id:
+        return jsonify({"error": "session_id and action_id are required.", "status": "error"}), 400
+
+    session_dir = UPLOAD_ROOT / session_id
+    if not session_dir.is_dir():
+        return jsonify({"error": "Invalid session or action proposal not found.", "status": "rejected"}), 400
 
     try:
         result = ActionExecutor.execute_confirmed_action(session_id, action_id)
@@ -98,4 +104,37 @@ def execute_action():
         return jsonify({"error": str(exc), "status": "rejected"}), 400
     except Exception as exc:
         return jsonify({"error": f"Execution failed: {exc}", "status": "error"}), 500
+
+
+@agent_bp.post("/api/agent/action/reject")
+def reject_action():
+    """Rejects a proposed action on the server.
+    Payload: {"session_id": "...", "action_id": "..."}
+    """
+    body = request.get_json(silent=True) or {}
+    session_id = body.get("session_id")
+    action_id = body.get("action_id")
+
+    if not session_id or not action_id:
+        return jsonify({"error": "session_id and action_id are required.", "status": "error"}), 400
+
+    session_dir = UPLOAD_ROOT / session_id
+    if not session_dir.is_dir():
+        return jsonify({"error": "Invalid session or action proposal not found.", "status": "rejected"}), 400
+
+    proposal = ProposalStore.get_proposal(session_id, action_id)
+    if not proposal:
+        return jsonify({"error": f"Action proposal '{action_id}' not found or has expired.", "status": "rejected"}), 404
+
+    if proposal.status != "proposed":
+        return jsonify({
+            "error": f"Action proposal '{action_id}' cannot be rejected (current status: '{proposal.status}').",
+            "status": proposal.status,
+        }), 400
+
+    try:
+        ProposalStore.update_proposal_status(session_id, action_id, "rejected")
+        return jsonify({"status": "rejected", "action_id": action_id})
+    except Exception as exc:
+        return jsonify({"error": f"Failed to reject proposal: {exc}", "status": "error"}), 500
 

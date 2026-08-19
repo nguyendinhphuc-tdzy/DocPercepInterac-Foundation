@@ -1,16 +1,19 @@
 """Action Executor for Governed Agent Write Actions (Slice 5 & 6).
 
 Executes confirmed write proposals strictly server-side by action_id.
-Re-validates freshness, capabilities, and executes Foundation WritebackEngine.
+Re-validates freshness via SHA-256 document hashing, checks capabilities,
+executes Foundation WritebackEngine, logs cryptographic lineage, and updates
+lifecycle state.
 """
 from __future__ import annotations
 
+import hashlib
 import json
 from pathlib import Path
 from typing import Any
 
 from applications.agent.proposal_store import ProposalStore
-from perception.models import Element
+from perception.models import Anchor, Element
 from perception.parser import extract_geometry
 from perception.anchor_builder import assign_anchors
 from perception.element_classifier import classify_blocks
@@ -25,19 +28,12 @@ class ActionExecutor:
 
     @classmethod
     def execute_confirmed_action(cls, session_id: str, action_id: str) -> dict[str, Any]:
-        proposal = ProposalStore.get_proposal(session_id, action_id)
-        if not proposal:
-            raise ValueError(f"Action proposal '{action_id}' not found or has expired.")
-
-        if proposal.status == "applied":
-            raise ValueError(f"Action proposal '{action_id}' has already been applied.")
-
-        if proposal.status == "rejected":
-            raise ValueError(f"Action proposal '{action_id}' was rejected.")
-
         session_dir = UPLOAD_ROOT / session_id
         if not session_dir.is_dir():
-            raise ValueError(f"Unknown session_id '{session_id}'")
+            raise ValueError(f"Invalid session or action proposal not found for session_id '{session_id}'.")
+
+        # 1. Atomically validate and claim proposal (transitions status to 'executing')
+        proposal = ProposalStore.claim_proposal_for_execution(session_id, action_id)
 
         manifest_path = session_dir / "manifest.json"
         if not manifest_path.exists():
@@ -53,53 +49,77 @@ class ActionExecutor:
         current_path = patched_path if patched_path.exists() else stored_path
         fmt = entry["format"]
 
-        # Perceive current document elements to validate freshness and capabilities
-        blocks = extract_geometry(str(current_path))
-        anchors = assign_anchors(blocks, fmt)
-        elements = classify_blocks(blocks, fmt, anchors)
+        if not current_path.exists():
+            raise ValueError(f"Document file '{current_path.name}' not found on disk.")
 
-        target_el: Element | None = None
-        for el in elements:
-            if el.element_id == proposal.element_id:
-                target_el = el
-                break
+        # 1. Freshness Check: Validate SHA-256 document content hash
+        current_bytes = current_path.read_bytes()
+        current_hash = hashlib.sha256(current_bytes).hexdigest()
 
-        if not target_el:
-            ProposalStore.update_proposal_status(session_id, action_id, "stale")
-            raise ValueError(f"Target element '{proposal.element_id}' no longer exists in document.")
-
-        if not target_el.capabilities.editable:
-            raise ValueError(f"Target element '{target_el.name}' is read-only (capabilities.editable is false).")
-
-        # Validate freshness: ensure content hasn't changed since proposal
-        if target_el.text != proposal.current_value:
+        if proposal.doc_hash and current_hash != proposal.doc_hash:
             ProposalStore.update_proposal_status(session_id, action_id, "stale")
             raise ValueError(
-                f"Element content has changed since the proposal was created "
-                f"(expected: '{proposal.current_value[:40]}...', found: '{target_el.text[:40]}...'). "
+                f"Document content has changed out-of-band since proposal creation "
+                f"(expected hash: {proposal.doc_hash[:8]}, current: {current_hash[:8]}). "
                 "A fresh proposal must be generated."
             )
 
-        # Execute WritebackEngine
+        # 2. Resolve Anchor
+        anchor: Anchor | None = None
+        if proposal.target_anchor:
+            try:
+                anchor = Anchor(**proposal.target_anchor)
+            except Exception:
+                anchor = None
+
+        if not anchor:
+            # Fallback to perceiving elements if target_anchor was not pre-computed
+            blocks = extract_geometry(str(current_path))
+            anchors = assign_anchors(blocks, fmt)
+            elements = classify_blocks(blocks, fmt, anchors)
+
+            target_el: Element | None = None
+            for el in elements:
+                if el.element_id == proposal.element_id:
+                    target_el = el
+                    break
+
+            if not target_el:
+                ProposalStore.update_proposal_status(session_id, action_id, "stale")
+                raise ValueError(f"Target element '{proposal.element_id}' no longer exists in document.")
+
+            if not target_el.capabilities.editable:
+                raise ValueError(f"Target element '{target_el.name}' is read-only (capabilities.editable is false).")
+
+            if target_el.text != proposal.current_value:
+                ProposalStore.update_proposal_status(session_id, action_id, "stale")
+                raise ValueError(
+                    f"Element content has changed since the proposal was created "
+                    f"(expected: '{proposal.current_value[:40]}...', found: '{target_el.text[:40]}...'). "
+                    "A fresh proposal must be generated."
+                )
+            anchor = target_el.anchor
+
+        # 3. Execute WritebackEngine
         engine = WritebackEngine()
         self_heal = engine.apply_single_patch(
             str(current_path),
-            target_el.anchor,
+            anchor,
             proposal.proposed_value,
             str(patched_path),
         )
 
-        # Log Lineage
-        logger = LineageLogger()
+        # 4. Log Lineage with cryptographic hash (session-scoped log dir)
+        logger = LineageLogger(log_dir=str(session_dir / "lineage"))
         logger.log_mapping(
-            target_anchor=target_el.anchor.model_dump_json(),
+            target_anchor=anchor.model_dump_json(),
             target_value=proposal.proposed_value,
             source_file="Agent:governed_proposal",
             source_anchor=f"action:{action_id}",
             confidence=1.0,
         )
 
-        # Mark proposal applied
+        # 5. Mark proposal applied (strict error propagation)
         ProposalStore.update_proposal_status(session_id, action_id, "applied")
 
         download_url = f"/api/documents/{session_id}/download/{proposal.doc_id}"
