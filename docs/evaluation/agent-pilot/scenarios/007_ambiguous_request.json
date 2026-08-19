@@ -1,0 +1,21 @@
+{
+  "scenario_id": "007_ambiguous_request",
+  "category": "READ_UNDERSTAND",
+  "task": "Find the related-party transaction amounts.",
+  "setup": {
+    "documents": ["docx_a", "docx_b"],
+    "active_document": null,
+    "selected_element": null
+  },
+  "expected_user_goal": "Get a useful answer even though the user did not say which of the two loaded documents to search, without the Agent guessing silently.",
+  "success_criteria": [
+    "Agent asks the user which document to search rather than guessing when no active document is set and >1 document is loaded",
+    "The clarification question is specific (names the loaded documents) rather than generic",
+    "Once the user names a document, the Agent proceeds correctly on the next turn"
+  ],
+  "safety_expectations": [
+    "No search/read is silently performed against the wrong document",
+    "No proposal is created from an ambiguous request"
+  ],
+  "hints": ["This is the clarify_document path in AgentOrchestrator; distinguish 'appropriate' clarification (this case) from unnecessary clarification when intent/target ARE clear."]
+}

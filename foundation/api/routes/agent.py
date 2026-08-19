@@ -20,12 +20,15 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from applications.agent.orchestrator import AgentOrchestrator  # noqa: E402
 from applications.agent.action_executor import ActionExecutor  # noqa: E402
+from applications.pilot.event_log import PilotEventLogger  # noqa: E402
 from applications.workbench_client import (  # noqa: E402
     WorkbenchApiError,
     WorkbenchConfigError,
 )
 
 agent_bp = Blueprint("agent", __name__)
+
+_CLARIFY_INTENTS = {"clarify_target", "clarify_document", "clarify_comparison"}
 
 
 @agent_bp.post("/api/agent/chat")
@@ -38,14 +41,76 @@ def agent_chat():
     session_id = body.get("session_id")
     context = body.get("context", {})
 
+    PilotEventLogger.emit(
+        "agent.request.started",
+        session_id=session_id,
+        message_length=len(message),
+        has_selection=bool(context.get("selected_element_id")),
+        has_active_doc=bool(context.get("active_doc_id")),
+        doc_count=len(context.get("file_names") or []),
+    )
+
     try:
         response_model = AgentOrchestrator.handle_chat(
             message=message,
             session_id=session_id,
             context_input=context,
         )
+        run_id = response_model.run_id
+        intent = response_model.intent
+
+        PilotEventLogger.emit(
+            "agent.intent.resolved",
+            session_id=session_id,
+            run_id=run_id,
+            intent=intent,
+        )
+        PilotEventLogger.emit(
+            "agent.tool.selected",
+            session_id=session_id,
+            run_id=run_id,
+            tool=intent,
+        )
+        if intent in _CLARIFY_INTENTS:
+            PilotEventLogger.emit(
+                "agent.clarification.requested",
+                session_id=session_id,
+                run_id=run_id,
+                intent=intent,
+            )
+        if response_model.citations:
+            first = response_model.citations[0]
+            PilotEventLogger.emit(
+                "agent.target.resolved",
+                session_id=session_id,
+                run_id=run_id,
+                doc_id=first.doc_id,
+                element_id=first.element_id,
+                count=len(response_model.citations),
+            )
+        if response_model.proposed_actions:
+            for action in response_model.proposed_actions:
+                PilotEventLogger.emit(
+                    "agent.proposal.created",
+                    session_id=session_id,
+                    run_id=run_id,
+                    action_id=action.action_id,
+                    doc_id=action.doc_id,
+                    element_id=action.element_id,
+                )
+        PilotEventLogger.emit(
+            "agent.tool.completed",
+            session_id=session_id,
+            run_id=run_id,
+            tool=intent,
+            status="success",
+        )
+
         return jsonify(response_model.model_dump(mode="json"))
     except WorkbenchConfigError as exc:
+        PilotEventLogger.emit(
+            "agent.tool.failed", session_id=session_id, error_category="PROVIDER", status="error",
+        )
         return jsonify({
             "error": str(exc),
             "status": "error",
@@ -56,6 +121,9 @@ def agent_chat():
             "proposed_actions": [],
         }), 503
     except WorkbenchApiError as exc:
+        PilotEventLogger.emit(
+            "agent.tool.failed", session_id=session_id, error_category="PROVIDER", status="error",
+        )
         return jsonify({
             "error": str(exc),
             "status": "error",
@@ -66,6 +134,9 @@ def agent_chat():
             "proposed_actions": [],
         }), 502
     except Exception as exc:
+        PilotEventLogger.emit(
+            "agent.tool.failed", session_id=session_id, error_category="UNKNOWN", status="error",
+        )
         return jsonify({
             "error": f"Unexpected error: {exc}",
             "status": "error",
@@ -97,12 +168,34 @@ def execute_action():
     if not session_dir.is_dir():
         return jsonify({"error": "Invalid session or action proposal not found.", "status": "rejected"}), 400
 
+    PilotEventLogger.emit(
+        "agent.proposal.confirmed", session_id=session_id, action_id=action_id,
+    )
     try:
         result = ActionExecutor.execute_confirmed_action(session_id, action_id)
+        PilotEventLogger.emit(
+            "agent.write.completed",
+            session_id=session_id,
+            action_id=action_id,
+            doc_id=result.get("doc_id"),
+            element_id=result.get("element_id"),
+        )
         return jsonify(result)
     except ValueError as exc:
+        PilotEventLogger.emit(
+            "agent.write.failed",
+            session_id=session_id,
+            action_id=action_id,
+            error_category="GOVERNANCE",
+        )
         return jsonify({"error": str(exc), "status": "rejected"}), 400
     except Exception as exc:
+        PilotEventLogger.emit(
+            "agent.write.failed",
+            session_id=session_id,
+            action_id=action_id,
+            error_category="WRITEBACK",
+        )
         return jsonify({"error": f"Execution failed: {exc}", "status": "error"}), 500
 
 
@@ -134,6 +227,9 @@ def reject_action():
 
     try:
         ProposalStore.update_proposal_status(session_id, action_id, "rejected")
+        PilotEventLogger.emit(
+            "agent.proposal.rejected", session_id=session_id, action_id=action_id,
+        )
         return jsonify({"status": "rejected", "action_id": action_id})
     except Exception as exc:
         return jsonify({"error": f"Failed to reject proposal: {exc}", "status": "error"}), 500

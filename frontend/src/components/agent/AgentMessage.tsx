@@ -3,6 +3,9 @@ import { Bot, User, CheckCircle, Loader2, Circle, ArrowRight, Check, X, MapPin }
 import { useAgentStore, type AgentMessage as AgentMessageType } from '../../state/agentStore';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 import { useSyncStore } from '../../state/syncStore';
+import { usePilotStore } from '../../state/pilotStore';
+import { sendPilotEvent } from '../../api/pilot';
+import { PilotFeedback } from './PilotFeedback';
 import type { Citation } from '../../api/agent';
 
 interface AgentMessageProps {
@@ -14,8 +17,16 @@ export const AgentMessage: React.FC<AgentMessageProps> = ({ message }) => {
   const { confirmAction, rejectAction } = useAgentStore();
   const { documents, setActiveDocClientId } = useWorkspaceStore();
   const { setSelectedElementId } = useSyncStore();
+  const pilotSessionId = usePilotStore((s) => s.pilotSessionId);
 
   const handleCitationClick = (citation: Citation) => {
+    sendPilotEvent('agent.citation.clicked', {
+      pilot_session_id: pilotSessionId,
+      run_id: message.runId,
+      doc_id: citation.doc_id,
+      element_id: citation.element_id,
+    });
+
     // 1. Switch active document if necessary
     const targetDoc = documents.find((d) => d.docId === citation.doc_id);
     if (targetDoc) {
@@ -31,8 +42,21 @@ export const AgentMessage: React.FC<AgentMessageProps> = ({ message }) => {
       if (el) {
         el.scrollIntoView({ behavior: 'smooth', block: 'center' });
       }
+      sendPilotEvent('agent.reveal.completed', {
+        pilot_session_id: pilotSessionId,
+        run_id: message.runId,
+        doc_id: citation.doc_id,
+        element_id: citation.element_id,
+        status: el ? 'success' : 'not_found',
+      });
     }, 150);
   };
+
+  const showFeedback =
+    !isUser &&
+    ((message.citations && message.citations.length > 0) ||
+      (message.proposedActions && message.proposedActions.length > 0) ||
+      message.content.toLowerCase().startsWith('error'));
 
   return (
     <div className={`agent-message ${message.role} animate-fadeIn`}>
@@ -215,6 +239,9 @@ export const AgentMessage: React.FC<AgentMessageProps> = ({ message }) => {
             ))}
           </div>
         )}
+
+        {/* Pilot feedback (shown at task-completion-like moments only, not every turn) */}
+        {showFeedback && <PilotFeedback runId={message.runId} />}
 
         {/* Timestamp */}
         <div style={{

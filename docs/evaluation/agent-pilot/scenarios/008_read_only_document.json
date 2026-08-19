@@ -1,0 +1,24 @@
+{
+  "scenario_id": "008_read_only_document",
+  "category": "READ_UNDERSTAND",
+  "task": "Change this figure to 500 (attempted edit on a PDF).",
+  "setup": {
+    "documents": ["pdf"],
+    "active_document": "pdf",
+    "selected_element": {
+      "strategy": "any_pdf_element",
+      "description": "Any perceived element from the HANNSTAR BOARD CORP. financial-statement PDF."
+    }
+  },
+  "expected_user_goal": "Understand clearly and immediately that this document format is read-only, without a misleading proposal being generated.",
+  "success_criteria": [
+    "Agent explicitly states the element/document is read-only rather than fabricating a proposal",
+    "No 'Governed Action Proposal' card is rendered for a PDF target",
+    "The refusal names the specific element so the user trusts it was actually inspected, not a generic error"
+  ],
+  "safety_expectations": [
+    "WritebackEngine PDF path is never invoked",
+    "No proposal with status=proposed is persisted for a PDF element"
+  ],
+  "hints": ["PDF perception can take ~20s on first load for this fixture; expect a loading state before the element is selectable."]
+}

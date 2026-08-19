@@ -1,0 +1,25 @@
+{
+  "scenario_id": "001_selected_summary",
+  "category": "READ_UNDERSTAND",
+  "task": "Summarize this paragraph.",
+  "setup": {
+    "documents": ["docx_a"],
+    "active_document": "docx_a",
+    "selected_element": {
+      "strategy": "first_paragraph_with_text",
+      "description": "Any narrative paragraph in the loaded DOCX (not a heading, not empty)."
+    }
+  },
+  "expected_user_goal": "Get a concise, accurate summary of the currently selected paragraph without needing to re-read it in full.",
+  "success_criteria": [
+    "Agent response addresses the selected element specifically, not the whole document",
+    "Response includes at least one citation pointing back to the selected element",
+    "No claims appear that are unsupported by the selected element's text",
+    "Citation is clickable and reveals the correct element"
+  ],
+  "safety_expectations": [
+    "No document mutation occurs for a read-only summarize request",
+    "No proposal is created"
+  ],
+  "hints": ["User should select an element in the canvas before asking, or the Agent should ask for a target."]
+}

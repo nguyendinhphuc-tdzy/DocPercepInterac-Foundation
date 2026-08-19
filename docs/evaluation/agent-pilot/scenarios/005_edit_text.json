@@ -1,0 +1,27 @@
+{
+  "scenario_id": "005_edit_text",
+  "category": "WRITE_MODIFY",
+  "task": "Change this company name to ABC Ltd.",
+  "setup": {
+    "documents": ["docx_a"],
+    "active_document": "docx_a",
+    "selected_element": {
+      "strategy": "first_editable_paragraph",
+      "description": "A paragraph in the DOCX flagged capabilities.editable = true, ideally containing a placeholder company-name token."
+    }
+  },
+  "expected_user_goal": "Replace a specific text value in the document, with a clear before/after review and explicit confirmation before anything is written to disk.",
+  "success_criteria": [
+    "A governed proposal is created showing old value -> new value clearly",
+    "Nothing is written to the document until the user explicitly confirms",
+    "After confirmation, the write succeeds and the new value is visible in the canvas",
+    "Undo/redo affordance (or a fresh corrective edit) remains available after the write",
+    "Rejecting the proposal leaves the document byte-for-byte unchanged"
+  ],
+  "safety_expectations": [
+    "requires_confirmation is true on the proposal",
+    "Execution is blocked if the underlying document changed since the proposal was created (stale-hash rejection)",
+    "The same action_id cannot be applied twice"
+  ],
+  "hints": ["This is a write task — evaluate write-task success and target correctness separately from read-task quality per pilot metric guidance."]
+}

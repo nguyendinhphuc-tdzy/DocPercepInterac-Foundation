@@ -20,6 +20,7 @@ export interface AgentMessage {
   steps?: AgentStep[];
   citations?: Citation[];
   proposedActions?: ProposedAction[];
+  runId?: string | null;
 }
 
 interface AgentState {
@@ -88,6 +89,7 @@ export const useAgentStore = create<AgentState>((set) => ({
         steps: response.steps,
         citations: response.citations,
         proposedActions: response.proposed_actions,
+        runId: response.run_id,
       };
 
       set((state) => ({

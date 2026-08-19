@@ -13,6 +13,7 @@ from pathlib import Path
 from typing import Any
 
 from applications.agent.proposal_store import ProposalStore
+from applications.pilot.event_log import PilotEventLogger
 from perception.models import Anchor, Element
 from perception.parser import extract_geometry
 from perception.anchor_builder import assign_anchors
@@ -58,6 +59,9 @@ class ActionExecutor:
 
         if proposal.doc_hash and current_hash != proposal.doc_hash:
             ProposalStore.update_proposal_status(session_id, action_id, "stale")
+            PilotEventLogger.emit(
+                "agent.proposal.stale", session_id=session_id, action_id=action_id, reason="doc_hash_mismatch",
+            )
             raise ValueError(
                 f"Document content has changed out-of-band since proposal creation "
                 f"(expected hash: {proposal.doc_hash[:8]}, current: {current_hash[:8]}). "
@@ -86,6 +90,9 @@ class ActionExecutor:
 
             if not target_el:
                 ProposalStore.update_proposal_status(session_id, action_id, "stale")
+                PilotEventLogger.emit(
+                    "agent.proposal.stale", session_id=session_id, action_id=action_id, reason="element_missing",
+                )
                 raise ValueError(f"Target element '{proposal.element_id}' no longer exists in document.")
 
             if not target_el.capabilities.editable:
@@ -93,6 +100,9 @@ class ActionExecutor:
 
             if target_el.text != proposal.current_value:
                 ProposalStore.update_proposal_status(session_id, action_id, "stale")
+                PilotEventLogger.emit(
+                    "agent.proposal.stale", session_id=session_id, action_id=action_id, reason="content_changed",
+                )
                 raise ValueError(
                     f"Element content has changed since the proposal was created "
                     f"(expected: '{proposal.current_value[:40]}...', found: '{target_el.text[:40]}...'). "

@@ -39,3 +39,8 @@ foundation/models/*
 # files, patched output, and lineage logs, never source
 foundation/.uploads/
 foundation/.lineage_logs/
+.lineage_logs_test/
+
+# Generated at runtime by applications/pilot/event_log.py — pilot
+# instrumentation event logs, never source
+foundation/.pilot_logs/

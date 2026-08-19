@@ -16,6 +16,7 @@ from typing import Optional
 from filelock import FileLock
 
 from applications.agent.models import ProposedAction
+from applications.pilot.event_log import PilotEventLogger
 
 UPLOAD_ROOT = Path(__file__).resolve().parents[2] / ".uploads"
 
@@ -103,6 +104,9 @@ class ProposalStore:
                         proposal.status = "expired"
                         proposals[action_id]["status"] = "expired"
                         cls._write_locked(session_id, proposals)
+                        PilotEventLogger.emit(
+                            "agent.proposal.expired", session_id=session_id, action_id=action_id,
+                        )
             except Exception:
                 pass
 
@@ -130,6 +134,9 @@ class ProposalStore:
                     proposal.status = "expired"
                     proposals[action_id]["status"] = "expired"
                     cls._write_locked(session_id, proposals)
+                    PilotEventLogger.emit(
+                        "agent.proposal.expired", session_id=session_id, action_id=action_id,
+                    )
                     raise ValueError(f"Action proposal '{action_id}' has expired (TTL exceeded).")
             except Exception as exc:
                 if "TTL exceeded" in str(exc):
@@ -184,6 +191,9 @@ class ProposalStore:
                         if now > (created_dt + timedelta(seconds=ttl)):
                             raw["status"] = "expired"
                             updated_count += 1
+                            PilotEventLogger.emit(
+                                "agent.proposal.expired", session_id=session_id, action_id=action_id,
+                            )
                     except Exception:
                         pass
             if updated_count > 0:
