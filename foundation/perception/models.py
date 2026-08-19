@@ -144,6 +144,17 @@ class AnchorDOCX(BaseModel):
     relationship_id: Optional[str] = None
     drawing_id: Optional[str] = None  # docPr id — disambiguates multiple drawings sharing one relationship_id (rare)
     media_id: Optional[str] = None  # ElementIndex.media[] key — see MediaAsset
+    # Footnote/endnote/comment identity — the OOXML `w:id` from footnotes.xml
+    # / endnotes.xml / comments.xml. A typed field of its own rather than
+    # reusing `drawing_id` (an earlier version of this anchor did exactly
+    # that, since both are "just an id string") — `drawing_id` specifically
+    # means docPr id and a footnote has no docPr at all; overloading it blurs
+    # what field a given consumer should even look at. docx-preview's own
+    # parsed footnote/endnote objects carry this same `w:id` as `.id`
+    # (frontend/src/components/document/rendering/DocxRenderer.tsx stamps it
+    # as `data-note-id`), giving an exact identity match instead of the
+    # text-content matching every other chrome kind is stuck with.
+    note_id: Optional[str] = None
 
 
 class AnchorXLSX(BaseModel):

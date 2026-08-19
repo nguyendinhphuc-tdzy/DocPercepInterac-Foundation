@@ -166,13 +166,16 @@ def assign_docx_anchor(
         # Headers/footers/footnotes/endnotes/comments live in separate OOXML
         # parts, outside body paragraph order — text_fingerprint is still
         # their most stable identity (there is no body paragraph_index for
-        # them), disambiguated by drawing_id carrying the note/comment id.
+        # them). Footnotes/endnotes/comments additionally carry the real
+        # OOXML `w:id` in `note_id` (see AnchorDOCX.note_id) — headers/
+        # footers have no such id (they're one-per-section, not a numbered
+        # list), so it stays None for those two.
         note_id = extra.get("note_id")
         return AnchorDOCX(
             paragraph_index=None,
             style_id=kind,  # repurposed as a coarse type tag for this anchor family — never compared against a real Word style
             text_fingerprint=_text_fingerprint(block.get("text") or ""),
-            drawing_id=str(note_id) if note_id is not None else None,
+            note_id=str(note_id) if note_id is not None else None,
         )
 
     fingerprint = _text_fingerprint(block.get("text") or "")

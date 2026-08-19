@@ -152,16 +152,25 @@ def test_docx_chrome_objects_are_detected_and_classified(tmp_path):
     assert ElementType.ENDNOTE in by_type and by_type[ElementType.ENDNOTE][0].text == "A real endnote."
     assert ElementType.COMMENT in by_type and by_type[ElementType.COMMENT][0].text == "A real comment."
 
-    # None of these are silently dropped, but none are falsely claimed
-    # editable or selectable either — honest partial support.
+    # None of these are silently dropped or falsely claimed editable.
     for etype in (ElementType.HEADER, ElementType.FOOTER, ElementType.FOOTNOTE, ElementType.ENDNOTE, ElementType.COMMENT):
         el = by_type[etype][0]
         assert el.capabilities.detected is True
         assert el.capabilities.editable is False
-        assert el.capabilities.selectable is False
+
+    # Footnotes/endnotes ARE selectable: docx-preview renders each as one
+    # <li> carrying the real OOXML w:id (anchor.note_id), giving
+    # docxAnchorMapping.ts's mapFootnotes an exact DOM match — see
+    # element_classifier.py's footnote/endnote/comment branch. Header/
+    # footer/comment stay honestly unselectable: no anchor-mapped DOM
+    # region exists for any of them.
+    for etype in (ElementType.FOOTNOTE, ElementType.ENDNOTE):
+        assert by_type[etype][0].capabilities.selectable is True
+    for etype in (ElementType.HEADER, ElementType.FOOTER, ElementType.COMMENT):
+        assert by_type[etype][0].capabilities.selectable is False
 
     # The separator/continuation placeholder (w:id="0") must be excluded.
-    footnote_ids = {e.anchor.drawing_id for e in by_type[ElementType.FOOTNOTE]}
+    footnote_ids = {e.anchor.note_id for e in by_type[ElementType.FOOTNOTE]}
     assert "0" not in footnote_ids
 
 

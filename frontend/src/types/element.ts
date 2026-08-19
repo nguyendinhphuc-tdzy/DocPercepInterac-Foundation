@@ -46,6 +46,9 @@ export interface AnchorDOCX {
   relationship_id?: string | null;
   drawing_id?: string | null;
   media_id?: string | null;
+  // Footnote/endnote/comment identity — the OOXML w:id from footnotes.xml
+  // / endnotes.xml / comments.xml (see perception/models.py::AnchorDOCX.note_id).
+  note_id?: string | null;
 }
 
 export interface AnchorXLSX {

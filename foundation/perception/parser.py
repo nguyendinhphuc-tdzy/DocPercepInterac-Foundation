@@ -97,6 +97,54 @@ def _base_block(kind: str, text: str = "", **extra: Any) -> GeometryBlock:
 # --- DOCX ---------------------------------------------------------------
 
 _WP_NS = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
+_W_INS_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+
+
+def _paragraph_text(para) -> tuple[str, bool]:
+    """`para.text`, extended to include text tracked-inserted via `<w:ins>`.
+
+    python-docx's own `Paragraph.text` is `''.join(r.text for r in
+    self.runs)`, and `self.runs` comes from `CT_P.r_lst` — an XPath for
+    direct `<w:r>` children of `<w:p>` only. A tracked insertion wraps its
+    run(s) one level deeper (`<w:p><w:ins><w:r>...</w:r></w:ins></w:p>`),
+    so python-docx never sees that text at all — not "sees it but drops
+    formatting", genuinely invisible. Confirmed against the real KPMG
+    fixture: one paragraph (all runs insertion-wrapped) produced empty
+    `.text` and was silently skipped by the `if para.text.strip():` check
+    below entirely; two more had their inserted trailing clause missing
+    from otherwise-normal `.text`.
+
+    Deleted text (`<w:del>` / `<w:delText>`) is deliberately NOT included
+    here: docx-preview's default render (this project doesn't set
+    `renderChanges: true`) renders `<w:ins>` content as plain visible text
+    and `<w:del>` content as nothing at all — i.e. an "accepted changes"
+    view. Perception's text should match what the rendered document
+    actually shows, so inserted text belongs in `text` and deleted text
+    does not; adding deleted text back in would make this MORE complete
+    than the document that's actually displayed to the user.
+
+    Walks `para._p`'s direct children in document order so normal and
+    inserted runs interleave correctly (never a separate "append insertions
+    at the end" pass), matching a plain `<w:r>` at a given position and
+    recursing one level into a `<w:ins>` at that position for its own
+    `<w:r>` children. Returns (text, had_insertion) — the flag lets a
+    caller record that this text is partly sourced from a tracked change
+    without needing a full revision/diff model.
+    """
+    from docx.text.run import Run
+
+    ins_tag = f"{{{_W_INS_NS}}}ins"
+    r_tag = f"{{{_W_INS_NS}}}r"
+    parts: list[str] = []
+    had_insertion = False
+    for child in para._p:
+        if child.tag == r_tag:
+            parts.append(Run(child, para).text)
+        elif child.tag == ins_tag:
+            for r in child.findall(r_tag):
+                parts.append(Run(r, para).text)
+                had_insertion = True
+    return "".join(parts), had_insertion
 _A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
 _R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 _C_NS = "http://schemas.openxmlformats.org/drawingml/2006/chart"
@@ -222,11 +270,12 @@ def parse_docx(path: str) -> list[GeometryBlock]:
     blocks: list[GeometryBlock] = []
 
     for i, para in enumerate(doc.paragraphs):
-        if para.text.strip():
-            block = _base_block("paragraph", text=para.text)
+        text, had_insertion = _paragraph_text(para)
+        if text.strip():
+            block = _base_block("paragraph", text=text)
             block["paragraph_index"] = i
             block["style_id"] = para.style.style_id if para.style else None
-            block["extra"] = None
+            block["extra"] = {"has_tracked_insertion": True} if had_insertion else None
             blocks.append(block)
         # Images/charts/drawings inside this paragraph — checked regardless
         # of whether the paragraph itself has text, since a picture-only

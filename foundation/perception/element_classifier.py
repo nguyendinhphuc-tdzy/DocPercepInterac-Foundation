@@ -153,10 +153,16 @@ def classify_block(block: Mapping[str, Any], index: int, fmt: str, anchor: Ancho
         if author:
             label += f" ({author})"
         # docx-preview renders footnotes/endnotes inline (renderFootnotes/
-        # renderEndnotes: true) but comments are not rendered by it at all —
-        # none of the three are anchor-mapped to a DOM region this phase.
+        # renderEndnotes: true) as one <li> per note carrying the real OOXML
+        # w:id — anchor.note_id above is that same id, giving frontend/
+        # docxAnchorMapping.ts's mapFootnotes an exact (not text-guessed)
+        # DOM match. Comments are not rendered by docx-preview at all —
+        # still honestly unselectable, no DOM region exists to map to.
+        if kind == "comment":
+            return Element(index=index, element_id=_stable_element_id(anchor), type=etype, name=label, text=text, anchor=anchor,
+                            confidence=1.0, capabilities=_partial_capabilities(rendered=False, selectable=False))
         return Element(index=index, element_id=_stable_element_id(anchor), type=etype, name=label, text=text, anchor=anchor,
-                        confidence=1.0, capabilities=_partial_capabilities(rendered=(kind != "comment"), selectable=False))
+                        confidence=1.0, capabilities=_partial_capabilities())
 
     if kind == "pdf_image":
         name = "Image" + (f" ({extra['width']}×{extra['height']}px)" if extra.get("width") and extra.get("height") else "")

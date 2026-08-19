@@ -139,6 +139,20 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
               node.setAttribute('data-drawing-id', String(elem.foundationDrawingId));
               return;
             }
+            // Footnotes/endnotes render as one <li> per note (docx-preview's
+            // renderNotes -> renderContainer(elem, "li")), and `elem` here is
+            // docx-preview's OWN parsed WmlFootnote/WmlEndnote object, which
+            // already carries the real OOXML w:id as `.id` (FootnotesPart's
+            // parseNotes: `node.id = xml.attr(el, "id")`) — no docx-preview
+            // patch needed, unlike drawings. Matched in docxAnchorMapping.ts's
+            // mapFootnotes against anchor.note_id: an exact id match instead
+            // of the text-content guessing every other chrome kind is stuck
+            // with (no equivalent id exists for header/footer/comment).
+            if ((elem.type === 'footnote' || elem.type === 'endnote') && node.tagName === 'LI' && elem.id != null) {
+              node.setAttribute('data-note-id', String(elem.id));
+              node.setAttribute('data-note-kind', elem.type);
+              return;
+            }
             if (node.tagName !== 'P') return;
             node.setAttribute('data-el-style', elem.styleName ?? 'Normal');
             const raw = rawTextOf(elem);
