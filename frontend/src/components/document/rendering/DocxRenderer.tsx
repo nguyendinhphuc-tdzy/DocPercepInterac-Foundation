@@ -126,6 +126,19 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
           renderEndnotes: true,
           useBase64URL: true,
           onElementRendered: (elem: any, node: HTMLElement) => {
+            // Shapes (type='drawing' — a shape/text-box/SmartArt, NOT a
+            // bitmap picture; those are type='image', matched separately
+            // by byte content in mapImages) render to a <div> (docx-preview's
+            // renderDrawing: `this.toHTML(elem, ns.html, "div")`). Their
+            // ONLY stable identity is docPr @id — patched into
+            // parseDrawingWrapper's result as `foundationDrawingId`
+            // (patches/docx-preview+0.4.0.patch), since upstream silently
+            // discarded it. Stamped here, matched in docxAnchorMapping.ts's
+            // mapDrawings against anchor.drawing_id.
+            if (elem.foundationDrawingId != null && node.tagName === 'DIV') {
+              node.setAttribute('data-drawing-id', String(elem.foundationDrawingId));
+              return;
+            }
             if (node.tagName !== 'P') return;
             node.setAttribute('data-el-style', elem.styleName ?? 'Normal');
             node.setAttribute('data-el-rawtext', rawTextOf(elem).trim().slice(0, 50));

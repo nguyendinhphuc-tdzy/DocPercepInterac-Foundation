@@ -126,8 +126,15 @@ def classify_block(block: Mapping[str, Any], index: int, fmt: str, anchor: Ancho
 
     if kind == "drawing":
         name = extra.get("name") or "Drawing"
+        # rendered=True/selectable=True (the _partial_capabilities default):
+        # the frontend now maps drawings by drawing_id (docPr @id) — see
+        # patches/docx-preview+0.4.0.patch + rendering/docxAnchorMapping.ts's
+        # mapDrawings — so a shape genuinely does have a locatable rendered
+        # region and identity now. extracted stays PARTIAL: this only
+        # locates the shape, it doesn't semantically interpret it (no shape
+        # type, no text content beyond what's already in `text`).
         return Element(index=index, element_id=_stable_element_id(anchor), type=ElementType.DRAWING, name=name, text=text, anchor=anchor,
-                        confidence=1.0, capabilities=_partial_capabilities(rendered=None, selectable=False))
+                        confidence=1.0, capabilities=_partial_capabilities())
 
     if kind in ("header", "footer"):
         etype = ElementType.HEADER if kind == "header" else ElementType.FOOTER

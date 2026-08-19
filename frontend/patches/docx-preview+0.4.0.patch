@@ -1,8 +1,18 @@
 diff --git a/node_modules/docx-preview/dist/docx-preview.mjs b/node_modules/docx-preview/dist/docx-preview.mjs
-index 97fe1ba..bc2628b 100644
+index 97fe1ba..ec110e7 100644
 --- a/node_modules/docx-preview/dist/docx-preview.mjs
 +++ b/node_modules/docx-preview/dist/docx-preview.mjs
-@@ -3392,6 +3392,18 @@ section.${c}>footer { z-index: 1; }
+@@ -2103,6 +2103,9 @@ class DocumentParser {
+                 case "wrapNone":
+                     wrapType = "wrapNone";
+                     break;
++                case "docPr":
++                    result.foundationDrawingId = globalXmlParser.attr(n, "id");
++                    break;
+                 case "graphic":
+                     var g = this.parseGraphic(n);
+                     if (g)
+@@ -3392,6 +3395,18 @@ section.${c}>footer { z-index: 1; }
          }
      }
      renderElement(elem) {
