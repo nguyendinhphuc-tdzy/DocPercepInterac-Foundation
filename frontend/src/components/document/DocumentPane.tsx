@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { FileText, AlertTriangle, Rows3, Columns2, Loader2 } from 'lucide-react';
+import React, { useEffect, useMemo, useRef, useState, useCallback } from 'react';
+import { FileText, AlertTriangle, Rows3, Columns2, Loader2, ZoomIn, ZoomOut, X, Info } from 'lucide-react';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 import { useSyncStore } from '../../state/syncStore';
 import { EditableText } from '../shared/EditableText';
@@ -8,6 +8,7 @@ import { DocxRenderer } from './rendering/DocxRenderer';
 import { XlsxRenderer } from './rendering/XlsxRenderer';
 import { PdfRenderer } from './rendering/PdfRenderer';
 import { useDocumentBytes } from './rendering/useDocumentBytes';
+import { SplitView } from './SplitView';
 import type { DocumentRendererProps, MappingReport } from './rendering/types';
 import type { AnchorDOCX, ElementRowData } from '../../types/element';
 import { idOf } from '../../utils/elementId';
@@ -16,10 +17,6 @@ function isDocxAnchor(anchor: ElementRowData['anchor']): anchor is AnchorDOCX {
   return anchor.format === 'docx';
 }
 
-// Stable reference for "no elements yet" — see the identical constant in
-// ElementsPane.tsx for why `?? []` alone is unsafe here (a fresh empty
-// array every render while a document's elements are still loading feeds
-// straight into this component's own useMemo dependencies).
 const EMPTY_ELEMENTS: ElementRowData[] = [];
 
 interface TableGroup {
@@ -31,11 +28,6 @@ type DocBlock =
   | { kind: 'element'; el: ElementRowData }
   | { kind: 'table'; group: TableGroup };
 
-// Single pass over the already-in-reading-order elements array that merges
-// each DOCX table's cells into one block at the position its first cell
-// appears — used only by "Elements" mode (ElementsFlowView below). Without
-// this, a naive "collect paragraphs, then collect tables" split renders
-// every table AFTER every paragraph regardless of where it actually sits.
 function buildDocumentBlocks(elements: ElementRowData[]): DocBlock[] {
   const blocks: DocBlock[] = [];
   const tablePosition = new Map<number, number>();
@@ -76,15 +68,10 @@ interface ElementViewProps {
 
 function cellHighlightStyle(isSelected: boolean, isHighlighted: boolean): React.CSSProperties {
   if (isSelected) return { background: 'var(--accent-light)', boxShadow: 'inset 2px 0 0 var(--accent)' };
-  if (isHighlighted) return { background: '#EEF2FF', boxShadow: 'inset 2px 0 0 var(--accent)' };
+  if (isHighlighted) return { background: 'var(--bg-hover)', boxShadow: 'inset 2px 0 0 var(--border)' };
   return {};
 }
 
-// ── "Elements" mode: Foundation's structured perception output, in
-// document order — flowing paragraphs/headings + grouped DOCX tables. This
-// is the ONLY mode whose source of truth is `elements[]`. "Original" mode
-// (below) renders the actual uploaded document bytes instead — see
-// rendering/DocxRenderer.tsx, XlsxRenderer.tsx, PdfRenderer.tsx. ──
 const ElementsFlowView: React.FC<ElementViewProps> = ({
   elements, hoveredElementId, selectedElementId, setHoveredElement, onSelect, registerNode, canEdit, onEdit,
 }) => {
@@ -109,6 +96,7 @@ const ElementsFlowView: React.FC<ElementViewProps> = ({
                 padding: 'var(--space-1) var(--space-2)',
                 borderRadius: 'var(--radius-md)',
                 transition: 'all var(--transition-fast)',
+                cursor: 'pointer',
                 ...cellHighlightStyle(isSelected, isHighlighted),
               }}
             >
@@ -168,6 +156,7 @@ const ElementsFlowView: React.FC<ElementViewProps> = ({
                               borderRight: '1px solid var(--border-light)',
                               whiteSpace: 'nowrap',
                               transition: 'background var(--transition-fast)',
+                              cursor: cellEl ? 'pointer' : 'default',
                               ...cellHighlightStyle(isSelected, isHighlighted),
                             }}
                           >
@@ -201,12 +190,6 @@ const VIEW_MODES: { mode: ViewMode; label: string; icon: React.ElementType }[] =
   { mode: 'split', label: 'Split', icon: Columns2 },
 ];
 
-// ── "Original" mode: real document rendering. Fetches the document's
-// current bytes (GET /api/documents/<session_id>/download/<doc_id> — always
-// serves the live-patched file if one exists, else the pristine upload)
-// and hands them to a format-specific renderer. XLSX is the one exception
-// that stays elements[]-sourced by design — see rendering/XlsxRenderer.tsx
-// for why that's still correct, not leftover reconstruction debt. ──
 const OriginalRenderer: React.FC<{
   format: 'docx' | 'xlsx' | 'pdf';
   sessionId: string;
@@ -214,7 +197,6 @@ const OriginalRenderer: React.FC<{
   revision: number;
   rendererProps: DocumentRendererProps;
 }> = ({ format, sessionId, docId, revision, rendererProps }) => {
-  // XLSX doesn't need the raw file bytes at all — skip the fetch entirely.
   const needsBytes = format !== 'xlsx';
   const { status, bytes, error } = useDocumentBytes(needsBytes ? sessionId : null, needsBytes ? docId : null, revision);
 
@@ -243,9 +225,25 @@ export const DocumentPane: React.FC = () => {
   const canEdit = activeDoc?.status === 'ready' && activeDoc.elements !== null;
   const [viewMode, setViewMode] = useState<ViewMode>('original');
   const [mappingReport, setMappingReport] = useState<MappingReport | null>(null);
+  const [zoomLevel, setZoomLevel] = useState<number>(100);
+  const [showDiagnostics, setShowDiagnostics] = useState(false);
 
-  // Reset the coverage summary whenever the active document changes so a
-  // stale report from document A never displays while document B is shown.
+  // Global Escape shortcut: deselect current element when not in active input/textarea
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        const target = e.target as HTMLElement | null;
+        const isEditing = target?.tagName === 'TEXTAREA' || target?.tagName === 'INPUT';
+        if (!isEditing && selectedElementId != null) {
+          setSelectedElementId(null);
+        }
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [selectedElementId, setSelectedElementId]);
+
+  // Reset mapping report on document switch
   useEffect(() => { setMappingReport(null); }, [activeDoc?.docId]);
 
   const nodeRefs = useRef(new Map<string, HTMLElement>());
@@ -264,17 +262,22 @@ export const DocumentPane: React.FC = () => {
     nodeRefs.current.get(selectedElementId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   }, [selectedElementId]);
 
-  // `editElement()`'s existing signature is array-position-based (it looks
-  // up the element's current Anchor to build the PATCH body — see
-  // workspaceStore.ts) — that's an implementation detail of locating the
-  // element to persist, not an identity claim, so it stays index-keyed
-  // internally. Every INTERACTION-facing surface (selection, hover,
-  // highlight, the renderer contract) is element_id-keyed; this is the one
-  // translation point between the two.
   const onEdit = (elementId: string, newValue: string) => {
     const el = activeElements.find((e) => idOf(e) === elementId);
     if (activeDocClientId && el) editElement(activeDocClientId, el.index, newValue);
   };
+
+  const handleZoomIn = useCallback(() => {
+    setZoomLevel((z) => Math.min(z + 15, 175));
+  }, []);
+
+  const handleZoomOut = useCallback(() => {
+    setZoomLevel((z) => Math.max(z - 15, 60));
+  }, []);
+
+  const handleResetZoom = useCallback(() => {
+    setZoomLevel(100);
+  }, []);
 
   const viewProps: ElementViewProps = {
     elements: activeElements,
@@ -288,7 +291,7 @@ export const DocumentPane: React.FC = () => {
   };
 
   const rendererProps: DocumentRendererProps = {
-    source: new ArrayBuffer(0), // overwritten by OriginalRenderer for docx/pdf; unused by XlsxRenderer
+    source: new ArrayBuffer(0),
     sessionId: sessionId ?? '',
     docId: activeDoc?.docId ?? '',
     elements: activeElements,
@@ -301,9 +304,6 @@ export const DocumentPane: React.FC = () => {
     onMappingReport: setMappingReport,
   };
 
-  // No documents at all — the Documents panel (FileRail) owns upload; this
-  // pane never renders an upload control, so its layout never depends on
-  // that control's width (per this phase's toolbar/intake separation).
   if (documents.length === 0) {
     return (
       <div className="pane-container">
@@ -324,11 +324,6 @@ export const DocumentPane: React.FC = () => {
     );
   }
 
-  // Distinguish "nothing will ever be here" from "still loading" — showing
-  // the same empty state for both is misleading, especially once the
-  // header already reports "Ready · N elements" while this pane is still
-  // mid-fetch (elements are loaded lazily per document, see
-  // workspaceStore.ts::ensureElementsLoaded).
   if (!activeDoc || activeDoc.status === 'error') {
     return (
       <div className="pane-container">
@@ -400,23 +395,49 @@ export const DocumentPane: React.FC = () => {
   }
 
   const canRenderOriginal = !!activeDoc.docId && !!sessionId;
+  const selectedElement = selectedElementId != null ? activeElements.find((e) => idOf(e) === selectedElementId) : null;
 
   return (
     <div className="pane-container">
+      {/* Pane Header */}
       <div className="pane-header">
         <div className="pane-header-title">
           <FileText size={14} />
           <span>Document</span>
         </div>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-3)', minWidth: 0 }}>
-          {docName && (
-            <span style={{
-              fontSize: 'var(--text-xs)', color: 'var(--text-tertiary)', maxWidth: 160,
-              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
-            }} title={docName}>
-              {docName}
-            </span>
+
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', minWidth: 0 }}>
+          {/* Zoom controls (for original and elements modes) */}
+          {viewMode !== 'split' && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: '2px', background: 'var(--bg-app)', padding: '2px', borderRadius: 'var(--radius-md)', border: '1px solid var(--border)' }}>
+              <button
+                className="btn btn-ghost btn-sm btn-icon"
+                onClick={handleZoomOut}
+                title="Zoom out"
+                aria-label="Zoom out"
+              >
+                <ZoomOut size={12} />
+              </button>
+              <button
+                className="btn btn-ghost btn-sm"
+                onClick={handleResetZoom}
+                title="Reset zoom to 100%"
+                style={{ fontSize: 'var(--text-xxs)', padding: '0 4px', minWidth: 36, textAlign: 'center' }}
+              >
+                {zoomLevel}%
+              </button>
+              <button
+                className="btn btn-ghost btn-sm btn-icon"
+                onClick={handleZoomIn}
+                title="Zoom in"
+                aria-label="Zoom in"
+              >
+                <ZoomIn size={12} />
+              </button>
+            </div>
           )}
+
+          {/* View mode switcher */}
           <div className="view-mode-switch">
             {VIEW_MODES.map(({ mode, label, icon: Icon }) => (
               <button
@@ -430,14 +451,71 @@ export const DocumentPane: React.FC = () => {
               </button>
             ))}
           </div>
+
+          {/* Dev Diagnostics Toggle */}
+          {import.meta.env.DEV && mappingReport && (
+            <button
+              className="btn btn-ghost btn-sm btn-icon"
+              onClick={() => setShowDiagnostics(!showDiagnostics)}
+              title="Toggle perception & mapping diagnostics"
+              aria-label="Toggle diagnostics"
+              style={{ color: showDiagnostics ? 'var(--accent)' : 'var(--text-tertiary)' }}
+            >
+              <Info size={13} />
+            </button>
+          )}
         </div>
       </div>
 
-      {/* Non-blocking coverage notice — a mapping shortfall never hides the
-          document or disables mapped elements (failure isolation, per the
-          Renderer Contract Hardening phase); this is purely informational.
-          Only shown once enough of the document is affected to be worth
-          surfacing, not for a couple of ambiguous notes/comments. */}
+      {/* Selected Element Action Bar (Contextual Deselection & Info) */}
+      {selectedElement && (
+        <div style={{
+          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+          padding: 'var(--space-1) var(--space-3)', background: 'var(--accent-light)',
+          borderBottom: '1px solid var(--accent-border)', fontSize: 'var(--text-xs)',
+          color: 'var(--accent)', animation: 'fadeIn 120ms ease',
+        }}>
+          <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', minWidth: 0 }}>
+            <span style={{ fontWeight: 600, textTransform: 'capitalize' }}>{selectedElement.type}:</span>
+            <span style={{
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap',
+              maxWidth: 320, color: 'var(--text-primary)',
+            }}>
+              {selectedElement.text || selectedElement.name}
+            </span>
+          </div>
+          <button
+            className="btn btn-ghost btn-sm"
+            onClick={() => setSelectedElementId(null)}
+            title="Deselect (Escape)"
+            style={{ display: 'flex', alignItems: 'center', gap: '2px', color: 'var(--accent)', fontWeight: 500 }}
+          >
+            <span>Deselect</span>
+            <X size={12} />
+          </button>
+        </div>
+      )}
+
+      {/* Dev Diagnostics Drawer (Collapsible) */}
+      {showDiagnostics && mappingReport && (
+        <div style={{
+          padding: 'var(--space-2) var(--space-3)', fontSize: 'var(--text-xxs)', color: 'var(--text-secondary)',
+          background: 'var(--bg-surface-secondary)', borderBottom: '1px solid var(--border)', fontFamily: 'var(--font-mono)',
+          display: 'flex', flexWrap: 'wrap', gap: 'var(--space-2)', alignItems: 'center',
+        }}>
+          <span style={{ fontWeight: 600, color: 'var(--accent)' }}>Mapping Report:</span>
+          <span>{mappingReport.total} total</span>
+          <span>· {mappingReport.byStatus.available} available ({(mappingReport.byStatus.available / mappingReport.total * 100).toFixed(1)}%)</span>
+          {mappingReport.byStatus.partial > 0 && <span>· {mappingReport.byStatus.partial} partial</span>}
+          {mappingReport.byStatus.unavailable > 0 && <span style={{ color: 'var(--error)' }}>· {mappingReport.byStatus.unavailable} unavailable</span>}
+          {mappingReport.byStatus.ambiguous > 0 && <span style={{ color: 'var(--warning)' }}>· {mappingReport.byStatus.ambiguous} ambiguous</span>}
+          <div style={{ width: '100%', borderTop: '1px dashed var(--border)', paddingTop: 2, marginTop: 2, color: 'var(--text-tertiary)' }}>
+            {Object.entries(mappingReport.byType).map(([t, c]) => `${t}: ${c.available}/${c.total}`).join(' · ')}
+          </div>
+        </div>
+      )}
+
+      {/* Non-blocking coverage notice */}
       {mappingReport && (mappingReport.byStatus.unavailable + mappingReport.byStatus.ambiguous) > Math.max(2, mappingReport.total * 0.05) && (
         <div className="renderer-notice">
           <AlertTriangle size={12} />
@@ -446,16 +524,6 @@ export const DocumentPane: React.FC = () => {
             ({mappingReport.byStatus.unavailable + mappingReport.byStatus.ambiguous} of {mappingReport.total}).
             Everything else remains interactive.
           </span>
-        </div>
-      )}
-      {import.meta.env.DEV && mappingReport && (
-        <div style={{
-          padding: 'var(--space-1) var(--space-3)', fontSize: 'var(--text-xxs)', color: 'var(--text-tertiary)',
-          borderBottom: '1px solid var(--border)', fontFamily: 'monospace',
-        }}>
-          mapping: {mappingReport.total} total · {mappingReport.byStatus.available} available · {mappingReport.byStatus.partial} partial · {mappingReport.byStatus.unavailable} unavailable · {mappingReport.byStatus.ambiguous} ambiguous
-          {' · '}
-          {Object.entries(mappingReport.byType).map(([t, c]) => `${t}: ${c.available}/${c.total}`).join(', ')}
         </div>
       )}
 
@@ -470,44 +538,54 @@ export const DocumentPane: React.FC = () => {
         </div>
       )}
 
-      <div className="pane-content" style={{ background: 'var(--bg-app)' }}>
+      {/* Main Document Content */}
+      <div
+        className="pane-content"
+        style={{ background: 'var(--bg-app)', position: 'relative' }}
+        onPointerDown={(e) => {
+          // Deselect on neutral container clicks (if clicked on root background directly)
+          if (e.target === e.currentTarget && selectedElementId != null) {
+            setSelectedElementId(null);
+          }
+        }}
+      >
         {viewMode === 'original' && (
           canRenderOriginal ? (
-            <OriginalRenderer
-              key={activeDoc.docId}
-              format={activeDoc.format!}
-              sessionId={sessionId!}
-              docId={activeDoc.docId!}
-              revision={editHistory.length}
-              rendererProps={rendererProps}
-            />
+            <div
+              style={{
+                height: '100%',
+                transform: zoomLevel !== 100 ? `scale(${zoomLevel / 100})` : undefined,
+                transformOrigin: 'top center',
+                transition: 'transform var(--transition-fast)',
+              }}
+            >
+              <OriginalRenderer
+                key={activeDoc.docId}
+                format={activeDoc.format!}
+                sessionId={sessionId!}
+                docId={activeDoc.docId!}
+                revision={editHistory.length}
+                rendererProps={rendererProps}
+              />
+            </div>
           ) : (
             <EmptyState icon={Loader2} iconClassName="animate-spin" title="Preparing document…" description="" />
           )
         )}
         {viewMode === 'elements' && (
-          <div style={{ background: 'var(--bg-surface)' }}><ElementsFlowView {...viewProps} /></div>
+          <div
+            style={{
+              background: 'var(--bg-surface)', minHeight: '100%',
+              transform: zoomLevel !== 100 ? `scale(${zoomLevel / 100})` : undefined,
+              transformOrigin: 'top center',
+              transition: 'transform var(--transition-fast)',
+            }}
+          >
+            <ElementsFlowView {...viewProps} />
+          </div>
         )}
         {viewMode === 'split' && (
-          <div style={{ display: 'flex', height: '100%' }}>
-            <div style={{ flex: 1, overflow: 'auto', borderRight: '1px solid var(--border)' }}>
-              {canRenderOriginal ? (
-                <OriginalRenderer
-                  key={activeDoc.docId}
-                  format={activeDoc.format!}
-                  sessionId={sessionId!}
-                  docId={activeDoc.docId!}
-                  revision={editHistory.length}
-                  rendererProps={rendererProps}
-                />
-              ) : (
-                <EmptyState icon={Loader2} iconClassName="animate-spin" title="Preparing document…" description="" />
-              )}
-            </div>
-            <div style={{ flex: 1, overflow: 'auto', background: 'var(--bg-surface)' }}>
-              <ElementsFlowView {...viewProps} />
-            </div>
-          </div>
+          <SplitView onMappingReport={setMappingReport} />
         )}
       </div>
     </div>

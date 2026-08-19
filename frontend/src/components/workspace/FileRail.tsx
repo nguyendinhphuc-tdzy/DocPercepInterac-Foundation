@@ -1,5 +1,5 @@
-import React, { useRef } from 'react';
-import { FileText, File as FileIcon, Sheet, CheckCircle, Loader2, AlertCircle, Plus } from 'lucide-react';
+import React, { useRef, useState } from 'react';
+import { FileText, File as FileIcon, Sheet, CheckCircle, Loader2, AlertCircle, Plus, PanelLeftClose, PanelLeft } from 'lucide-react';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 import type { DocumentFormat } from '../../types/element';
 
@@ -10,23 +10,24 @@ const ACCEPTED_EXTENSIONS = '.xlsx,.pdf,.docx';
 
 function FileTypeIcon({ format, size = 14 }: { format: DocumentFormat | null; size?: number }) {
   switch (format) {
-    case 'xlsx': return <Sheet size={size} style={{ color: '#2E7D32' }} />;
-    case 'pdf': return <FileIcon size={size} style={{ color: '#C62828' }} />;
-    case 'docx': return <FileText size={size} style={{ color: '#1565C0' }} />;
-    default: return <FileIcon size={size} style={{ color: 'var(--text-tertiary)' }} />;
+    case 'xlsx': return <Sheet size={size} style={{ color: '#2E7D32', flexShrink: 0 }} />;
+    case 'pdf': return <FileIcon size={size} style={{ color: '#C62828', flexShrink: 0 }} />;
+    case 'docx': return <FileText size={size} style={{ color: '#1565C0', flexShrink: 0 }} />;
+    default: return <FileIcon size={size} style={{ color: 'var(--text-tertiary)', flexShrink: 0 }} />;
   }
 }
 
 function DocStatusIcon({ status }: { status: 'perceiving' | 'ready' | 'error' }) {
   switch (status) {
-    case 'ready': return <CheckCircle size={12} style={{ color: 'var(--success)' }} />;
-    case 'perceiving': return <Loader2 size={12} className="animate-spin" style={{ color: 'var(--accent)' }} />;
-    case 'error': return <AlertCircle size={12} style={{ color: 'var(--error)' }} />;
+    case 'ready': return <CheckCircle size={12} style={{ color: 'var(--success)', flexShrink: 0 }} />;
+    case 'perceiving': return <Loader2 size={12} className="animate-spin" style={{ color: 'var(--accent)', flexShrink: 0 }} />;
+    case 'error': return <AlertCircle size={12} style={{ color: 'var(--error)', flexShrink: 0 }} />;
   }
 }
 
 export const FileRail: React.FC = () => {
   const { documents, activeDocClientId, setActiveDocClientId, addDocument, intakeError } = useWorkspaceStore();
+  const [collapsed, setCollapsed] = useState(false);
 
   const fileInputRef = useRef<HTMLInputElement>(null);
   const handleFilesSelected = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -35,17 +36,27 @@ export const FileRail: React.FC = () => {
   };
 
   return (
-    <div className="file-rail">
+    <div className={`file-rail ${collapsed ? 'collapsed' : ''}`} aria-label="Documents collection">
       <div className="file-rail-header">
-        <span className="file-rail-header-title">Documents</span>
-        <button
-          className="btn btn-secondary btn-sm"
-          onClick={() => fileInputRef.current?.click()}
-          title="Add documents"
-        >
-          <Plus size={12} />
-          <span>Add</span>
-        </button>
+        {!collapsed && <span className="file-rail-header-title">Documents</span>}
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-1)', marginLeft: collapsed ? 'auto' : undefined }}>
+          <button
+            className="btn btn-secondary btn-sm btn-icon"
+            onClick={() => fileInputRef.current?.click()}
+            title="Add documents"
+            aria-label="Add documents"
+          >
+            <Plus size={13} />
+          </button>
+          <button
+            className="btn btn-ghost btn-sm btn-icon"
+            onClick={() => setCollapsed(!collapsed)}
+            title={collapsed ? 'Expand documents panel' : 'Collapse documents panel'}
+            aria-label={collapsed ? 'Expand documents panel' : 'Collapse documents panel'}
+          >
+            {collapsed ? <PanelLeft size={13} /> : <PanelLeftClose size={13} />}
+          </button>
+        </div>
       </div>
       <input
         ref={fileInputRef}
@@ -56,7 +67,7 @@ export const FileRail: React.FC = () => {
         onChange={handleFilesSelected}
         aria-label="Upload documents"
       />
-      {intakeError && (
+      {intakeError && !collapsed && (
         <div style={{
           display: 'flex', alignItems: 'flex-start', gap: 'var(--space-2)',
           padding: 'var(--space-2)', margin: 'var(--space-2)',
@@ -71,16 +82,21 @@ export const FileRail: React.FC = () => {
         <div className="file-rail-list">
           {documents.map((doc) => {
             const isActive = activeDocClientId === doc.clientId;
+            const tooltip = doc.error ? `${doc.file.name} — ${doc.error}` : `${doc.file.name} (${doc.status === 'ready' ? `${doc.elementCount} elements` : doc.status})`;
             return (
               <button
                 key={doc.clientId}
-                className={`file-rail-item ${isActive ? 'active' : ''}`}
+                className={`file-rail-item ${isActive ? 'active' : ''} ${collapsed ? 'collapsed' : ''}`}
                 onClick={() => setActiveDocClientId(doc.clientId)}
-                title={doc.error ? `${doc.file.name} — ${doc.error}` : doc.file.name}
+                title={tooltip}
+                aria-label={tooltip}
               >
                 <FileTypeIcon format={doc.format} />
-                <span className="file-name">{doc.file.name}</span>
-                <DocStatusIcon status={doc.status} />
+                {!collapsed && <span className="file-name">{doc.file.name}</span>}
+                {!collapsed && <DocStatusIcon status={doc.status} />}
+                {collapsed && (
+                  <span className={`status-dot ${doc.status}`} />
+                )}
               </button>
             );
           })}

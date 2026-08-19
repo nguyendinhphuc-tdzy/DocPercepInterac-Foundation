@@ -59,27 +59,23 @@ export const WorkspaceHeader: React.FC = () => {
         <span className="workspace-subtitle" title={docName}>{docName}</span>
         <StatusBadge status={statusType} />
         {elementCount > 0 && (
-          <span style={{
-            fontSize: 'var(--text-xs)',
-            color: 'var(--text-tertiary)',
-          }}>
+          <span className="workspace-element-count">
             {elementCount.toLocaleString()} elements
           </span>
         )}
       </div>
 
       <div className="workspace-header-right">
-        {/* Applications — secondary, opt-in application entry points. GTPS
-            mapping lives here, not as a default workspace action, so
-            uploading documents never implies running it. */}
+        {/* Applications */}
         <div style={{ position: 'relative' }}>
           <button
             className="btn btn-secondary btn-sm"
             onClick={() => setAppsMenuOpen(!appsMenuOpen)}
             title="Application actions"
+            aria-label="Applications"
           >
             <LayoutGrid size={13} />
-            <span>Applications</span>
+            <span className="btn-label-responsive">Applications</span>
           </button>
           {appsMenuOpen && <GptsMappingAction onClose={() => setAppsMenuOpen(false)} />}
         </div>
@@ -90,9 +86,10 @@ export const WorkspaceHeader: React.FC = () => {
             className="btn btn-secondary btn-sm"
             onClick={() => setPresetMenuOpen(!presetMenuOpen)}
             title="Change workspace layout"
+            aria-label={PRESET_LABELS[workspacePreset]}
           >
             <Layout size={13} />
-            <span>{PRESET_LABELS[workspacePreset]}</span>
+            <span className="btn-label-responsive">{PRESET_LABELS[workspacePreset]}</span>
           </button>
           {presetMenuOpen && (
             <>
@@ -155,29 +152,29 @@ export const WorkspaceHeader: React.FC = () => {
           )}
         </div>
 
-        {/* Undo — undoes the active document's last edit */}
+        {/* Undo */}
         <button
           className="btn btn-secondary btn-sm"
           onClick={undoLastEdit}
           disabled={!canUndo}
-          title={canUndo ? `Undo last edit (${editHistory.length})` : 'No edits to undo'}
+          title={canUndo ? `Undo last edit (${editHistory.length}) (Ctrl+Z)` : 'No edits to undo'}
+          aria-label="Undo last edit"
         >
           <Undo2 size={13} />
-          <span>Undo{editHistory.length > 0 ? ` (${editHistory.length})` : ''}</span>
+          <span className="btn-label-responsive">Undo{editHistory.length > 0 ? ` (${editHistory.length})` : ''}</span>
         </button>
 
-        {/* Download — the active document's own patched output, if any
-            (works whether the patch came from a manual edit or a GTPS
-            mapping run: both write to the same generic per-document
-            download endpoint). */}
+        {/* Download */}
         {downloadUrlForActiveDoc && (
           <a
             href={downloadUrlFor(downloadUrlForActiveDoc)}
             className="btn btn-primary btn-sm"
             style={{ textDecoration: 'none' }}
+            title="Download patched document"
+            aria-label="Download patched document"
           >
             <Download size={13} />
-            <span>Download</span>
+            <span className="btn-label-responsive">Download</span>
           </a>
         )}
       </div>
@@ -185,10 +182,6 @@ export const WorkspaceHeader: React.FC = () => {
   );
 };
 
-// Small convenience wrapper: derives the active document's download URL
-// (available once it has a docId — the generic download route resolves
-// whether a patch actually exists) from store fields, without adding a
-// dedicated store field just for this header.
 function useWorkspaceStoreExtras() {
   const state = useWorkspaceStore();
   const activeDoc = state.documents.find((d) => d.clientId === state.activeDocClientId) ?? null;

@@ -1,13 +1,11 @@
 import React from 'react';
 import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels';
-import { GitCompare } from 'lucide-react';
 import { WorkspaceHeader } from './WorkspaceHeader';
 import { FileRail } from './FileRail';
 import { AgentPane } from '../agent/AgentPane';
 import { ElementsPane } from '../elements/ElementsPane';
 import { ResultsPane } from '../results/ResultsPane';
 import { DocumentPane } from '../document/DocumentPane';
-import { EmptyState } from '../shared/EmptyState';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 
 // Workspace is the primary entry surface regardless of document count — it
@@ -34,27 +32,27 @@ export const WorkspaceView: React.FC = () => {
 
 // ── Preset Layouts ── //
 
-/** Agent + Document (default) — Agent is the dominant surface */
+/** Agent + Document — Balanced 50/50 split so document viewer is always comfortably readable */
 const AgentPresetLayout: React.FC = () => (
   <PanelGroup orientation="horizontal">
-    <Panel defaultSize={65} minSize={40}>
+    <Panel defaultSize={50} minSize={30}>
       <AgentPane />
     </Panel>
     <PanelResizeHandle className="resize-handle" data-orientation="horizontal" />
-    <Panel defaultSize={35} minSize={25}>
+    <Panel defaultSize={50} minSize={40}>
       <DocumentPane />
     </Panel>
   </PanelGroup>
 );
 
-/** Inspect: Document + Elements + Inspector */
+/** Inspect: Document + Elements Explorer */
 const InspectPresetLayout: React.FC = () => (
   <PanelGroup orientation="horizontal">
-    <Panel defaultSize={40} minSize={25}>
+    <Panel defaultSize={50} minSize={35}>
       <DocumentPane />
     </Panel>
     <PanelResizeHandle className="resize-handle" data-orientation="horizontal" />
-    <Panel defaultSize={60} minSize={35}>
+    <Panel defaultSize={50} minSize={35}>
       <ElementsPane />
     </Panel>
   </PanelGroup>
@@ -63,32 +61,17 @@ const InspectPresetLayout: React.FC = () => (
 /** Review: Document + Results/Output */
 const ReviewPresetLayout: React.FC = () => (
   <PanelGroup orientation="horizontal">
-    <Panel defaultSize={45} minSize={25}>
+    <Panel defaultSize={45} minSize={30}>
       <DocumentPane />
     </Panel>
     <PanelResizeHandle className="resize-handle" data-orientation="horizontal" />
-    <Panel defaultSize={55} minSize={30}>
+    <Panel defaultSize={55} minSize={35}>
       <ResultsPane />
     </Panel>
   </PanelGroup>
 );
 
-/** Compare: not implemented yet — shown honestly rather than as a
- * functional-looking two-document picker that has no wiring behind it. */
+/** Compare: Full-width Document Pane configured for comparison */
 const ComparePresetLayout: React.FC = () => (
-  <div className="pane-container">
-    <div className="pane-header">
-      <div className="pane-header-title">
-        <GitCompare size={14} />
-        <span>Compare</span>
-      </div>
-    </div>
-    <div className="pane-content">
-      <EmptyState
-        icon={GitCompare}
-        title="Compare mode isn't available yet"
-        description="Document comparison is planned but not implemented. Use Inspect or Review to work with one document at a time."
-      />
-    </div>
-  </div>
+  <DocumentPane />
 );
