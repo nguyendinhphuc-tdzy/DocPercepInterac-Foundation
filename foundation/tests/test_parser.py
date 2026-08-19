@@ -131,7 +131,9 @@ def test_parse_xlsx_extracts_correct_geometry(tmp_path):
     ws["B2"] = "World"
     
     # Create named range
-    wb.create_named_range("MyNamedRange", ws, "A1:A1")
+    from openpyxl.workbook.defined_name import DefinedName
+    new_range = DefinedName("MyNamedRange", attr_text="TestSheet!$A$1")
+    wb.defined_names.add(new_range)
     
     wb.save(file_path)
     wb.close()

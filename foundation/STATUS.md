@@ -1,19 +1,27 @@
 # Document Perception — Build Status
 
 Trạng thái thực tế của `foundation/` (+ `frontend/`) tính đến thời điểm này.
-Đối chiếu với **`../Foundation_Build_Plan_v4.md`** (sau buổi họp chuẩn bị
-Partners 10/08 — thay thế v3) và `Foundation_Build_Plan_v3.md` (kiến trúc 2
-lớp / data model / API chi tiết, v4 không lặp lại). Cập nhật file này mỗi
-khi có module mới hoàn thành — đừng để nó trôi khỏi thực tế code.
-
-**⚠️ 2026-08-14: `Foundation_Build_Plan_v5.md` đã tồn tại** (thêm nhánh OCR
-— xem §11, §14 cũ) nhưng file STATUS.md này **chưa đối chiếu lại với v5**,
-vẫn đang bám v4. Đừng coi phần "ĐÃ LÊN v4" ngay dưới đây là nguồn sự thật
-mới nhất tuyệt đối — chỉ là chưa có ai làm việc đối chiếu v5 riêng.
+Đối chiếu với **`../Foundation_Build_Plan_v5.md`** và `Foundation_Build_Plan_v4.md` / `v3`.
 
 ---
 
-## 📍 TÌNH TRẠNG HIỆN TẠI (chốt 2026-08-14) — đọc mục này trước, phần dưới là lịch sử/lý do
+## 📍 TÌNH TRẠNG HIỆN TẠI (2026-08-19) — Stage B: Full Foundation Audit Completed
+
+- **Comprehensive Audit Report**: Đã tạo tài liệu kiểm toán kiến trúc toàn diện tại `docs/audit/Foundation_Core_Audit_2026-08-19.md`.
+- **Backend Test Suite**: **109/109 tests PASS** (0 warnings, 0 errors).
+- **Stage A Baseline Hardening**: Đã kiểm tra đối chuẩn trên fixture khó `Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx` (848 elements) — đạt **802/848 (94.6%)** direct mapping DOM:
+  - Paragraphs: 210/210
+  - Headings: 60/60
+  - Table Cells: 505/505
+  - Footnotes: 25/25
+  - Footer: 1/1
+  - Bidirectional click & tree synchronization verified via Playwright.
+- **Frontend Type & Lint Check**: `npm test` (`oxlint && tsc -b && vite build`) đạt 0 warnings, 0 errors.
+- **Git Hygiene**: Đã dọn dẹp file ảnh tạm `UsersPCAppDataLocalTemp...` khỏi git tracking.
+
+---
+
+## 📍 TÌNH TRẠNG LỊCH SỬ (2026-08-14) — đọc mục này nếu cần tra cứu tiến trình cũ
 
 Toàn bộ nội dung từ mục "✅ ĐÃ GIẢI QUYẾT (2026-08-14): Access layer..."
 trở xuống (trước bảng "Đã làm được") là **1 phiên làm việc duy nhất, cùng
