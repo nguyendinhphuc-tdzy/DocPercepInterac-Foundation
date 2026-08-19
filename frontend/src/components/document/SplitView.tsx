@@ -1,6 +1,6 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useRef, useEffect, useCallback } from 'react';
 import { Panel, Group as PanelGroup, Separator as PanelResizeHandle } from 'react-resizable-panels';
-import { FileText, Rows3, File, Sheet, ArrowLeftRight, Loader2, AlertTriangle } from 'lucide-react';
+import { FileText, Rows3, File, Sheet, ArrowLeftRight, Loader2, AlertTriangle, ZoomIn, ZoomOut } from 'lucide-react';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 import { useSyncStore } from '../../state/syncStore';
 import { DocxRenderer } from './rendering/DocxRenderer';
@@ -78,6 +78,17 @@ const SplitElementsView: React.FC<{
   onEdit: (elementId: string, newValue: string) => void;
 }> = ({ elements, selectedElementId, hoveredElementId, onSelect, onHover, canEdit, onEdit }) => {
   const blocks = useMemo(() => buildDocumentBlocks(elements), [elements]);
+  const nodeRefs = useRef(new Map<string, HTMLElement>());
+
+  const registerNode = (elementId: string, node: HTMLElement | null) => {
+    if (node) nodeRefs.current.set(elementId, node);
+    else nodeRefs.current.delete(elementId);
+  };
+
+  useEffect(() => {
+    if (!selectedElementId) return;
+    nodeRefs.current.get(selectedElementId)?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  }, [selectedElementId]);
 
   return (
     <div style={{ padding: 'var(--space-3)', display: 'flex', flexDirection: 'column', gap: 'var(--space-2)' }}>
@@ -90,6 +101,7 @@ const SplitElementsView: React.FC<{
           return (
             <div
               key={elId}
+              ref={(n) => registerNode(elId, n)}
               onMouseEnter={() => onHover(elId)}
               onMouseLeave={() => onHover(null)}
               onClick={() => onSelect(elId)}
@@ -148,6 +160,7 @@ const SplitElementsView: React.FC<{
                         return (
                           <td
                             key={c}
+                            ref={(n) => { if (cellElId) registerNode(cellElId, n); }}
                             onMouseEnter={() => cellElId && onHover(cellElId)}
                             onMouseLeave={() => cellElId && onHover(null)}
                             onClick={() => cellElId && onSelect(cellElId)}
@@ -224,17 +237,33 @@ export const SplitView: React.FC<{
   // Split state
   const [leftDocClientId, setLeftDocClientId] = useState<string>(activeDoc?.clientId ?? '');
   const [leftMode, setLeftMode] = useState<RepresentationMode>('original');
+  const [leftZoom, setLeftZoom] = useState<number>(100);
+
   const [rightDocClientId, setRightDocClientId] = useState<string>(secondDoc ? secondDoc.clientId : (activeDoc?.clientId ?? ''));
   const [rightMode, setRightMode] = useState<RepresentationMode>(secondDoc ? 'original' : 'elements');
+  const [rightZoom, setRightZoom] = useState<number>(100);
 
-  // Keep defaults updated if documents list changes
-  React.useEffect(() => {
-    if (activeDoc && !leftDocClientId) setLeftDocClientId(activeDoc.clientId);
-    if (!rightDocClientId) setRightDocClientId(secondDoc ? secondDoc.clientId : (activeDoc?.clientId ?? ''));
-  }, [activeDoc, secondDoc, leftDocClientId, rightDocClientId]);
+  // Keep defaults updated and heal invalid document pointers if documents change/delete
+  useEffect(() => {
+    const docIds = new Set(documents.map((d) => d.clientId));
+    if (activeDoc && (!leftDocClientId || !docIds.has(leftDocClientId))) {
+      setLeftDocClientId(activeDoc.clientId);
+    }
+    if (!rightDocClientId || !docIds.has(rightDocClientId)) {
+      setRightDocClientId(secondDoc ? secondDoc.clientId : (activeDoc?.clientId ?? ''));
+    }
+  }, [documents, activeDoc, secondDoc, leftDocClientId, rightDocClientId]);
 
   const leftDoc = documents.find((d) => d.clientId === leftDocClientId) ?? activeDoc;
   const rightDoc = documents.find((d) => d.clientId === rightDocClientId) ?? (secondDoc ?? activeDoc);
+
+  const isSameDoc = leftDoc?.clientId === rightDoc?.clientId;
+
+  // Isolate cross-document selection: if leftDoc has element matching selectedElementId, pass it; else null
+  const leftSelectedId = leftDoc?.elements?.some((e) => idOf(e) === selectedElementId) ? selectedElementId : null;
+  const rightSelectedId = rightDoc?.elements?.some((e) => idOf(e) === selectedElementId) ? selectedElementId : null;
+  const leftHoveredId = leftDoc?.elements?.some((e) => idOf(e) === hoveredElementId) ? hoveredElementId : null;
+  const rightHoveredId = rightDoc?.elements?.some((e) => idOf(e) === hoveredElementId) ? hoveredElementId : null;
 
   const applyPreset = (preset: 'same-doc' | 'compare-orig' | 'compare-elements') => {
     if (!activeDoc) return;
@@ -268,9 +297,20 @@ export const SplitView: React.FC<{
     if (el) editElement(rightDoc.clientId, el.index, newValue);
   };
 
+  const handleZoomLeftIn = useCallback(() => setLeftZoom((z) => Math.min(z + 15, 175)), []);
+  const handleZoomLeftOut = useCallback(() => setLeftZoom((z) => Math.max(z - 15, 60)), []);
+  const handleResetZoomLeft = useCallback(() => setLeftZoom(100), []);
+
+  const handleZoomRightIn = useCallback(() => setRightZoom((z) => Math.min(z + 15, 175)), []);
+  const handleZoomRightOut = useCallback(() => setRightZoom((z) => Math.max(z - 15, 60)), []);
+  const handleResetZoomRight = useCallback(() => setRightZoom(100), []);
+
   const renderSideContent = (
     doc: typeof activeDoc,
     mode: RepresentationMode,
+    selectedId: string | null,
+    hoveredId: string | null,
+    zoom: number,
     onEdit: (elementId: string, val: string) => void,
   ) => {
     if (!doc) {
@@ -285,11 +325,15 @@ export const SplitView: React.FC<{
 
     if (mode === 'elements') {
       return (
-        <div style={{ height: '100%', overflow: 'auto', background: 'var(--bg-surface)' }}>
+        <div style={{
+          height: '100%', overflow: 'auto', background: 'var(--bg-surface)',
+          transform: zoom !== 100 ? `scale(${zoom / 100})` : undefined,
+          transformOrigin: 'top center', transition: 'transform var(--transition-fast)',
+        }}>
           <SplitElementsView
             elements={doc.elements ?? EMPTY_ELEMENTS}
-            selectedElementId={selectedElementId}
-            hoveredElementId={hoveredElementId}
+            selectedElementId={selectedId}
+            hoveredElementId={hoveredId}
             onSelect={setSelectedElementId}
             onHover={setHoveredElement}
             canEdit={doc.status === 'ready'}
@@ -305,8 +349,8 @@ export const SplitView: React.FC<{
       sessionId: sessionId ?? '',
       docId: doc.docId ?? '',
       elements: doc.elements ?? EMPTY_ELEMENTS,
-      selectedElementId,
-      hoveredElementId,
+      selectedElementId: selectedId,
+      hoveredElementId: hoveredId,
       onSelectElement: setSelectedElementId,
       onHoverElement: setHoveredElement,
       onEditElement: onEdit,
@@ -315,7 +359,11 @@ export const SplitView: React.FC<{
     };
 
     return (
-      <div style={{ height: '100%', overflow: 'auto', background: 'var(--bg-app)' }}>
+      <div style={{
+        height: '100%', overflow: 'auto', background: 'var(--bg-app)',
+        transform: zoom !== 100 ? `scale(${zoom / 100})` : undefined,
+        transformOrigin: 'top center', transition: 'transform var(--transition-fast)',
+      }}>
         <SplitOriginalPane
           sessionId={sessionId ?? ''}
           docId={doc.docId ?? ''}
@@ -335,13 +383,13 @@ export const SplitView: React.FC<{
         padding: 'var(--space-1) var(--space-3)', background: 'var(--bg-surface-secondary)',
         borderBottom: '1px solid var(--border)', fontSize: 'var(--text-xs)',
       }}>
-        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
           <ArrowLeftRight size={13} style={{ color: 'var(--text-tertiary)' }} />
           <span style={{ fontWeight: 600, color: 'var(--text-secondary)' }}>Compare:</span>
           <button
             className="btn btn-ghost btn-sm"
             onClick={() => applyPreset('same-doc')}
-            style={{ fontWeight: leftDocClientId === rightDocClientId ? 600 : 400 }}
+            style={{ fontWeight: isSameDoc ? 600 : 400 }}
           >
             Same Doc (Original ↔ Elements)
           </button>
@@ -351,7 +399,7 @@ export const SplitView: React.FC<{
               <button
                 className="btn btn-ghost btn-sm"
                 onClick={() => applyPreset('compare-orig')}
-                style={{ fontWeight: leftDocClientId !== rightDocClientId && leftMode === 'original' && rightMode === 'original' ? 600 : 400 }}
+                style={{ fontWeight: !isSameDoc && leftMode === 'original' && rightMode === 'original' ? 600 : 400 }}
               >
                 2 Docs (Original ↔ Original)
               </button>
@@ -359,13 +407,23 @@ export const SplitView: React.FC<{
               <button
                 className="btn btn-ghost btn-sm"
                 onClick={() => applyPreset('compare-elements')}
-                style={{ fontWeight: leftDocClientId !== rightDocClientId && leftMode === 'elements' && rightMode === 'elements' ? 600 : 400 }}
+                style={{ fontWeight: !isSameDoc && leftMode === 'elements' && rightMode === 'elements' ? 600 : 400 }}
               >
                 2 Docs (Elements ↔ Elements)
               </button>
             </>
           )}
         </div>
+
+        {!isSameDoc && (
+          <span style={{
+            fontSize: 'var(--text-xxs)', color: 'var(--text-secondary)',
+            background: 'var(--bg-surface)', padding: '2px 8px', borderRadius: 'var(--radius-full)',
+            border: '1px solid var(--border)', fontWeight: 500,
+          }}>
+            2 Documents · Independent Selection
+          </span>
+        )}
       </div>
 
       {/* 2-Pane Resizable Comparison Workspace */}
@@ -373,7 +431,7 @@ export const SplitView: React.FC<{
         <PanelGroup orientation="horizontal">
           {/* Left Pane */}
           <Panel defaultSize={50} minSize={30}>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', borderRight: '1px solid var(--border)' }}>
+            <div className="split-left-pane" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden', borderRight: '1px solid var(--border)' }}>
               {/* Left Pane Toolbar */}
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -398,28 +456,62 @@ export const SplitView: React.FC<{
                     ))}
                   </select>
                 </div>
-                <div className="view-mode-switch" style={{ scale: '0.9', transformOrigin: 'right center' }}>
-                  <button
-                    className={`view-mode-btn ${leftMode === 'original' ? 'active' : ''}`}
-                    onClick={() => setLeftMode('original')}
-                    title="Original view"
-                  >
-                    <FileText size={11} />
-                    <span>Original</span>
-                  </button>
-                  <button
-                    className={`view-mode-btn ${leftMode === 'elements' ? 'active' : ''}`}
-                    onClick={() => setLeftMode('elements')}
-                    title="Elements view"
-                  >
-                    <Rows3 size={11} />
-                    <span>Elements</span>
-                  </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                  {/* Left Pane Independent Zoom Controls */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', background: 'var(--bg-surface-secondary)', borderRadius: 'var(--radius-sm)', padding: '1px' }}>
+                    <button
+                      className="btn btn-ghost btn-sm btn-icon"
+                      onClick={handleZoomLeftOut}
+                      title="Zoom out"
+                      aria-label="Left pane zoom out"
+                      style={{ padding: '2px 4px', height: 'auto' }}
+                    >
+                      <ZoomOut size={11} />
+                    </button>
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      onClick={handleResetZoomLeft}
+                      title="Reset zoom"
+                      aria-label="Left pane reset zoom"
+                      style={{ fontSize: 'var(--text-xxs)', padding: '2px 4px', height: 'auto', minWidth: '32px', textAlign: 'center' }}
+                    >
+                      {leftZoom}%
+                    </button>
+                    <button
+                      className="btn btn-ghost btn-sm btn-icon"
+                      onClick={handleZoomLeftIn}
+                      title="Zoom in"
+                      aria-label="Left pane zoom in"
+                      style={{ padding: '2px 4px', height: 'auto' }}
+                    >
+                      <ZoomIn size={11} />
+                    </button>
+                  </div>
+
+                  <div className="view-mode-switch" style={{ scale: '0.9', transformOrigin: 'right center' }}>
+                    <button
+                      className={`view-mode-btn ${leftMode === 'original' ? 'active' : ''}`}
+                      onClick={() => setLeftMode('original')}
+                      title="Original view"
+                    >
+                      <FileText size={11} />
+                      <span>Original</span>
+                    </button>
+                    <button
+                      className={`view-mode-btn ${leftMode === 'elements' ? 'active' : ''}`}
+                      onClick={() => setLeftMode('elements')}
+                      title="Elements view"
+                    >
+                      <Rows3 size={11} />
+                      <span>Elements</span>
+                    </button>
+                  </div>
                 </div>
               </div>
               {/* Left Content */}
               <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-                {renderSideContent(leftDoc, leftMode, handleEditLeft)}
+                {renderSideContent(leftDoc, leftMode, leftSelectedId, leftHoveredId, leftZoom, handleEditLeft)}
               </div>
             </div>
           </Panel>
@@ -428,7 +520,7 @@ export const SplitView: React.FC<{
 
           {/* Right Pane */}
           <Panel defaultSize={50} minSize={30}>
-            <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
+            <div className="split-right-pane" style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
               {/* Right Pane Toolbar */}
               <div style={{
                 display: 'flex', alignItems: 'center', justifyContent: 'space-between',
@@ -453,28 +545,62 @@ export const SplitView: React.FC<{
                     ))}
                   </select>
                 </div>
-                <div className="view-mode-switch" style={{ scale: '0.9', transformOrigin: 'right center' }}>
-                  <button
-                    className={`view-mode-btn ${rightMode === 'original' ? 'active' : ''}`}
-                    onClick={() => setRightMode('original')}
-                    title="Original view"
-                  >
-                    <FileText size={11} />
-                    <span>Original</span>
-                  </button>
-                  <button
-                    className={`view-mode-btn ${rightMode === 'elements' ? 'active' : ''}`}
-                    onClick={() => setRightMode('elements')}
-                    title="Elements view"
-                  >
-                    <Rows3 size={11} />
-                    <span>Elements</span>
-                  </button>
+
+                <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                  {/* Right Pane Independent Zoom Controls */}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '2px', background: 'var(--bg-surface-secondary)', borderRadius: 'var(--radius-sm)', padding: '1px' }}>
+                    <button
+                      className="btn btn-ghost btn-sm btn-icon"
+                      onClick={handleZoomRightOut}
+                      title="Zoom out"
+                      aria-label="Right pane zoom out"
+                      style={{ padding: '2px 4px', height: 'auto' }}
+                    >
+                      <ZoomOut size={11} />
+                    </button>
+                    <button
+                      className="btn btn-ghost btn-sm"
+                      onClick={handleResetZoomRight}
+                      title="Reset zoom"
+                      aria-label="Right pane reset zoom"
+                      style={{ fontSize: 'var(--text-xxs)', padding: '2px 4px', height: 'auto', minWidth: '32px', textAlign: 'center' }}
+                    >
+                      {rightZoom}%
+                    </button>
+                    <button
+                      className="btn btn-ghost btn-sm btn-icon"
+                      onClick={handleZoomRightIn}
+                      title="Zoom in"
+                      aria-label="Right pane zoom in"
+                      style={{ padding: '2px 4px', height: 'auto' }}
+                    >
+                      <ZoomIn size={11} />
+                    </button>
+                  </div>
+
+                  <div className="view-mode-switch" style={{ scale: '0.9', transformOrigin: 'right center' }}>
+                    <button
+                      className={`view-mode-btn ${rightMode === 'original' ? 'active' : ''}`}
+                      onClick={() => setRightMode('original')}
+                      title="Original view"
+                    >
+                      <FileText size={11} />
+                      <span>Original</span>
+                    </button>
+                    <button
+                      className={`view-mode-btn ${rightMode === 'elements' ? 'active' : ''}`}
+                      onClick={() => setRightMode('elements')}
+                      title="Elements view"
+                    >
+                      <Rows3 size={11} />
+                      <span>Elements</span>
+                    </button>
+                  </div>
                 </div>
               </div>
               {/* Right Content */}
               <div style={{ flex: 1, minHeight: 0, overflow: 'auto' }}>
-                {renderSideContent(rightDoc, rightMode, handleEditRight)}
+                {renderSideContent(rightDoc, rightMode, rightSelectedId, rightHoveredId, rightZoom, handleEditRight)}
               </div>
             </div>
           </Panel>

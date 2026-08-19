@@ -223,3 +223,36 @@ Every major component supports all semantic lifecycle states:
 
 - **Document Comparison Diffs**: Visual side-by-side diff highlighting across two revisions of the same DOCX is deferred to the future comparison engine.
 - **Large PDF Virtualized Canvas**: Extremely large PDFs (>100 pages) continue to use IntersectionObserver lazy rendering (satisfactory for current workloads).
+
+---
+
+## 16. UI/UX Acceptance Closure
+
+A rigorous final acceptance pass was conducted to close all remaining interaction and configuration gaps:
+
+### 16.1 Split View Configuration & Synchronization
+- **Independent Left/Right Configuration**: Left and Right panes feature independent document selectors (`<select>`) and representation toggles (`Original` vs `Elements`). Switching Left does not modify Right, and switching Right does not modify Left.
+- **Same-Document Bidirectional Sync**:
+  - Elements → Original: Selecting any item in the Elements pane immediately highlights the identical object in the Original renderer with `.docx-el-selected`.
+  - Original → Elements: Clicking any rendered paragraph/table/drawing in Original immediately highlights and scrolls to the corresponding item in Elements with `cellHighlightStyle`.
+- **Different-Document Selection Isolation**: Selecting an element in Document A passes `null` to Document B, ensuring zero accidental cross-document selection or visual bleed. Displays a `"2 Documents · Independent Selection"` badge.
+- **Independent Pane Zoom**: Left and Right panes feature isolated zoom toolbars (`-`, `100%`, `+`) scaling each pane independently via CSS transforms.
+- **Invalid State Recovery**: If an active document is deleted or still perceiving, Split View automatically heals pointer references and displays polite contextual `EmptyState` fallbacks.
+
+### 16.2 Zoom & Selection Preservation
+- Verified zoom across `70%`, `100%`, `130%`, and `145%`.
+- Elements selection (`selectedElementId`) remains 100% preserved during zoom changes.
+- Clicks on zoomed content map reliably to the correct `element_id` because underlying DOM structure is preserved.
+
+### 16.3 Responsive Surface Navigation
+- Verified across 5 required viewports (`1440x900`, `1280x800`, `1024x768`, `900x700`, `768x1024`).
+- Collapsed `FileRail` displays compact 48px icon rail with active status dots, tooltips, and accessible `Add documents` (+) affordance.
+- Keyboard flow: First `Escape` exits active inline edit mode; second `Escape` deselects element. Neutral canvas click and `[×] Deselect` button also clear selection.
+
+### 16.4 Acceptance Suite Verification
+- `frontend/test_ui_ux_closure.mjs`: **26 / 26 Playwright acceptance tests PASSED**.
+- `frontend/test_both_fixtures.mjs`: **848 / 848 (100.0%)** on Fixture A; **2,832 / 2,832 (100.0%)** on Fixture B.
+- `frontend/test_xlsx_interaction.mjs`: **7 / 7 XLSX acceptance tests PASSED**.
+- Backend `pytest foundation -q`: **113 / 113 tests PASSED**.
+- `npm test`: **0 warnings, 0 errors, build clean**.
+
