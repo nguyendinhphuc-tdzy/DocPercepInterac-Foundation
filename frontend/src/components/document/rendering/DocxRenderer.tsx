@@ -186,6 +186,7 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
         mapRef.current = map;
         for (const [elementId, node] of map.nodeByElementId) nodeToElementId.current.set(node, elementId);
         onMappingReport?.(map.report);
+        if (typeof window !== 'undefined') (window as any).__DOCX_MAPPING_REPORT__ = map.report;
         setMapReady(true);
         setStatus('ready');
       } catch (err) {

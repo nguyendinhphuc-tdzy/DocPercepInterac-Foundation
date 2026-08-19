@@ -318,7 +318,11 @@ async function computeHeaderHash(table: HTMLTableElement): Promise<string> {
   const firstRow = table.rows[0]; // native property: this table's own rows only, never a nested table's
   const headerText = firstRow
     ? Array.from(firstRow.cells) // native property: this row's own cells only
-        .map((cell) => cellFullText(cell).trim())
+        .map((cell) => {
+          const t = cellFullText(cell).trim();
+          const span = cell.colSpan || 1;
+          return t.repeat(span);
+        })
         .join('')
     : '';
   return sha256Hex8(headerText);
@@ -413,6 +417,7 @@ async function mapTableCells(
     tablesByHash.set(hash, list);
   }
 
+  const seenTableOrdinal = new Map<string, number>();
   for (const [, cells] of tableGroups) {
     const expectedHash = cells.find((c) => isDocxAnchor(c.anchor))?.anchor;
     const tableHash = expectedHash && isDocxAnchor(expectedHash) ? expectedHash.table_hash : null;
@@ -422,16 +427,24 @@ async function mapTableCells(
       for (const cell of cells) statusByElementId.set(idOf(cell), 'unavailable');
       continue;
     }
-    if (candidates.length > 1) {
-      // A hash shared by more than one candidate table can't be resolved
-      // without guessing which is the real one — never pick "whichever
-      // rendered first". Every cell in this Foundation table is reported
-      // ambiguous rather than silently risking the wrong table.
-      for (const cell of cells) statusByElementId.set(idOf(cell), 'ambiguous');
+
+    const ordinal = seenTableOrdinal.get(tableHash!) ?? 0;
+    seenTableOrdinal.set(tableHash!, ordinal + 1);
+
+    const targetTable = candidates[ordinal];
+    if (!targetTable) {
+      for (const cell of cells) statusByElementId.set(idOf(cell), 'unavailable');
       continue;
     }
 
-    const grid = buildLogicalGrid(candidates[0]);
+    // Balanced per spec: candidates.length === totalFoundationTablesWithThisHash
+    const totalFoundationTablesWithThisHash = Array.from(tableGroups.values()).filter((groupCells) => {
+      const h = groupCells.find((c) => isDocxAnchor(c.anchor))?.anchor;
+      return h && isDocxAnchor(h) ? h.table_hash === tableHash : false;
+    }).length;
+
+    const isBalanced = candidates.length === totalFoundationTablesWithThisHash;
+    const grid = buildLogicalGrid(targetTable);
     for (const cell of cells) {
       if (!isDocxAnchor(cell.anchor)) continue;
       const r = cell.anchor.row_index ?? 0;
@@ -440,7 +453,7 @@ async function mapTableCells(
       const id = idOf(cell);
       if (cellNode) {
         nodeByElementId.set(id, cellNode);
-        statusByElementId.set(id, 'available');
+        statusByElementId.set(id, isBalanced ? 'available' : 'ambiguous');
       } else {
         statusByElementId.set(id, 'partial'); // table identity resolved; this specific row/col didn't
       }
