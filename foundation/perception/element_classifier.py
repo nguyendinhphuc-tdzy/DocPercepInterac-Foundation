@@ -190,8 +190,10 @@ def classify_block(block: Mapping[str, Any], index: int, fmt: str, anchor: Ancho
     if fmt == "xlsx":
         name = block.get("named_range") or f"{block['sheet_name']}!{block['cell_address']}"
         etype = ElementType.CELL
+        extra_dict = block.get("extra") or {}
+        is_formula = bool(extra_dict.get("formula")) if isinstance(extra_dict, dict) else False
         return Element(index=index, element_id=_stable_element_id(anchor), type=etype, name=name, text=text, anchor=anchor,
-                        confidence=1.0, capabilities=_full_capabilities(editable=True))
+                        confidence=1.0, capabilities=_full_capabilities(editable=not is_formula))
     elif fmt == "docx":
         if block.get("table_index") is not None:
             etype = ElementType.CELL

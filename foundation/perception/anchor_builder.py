@@ -389,12 +389,11 @@ def resolve_xlsx_anchor(wb, anchor: AnchorXLSX) -> Tuple[Any, Optional[str]]:
     if col_letter:
         for row in ws.iter_rows():
             row_number = row[0].row
-            if _row_label_fingerprint(ws, row_number) == anchor.row_label_fingerprint:
+            if row_number != cell.row and _row_label_fingerprint(ws, row_number) == anchor.row_label_fingerprint:
                 return ws[f"{col_letter}{row_number}"], f"Drift detected. Self-healed row {cell.row} -> {row_number} by row label"
 
-    raise ValueError(
-        f"Failed to resolve XLSX anchor: {anchor!r} — row label drifted and no matching row found"
-    )
+    # Strategy 2 fallback: cell_address itself (the row's label was edited in-place)
+    return cell, "Strategy 2: matched by cell_address — row label differs from recorded anchor"
 
 
 _PDF_BBOX_TOLERANCE = 0.02  # relative units — ~same line position

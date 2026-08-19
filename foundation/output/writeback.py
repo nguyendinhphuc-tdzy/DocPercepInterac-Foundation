@@ -5,6 +5,36 @@ import re
 
 from perception.anchor_builder import resolve_docx_anchor, resolve_table_anchor, resolve_xlsx_anchor
 
+
+def _coerce_xlsx_value(val: Any) -> Any:
+    """Coerces incoming edit strings to appropriate Python/Excel types while preserving
+    formulas, strings with leading zeros (e.g. tax codes / phone numbers), and booleans."""
+    if not isinstance(val, str):
+        return val
+    if val == "":
+        return None
+    if val.startswith("="):
+        return val
+    # Integer
+    try:
+        if val == "0" or not (val.startswith("0") and len(val) > 1):
+            return int(val)
+    except ValueError:
+        pass
+    # Float
+    try:
+        if not (val.startswith("0") and len(val) > 1 and not val.startswith("0.")):
+            return float(val)
+    except ValueError:
+        pass
+    # Boolean
+    if val.lower() == "true":
+        return True
+    if val.lower() == "false":
+        return False
+    return val
+
+
 class WritebackEngine:
     def __init__(self):
         pass
@@ -37,7 +67,11 @@ class WritebackEngine:
 
             wb = openpyxl.load_workbook(path)
             cell, message = resolve_xlsx_anchor(wb, anchor)
-            cell.value = new_value
+            if isinstance(cell.value, str) and cell.value.startswith("=") and not (isinstance(new_value, str) and new_value.startswith("=")):
+                raise ValueError(
+                    f"Cell {anchor.sheet_name}!{anchor.cell_address} contains a formula ('{cell.value}') and is read-only"
+                )
+            cell.value = _coerce_xlsx_value(new_value)
             wb.save(output_path)
             return message
 

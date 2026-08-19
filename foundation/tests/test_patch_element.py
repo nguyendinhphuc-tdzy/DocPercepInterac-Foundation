@@ -18,6 +18,7 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from docx import Document as DocxDocument  # noqa: E402
 
 from perception.anchor_builder import assign_docx_anchor, assign_xlsx_anchor  # noqa: E402
+from perception.models import AnchorXLSX  # noqa: E402
 from perception.parser import parse_docx, parse_xlsx  # noqa: E402
 from output.writeback import WritebackEngine  # noqa: E402
 
@@ -116,20 +117,22 @@ def _seed_document(tmp_path, session_id, doc_id, filename, doc_or_wb, element_co
     stored_path = session_dir / stored_filename
     doc_or_wb.save(stored_path)
 
+    manifest_file = session_dir / "manifest.json"
+    if manifest_file.exists():
+        manifest = json.loads(manifest_file.read_text(encoding="utf-8"))
+    else:
+        manifest = {"documents": {}}
+
     fmt = Path(filename).suffix.lstrip(".")
-    manifest = {
-        "documents": {
-            doc_id: {
-                "original_filename": filename,
-                "stored_filename": stored_filename,
-                "format": fmt,
-                "status": "ready",
-                "element_count": element_count,
-                "error": None,
-            }
-        }
+    manifest["documents"][doc_id] = {
+        "original_filename": filename,
+        "stored_filename": stored_filename,
+        "format": fmt,
+        "status": "ready",
+        "element_count": element_count,
+        "error": None,
     }
-    (session_dir / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+    manifest_file.write_text(json.dumps(manifest), encoding="utf-8")
     return session_dir, stored_path
 
 
@@ -295,3 +298,172 @@ def test_patch_element_returns_422_for_pdf_anchor(client, tmp_path):
         },
     )
     assert response.status_code == 422
+
+
+def test_patch_element_xlsx_type_coercion(client, tmp_path):
+    """Verifies that numeric, float, boolean, and empty values are properly coerced in XLSX output."""
+    import openpyxl
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Data"
+    ws["A1"] = "old_int"
+    ws["A2"] = "old_float"
+    ws["A3"] = "old_bool"
+    ws["A4"] = "old_code"
+    ws["A5"] = "old_empty"
+
+    session_id, doc_id = str(uuid.uuid4()), str(uuid.uuid4())
+    session_dir, stored_path = _seed_document(tmp_path, session_id, doc_id, "coercion.xlsx", wb)
+
+    # 1. Integer
+    anchor_a1 = AnchorXLSX(sheet_name="Data", cell_address="A1")
+    r1 = client.patch(f"/api/documents/{session_id}/elements/{doc_id}", json={"anchor": anchor_a1.model_dump(mode="json"), "value": "1234"})
+    assert r1.status_code == 200
+
+    # 2. Float
+    anchor_a2 = AnchorXLSX(sheet_name="Data", cell_address="A2")
+    r2 = client.patch(f"/api/documents/{session_id}/elements/{doc_id}", json={"anchor": anchor_a2.model_dump(mode="json"), "value": "123.45"})
+    assert r2.status_code == 200
+
+    # 3. Boolean
+    anchor_a3 = AnchorXLSX(sheet_name="Data", cell_address="A3")
+    r3 = client.patch(f"/api/documents/{session_id}/elements/{doc_id}", json={"anchor": anchor_a3.model_dump(mode="json"), "value": "true"})
+    assert r3.status_code == 200
+
+    # 4. String with leading zero
+    anchor_a4 = AnchorXLSX(sheet_name="Data", cell_address="A4")
+    r4 = client.patch(f"/api/documents/{session_id}/elements/{doc_id}", json={"anchor": anchor_a4.model_dump(mode="json"), "value": "012345"})
+    assert r4.status_code == 200
+
+    # 5. Empty cell
+    anchor_a5 = AnchorXLSX(sheet_name="Data", cell_address="A5")
+    r5 = client.patch(f"/api/documents/{session_id}/elements/{doc_id}", json={"anchor": anchor_a5.model_dump(mode="json"), "value": ""})
+    assert r5.status_code == 200
+
+    patched_path = stored_path.with_name(f"{stored_path.stem}_patched.xlsx")
+    patched_wb = openpyxl.load_workbook(patched_path)
+    ws_patched = patched_wb["Data"]
+
+    assert ws_patched["A1"].value == 1234
+    assert isinstance(ws_patched["A1"].value, int)
+    assert ws_patched["A2"].value == 123.45
+    assert isinstance(ws_patched["A2"].value, float)
+    assert ws_patched["A3"].value is True
+    assert isinstance(ws_patched["A3"].value, bool)
+    assert ws_patched["A4"].value == "012345"
+    assert isinstance(ws_patched["A4"].value, str)
+    assert ws_patched["A5"].value is None
+
+
+def test_patch_element_xlsx_formula_cell_protection(client, tmp_path):
+    """Verifies that formula cells are classified as read-only and rejected by backend patch."""
+    import openpyxl
+    from perception.parser import extract_geometry
+    from perception.anchor_builder import assign_anchors
+    from perception.element_classifier import classify_blocks
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Calc"
+    ws["A1"] = 10
+    ws["A2"] = 20
+    ws["A3"] = "=SUM(A1:A2)"
+
+    session_id, doc_id = str(uuid.uuid4()), str(uuid.uuid4())
+    session_dir, stored_path = _seed_document(tmp_path, session_id, doc_id, "formulas.xlsx", wb)
+
+    # 1. Check perception capabilities
+    blocks = extract_geometry(str(stored_path))
+    anchors = assign_anchors(blocks, "xlsx")
+    elements = classify_blocks(blocks, "xlsx", anchors)
+
+    formula_el = next(e for e in elements if e.anchor.cell_address == "A3")
+    literal_el = next(e for e in elements if e.anchor.cell_address == "A1")
+
+    assert formula_el.capabilities.editable is False
+    assert literal_el.capabilities.editable is True
+
+    # 2. Attempting to write a literal value to a formula cell is rejected with 422
+    anchor_a3 = AnchorXLSX(sheet_name="Calc", cell_address="A3")
+    response = client.patch(
+        f"/api/documents/{session_id}/elements/{doc_id}",
+        json={"anchor": anchor_a3.model_dump(mode="json"), "value": "100"},
+    )
+    assert response.status_code == 422
+    assert "contains a formula" in response.get_json()["error"]
+    assert "read-only" in response.get_json()["error"]
+
+
+def test_patch_element_xlsx_undo_roundtrip(client, tmp_path):
+    """Verifies that an edit can be undone by patching back the original value."""
+    import openpyxl
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Sheet1"
+    ws["B5"] = "Initial Company Name"
+
+    session_id, doc_id = str(uuid.uuid4()), str(uuid.uuid4())
+    session_dir, stored_path = _seed_document(tmp_path, session_id, doc_id, "company.xlsx", wb)
+
+    anchor_b5 = AnchorXLSX(sheet_name="Sheet1", cell_address="B5")
+
+    # 1. Edit to new value
+    r1 = client.patch(
+        f"/api/documents/{session_id}/elements/{doc_id}",
+        json={"anchor": anchor_b5.model_dump(mode="json"), "value": "Updated Company Name"},
+    )
+    assert r1.status_code == 200
+
+    patched_path = stored_path.with_name(f"{stored_path.stem}_patched.xlsx")
+    wb_edited = openpyxl.load_workbook(patched_path)
+    assert wb_edited["Sheet1"]["B5"].value == "Updated Company Name"
+
+    # 2. Undo edit by patching back initial value
+    r2 = client.patch(
+        f"/api/documents/{session_id}/elements/{doc_id}",
+        json={"anchor": anchor_b5.model_dump(mode="json"), "value": "Initial Company Name"},
+    )
+    assert r2.status_code == 200
+
+    wb_restored = openpyxl.load_workbook(patched_path)
+    assert wb_restored["Sheet1"]["B5"].value == "Initial Company Name"
+
+
+def test_patch_element_multi_document_isolation(client, tmp_path):
+    """Verifies that editing an XLSX document in a multi-document session leaves DOCX documents untouched."""
+    import openpyxl
+    from docx import Document as DocxDocument
+
+    # Document 1: DOCX
+    docx = DocxDocument()
+    docx.add_paragraph("DOCX Pristine Paragraph")
+    session_id = str(uuid.uuid4())
+    docx_doc_id = str(uuid.uuid4())
+    _seed_document(tmp_path, session_id, docx_doc_id, "doc1.docx", docx)
+
+    # Document 2: XLSX
+    xlsx = openpyxl.Workbook()
+    xlsx.active.title = "Sheet1"
+    xlsx.active["A1"] = "XLSX Cell Original"
+    xlsx_doc_id = str(uuid.uuid4())
+    session_dir, xlsx_path = _seed_document(tmp_path, session_id, xlsx_doc_id, "doc2.xlsx", xlsx)
+
+    # Patch XLSX only
+    anchor_xlsx = AnchorXLSX(sheet_name="Sheet1", cell_address="A1")
+    r = client.patch(
+        f"/api/documents/{session_id}/elements/{xlsx_doc_id}",
+        json={"anchor": anchor_xlsx.model_dump(mode="json"), "value": "XLSX Cell Edited"},
+    )
+    assert r.status_code == 200
+
+    # Verify XLSX is patched
+    patched_xlsx = openpyxl.load_workbook(xlsx_path.with_name(f"{xlsx_path.stem}_patched.xlsx"))
+    assert patched_xlsx["Sheet1"]["A1"].value == "XLSX Cell Edited"
+
+    # Verify DOCX download serves untouched file with original content
+    download_docx = client.get(f"/api/documents/{session_id}/download/{docx_doc_id}")
+    assert download_docx.status_code == 200
+    # No _patched.docx should exist for doc1
+    assert not (session_dir / f"{docx_doc_id}_patched.docx").exists()

@@ -162,9 +162,37 @@ export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
   const [activeSheet, setActiveSheet] = useState<string | null>(null);
   const currentSheet = activeSheet && sheets.has(activeSheet) ? activeSheet : sheetNames[0] ?? null;
 
+  // Auto-switch sheet tab when an element from another sheet is selected (e.g. from Elements Pane)
+  useEffect(() => {
+    if (!selectedElementId) return;
+    const selectedEl = elements.find((e) => idOf(e) === selectedElementId);
+    if (selectedEl && selectedEl.anchor.format === 'xlsx' && selectedEl.anchor.sheet_name) {
+      if (sheets.has(selectedEl.anchor.sheet_name) && selectedEl.anchor.sheet_name !== currentSheet) {
+        setActiveSheet(selectedEl.anchor.sheet_name);
+      }
+    }
+  }, [selectedElementId, elements, sheets, currentSheet]);
+
   const scrollRef = useRef<HTMLDivElement>(null);
   const [scrollTop, setScrollTop] = useState(0);
   const [viewportHeight, setViewportHeight] = useState(600);
+
+  // Scroll to selected cell if on current sheet
+  useEffect(() => {
+    if (!selectedElementId || !currentSheet) return;
+    const selectedEl = elements.find((e) => idOf(e) === selectedElementId);
+    if (selectedEl && selectedEl.anchor.format === 'xlsx' && selectedEl.anchor.sheet_name === currentSheet) {
+      const parsed = parseCellAddress(selectedEl.anchor.cell_address);
+      if (parsed && scrollRef.current) {
+        const targetTop = (parsed.row - 1) * ROW_HEIGHT;
+        const currentScroll = scrollRef.current.scrollTop;
+        const viewHeight = scrollRef.current.clientHeight;
+        if (targetTop < currentScroll || targetTop > currentScroll + viewHeight - ROW_HEIGHT * 2) {
+          scrollRef.current.scrollTo({ top: Math.max(0, targetTop - ROW_HEIGHT * 3), behavior: 'smooth' });
+        }
+      }
+    }
+  }, [selectedElementId, currentSheet, elements]);
 
   if (sheets.size === 0) {
     return <EmptyState icon={LayoutGrid} title="No spreadsheet cells" description="This document has no XLSX cell data to display as a grid." />;
@@ -254,6 +282,14 @@ export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
                     const cellElId = cellEl ? idOf(cellEl) : null;
                     const isHighlighted = !!cellEl && hoveredElementId === cellElId;
                     const isSelected = !!cellEl && selectedElementId === cellElId;
+                    const isCellEditable = editable && (cellEl?.capabilities ? cellEl.capabilities.editable : true);
+                    const cellTitle = cellEl
+                      ? cellEl.source === 'manual'
+                        ? 'Manually edited'
+                        : !isCellEditable
+                        ? 'Calculated formula cell (read-only)'
+                        : 'Click to edit'
+                      : '';
                     const drawings = currentSheet ? drawingsByPosition.get(`${currentSheet}:${r},${c}`) : undefined;
                     return (
                       <td
@@ -267,9 +303,9 @@ export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
                           <EditableText
                             value={cellEl.text}
                             onSave={(newValue) => onEditElement(cellElId, newValue)}
-                            disabled={!editable}
+                            disabled={!isCellEditable}
                             className={cellEl.source === 'manual' ? 'bg-amber-50' : ''}
-                            title={cellEl.source === 'manual' ? 'Manually edited' : 'Click to edit'}
+                            title={cellTitle}
                           />
                         ) : ''}
                         {drawings?.map((d) => (
