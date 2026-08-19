@@ -1,8 +1,61 @@
 diff --git a/node_modules/docx-preview/dist/docx-preview.mjs b/node_modules/docx-preview/dist/docx-preview.mjs
-index 97fe1ba..ec110e7 100644
+index 97fe1ba..aa4e1e7 100644
 --- a/node_modules/docx-preview/dist/docx-preview.mjs
 +++ b/node_modules/docx-preview/dist/docx-preview.mjs
-@@ -2103,6 +2103,9 @@ class DocumentParser {
+@@ -2037,6 +2037,12 @@ class DocumentParser {
+     }
+     parseVmlPicture(elem) {
+         const result = { type: DomType.VmlPicture, children: [] };
++        // Foundation identity bridge (see checkAlternateContent below): `elem`
++        // here is the SAME `<w:pict>` DOM node checkAlternateContent returned
++        // when it picked the Fallback branch — a plain JS property survives
++        // that hand-off since it's the same object, no serialization involved.
++        if (elem.__foundationDrawingId != null)
++            result.foundationDrawingId = elem.__foundationDrawingId;
+         for (const el of globalXmlParser.elements(elem)) {
+             const child = parseVmlElement(el, this);
+             child && result.children.push(child);
+@@ -2047,13 +2053,37 @@ class DocumentParser {
+         if (elem.localName != 'AlternateContent')
+             return elem;
+         var choice = globalXmlParser.element(elem, "Choice");
++        // Foundation identity bridge: `supportedNamespaceURIs` is always
++        // empty in this build, so the Fallback (VML) branch is always what
++        // actually gets rendered for a wps/wpg/wpc shape — see the Choice
++        // check just below, unchanged. But the DrawingML Choice branch still
++        // carries the shape's real identity: a `wp:docPr@id`, which VML has
++        // no equivalent of. Recover it here, from THIS SAME AlternateContent
++        // wrapper's Choice (never from anywhere else in the document — no
++        // positional/global matching), and stash it on the node we're about
++        // to return so parseVmlPicture/parseDrawing can pick it up. Bail
++        // (leave it unset) if Choice contains anything other than exactly
++        // one docPr — e.g. a shape GROUP wrapping several — since a single
++        // Fallback picture can't be proven to correspond to one specific
++        // member's id without guessing.
++        var foundationDrawingId = null;
++        if (choice) {
++            var docPrNodes = choice.getElementsByTagNameNS('*', 'docPr');
++            if (docPrNodes.length === 1)
++                foundationDrawingId = globalXmlParser.attr(docPrNodes[0], 'id');
++        }
++        var result;
+         if (choice) {
+             var requires = globalXmlParser.attr(choice, "Requires");
+             var namespaceURI = elem.lookupNamespaceURI(requires);
+             if (supportedNamespaceURIs.includes(namespaceURI))
+-                return choice.firstElementChild;
++                result = choice.firstElementChild;
+         }
+-        return globalXmlParser.element(elem, "Fallback")?.firstElementChild;
++        if (!result)
++            result = globalXmlParser.element(elem, "Fallback")?.firstElementChild;
++        if (result && foundationDrawingId != null)
++            result.__foundationDrawingId = foundationDrawingId;
++        return result;
+     }
+     parseDrawing(node) {
+         for (var n of globalXmlParser.elements(node)) {
+@@ -2103,6 +2133,9 @@ class DocumentParser {
                  case "wrapNone":
                      wrapType = "wrapNone";
                      break;
@@ -12,7 +65,7 @@ index 97fe1ba..ec110e7 100644
                  case "graphic":
                      var g = this.parseGraphic(n);
                      if (g)
-@@ -3392,6 +3395,18 @@ section.${c}>footer { z-index: 1; }
+@@ -3392,6 +3425,18 @@ section.${c}>footer { z-index: 1; }
          }
      }
      renderElement(elem) {

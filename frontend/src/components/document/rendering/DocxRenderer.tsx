@@ -141,7 +141,16 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
             }
             if (node.tagName !== 'P') return;
             node.setAttribute('data-el-style', elem.styleName ?? 'Normal');
-            node.setAttribute('data-el-rawtext', rawTextOf(elem).trim().slice(0, 50));
+            const raw = rawTextOf(elem);
+            node.setAttribute('data-el-rawtext', raw.trim().slice(0, 50));
+            // Untruncated, untrimmed sibling of the above — table-cell text
+            // (docxAnchorMapping.ts's table_hash recomputation) needs the
+            // EXACT text python-docx's `cell.text` would produce to hash
+            // identically, not a 50-char matching-key prefix. Stamped on
+            // every <p> unconditionally (not just table ones): `elem` here
+            // isn't attached to the document tree yet, so there's no cheap
+            // way to test "is this inside a table cell" at this point.
+            node.setAttribute('data-el-fulltext', raw);
           },
         } as Parameters<typeof docxPreview.renderAsync>[3]);
         if (cancelled || !bodyRef.current) return;
