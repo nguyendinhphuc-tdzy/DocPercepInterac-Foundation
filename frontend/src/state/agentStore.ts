@@ -4,7 +4,9 @@ import {
   executeAgentAction,
   rejectAgentAction,
   AgentApiError,
+  DEFAULT_AGENT_MODEL,
   type AgentModelId,
+  type AgentProviderId,
   type AgentStep,
   type Citation,
   type ProposedAction,
@@ -20,7 +22,9 @@ export interface AgentMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
+  /** Which model produced (or was asked for) this message — per-message, never rewritten. */
   model?: AgentModelId;
+  provider?: AgentProviderId;
   steps?: AgentStep[];
   citations?: Citation[];
   proposedActions?: ProposedAction[];
@@ -29,6 +33,11 @@ export interface AgentMessage {
 
 export interface ProviderErrorInfo {
   message: string;
+  /**
+   * The model that actually failed. Retry re-sends to exactly this model, even
+   * if the selector has been changed since — retry never means "try a
+   * different model".
+   */
   failedModel: AgentModelId;
   errorType?: string;
   lastPrompt: string;
@@ -62,7 +71,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   status: 'idle',
   error: null,
   providerError: null,
-  selectedModel: 'luna',
+  selectedModel: DEFAULT_AGENT_MODEL,
 
   setSelectedModel: (model: AgentModelId) => {
     const prev = get().selectedModel;
@@ -77,6 +86,9 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   sendMessage: async (content: string, overrideModel?: AgentModelId) => {
     if (!content.trim()) return;
 
+    // The model is captured here, once, for the life of this request. Changing
+    // the selector while this request is in flight must not retarget it — the
+    // new selection applies to the next request only.
     const modelToSend = overrideModel ?? get().selectedModel;
 
     // Check if the last message was already this exact user prompt (e.g. from retry)
@@ -119,7 +131,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       const response = await sendAgentChat({
         session_id: ws.sessionId,
         message: content.trim(),
-        model: modelToSend,
+        model_id: modelToSend,
         context: {
           active_doc_id: activeDoc?.docId ?? null,
           selected_element_id: sync.selectedElementId,
@@ -133,7 +145,8 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         role: 'assistant',
         content: response.response,
         timestamp: new Date().toISOString(),
-        model: response.model ?? modelToSend,
+        model: response.model_id ?? modelToSend,
+        provider: response.provider,
         steps: response.steps,
         citations: response.citations,
         proposedActions: response.proposed_actions,
@@ -150,7 +163,9 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       const errorMsg = err instanceof Error ? err.message : 'An unexpected error occurred.';
       const errorType = err instanceof AgentApiError ? err.errorType : 'unknown';
 
-      // Safe Error State: Do NOT insert fake assistant bubbles into messages
+      // Safe Error State: no assistant bubble is created, and no other model is
+      // tried. The user sees an explicit failure for the model they chose and
+      // decides what to do next.
       set({
         status: 'error',
         error: errorMsg,
@@ -167,11 +182,14 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   retryFailedMessage: async () => {
     const pe = get().providerError;
     if (!pe || !pe.lastPrompt) return;
-    // Retry using the failed model explicitly
+    // Retry always means the SAME model that failed, passed explicitly so the
+    // current selector value cannot change what gets retried.
     await get().sendMessage(pe.lastPrompt, pe.failedModel);
   },
 
   switchModelAndRetry: async (targetModel: AgentModelId) => {
+    // Only reachable from an explicit user choice of a specific model in the
+    // error card. Nothing calls this automatically on failure.
     const pe = get().providerError;
     get().setSelectedModel(targetModel);
     if (pe && pe.lastPrompt) {

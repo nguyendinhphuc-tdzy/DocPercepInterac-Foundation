@@ -1,28 +1,94 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000';
 
-export type AgentModelId = 'luna' | 'sol';
+/**
+ * Four user-selectable models across two providers. This table mirrors the
+ * authoritative backend registry in foundation/applications/agent/models.py —
+ * the same four application-level ids on both sides. The frontend never sends
+ * a raw provider deployment name; the backend resolves ids server-side.
+ *
+ * There is no fallback anywhere in this client. If the selected model fails,
+ * the failure is surfaced as an explicit error for that model. Changing model
+ * is only ever a user action.
+ */
+export type AgentProviderId = 'workbench' | 'gemini';
+
+export type AgentModelId =
+  | 'workbench_luna'
+  | 'workbench_sol'
+  | 'gemini_3_6_flash'
+  | 'gemini_3_5_flash';
+
+export const DEFAULT_AGENT_MODEL: AgentModelId = 'workbench_luna';
 
 export interface AgentModelOption {
   id: AgentModelId;
   name: string;
   description: string;
+  provider: AgentProviderId;
+  group: string;
   is_default: boolean;
 }
 
+/**
+ * Selector order. Gemini 3.6 Flash is listed above Gemini 3.5 Flash because it
+ * is the preferred Gemini option for local/demo use — a presentation
+ * preference only. It does NOT make 3.5 a fallback for 3.6.
+ */
 export const AGENT_MODELS: AgentModelOption[] = [
   {
-    id: 'luna',
+    id: 'workbench_luna',
     name: 'Luna',
     description: 'Fast · Everyday tasks',
+    provider: 'workbench',
+    group: 'Workbench',
     is_default: true,
   },
   {
-    id: 'sol',
+    id: 'workbench_sol',
     name: 'Sol',
     description: 'Deep reasoning · Complex analysis',
+    provider: 'workbench',
+    group: 'Workbench',
+    is_default: false,
+  },
+  {
+    id: 'gemini_3_6_flash',
+    name: 'Gemini 3.6 Flash',
+    description: 'Fast · Local/demo',
+    provider: 'gemini',
+    group: 'Gemini',
+    is_default: false,
+  },
+  {
+    id: 'gemini_3_5_flash',
+    name: 'Gemini 3.5 Flash',
+    description: 'Gemini · Alternative',
+    provider: 'gemini',
+    group: 'Gemini',
     is_default: false,
   },
 ];
+
+/** Provider-grouped view of AGENT_MODELS, preserving the order above. */
+export const AGENT_MODEL_GROUPS: { group: string; models: AgentModelOption[] }[] =
+  AGENT_MODELS.reduce<{ group: string; models: AgentModelOption[] }[]>((groups, model) => {
+    const existing = groups.find((g) => g.group === model.group);
+    if (existing) {
+      existing.models.push(model);
+    } else {
+      groups.push({ group: model.group, models: [model] });
+    }
+    return groups;
+  }, []);
+
+export function getModelOption(id: AgentModelId | undefined | null): AgentModelOption {
+  return AGENT_MODELS.find((m) => m.id === id) ?? AGENT_MODELS[0];
+}
+
+/** User-facing label for a model id, used in badges and error copy. */
+export function getModelLabel(id: AgentModelId | undefined | null): string {
+  return getModelOption(id).name;
+}
 
 export interface Citation {
   doc_id: string;
@@ -55,7 +121,7 @@ export interface AgentStep {
 export interface AgentChatRequest {
   session_id: string | null;
   message: string;
-  model?: AgentModelId;
+  model_id?: AgentModelId;
   context: {
     active_doc_id?: string | null;
     selected_element_id?: string | null;
@@ -69,7 +135,8 @@ export interface AgentChatResponse {
   status: 'success' | 'error';
   run_id: string | null;
   intent?: string;
-  model?: AgentModelId;
+  model_id?: AgentModelId;
+  provider?: AgentProviderId;
   steps: AgentStep[];
   citations?: Citation[];
   proposed_actions?: ProposedAction[];
@@ -106,15 +173,16 @@ export interface RejectActionResponse {
 
 export class AgentApiError extends Error {
   readonly errorType?: string;
-  readonly model?: AgentModelId;
+  /** The model the user selected for the request that failed — never a substitute. */
+  readonly modelId?: AgentModelId;
   readonly statusCode: number;
 
-  constructor(message: string, statusCode: number, errorType?: string, model?: AgentModelId) {
+  constructor(message: string, statusCode: number, errorType?: string, modelId?: AgentModelId) {
     super(message);
     this.name = 'AgentApiError';
     this.statusCode = statusCode;
     this.errorType = errorType;
-    this.model = model;
+    this.modelId = modelId;
   }
 }
 
@@ -131,7 +199,7 @@ export async function sendAgentChat(request: AgentChatRequest): Promise<AgentCha
       `Could not reach the Foundation API at ${API_BASE_URL}. Is the server running?`,
       0,
       'network_error',
-      request.model
+      request.model_id
     );
   }
 
@@ -143,7 +211,7 @@ export async function sendAgentChat(request: AgentChatRequest): Promise<AgentCha
       errorMsg,
       response.status,
       body?.error_type,
-      body?.model ?? request.model
+      body?.model_id ?? request.model_id
     );
   }
 

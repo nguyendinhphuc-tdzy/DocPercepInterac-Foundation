@@ -6,7 +6,7 @@ import { useSyncStore } from '../../state/syncStore';
 import { usePilotStore } from '../../state/pilotStore';
 import { sendPilotEvent } from '../../api/pilot';
 import { PilotFeedback } from './PilotFeedback';
-import type { Citation } from '../../api/agent';
+import { getModelOption, type Citation } from '../../api/agent';
 
 interface AgentMessageProps {
   message: AgentMessageType;
@@ -80,31 +80,40 @@ export const AgentMessage: React.FC<AgentMessageProps> = ({ message }) => {
 
       {/* Content */}
       <div style={{ flex: 1, minWidth: 0 }}>
-        {!isUser && message.model && (
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: '4px',
-            marginBottom: '4px',
-          }}>
-            <span
-              data-testid="agent-message-model-tag"
-              style={{
-                fontSize: '10px',
-                fontWeight: 600,
-                color: message.model === 'sol' ? 'var(--accent)' : 'var(--text-secondary)',
-                background: message.model === 'sol' ? 'var(--bg-active)' : 'var(--bg-hover)',
-                border: `1px solid ${message.model === 'sol' ? 'var(--accent-border)' : 'var(--border)'}`,
-                padding: '1px 5px',
-                borderRadius: 'var(--radius-sm)',
-                lineHeight: 1.2,
-                letterSpacing: '0.02em',
-              }}
-            >
-              {message.model === 'sol' ? 'Sol' : 'Luna'}
-            </span>
-          </div>
-        )}
+        {!isUser && message.model && (() => {
+          // Per-message traceability: the badge names the model that actually
+          // produced this response, and is never rewritten when the selector
+          // changes later in the conversation.
+          const modelOption = getModelOption(message.model);
+          const emphasized = modelOption.id !== 'workbench_luna';
+          return (
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              marginBottom: '4px',
+            }}>
+              <span
+                data-testid="agent-message-model-tag"
+                data-provider={message.provider ?? modelOption.provider}
+                style={{
+                  fontSize: '10px',
+                  fontWeight: 600,
+                  color: emphasized ? 'var(--accent)' : 'var(--text-secondary)',
+                  background: emphasized ? 'var(--bg-active)' : 'var(--bg-hover)',
+                  border: `1px solid ${emphasized ? 'var(--accent-border)' : 'var(--border)'}`,
+                  padding: '1px 5px',
+                  borderRadius: 'var(--radius-sm)',
+                  lineHeight: 1.2,
+                  letterSpacing: '0.02em',
+                  whiteSpace: 'nowrap',
+                }}
+              >
+                {modelOption.name}
+              </span>
+            </div>
+          );
+        })()}
 
         <div className={`agent-bubble ${message.role}`} style={{ whiteSpace: 'pre-wrap' }}>
           {message.content}

@@ -1,7 +1,17 @@
 """Agent Orchestrator for Foundation Document Intelligence.
 
-Coordinates ContextBuilder, Intent parsing, Workbench LLM reasoning,
-provenance Citation generation, and governed action proposals.
+Coordinates ContextBuilder, Intent parsing, model reasoning, provenance
+Citation generation, and governed action proposals.
+
+There is exactly ONE orchestrator for all four selectable models. The user's
+model choice is resolved to an AgentModelSpec once per request and reaches the
+model only through the provider boundary (applications/agent/providers/). No
+step below branches on provider: context, intent, citations, capability checks,
+proposal lifecycle and confirmation are identical whichever model was selected.
+
+If the selected model's provider fails, the ProviderError propagates to the
+route and becomes an explicit error for that model. Nothing here catches it to
+try another model or to answer deterministically.
 """
 from __future__ import annotations
 
@@ -15,21 +25,16 @@ from typing import Any, Optional
 from applications.agent.models import (
     AgentContext,
     AgentIntent,
-    AgentModelId,
+    AgentModelSpec,
     AgentResponse,
     AgentStep,
     Citation,
     ProposedAction,
     resolve_agent_model,
-    get_model_key,
 )
 from applications.agent.context_builder import ContextBuilder, perceive_session_document
 from applications.agent.proposal_store import ProposalStore
-from applications.workbench_client import (
-    WorkbenchApiError,
-    WorkbenchConfigError,
-    chat_completion,
-)
+from applications.agent.providers import ProviderMessage, get_provider
 
 UPLOAD_ROOT = Path(__file__).resolve().parents[2] / ".uploads"
 
@@ -49,9 +54,10 @@ class AgentOrchestrator:
         active_doc_id = context_input.get("active_doc_id")
         selected_element_id = context_input.get("selected_element_id")
 
-        # Resolve selected model against server allowlist (default Luna)
-        deployment_name = resolve_agent_model(model)
-        model_key: AgentModelId = get_model_key(model)
+        # Resolve the selected model against the server-side allowlist exactly
+        # once. `spec` is the only authority for this request's provider and
+        # provider-native model name; nothing downstream may change it.
+        spec: AgentModelSpec = resolve_agent_model(model)
 
         # 1. Build authoritative context from Foundation
         context = ContextBuilder.build_context(
@@ -81,7 +87,8 @@ class AgentOrchestrator:
                     status="success",
                     run_id=run_id,
                     intent="clarify_target",
-                    model=model_key,
+                    model_id=spec.model_id,
+                    provider=spec.provider,
                     steps=steps,
                     citations=[],
                     proposed_actions=[],
@@ -113,7 +120,8 @@ class AgentOrchestrator:
                     status="success",
                     run_id=run_id,
                     intent="propose_edit",
-                    model=model_key,
+                    model_id=spec.model_id,
+                    provider=spec.provider,
                     steps=steps,
                     citations=[
                         Citation(
@@ -184,7 +192,8 @@ class AgentOrchestrator:
                 status="success",
                 run_id=run_id,
                 intent="propose_edit",
-                model=model_key,
+                model_id=spec.model_id,
+                provider=spec.provider,
                 steps=steps,
                 citations=citations,
                 proposed_actions=proposed_actions,
@@ -209,10 +218,10 @@ class AgentOrchestrator:
             )
 
             # Attempt Workbench completion
-            llm_text = cls._call_workbench(
+            llm_text = cls._call_model(
                 message=message,
                 system_prompt=cls._build_selected_element_prompt(context),
-                model=deployment_name,
+                spec=spec,
             )
             steps.append(AgentStep(label="Generated element summary with citation", status="done"))
 
@@ -221,7 +230,8 @@ class AgentOrchestrator:
                 status="success",
                 run_id=run_id,
                 intent="summarize_element",
-                model=model_key,
+                model_id=spec.model_id,
+                provider=spec.provider,
                 steps=steps,
                 citations=citations,
                 proposed_actions=[],
@@ -241,7 +251,8 @@ class AgentOrchestrator:
                     status="success",
                     run_id=run_id,
                     intent="clarify_document",
-                    model=model_key,
+                    model_id=spec.model_id,
+                    provider=spec.provider,
                     steps=steps,
                     citations=[],
                     proposed_actions=[],
@@ -281,10 +292,10 @@ class AgentOrchestrator:
                             )
                         )
 
-                    llm_text = cls._call_workbench(
+                    llm_text = cls._call_model(
                         message=message,
                         system_prompt=cls._build_search_prompt(context, search_results),
-                        model=deployment_name,
+                        spec=spec,
                     )
                     steps.append(AgentStep(label="Generated provenance answer", status="done"))
 
@@ -293,7 +304,8 @@ class AgentOrchestrator:
                         status="success",
                         run_id=run_id,
                         intent="search_elements",
-                        model=model_key,
+                        model_id=spec.model_id,
+                        provider=spec.provider,
                         steps=steps,
                         citations=citations,
                         proposed_actions=[],
@@ -305,7 +317,8 @@ class AgentOrchestrator:
                         status="success",
                         run_id=run_id,
                         intent="search_elements",
-                        model=model_key,
+                        model_id=spec.model_id,
+                        provider=spec.provider,
                         steps=steps,
                         citations=[],
                         proposed_actions=[],
@@ -323,7 +336,8 @@ class AgentOrchestrator:
                     status="success",
                     run_id=run_id,
                     intent="clarify_comparison",
-                    model=model_key,
+                    model_id=spec.model_id,
+                    provider=spec.provider,
                     steps=steps,
                     citations=[],
                     proposed_actions=[],
@@ -348,10 +362,10 @@ class AgentOrchestrator:
                 except Exception:
                     pass
 
-            llm_text = cls._call_workbench(
+            llm_text = cls._call_model(
                 message=message,
                 system_prompt=cls._build_compare_prompt(context),
-                model=deployment_name,
+                spec=spec,
             )
             steps.append(AgentStep(label="Generated comparison summary", status="done"))
 
@@ -360,7 +374,8 @@ class AgentOrchestrator:
                 status="success",
                 run_id=run_id,
                 intent="compare_documents",
-                model=model_key,
+                model_id=spec.model_id,
+                provider=spec.provider,
                 steps=steps,
                 citations=citations,
                 proposed_actions=[],
@@ -373,7 +388,7 @@ class AgentOrchestrator:
         steps.append(AgentStep(label=f"Read workspace context ({doc_count} document{'s' if doc_count != 1 else ''})", status="done"))
         
         system_prompt = cls._build_general_prompt(context)
-        llm_text = cls._call_workbench(message, system_prompt, model=deployment_name)
+        llm_text = cls._call_model(message, system_prompt, spec=spec)
         steps.append(AgentStep(label="Generated response", status="done"))
 
         return AgentResponse(
@@ -381,7 +396,8 @@ class AgentOrchestrator:
             status="success",
             run_id=run_id,
             intent="general_query",
-            model=model_key,
+            model_id=spec.model_id,
+            provider=spec.provider,
             steps=steps,
             citations=citations,
             proposed_actions=[],
@@ -391,19 +407,23 @@ class AgentOrchestrator:
     # LLM Helper & Prompt Construction
     # ------------------------------------------------------------------------
     @classmethod
-    def _call_workbench(
-        cls, message: str, system_prompt: str, model: Optional[str] = None
+    def _call_model(
+        cls, message: str, system_prompt: str, *, spec: AgentModelSpec
     ) -> str:
-        kwargs: dict[str, Any] = {
-            "messages": [
-                {"role": "system", "content": system_prompt},
-                {"role": "user", "content": message},
+        """Send one turn to the selected model through its provider.
+
+        The message shape is provider-neutral and identical for all four models
+        — each provider translates it at its own boundary. Any ProviderError
+        raised here propagates: the caller must not substitute another model.
+        """
+        provider = get_provider(spec.provider)
+        res = provider.chat(
+            messages=[
+                ProviderMessage(role="system", content=system_prompt),
+                ProviderMessage(role="user", content=message),
             ],
-            "temperature": 0.3,
-        }
-        if model:
-            kwargs["model"] = model
-        res = chat_completion(**kwargs)
+            model=spec.model,
+        )
         return res.content
 
     @staticmethod

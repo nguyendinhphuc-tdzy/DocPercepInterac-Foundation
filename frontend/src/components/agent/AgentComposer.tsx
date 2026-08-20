@@ -3,7 +3,7 @@ import { ArrowUp, Paperclip, MapPin, Sparkles, ChevronDown } from 'lucide-react'
 import { useAgentStore } from '../../state/agentStore';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 import { useSyncStore } from '../../state/syncStore';
-import { AGENT_MODELS } from '../../api/agent';
+import { AGENT_MODEL_GROUPS, getModelOption } from '../../api/agent';
 
 export const AgentComposer: React.FC = () => {
   const [input, setInput] = useState('');
@@ -77,7 +77,7 @@ export const AgentComposer: React.FC = () => {
     el.style.height = Math.min(el.scrollHeight, 120) + 'px';
   }, []);
 
-  const currentModelOption = AGENT_MODELS.find((m) => m.id === selectedModel) ?? AGENT_MODELS[0];
+  const currentModelOption = getModelOption(selectedModel);
 
   return (
     <div className="agent-composer">
@@ -225,45 +225,59 @@ export const AgentComposer: React.FC = () => {
                 aria-label="Available AI Models"
                 data-testid="agent-model-selector-dropdown"
               >
-                {AGENT_MODELS.map((model) => {
-                  const isSelected = selectedModel === model.id;
-                  return (
-                    <div
-                      key={model.id}
-                      role="option"
-                      aria-selected={isSelected}
-                      tabIndex={0}
-                      className={`agent-model-option ${isSelected ? 'selected' : ''}`}
-                      onClick={() => {
-                        setSelectedModel(model.id);
-                        setIsModelDropdownOpen(false);
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          setSelectedModel(model.id);
-                          setIsModelDropdownOpen(false);
-                        } else if (e.key === 'Escape') {
-                          setIsModelDropdownOpen(false);
-                        }
-                      }}
-                      data-testid={`model-option-${model.id}`}
-                    >
-                      <div className="model-option-radio">
-                        <span className={`radio-indicator ${isSelected ? 'active' : ''}`}>
-                          {isSelected ? '●' : '○'}
-                        </span>
-                      </div>
-                      <div className="model-option-content">
-                        <div className="model-option-title-row">
-                          <span className="model-option-name">{model.name}</span>
-                          {model.is_default && <span className="model-option-badge">Default</span>}
-                        </div>
-                        <span className="model-option-desc">{model.description}</span>
-                      </div>
+                {/* Grouped by provider so the Workbench/Gemini boundary is
+                    visible, without exposing endpoints or deployment names. */}
+                {AGENT_MODEL_GROUPS.map((group) => (
+                  <div
+                    key={group.group}
+                    role="group"
+                    aria-label={group.group}
+                    className="agent-model-group"
+                  >
+                    <div className="agent-model-group-label" aria-hidden="true">
+                      {group.group}
                     </div>
-                  );
-                })}
+                    {group.models.map((model) => {
+                      const isSelected = selectedModel === model.id;
+                      return (
+                        <div
+                          key={model.id}
+                          role="option"
+                          aria-selected={isSelected}
+                          tabIndex={0}
+                          className={`agent-model-option ${isSelected ? 'selected' : ''}`}
+                          onClick={() => {
+                            setSelectedModel(model.id);
+                            setIsModelDropdownOpen(false);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' || e.key === ' ') {
+                              e.preventDefault();
+                              setSelectedModel(model.id);
+                              setIsModelDropdownOpen(false);
+                            } else if (e.key === 'Escape') {
+                              setIsModelDropdownOpen(false);
+                            }
+                          }}
+                          data-testid={`model-option-${model.id}`}
+                        >
+                          <div className="model-option-radio">
+                            <span className={`radio-indicator ${isSelected ? 'active' : ''}`}>
+                              {isSelected ? '●' : '○'}
+                            </span>
+                          </div>
+                          <div className="model-option-content">
+                            <div className="model-option-title-row">
+                              <span className="model-option-name">{model.name}</span>
+                              {model.is_default && <span className="model-option-badge">Default</span>}
+                            </div>
+                            <span className="model-option-desc">{model.description}</span>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                ))}
               </div>
             )}
           </div>

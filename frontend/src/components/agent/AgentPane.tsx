@@ -1,4 +1,4 @@
-import React, { useRef, useEffect } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Bot, Sparkles, FlaskConical, AlertCircle, RefreshCw, ArrowRight, X } from 'lucide-react';
 import { useAgentStore } from '../../state/agentStore';
 import { useWorkspaceStore } from '../../state/workspaceStore';
@@ -6,7 +6,35 @@ import { usePilotStore } from '../../state/pilotStore';
 import { AgentComposer } from './AgentComposer';
 import { AgentMessage as AgentMessageComponent } from './AgentMessage';
 import { EmptyState } from '../shared/EmptyState';
-import type { AgentModelId } from '../../api/agent';
+import { AGENT_MODELS, getModelLabel, type AgentModelId } from '../../api/agent';
+
+/**
+ * Headline for the provider error card, per normalized backend error_type.
+ * Every variant names the failed model and only that model — the card must
+ * never read as if some other model has already answered.
+ */
+function errorHeadline(errorType: string | undefined, modelName: string): string {
+  switch (errorType) {
+    case 'config_missing':
+      return `${modelName} is not available in this environment`;
+    case 'auth_error':
+      return `${modelName} could not authenticate`;
+    case 'timeout':
+      return `${modelName} timed out`;
+    case 'rate_limited':
+      return `${modelName} has reached its quota`;
+    case 'invalid_request':
+      return `${modelName} rejected the request`;
+    case 'malformed_response':
+      return `${modelName} returned an unreadable response`;
+    case 'content_blocked':
+      return `${modelName} declined this request`;
+    case 'unsupported_operation':
+      return `${modelName} does not support this operation`;
+    default:
+      return `${modelName} is temporarily unavailable`;
+  }
+}
 
 export const AgentPane: React.FC = () => {
   const {
@@ -19,6 +47,7 @@ export const AgentPane: React.FC = () => {
   } = useAgentStore();
   const { documents } = useWorkspaceStore();
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [isSwitchListOpen, setIsSwitchListOpen] = useState(false);
   const {
     pilotModeEnabled,
     togglePilotMode,
@@ -37,11 +66,17 @@ export const AgentPane: React.FC = () => {
     }
   }, [messages, providerError, status]);
 
+  useEffect(() => {
+    setIsSwitchListOpen(false);
+  }, [providerError]);
+
   const hasReadyDocument = documents.some((d) => d.status === 'ready');
 
-  const failedModelName = providerError?.failedModel === 'sol' ? 'Sol' : 'Luna';
-  const otherModelId: AgentModelId = providerError?.failedModel === 'sol' ? 'luna' : 'sol';
-  const otherModelName = otherModelId === 'sol' ? 'Sol' : 'Luna';
+  // The error card is scoped entirely to the model that failed. `Retry` re-runs
+  // that same model; the only way to reach a different one is for the user to
+  // pick it themselves from the switch list below.
+  const failedModelName = getModelLabel(providerError?.failedModel);
+  const alternativeModels = AGENT_MODELS.filter((m) => m.id !== providerError?.failedModel);
 
   return (
     <div className="agent-pane">
@@ -163,9 +198,7 @@ export const AgentPane: React.FC = () => {
               <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
                 <AlertCircle size={16} style={{ color: 'var(--text-error, #ef4444)', flexShrink: 0 }} />
                 <span style={{ fontWeight: 600, fontSize: 'var(--text-xs)', color: 'var(--text-primary)' }}>
-                  {providerError.errorType === 'config_missing'
-                    ? `${failedModelName} is not configured`
-                    : `${failedModelName} is temporarily unavailable`}
+                  {errorHeadline(providerError.errorType, failedModelName)}
                 </span>
               </div>
               <button
@@ -186,7 +219,7 @@ export const AgentPane: React.FC = () => {
               color: 'var(--text-secondary)',
               lineHeight: 1.4,
             }}>
-              {providerError.message} Try again, or switch to {otherModelName}.
+              {providerError.message} Retry {failedModelName}, or choose a different model.
             </p>
 
             <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
@@ -206,9 +239,11 @@ export const AgentPane: React.FC = () => {
                 Retry {failedModelName}
               </button>
               <button
-                onClick={() => switchModelAndRetry(otherModelId)}
+                onClick={() => setIsSwitchListOpen((prev) => !prev)}
                 className="btn btn-secondary btn-sm"
                 data-testid="agent-error-switch-btn"
+                aria-expanded={isSwitchListOpen}
+                aria-controls="agent-error-switch-list"
                 style={{
                   display: 'flex',
                   alignItems: 'center',
@@ -218,9 +253,46 @@ export const AgentPane: React.FC = () => {
                 }}
               >
                 <ArrowRight size={11} />
-                Switch to {otherModelName}
+                Switch Model
               </button>
             </div>
+
+            {/* Explicit model choice. Nothing is pre-selected and nothing is
+                sent until the user picks one of these by name. */}
+            {isSwitchListOpen && (
+              <div
+                id="agent-error-switch-list"
+                role="group"
+                aria-label={`Switch away from ${failedModelName}`}
+                data-testid="agent-error-switch-list"
+                style={{
+                  display: 'flex',
+                  flexWrap: 'wrap',
+                  gap: 'var(--space-1)',
+                  marginTop: 'var(--space-2)',
+                }}
+              >
+                {alternativeModels.map((model) => (
+                  <button
+                    key={model.id}
+                    onClick={() => switchModelAndRetry(model.id as AgentModelId)}
+                    className="btn btn-ghost btn-sm"
+                    data-testid={`agent-error-switch-to-${model.id}`}
+                    style={{
+                      fontSize: 'var(--text-xxs)',
+                      padding: '3px 9px',
+                      background: 'var(--bg-surface)',
+                      border: '1px solid var(--border)',
+                      borderRadius: 'var(--radius-full)',
+                      color: 'var(--text-secondary)',
+                      whiteSpace: 'nowrap',
+                    }}
+                  >
+                    {model.name}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>

@@ -71,6 +71,13 @@ ALLOWED_FIELDS = frozenset({
     "confidence",
     "origin",
     "model",
+    # Four-model provider selection (2026-08-20): which model the user picked
+    # and which provider served it. Application-level ids only — raw provider
+    # deployment names, API keys, prompts and document content stay out, per
+    # the allowlist rule above.
+    "model_id",
+    "provider",
+    "request_status",
     "previous_model",
     "new_model",
 })

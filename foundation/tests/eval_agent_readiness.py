@@ -719,7 +719,7 @@ def run_evaluation_suite() -> dict[str, Any]:
     from unittest.mock import patch
     from applications.workbench_client import WorkbenchResponse
 
-    patcher = patch("applications.agent.orchestrator.chat_completion")
+    patcher = patch("applications.agent.providers.workbench_provider.chat_completion")
     mock_cc = patcher.start()
     mock_cc.return_value = WorkbenchResponse(
         content="Evaluation response from Workbench model.",

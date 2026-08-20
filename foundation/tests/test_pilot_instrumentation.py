@@ -39,7 +39,7 @@ def mock_workbench():
     """Default autouse mock for Workbench to test Pilot telemetry during AI chat turns."""
     from unittest.mock import patch
     from applications.workbench_client import WorkbenchResponse
-    with patch("applications.agent.orchestrator.chat_completion") as mock_cc:
+    with patch("applications.agent.providers.workbench_provider.chat_completion") as mock_cc:
         mock_cc.return_value = WorkbenchResponse(
             content="Mocked response for pilot dry run.",
             model="gpt-5-6-luna-2026-07-09-gs-ae",
@@ -304,8 +304,8 @@ def test_pilot_model_changed_event_ingestion(client, isolated_pilot_log):
         "/api/pilot/event",
         json={
             "event_type": "agent.model.changed",
-            "previous_model": "luna",
-            "new_model": "sol",
+            "previous_model": "workbench_luna",
+            "new_model": "gemini_3_6_flash",
             "session_id": "sess-1",
         },
     )
@@ -314,20 +314,21 @@ def test_pilot_model_changed_event_ingestion(client, isolated_pilot_log):
     assert len(events) == 1
     ev = events[0]
     assert ev["event_type"] == "agent.model.changed"
-    assert ev["previous_model"] == "luna"
-    assert ev["new_model"] == "sol"
+    assert ev["previous_model"] == "workbench_luna"
+    assert ev["new_model"] == "gemini_3_6_flash"
     assert ev["origin"] == "frontend"
 
 
 def test_pilot_telemetry_model_tracking_and_privacy(client, isolated_pilot_log, sample_session):
-    """Telemetry records product model keys ('luna'/'sol') without leaking raw deployment IDs, document text, or prompt."""
+    """Telemetry records application-level model_id + provider without leaking raw
+    deployment/model names, document text, or prompt."""
     session_id = sample_session["session_id"]
     res = client.post(
         "/api/agent/chat",
         json={
             "session_id": session_id,
             "message": "SECRET_FINANCIAL_PROMPT_CONTENT",
-            "model": "sol",
+            "model_id": "workbench_sol",
         },
     )
     assert res.status_code == 200
@@ -341,6 +342,22 @@ def test_pilot_telemetry_model_tracking_and_privacy(client, isolated_pilot_log, 
         assert "message" not in ev
         assert "prompt" not in ev
         assert "SECRET_FINANCIAL_PROMPT_CONTENT" not in json.dumps(ev)
-        assert "gpt-5-6-sol-2026-07-09-gs-ae" not in json.dumps(ev)  # raw deployment name must not be in telemetry
-        if "model" in ev:
-            assert ev["model"] in ("luna", "sol")
+        # Raw provider deployment/model names must not reach telemetry.
+        assert "gpt-5-6-sol-2026-07-09-gs-ae" not in json.dumps(ev)
+        assert "gemini-3.6-flash" not in json.dumps(ev)
+        if "model_id" in ev:
+            assert ev["model_id"] in (
+                "workbench_luna",
+                "workbench_sol",
+                "gemini_3_6_flash",
+                "gemini_3_5_flash",
+            )
+        if "provider" in ev:
+            assert ev["provider"] in ("workbench", "gemini")
+
+    # The agent.* events for this turn all carry the selected model and provider.
+    agent_events = [e for e in events if e["event_type"].startswith("agent.")]
+    assert agent_events
+    for ev in agent_events:
+        assert ev["model_id"] == "workbench_sol"
+        assert ev["provider"] == "workbench"

@@ -790,6 +790,24 @@ select:focus-visible {
 .model-selector-current {
   color: var(--text-primary);
   font-weight: 600;
+  /* Four models means the longest label ("Gemini 3.6 Flash") is more than
+     twice the shortest. Cap it so a long name can never widen the composer
+     row enough to push Send off-screen at 768px. */
+  max-width: 108px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@media (max-width: 900px) {
+  /* Below 900px the "Model" prefix is redundant — the current name carries it. */
+  .model-selector-label {
+    display: none;
+  }
+
+  .model-selector-current {
+    max-width: 84px;
+  }
 }
 
 .model-selector-arrow {
@@ -806,6 +824,9 @@ select:focus-visible {
   bottom: calc(100% + 6px);
   right: 0;
   width: 240px;
+  max-width: calc(100vw - 32px);
+  max-height: 320px;
+  overflow-y: auto;
   background: var(--bg-surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
@@ -815,6 +836,29 @@ select:focus-visible {
   display: flex;
   flex-direction: column;
   gap: 2px;
+}
+
+/* Provider grouping — makes the Workbench/Gemini boundary legible without
+   naming endpoints, gateways or deployments. */
+.agent-model-group {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.agent-model-group + .agent-model-group {
+  margin-top: 4px;
+  padding-top: 4px;
+  border-top: 1px solid var(--border);
+}
+
+.agent-model-group-label {
+  padding: 4px 10px 2px;
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-tertiary);
 }
 
 .agent-model-option {
