@@ -14,7 +14,9 @@ Required environment variables:
   WORKBENCH_SUBSCRIPTION_KEY  — Ocp-Apim-Subscription-Key
   WORKBENCH_CHARGE_CODE       — x-kpmg-charge-code
 
-The model is fixed to gpt-5-4-2026-03-05-gs-ae. No silent fallback.
+Supported models:
+  Luna: gpt-5-6-luna-2026-07-09-gs-ae (default)
+  Sol:  gpt-5-6-sol-2026-07-09-gs-ae
 """
 from __future__ import annotations
 
@@ -33,11 +35,31 @@ REQUEST_TIMEOUT = 60  # seconds
 
 
 class WorkbenchConfigError(Exception):
-    """Raised when required environment variables are missing."""
+    """Raised when required environment variables are missing (PROVIDER_CONFIG)."""
 
 
 class WorkbenchApiError(Exception):
-    """Raised when the Workbench API returns a non-success status or times out."""
+    """Base exception for all Workbench API failures."""
+
+
+class WorkbenchUnavailableError(WorkbenchApiError):
+    """Raised when Workbench cannot be reached (network error, connection refused, or 5xx server error)."""
+
+
+class WorkbenchTimeoutError(WorkbenchApiError):
+    """Raised when the Workbench request times out."""
+
+
+class WorkbenchAuthenticationError(WorkbenchApiError):
+    """Raised on authentication or authorization failure (HTTP 401/403)."""
+
+
+class WorkbenchNotFoundError(WorkbenchApiError):
+    """Raised when deployment is not found (HTTP 404)."""
+
+
+class WorkbenchRateLimitError(WorkbenchApiError):
+    """Raised when rate limited by gateway (HTTP 429)."""
 
 
 @dataclass
@@ -54,14 +76,14 @@ def _get_credentials() -> tuple[str, str]:
     if not key:
         raise WorkbenchConfigError(
             "WORKBENCH_SUBSCRIPTION_KEY environment variable is not set. "
-            "Set it before starting the Flask server:\n"
+            "Set it before starting the server:\n"
             "  PowerShell:  $env:WORKBENCH_SUBSCRIPTION_KEY = '...'\n"
             "  bash:        export WORKBENCH_SUBSCRIPTION_KEY='...'"
         )
     if not code:
         raise WorkbenchConfigError(
             "WORKBENCH_CHARGE_CODE environment variable is not set. "
-            "Set it before starting the Flask server:\n"
+            "Set it before starting the server:\n"
             "  PowerShell:  $env:WORKBENCH_CHARGE_CODE = '...'\n"
             "  bash:        export WORKBENCH_CHARGE_CODE='...'"
         )
@@ -85,8 +107,12 @@ def chat_completion(
 
     Raises:
         WorkbenchConfigError: Missing credentials.
-        WorkbenchApiError: Non-success HTTP response or timeout.
-        requests.exceptions.*: Network-level failures.
+        WorkbenchTimeoutError: Request timeout.
+        WorkbenchUnavailableError: Network or 5xx server error.
+        WorkbenchAuthenticationError: HTTP 401/403.
+        WorkbenchNotFoundError: HTTP 404.
+        WorkbenchRateLimitError: HTTP 429.
+        WorkbenchApiError: Other API failures.
     """
     subscription_key, charge_code = _get_credentials()
 
@@ -110,35 +136,42 @@ def chat_completion(
             url, headers=headers, params=params, json=json_body, timeout=REQUEST_TIMEOUT
         )
     except requests.Timeout as exc:
-        raise WorkbenchApiError(f"Workbench request timed out after {REQUEST_TIMEOUT}s.") from exc
+        raise WorkbenchTimeoutError(f"Workbench request timed out after {REQUEST_TIMEOUT}s.") from exc
     except requests.RequestException as exc:
-        raise WorkbenchApiError(f"Network error connecting to Workbench: {exc}") from exc
+        raise WorkbenchUnavailableError(f"Network error connecting to Workbench: {exc}") from exc
 
     if not response.ok:
-        # Build a helpful error message without leaking credentials
+        # Build a safe error message without leaking credentials
         try:
             error_body = response.json()
         except Exception:
             error_body = {"raw": response.text[:500]}
 
         if response.status_code == 401:
-            detail = "Subscription key was rejected (verify WORKBENCH_SUBSCRIPTION_KEY)."
+            raise WorkbenchAuthenticationError(
+                "Subscription key was rejected. Verify WORKBENCH_SUBSCRIPTION_KEY."
+            )
         elif response.status_code == 403:
-            detail = "Request denied (verify WORKBENCH_CHARGE_CODE and subscription access)."
+            raise WorkbenchAuthenticationError(
+                "Request denied. Verify WORKBENCH_CHARGE_CODE and subscription access."
+            )
         elif response.status_code == 404:
-            detail = f"Deployment '{model}' not found — do NOT silently fall back to another model."
+            raise WorkbenchNotFoundError(
+                f"Deployment '{model}' not found — do NOT silently fall back to another model."
+            )
         elif response.status_code == 429:
             retry_after = response.headers.get("Retry-After", "unknown")
-            detail = f"Rate limited. Retry-After: {retry_after}s."
+            raise WorkbenchRateLimitError(
+                f"Rate limited by Workbench gateway. Retry-After: {retry_after}s."
+            )
         elif response.status_code >= 500:
-            detail = "Workbench server error (likely transient)."
+            raise WorkbenchUnavailableError(
+                f"Workbench server error (HTTP {response.status_code})."
+            )
         else:
-            detail = f"Unexpected HTTP {response.status_code}."
-
-        raise WorkbenchApiError(
-            f"Workbench API error: {detail} "
-            f"Response: {error_body}"
-        )
+            raise WorkbenchApiError(
+                f"Unexpected HTTP {response.status_code} from Workbench: {error_body}"
+            )
 
     body = response.json()
 

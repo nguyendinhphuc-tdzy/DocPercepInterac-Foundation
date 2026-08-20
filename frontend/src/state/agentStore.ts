@@ -3,6 +3,7 @@ import {
   sendAgentChat,
   executeAgentAction,
   rejectAgentAction,
+  AgentApiError,
   type AgentModelId,
   type AgentStep,
   type Citation,
@@ -26,13 +27,24 @@ export interface AgentMessage {
   runId?: string | null;
 }
 
+export interface ProviderErrorInfo {
+  message: string;
+  failedModel: AgentModelId;
+  errorType?: string;
+  lastPrompt: string;
+}
+
 interface AgentState {
   messages: AgentMessage[];
   status: AgentStatus;
   error: string | null;
+  providerError: ProviderErrorInfo | null;
   selectedModel: AgentModelId;
   setSelectedModel: (model: AgentModelId) => void;
-  sendMessage: (content: string) => Promise<void>;
+  sendMessage: (content: string, overrideModel?: AgentModelId) => Promise<void>;
+  retryFailedMessage: () => Promise<void>;
+  switchModelAndRetry: (targetModel: AgentModelId) => Promise<void>;
+  dismissProviderError: () => void;
   confirmAction: (messageId: string, actionId: string) => Promise<void>;
   rejectAction: (messageId: string, actionId: string) => Promise<void>;
   clearMessages: () => void;
@@ -49,6 +61,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
   messages: [],
   status: 'idle',
   error: null,
+  providerError: null,
   selectedModel: 'luna',
 
   setSelectedModel: (model: AgentModelId) => {
@@ -61,24 +74,38 @@ export const useAgentStore = create<AgentState>((set, get) => ({
     });
   },
 
-  sendMessage: async (content: string) => {
+  sendMessage: async (content: string, overrideModel?: AgentModelId) => {
     if (!content.trim()) return;
 
-    const currentModel = get().selectedModel;
+    const modelToSend = overrideModel ?? get().selectedModel;
 
-    const userMsg: AgentMessage = {
-      id: nextId(),
-      role: 'user',
-      content: content.trim(),
-      timestamp: new Date().toISOString(),
-      model: currentModel,
-    };
+    // Check if the last message was already this exact user prompt (e.g. from retry)
+    const existingMessages = get().messages;
+    const lastMsg = existingMessages[existingMessages.length - 1];
+    const isRetry = lastMsg && lastMsg.role === 'user' && lastMsg.content === content.trim();
 
-    set((state) => ({
-      messages: [...state.messages, userMsg],
-      status: 'preparing',
-      error: null,
-    }));
+    if (!isRetry) {
+      const userMsg: AgentMessage = {
+        id: nextId(),
+        role: 'user',
+        content: content.trim(),
+        timestamp: new Date().toISOString(),
+        model: modelToSend,
+      };
+
+      set((state) => ({
+        messages: [...state.messages, userMsg],
+        status: 'preparing',
+        error: null,
+        providerError: null,
+      }));
+    } else {
+      set({
+        status: 'preparing',
+        error: null,
+        providerError: null,
+      });
+    }
 
     const ws = useWorkspaceStore.getState();
     const sync = useSyncStore.getState();
@@ -92,7 +119,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       const response = await sendAgentChat({
         session_id: ws.sessionId,
         message: content.trim(),
-        model: currentModel,
+        model: modelToSend,
         context: {
           active_doc_id: activeDoc?.docId ?? null,
           selected_element_id: sync.selectedElementId,
@@ -106,7 +133,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         role: 'assistant',
         content: response.response,
         timestamp: new Date().toISOString(),
-        model: response.model ?? currentModel,
+        model: response.model ?? modelToSend,
         steps: response.steps,
         citations: response.citations,
         proposedActions: response.proposed_actions,
@@ -116,24 +143,48 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       set((state) => ({
         messages: [...state.messages, assistantMsg],
         status: 'completed',
+        error: null,
+        providerError: null,
       }));
     } catch (err) {
       const errorMsg = err instanceof Error ? err.message : 'An unexpected error occurred.';
+      const errorType = err instanceof AgentApiError ? err.errorType : 'unknown';
 
-      const errorAssistantMsg: AgentMessage = {
-        id: nextId(),
-        role: 'assistant',
-        content: `Error: ${errorMsg}`,
-        timestamp: new Date().toISOString(),
-        model: currentModel,
-      };
-
-      set((state) => ({
-        messages: [...state.messages, errorAssistantMsg],
+      // Safe Error State: Do NOT insert fake assistant bubbles into messages
+      set({
         status: 'error',
         error: errorMsg,
-      }));
+        providerError: {
+          message: errorMsg,
+          failedModel: modelToSend,
+          errorType,
+          lastPrompt: content.trim(),
+        },
+      });
     }
+  },
+
+  retryFailedMessage: async () => {
+    const pe = get().providerError;
+    if (!pe || !pe.lastPrompt) return;
+    // Retry using the failed model explicitly
+    await get().sendMessage(pe.lastPrompt, pe.failedModel);
+  },
+
+  switchModelAndRetry: async (targetModel: AgentModelId) => {
+    const pe = get().providerError;
+    get().setSelectedModel(targetModel);
+    if (pe && pe.lastPrompt) {
+      await get().sendMessage(pe.lastPrompt, targetModel);
+    }
+  },
+
+  dismissProviderError: () => {
+    set({
+      providerError: null,
+      error: null,
+      status: 'idle',
+    });
   },
 
   confirmAction: async (messageId: string, actionId: string) => {
@@ -158,60 +209,59 @@ export const useAgentStore = create<AgentState>((set, get) => ({
           });
           useWorkspaceStore.setState((s) => ({
             documents: s.documents.map((d) =>
-              d.clientId === targetDoc.clientId
-                ? { ...d, elements: updatedElements, hasPatch: true }
-                : d
+              d.docId === targetDoc.docId ? { ...d, elements: updatedElements } : d
             ),
           }));
         }
 
-        // Mark action as applied in message state
+        // Update action status in the message
         set((state) => ({
-          messages: state.messages.map((m) =>
-            m.id === messageId && m.proposedActions
-              ? {
-                  ...m,
-                  proposedActions: m.proposedActions.map((a) =>
-                    a.action_id === actionId ? { ...a, status: 'applied' } : a
-                  ),
-                }
-              : m
-          ),
+          messages: state.messages.map((m) => {
+            if (m.id !== messageId || !m.proposedActions) return m;
+            return {
+              ...m,
+              proposedActions: m.proposedActions.map((a) =>
+                a.action_id === actionId
+                  ? { ...a, status: 'applied' as const }
+                  : a
+              ),
+            };
+          }),
         }));
       }
     } catch (err) {
-      const errorMsg = err instanceof Error ? err.message : 'Action execution failed.';
-      alert(`Could not execute action: ${errorMsg}`);
+      console.error('Failed to execute action:', err);
     }
   },
 
   rejectAction: async (messageId: string, actionId: string) => {
     const ws = useWorkspaceStore.getState();
-    if (ws.sessionId) {
-      try {
-        await rejectAgentAction({
-          session_id: ws.sessionId,
-          action_id: actionId,
-        });
-      } catch (err) {
-        console.error('Failed to persist action rejection on server:', err);
-      }
-    }
+    if (!ws.sessionId) return;
 
-    set((state) => ({
-      messages: state.messages.map((m) =>
-        m.id === messageId && m.proposedActions
-          ? {
-              ...m,
-              proposedActions: m.proposedActions.map((a) =>
-                a.action_id === actionId ? { ...a, status: 'rejected' } : a
-              ),
-            }
-          : m
-      ),
-    }));
+    try {
+      await rejectAgentAction({
+        session_id: ws.sessionId,
+        action_id: actionId,
+      });
+
+      // Update action status in the message
+      set((state) => ({
+        messages: state.messages.map((m) => {
+          if (m.id !== messageId || !m.proposedActions) return m;
+          return {
+            ...m,
+            proposedActions: m.proposedActions.map((a) =>
+              a.action_id === actionId
+                ? { ...a, status: 'rejected' as const }
+                : a
+            ),
+          };
+        }),
+      }));
+    } catch (err) {
+      console.error('Failed to reject action:', err);
+    }
   },
 
-  clearMessages: () => set({ messages: [], status: 'idle', error: null, selectedModel: 'luna' }),
+  clearMessages: () => set({ messages: [], status: 'idle', error: null, providerError: null }),
 }));
-

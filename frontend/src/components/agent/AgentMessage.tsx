@@ -55,8 +55,7 @@ export const AgentMessage: React.FC<AgentMessageProps> = ({ message }) => {
   const showFeedback =
     !isUser &&
     ((message.citations && message.citations.length > 0) ||
-      (message.proposedActions && message.proposedActions.length > 0) ||
-      message.content.toLowerCase().startsWith('error'));
+      (message.proposedActions && message.proposedActions.length > 0));
 
   return (
     <div className={`agent-message ${message.role} animate-fadeIn`}>

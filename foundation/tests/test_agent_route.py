@@ -1,6 +1,6 @@
 """Unit tests for the Agent route and Workbench client:
   - POST /api/agent/chat (api/routes/agent.py)
-  - applications/gpts/workbench_client.py
+  - applications/workbench_client.py
 """
 import os
 import sys
@@ -13,8 +13,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 from api.app import create_app  # noqa: E402
 from applications.workbench_client import (  # noqa: E402
+    WorkbenchApiError,
+    WorkbenchAuthenticationError,
     WorkbenchConfigError,
     WorkbenchResponse,
+    WorkbenchTimeoutError,
+    WorkbenchUnavailableError,
     chat_completion,
 )
 
@@ -38,21 +42,74 @@ def test_agent_chat_missing_credentials_returns_503(client, monkeypatch):
     monkeypatch.delenv("WORKBENCH_CHARGE_CODE", raising=False)
 
     res = client.post("/api/agent/chat", json={"message": "Summarize this document"})
-    assert res.status_code == 200  # Orchestrator gracefully falls back to deterministic context summary
+    assert res.status_code == 503
     data = res.get_json()
-    assert data["status"] == "success"
-    assert "response" in data
-    assert len(data["steps"]) > 0
+    assert data["status"] == "error"
+    assert data["error_type"] == "config_missing"
+    assert "Luna is not configured in this environment." in data["error"]
+    assert data["model"] == "luna"
 
 
-def test_agent_chat_success_mocked(client, monkeypatch):
+def test_agent_chat_sol_missing_credentials_returns_503(client, monkeypatch):
+    monkeypatch.delenv("WORKBENCH_SUBSCRIPTION_KEY", raising=False)
+    monkeypatch.delenv("WORKBENCH_CHARGE_CODE", raising=False)
+
+    res = client.post("/api/agent/chat", json={"message": "Deep analysis", "model": "sol"})
+    assert res.status_code == 503
+    data = res.get_json()
+    assert data["status"] == "error"
+    assert data["error_type"] == "config_missing"
+    assert "Sol is not configured in this environment." in data["error"]
+    assert data["model"] == "sol"
+
+
+def test_agent_chat_provider_unavailable_returns_503(client):
+    with patch("applications.agent.orchestrator.chat_completion") as mock_chat:
+        mock_chat.side_effect = WorkbenchUnavailableError("Connection refused")
+
+        res = client.post("/api/agent/chat", json={"message": "Analyze data", "model": "luna"})
+        assert res.status_code == 503
+        data = res.get_json()
+        assert data["status"] == "error"
+        assert data["error_type"] == "unavailable"
+        assert "Luna is currently unavailable" in data["error"]
+        assert data["model"] == "luna"
+
+
+def test_agent_chat_timeout_returns_504(client):
+    with patch("applications.agent.orchestrator.chat_completion") as mock_chat:
+        mock_chat.side_effect = WorkbenchTimeoutError("Timed out")
+
+        res = client.post("/api/agent/chat", json={"message": "Analyze data", "model": "sol"})
+        assert res.status_code == 504
+        data = res.get_json()
+        assert data["status"] == "error"
+        assert data["error_type"] == "timeout"
+        assert "Sol request timed out" in data["error"]
+        assert data["model"] == "sol"
+
+
+def test_agent_chat_auth_failure_returns_502(client):
+    with patch("applications.agent.orchestrator.chat_completion") as mock_chat:
+        mock_chat.side_effect = WorkbenchAuthenticationError("401 Unauthorized")
+
+        res = client.post("/api/agent/chat", json={"message": "Analyze data", "model": "luna"})
+        assert res.status_code == 502
+        data = res.get_json()
+        assert data["status"] == "error"
+        assert data["error_type"] == "auth_error"
+        assert "Luna authentication failed" in data["error"]
+        assert data["model"] == "luna"
+
+
+def test_agent_chat_success_mocked_luna(client, monkeypatch):
     monkeypatch.setenv("WORKBENCH_SUBSCRIPTION_KEY", "fake-key")
     monkeypatch.setenv("WORKBENCH_CHARGE_CODE", "fake-code")
 
     with patch("applications.agent.orchestrator.chat_completion") as mock_chat:
         mock_chat.return_value = WorkbenchResponse(
             content="Document contains 4 financial tables.",
-            model="gpt-5-4-2026-03-05-gs-ae",
+            model="gpt-5-6-luna-2026-07-09-gs-ae",
             usage={"prompt_tokens": 10, "completion_tokens": 8},
         )
 
@@ -60,6 +117,7 @@ def test_agent_chat_success_mocked(client, monkeypatch):
             "/api/agent/chat",
             json={
                 "message": "What is in this document?",
+                "model": "luna",
                 "context": {
                     "file_names": ["report.docx", "data.xlsx"],
                     "element_count": 42,
@@ -71,8 +129,39 @@ def test_agent_chat_success_mocked(client, monkeypatch):
         data = res.get_json()
         assert data["status"] == "success"
         assert data["response"] == "Document contains 4 financial tables."
+        assert data["model"] == "luna"
         assert len(data["steps"]) > 0
         assert data["run_id"] is not None
+
+
+def test_agent_chat_success_mocked_sol(client, monkeypatch):
+    monkeypatch.setenv("WORKBENCH_SUBSCRIPTION_KEY", "fake-key")
+    monkeypatch.setenv("WORKBENCH_CHARGE_CODE", "fake-code")
+
+    with patch("applications.agent.orchestrator.chat_completion") as mock_chat:
+        mock_chat.return_value = WorkbenchResponse(
+            content="Deep multi-step financial analysis completed.",
+            model="gpt-5-6-sol-2026-07-09-gs-ae",
+            usage={"prompt_tokens": 20, "completion_tokens": 16},
+        )
+
+        res = client.post(
+            "/api/agent/chat",
+            json={
+                "message": "Perform complex tax comparison.",
+                "model": "sol",
+                "context": {
+                    "file_names": ["report.docx", "data.xlsx"],
+                    "element_count": 42,
+                },
+            },
+        )
+
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["status"] == "success"
+        assert data["response"] == "Deep multi-step financial analysis completed."
+        assert data["model"] == "sol"
 
 
 def test_workbench_client_raises_without_charge_code(monkeypatch):

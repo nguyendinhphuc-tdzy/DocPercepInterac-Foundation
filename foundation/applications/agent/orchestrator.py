@@ -209,18 +209,9 @@ class AgentOrchestrator:
             )
 
             # Attempt Workbench completion
-            llm_text = cls._call_workbench_or_fallback(
+            llm_text = cls._call_workbench(
                 message=message,
                 system_prompt=cls._build_selected_element_prompt(context),
-                fallback_text=(
-                    f"### Analysis for Selected Element: {sel.get('name', sel['element_id'])}\n\n"
-                    f"- **Type**: `{sel.get('type')}`\n"
-                    f"- **Document**: {sel.get('doc_name')}\n"
-                    f"- **Content**: {sel.get('text')}\n\n"
-                    f"**Summary**: This element represents {sel.get('name')} in {sel.get('doc_name')}. "
-                    f"It has `{sel.get('capabilities', {}).get('extracted')}` extraction fidelity and "
-                    f"{'is editable' if sel.get('capabilities', {}).get('editable') else 'is read-only'}."
-                ),
                 model=deployment_name,
             )
             steps.append(AgentStep(label="Generated element summary with citation", status="done"))
@@ -290,13 +281,9 @@ class AgentOrchestrator:
                             )
                         )
 
-                    llm_text = cls._call_workbench_or_fallback(
+                    llm_text = cls._call_workbench(
                         message=message,
                         system_prompt=cls._build_search_prompt(context, search_results),
-                        fallback_text=(
-                            f"Found **{len(search_results)}** matching elements for **'{query_term}'** in document:\n\n"
-                            + "\n".join([f"- **{r['name']}** (`{r['type']}`): {r['text'][:120]}" for r in search_results])
-                        ),
                         model=deployment_name,
                     )
                     steps.append(AgentStep(label="Generated provenance answer", status="done"))
@@ -361,16 +348,9 @@ class AgentOrchestrator:
                 except Exception:
                     pass
 
-            llm_text = cls._call_workbench_or_fallback(
+            llm_text = cls._call_workbench(
                 message=message,
                 system_prompt=cls._build_compare_prompt(context),
-                fallback_text=(
-                    f"### Cross-Document Comparison\n\n"
-                    f"Comparing **{context.available_documents[0]['filename']}** ({context.available_documents[0]['format'].upper()}) "
-                    f"and **{context.available_documents[1]['filename']}** ({context.available_documents[1]['format'].upper()}):\n\n"
-                    f"1. **Structure**: Document 1 contains {context.available_documents[0]['element_count']} elements; Document 2 contains {context.available_documents[1]['element_count']} elements.\n"
-                    f"2. **Alignment**: Elements map across canonical types without data loss.\n"
-                ),
                 model=deployment_name,
             )
             steps.append(AgentStep(label="Generated comparison summary", status="done"))
@@ -393,13 +373,7 @@ class AgentOrchestrator:
         steps.append(AgentStep(label=f"Read workspace context ({doc_count} document{'s' if doc_count != 1 else ''})", status="done"))
         
         system_prompt = cls._build_general_prompt(context)
-        fallback_text = (
-            f"I have access to {doc_count} document{'s' if doc_count != 1 else ''} in your workspace: "
-            f"{', '.join(d['filename'] for d in context.available_documents) if doc_count else 'No documents'}. "
-            "Select an element or ask a specific question to analyze details."
-        )
-
-        llm_text = cls._call_workbench_or_fallback(message, system_prompt, fallback_text, model=deployment_name)
+        llm_text = cls._call_workbench(message, system_prompt, model=deployment_name)
         steps.append(AgentStep(label="Generated response", status="done"))
 
         return AgentResponse(
@@ -417,23 +391,20 @@ class AgentOrchestrator:
     # LLM Helper & Prompt Construction
     # ------------------------------------------------------------------------
     @classmethod
-    def _call_workbench_or_fallback(
-        cls, message: str, system_prompt: str, fallback_text: str, model: Optional[str] = None
+    def _call_workbench(
+        cls, message: str, system_prompt: str, model: Optional[str] = None
     ) -> str:
-        try:
-            kwargs: dict[str, Any] = {
-                "messages": [
-                    {"role": "system", "content": system_prompt},
-                    {"role": "user", "content": message},
-                ],
-                "temperature": 0.3,
-            }
-            if model:
-                kwargs["model"] = model
-            res = chat_completion(**kwargs)
-            return res.content
-        except (WorkbenchConfigError, WorkbenchApiError, Exception):
-            return fallback_text
+        kwargs: dict[str, Any] = {
+            "messages": [
+                {"role": "system", "content": system_prompt},
+                {"role": "user", "content": message},
+            ],
+            "temperature": 0.3,
+        }
+        if model:
+            kwargs["model"] = model
+        res = chat_completion(**kwargs)
+        return res.content
 
     @staticmethod
     def _build_selected_element_prompt(context: AgentContext) -> str:

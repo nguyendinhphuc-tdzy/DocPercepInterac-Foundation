@@ -716,7 +716,16 @@ def run_evaluation_suite() -> dict[str, Any]:
     print(f"Loaded Documents: {len(session.doc_map)} fixtures")
     for k, doc_id in session.doc_map.items():
         print(f"  - [{k}]: {doc_id} ({len(session.elements_map[k])} elements)")
-    print("=" * 70 + "\n")
+    from unittest.mock import patch
+    from applications.workbench_client import WorkbenchResponse
+
+    patcher = patch("applications.agent.orchestrator.chat_completion")
+    mock_cc = patcher.start()
+    mock_cc.return_value = WorkbenchResponse(
+        content="Evaluation response from Workbench model.",
+        model="gpt-5-6-luna-2026-07-09-gs-ae",
+        usage={"prompt_tokens": 10, "completion_tokens": 10},
+    )
 
     for scn in scenarios:
         t0 = time.perf_counter()
@@ -1013,7 +1022,7 @@ def run_evaluation_suite() -> dict[str, Any]:
         print(f"  {gate_str} {scn.scenario_id} ({scn.category:3s}): {status_str} in {latency_ms:6.1f}ms - {scn.description}")
         if not passed:
             print(f"      [!] Failure: {error_detail}")
-
+    patcher.stop()
     session.cleanup()
 
     # Aggregate metrics

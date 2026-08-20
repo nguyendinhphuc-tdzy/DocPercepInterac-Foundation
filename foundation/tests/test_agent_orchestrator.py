@@ -39,6 +39,18 @@ def client():
         yield c
 
 
+@pytest.fixture(autouse=True)
+def mock_workbench():
+    """Default autouse mock for Workbench to test Agent orchestrator logic without requiring live network."""
+    with patch("applications.agent.orchestrator.chat_completion") as mock_cc:
+        mock_cc.return_value = WorkbenchResponse(
+            content="Mocked response from KPMG Workbench.",
+            model="gpt-5-6-luna-2026-07-09-gs-ae",
+            usage={"prompt_tokens": 12, "completion_tokens": 10},
+        )
+        yield mock_cc
+
+
 @pytest.fixture
 def sample_session(client, tmp_path):
     """Creates a real session with uploaded DOCX & XLSX fixtures for testing."""
@@ -488,12 +500,12 @@ def test_agent_model_write_governance_invariance(client, sample_session):
 def test_agent_model_provider_error_no_silent_fallback(client, sample_session):
     """Provider unavailable raises explicit error without silent fallback to the other model."""
     session_id = sample_session["session_id"]
-    from applications.workbench_client import WorkbenchApiError
+    from applications.workbench_client import WorkbenchUnavailableError
 
     with patch("applications.agent.orchestrator.chat_completion") as mock_cc:
-        mock_cc.side_effect = WorkbenchApiError("Deployment 'gpt-5-6-sol-2026-07-09-gs-ae' is temporarily overloaded.")
+        mock_cc.side_effect = WorkbenchUnavailableError("Deployment 'gpt-5-6-sol-2026-07-09-gs-ae' is temporarily overloaded.")
         
-        # When orchestrator catches it for general query, fallback text is returned without changing model
+        # When Workbench fails, explicit 503 error is returned without changing model and without local fallback text
         res = client.post(
             "/api/agent/chat",
             json={
@@ -502,6 +514,10 @@ def test_agent_model_provider_error_no_silent_fallback(client, sample_session):
                 "model": "sol",
             },
         )
-        assert res.status_code == 200
+        assert res.status_code == 503
         data = res.get_json()
+        assert data["status"] == "error"
+        assert data["error_type"] == "unavailable"
         assert data["model"] == "sol"  # Must NOT silently switch to luna
+        assert "Sol is currently unavailable" in data["error"]
+        assert "response" not in data or data.get("response") is None

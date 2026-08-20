@@ -104,6 +104,20 @@ export interface RejectActionResponse {
   error?: string;
 }
 
+export class AgentApiError extends Error {
+  readonly errorType?: string;
+  readonly model?: AgentModelId;
+  readonly statusCode: number;
+
+  constructor(message: string, statusCode: number, errorType?: string, model?: AgentModelId) {
+    super(message);
+    this.name = 'AgentApiError';
+    this.statusCode = statusCode;
+    this.errorType = errorType;
+    this.model = model;
+  }
+}
+
 export async function sendAgentChat(request: AgentChatRequest): Promise<AgentChatResponse> {
   let response: Response;
   try {
@@ -113,15 +127,24 @@ export async function sendAgentChat(request: AgentChatRequest): Promise<AgentCha
       body: JSON.stringify(request),
     });
   } catch {
-    throw new Error(
-      `Could not reach the Foundation API at ${API_BASE_URL}. Is the Flask server running?`
+    throw new AgentApiError(
+      `Could not reach the Foundation API at ${API_BASE_URL}. Is the server running?`,
+      0,
+      'network_error',
+      request.model
     );
   }
 
   const body = await response.json().catch(() => null);
 
   if (!response.ok) {
-    throw new Error(body?.error ?? `Agent request failed (HTTP ${response.status})`);
+    const errorMsg = body?.error ?? `Agent request failed (HTTP ${response.status})`;
+    throw new AgentApiError(
+      errorMsg,
+      response.status,
+      body?.error_type,
+      body?.model ?? request.model
+    );
   }
 
   return body as AgentChatResponse;

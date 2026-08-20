@@ -31,6 +31,11 @@ from applications.pilot.event_log import PilotEventLogger  # noqa: E402
 from applications.workbench_client import (  # noqa: E402
     WorkbenchApiError,
     WorkbenchConfigError,
+    WorkbenchUnavailableError,
+    WorkbenchTimeoutError,
+    WorkbenchAuthenticationError,
+    WorkbenchNotFoundError,
+    WorkbenchRateLimitError,
 )
 
 agent_bp = Blueprint("agent", __name__)
@@ -158,43 +163,121 @@ def agent_chat():
 
         return jsonify(response_model.model_dump(mode="json"))
     except WorkbenchConfigError as exc:
+        model_name = "Sol" if model_key == "sol" else "Luna"
         PilotEventLogger.emit(
-            "agent.tool.failed", session_id=session_id, error_category="PROVIDER", status="error", model=model_key,
+            "agent.tool.failed",
+            session_id=session_id,
+            error_category="PROVIDER_CONFIG",
+            error_type="config_missing",
+            status="error",
+            model=model_key,
         )
         return jsonify({
-            "error": str(exc),
+            "error": f"{model_name} is not configured in this environment.",
             "status": "error",
-            "response": f"Agent is not configured: {exc}",
-            "run_id": None,
+            "error_type": "config_missing",
             "model": model_key,
+            "run_id": None,
             "steps": [],
             "citations": [],
             "proposed_actions": [],
         }), 503
-    except WorkbenchApiError as exc:
+    except WorkbenchTimeoutError as exc:
+        model_name = "Sol" if model_key == "sol" else "Luna"
         PilotEventLogger.emit(
-            "agent.tool.failed", session_id=session_id, error_category="PROVIDER", status="error", model=model_key,
+            "agent.tool.failed",
+            session_id=session_id,
+            error_category="PROVIDER_TIMEOUT",
+            error_type="timeout",
+            status="error",
+            model=model_key,
         )
         return jsonify({
-            "error": str(exc),
+            "error": f"{model_name} request timed out. Please try again.",
             "status": "error",
-            "response": f"Workbench API error: {exc}",
-            "run_id": None,
+            "error_type": "timeout",
             "model": model_key,
+            "run_id": None,
+            "steps": [],
+            "citations": [],
+            "proposed_actions": [],
+        }), 504
+    except WorkbenchAuthenticationError as exc:
+        model_name = "Sol" if model_key == "sol" else "Luna"
+        PilotEventLogger.emit(
+            "agent.tool.failed",
+            session_id=session_id,
+            error_category="PROVIDER_AUTH",
+            error_type="auth_error",
+            status="error",
+            model=model_key,
+        )
+        return jsonify({
+            "error": f"{model_name} authentication failed. Please verify provider credentials.",
+            "status": "error",
+            "error_type": "auth_error",
+            "model": model_key,
+            "run_id": None,
             "steps": [],
             "citations": [],
             "proposed_actions": [],
         }), 502
-    except Exception as exc:
+    except WorkbenchRateLimitError as exc:
+        model_name = "Sol" if model_key == "sol" else "Luna"
         PilotEventLogger.emit(
-            "agent.tool.failed", session_id=session_id, error_category="UNKNOWN", status="error", model=model_key,
+            "agent.tool.failed",
+            session_id=session_id,
+            error_category="PROVIDER_RATE_LIMIT",
+            error_type="rate_limited",
+            status="error",
+            model=model_key,
         )
         return jsonify({
-            "error": f"Unexpected error: {exc}",
+            "error": f"{model_name} is currently rate limited. Please retry in a few moments.",
             "status": "error",
-            "response": f"An unexpected error occurred: {exc}",
-            "run_id": None,
+            "error_type": "rate_limited",
             "model": model_key,
+            "run_id": None,
+            "steps": [],
+            "citations": [],
+            "proposed_actions": [],
+        }), 429
+    except (WorkbenchUnavailableError, WorkbenchNotFoundError, WorkbenchApiError) as exc:
+        model_name = "Sol" if model_key == "sol" else "Luna"
+        PilotEventLogger.emit(
+            "agent.tool.failed",
+            session_id=session_id,
+            error_category="PROVIDER_UNAVAILABLE",
+            error_type="unavailable",
+            status="error",
+            model=model_key,
+        )
+        return jsonify({
+            "error": f"{model_name} is currently unavailable because the AI service could not be reached.",
+            "status": "error",
+            "error_type": "unavailable",
+            "model": model_key,
+            "run_id": None,
+            "steps": [],
+            "citations": [],
+            "proposed_actions": [],
+        }), 503
+    except Exception as exc:
+        model_name = "Sol" if model_key == "sol" else "Luna"
+        PilotEventLogger.emit(
+            "agent.tool.failed",
+            session_id=session_id,
+            error_category="UNKNOWN",
+            error_type="unexpected",
+            status="error",
+            model=model_key,
+        )
+        return jsonify({
+            "error": f"An unexpected error occurred while communicating with {model_name}.",
+            "status": "error",
+            "error_type": "unexpected",
+            "model": model_key,
+            "run_id": None,
             "steps": [],
             "citations": [],
             "proposed_actions": [],

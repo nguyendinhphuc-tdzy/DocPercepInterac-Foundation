@@ -1,14 +1,22 @@
 import React, { useRef, useEffect } from 'react';
-import { Bot, Sparkles, FlaskConical } from 'lucide-react';
+import { Bot, Sparkles, FlaskConical, AlertCircle, RefreshCw, ArrowRight, X } from 'lucide-react';
 import { useAgentStore } from '../../state/agentStore';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 import { usePilotStore } from '../../state/pilotStore';
 import { AgentComposer } from './AgentComposer';
 import { AgentMessage as AgentMessageComponent } from './AgentMessage';
 import { EmptyState } from '../shared/EmptyState';
+import type { AgentModelId } from '../../api/agent';
 
 export const AgentPane: React.FC = () => {
-  const { messages, status } = useAgentStore();
+  const {
+    messages,
+    status,
+    providerError,
+    retryFailedMessage,
+    switchModelAndRetry,
+    dismissProviderError,
+  } = useAgentStore();
   const { documents } = useWorkspaceStore();
   const scrollRef = useRef<HTMLDivElement>(null);
   const {
@@ -22,17 +30,18 @@ export const AgentPane: React.FC = () => {
     abandonTask,
   } = usePilotStore();
 
-  // Auto-scroll to bottom on new messages
+  // Auto-scroll to bottom on new messages or error card appearance
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
-  }, [messages]);
+  }, [messages, providerError, status]);
 
-  // Gated on Perceive (>=1 document ready), NOT on any task/execution
-  // state — the Agent must be usable BEFORE any application workflow
-  // (e.g. GTPS mapping) runs, so a user can state a request first.
   const hasReadyDocument = documents.some((d) => d.status === 'ready');
+
+  const failedModelName = providerError?.failedModel === 'sol' ? 'Sol' : 'Luna';
+  const otherModelId: AgentModelId = providerError?.failedModel === 'sol' ? 'luna' : 'sol';
+  const otherModelName = otherModelId === 'sol' ? 'Sol' : 'Luna';
 
   return (
     <div className="agent-pane">
@@ -73,7 +82,7 @@ export const AgentPane: React.FC = () => {
         </div>
       </div>
 
-      {/* Pilot Scenario Launcher — instrumentation-only, separate from normal Agent flow */}
+      {/* Pilot Scenario Launcher */}
       {pilotModeEnabled && (
         <div style={{
           display: 'flex',
@@ -134,6 +143,85 @@ export const AgentPane: React.FC = () => {
           messages.map((msg) => (
             <AgentMessageComponent key={msg.id} message={msg} />
           ))
+        )}
+
+        {/* Explicit Provider Error Card (No fake assistant bubble) */}
+        {providerError && (
+          <div
+            className="agent-provider-error-card animate-fadeIn"
+            data-testid="agent-provider-error-card"
+            style={{
+              margin: 'var(--space-3) var(--space-2)',
+              padding: 'var(--space-3)',
+              borderRadius: 'var(--radius-md)',
+              background: 'var(--bg-surface-secondary)',
+              border: '1px solid var(--border-error, #f87171)',
+              boxShadow: '0 2px 8px rgba(0, 0, 0, 0.05)',
+            }}
+          >
+            <div style={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', gap: 'var(--space-2)' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)' }}>
+                <AlertCircle size={16} style={{ color: 'var(--text-error, #ef4444)', flexShrink: 0 }} />
+                <span style={{ fontWeight: 600, fontSize: 'var(--text-xs)', color: 'var(--text-primary)' }}>
+                  {providerError.errorType === 'config_missing'
+                    ? `${failedModelName} is not configured`
+                    : `${failedModelName} is temporarily unavailable`}
+                </span>
+              </div>
+              <button
+                onClick={dismissProviderError}
+                className="btn btn-ghost btn-sm"
+                style={{ padding: '2px', color: 'var(--text-tertiary)', lineHeight: 1 }}
+                title="Dismiss error"
+                data-testid="agent-error-dismiss-btn"
+                aria-label="Dismiss error"
+              >
+                <X size={13} />
+              </button>
+            </div>
+
+            <p style={{
+              margin: 'var(--space-2) 0 var(--space-3)',
+              fontSize: 'var(--text-xs)',
+              color: 'var(--text-secondary)',
+              lineHeight: 1.4,
+            }}>
+              {providerError.message} Try again, or switch to {otherModelName}.
+            </p>
+
+            <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
+              <button
+                onClick={retryFailedMessage}
+                className="btn btn-primary btn-sm"
+                data-testid="agent-error-retry-btn"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: 'var(--text-xxs)',
+                  padding: '4px 10px',
+                }}
+              >
+                <RefreshCw size={11} />
+                Retry {failedModelName}
+              </button>
+              <button
+                onClick={() => switchModelAndRetry(otherModelId)}
+                className="btn btn-secondary btn-sm"
+                data-testid="agent-error-switch-btn"
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '4px',
+                  fontSize: 'var(--text-xxs)',
+                  padding: '4px 10px',
+                }}
+              >
+                <ArrowRight size={11} />
+                Switch to {otherModelName}
+              </button>
+            </div>
+          </div>
         )}
       </div>
 

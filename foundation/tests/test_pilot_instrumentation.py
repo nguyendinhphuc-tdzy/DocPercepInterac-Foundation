@@ -35,6 +35,20 @@ def client():
 
 
 @pytest.fixture(autouse=True)
+def mock_workbench():
+    """Default autouse mock for Workbench to test Pilot telemetry during AI chat turns."""
+    from unittest.mock import patch
+    from applications.workbench_client import WorkbenchResponse
+    with patch("applications.agent.orchestrator.chat_completion") as mock_cc:
+        mock_cc.return_value = WorkbenchResponse(
+            content="Mocked response for pilot dry run.",
+            model="gpt-5-6-luna-2026-07-09-gs-ae",
+            usage={"prompt_tokens": 10, "completion_tokens": 8},
+        )
+        yield mock_cc
+
+
+@pytest.fixture(autouse=True)
 def isolated_pilot_log(tmp_path, monkeypatch):
     """Redirect the pilot event sink to an isolated directory for this test only."""
     isolated_root = tmp_path / ".pilot_logs"

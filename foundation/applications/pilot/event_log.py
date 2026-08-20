@@ -66,6 +66,8 @@ ALLOWED_FIELDS = frozenset({
     "reason",
     "comment",
     "error_category",
+    "error_type",
+    "provider_status",
     "confidence",
     "origin",
     "model",
