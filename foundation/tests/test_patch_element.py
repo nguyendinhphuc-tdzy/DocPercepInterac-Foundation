@@ -396,8 +396,10 @@ def test_patch_element_xlsx_formula_cell_protection(client, tmp_path):
 
 
 def test_patch_element_xlsx_undo_roundtrip(client, tmp_path):
-    """Verifies that an edit can be undone by patching back the original value."""
+    """Verifies that an edit can be undone by patching back the original value,
+    even when the anchor carries a row_label_fingerprint."""
     import openpyxl
+    from perception.anchor_builder import _text_fingerprint
 
     wb = openpyxl.Workbook()
     ws = wb.active
@@ -407,7 +409,11 @@ def test_patch_element_xlsx_undo_roundtrip(client, tmp_path):
     session_id, doc_id = str(uuid.uuid4()), str(uuid.uuid4())
     session_dir, stored_path = _seed_document(tmp_path, session_id, doc_id, "company.xlsx", wb)
 
-    anchor_b5 = AnchorXLSX(sheet_name="Sheet1", cell_address="B5")
+    anchor_b5 = AnchorXLSX(
+        sheet_name="Sheet1",
+        cell_address="B5",
+        row_label_fingerprint=_text_fingerprint("Initial Company Name"),
+    )
 
     # 1. Edit to new value
     r1 = client.patch(
@@ -420,7 +426,7 @@ def test_patch_element_xlsx_undo_roundtrip(client, tmp_path):
     wb_edited = openpyxl.load_workbook(patched_path)
     assert wb_edited["Sheet1"]["B5"].value == "Updated Company Name"
 
-    # 2. Undo edit by patching back initial value
+    # 2. Undo edit by patching back initial value (anchor still carries original fingerprint)
     r2 = client.patch(
         f"/api/documents/{session_id}/elements/{doc_id}",
         json={"anchor": anchor_b5.model_dump(mode="json"), "value": "Initial Company Name"},
@@ -467,3 +473,159 @@ def test_patch_element_multi_document_isolation(client, tmp_path):
     assert download_docx.status_code == 200
     # No _patched.docx should exist for doc1
     assert not (session_dir / f"{docx_doc_id}_patched.docx").exists()
+
+
+def test_patch_element_xlsx_multi_sheet_isolation(client, tmp_path):
+    """Verifies that editing Sheet1!A1 and undoing does not affect Sheet2!A1."""
+    import openpyxl
+
+    wb = openpyxl.Workbook()
+    ws1 = wb.active
+    ws1.title = "SheetA"
+    ws1["A1"] = "Value Sheet A"
+
+    ws2 = wb.create_sheet(title="SheetB")
+    ws2["A1"] = "Value Sheet B"
+
+    session_id, doc_id = str(uuid.uuid4()), str(uuid.uuid4())
+    session_dir, stored_path = _seed_document(tmp_path, session_id, doc_id, "multisheet.xlsx", wb)
+
+    anchor_sheet_a = AnchorXLSX(sheet_name="SheetA", cell_address="A1")
+
+    # 1. Edit SheetA!A1
+    r1 = client.patch(
+        f"/api/documents/{session_id}/elements/{doc_id}",
+        json={"anchor": anchor_sheet_a.model_dump(mode="json"), "value": "Edited Sheet A"},
+    )
+    assert r1.status_code == 200
+
+    patched_path = stored_path.with_name(f"{stored_path.stem}_patched.xlsx")
+    wb_edited = openpyxl.load_workbook(patched_path)
+    assert wb_edited["SheetA"]["A1"].value == "Edited Sheet A"
+    assert wb_edited["SheetB"]["A1"].value == "Value Sheet B"
+
+    # 2. Undo SheetA!A1
+    r2 = client.patch(
+        f"/api/documents/{session_id}/elements/{doc_id}",
+        json={"anchor": anchor_sheet_a.model_dump(mode="json"), "value": "Value Sheet A"},
+    )
+    assert r2.status_code == 200
+
+    wb_restored = openpyxl.load_workbook(patched_path)
+    assert wb_restored["SheetA"]["A1"].value == "Value Sheet A"
+    assert wb_restored["SheetB"]["A1"].value == "Value Sheet B"
+
+
+def test_patch_element_xlsx_real_fixture_edit_and_undo(client, tmp_path):
+    """Verifies edit and undo on an actual row-label cell of the real KPMG XLSX fixture."""
+    import openpyxl
+    from perception.parser import extract_geometry
+    from perception.anchor_builder import assign_anchors
+    from perception.element_classifier import classify_blocks
+
+    fixture_path = Path(__file__).resolve().parents[2] / "anonymize client" / "Demo files" / "Demo files" / "FA&RPTS & Appendix I" / "FA&RPTs" / "HMV-FA&RPT FY2024.xlsx"
+    if not fixture_path.exists():
+        pytest.skip(f"Real KPMG XLSX fixture not found: {fixture_path}")
+
+    wb_orig = openpyxl.load_workbook(fixture_path)
+    session_id, doc_id = str(uuid.uuid4()), str(uuid.uuid4())
+    session_dir, stored_path = _seed_document(tmp_path, session_id, doc_id, fixture_path.name, wb_orig)
+
+    blocks = extract_geometry(str(stored_path))
+    anchors = assign_anchors(blocks, "xlsx")
+    elements = classify_blocks(blocks, "xlsx", anchors)
+
+    # Find an actual row-label cell that is editable
+    target_el = next(
+        e for e in elements
+        if e.anchor.format == "xlsx" and e.anchor.row_label_fingerprint and e.capabilities.editable and e.text.startswith("Company name:")
+    )
+    original_value = target_el.text
+    anchor = target_el.anchor
+
+    # 1. Edit cell
+    new_value = "EDITED_COMPANY_TEST_2026"
+    r1 = client.patch(
+        f"/api/documents/{session_id}/elements/{doc_id}",
+        json={"anchor": anchor.model_dump(mode="json"), "value": new_value},
+    )
+    assert r1.status_code == 200
+
+    patched_path = stored_path.with_name(f"{stored_path.stem}_patched.xlsx")
+    wb_edited = openpyxl.load_workbook(patched_path)
+    assert wb_edited[anchor.sheet_name][anchor.cell_address].value == new_value
+
+    # 2. Undo edit
+    r2 = client.patch(
+        f"/api/documents/{session_id}/elements/{doc_id}",
+        json={"anchor": anchor.model_dump(mode="json"), "value": original_value},
+    )
+    assert r2.status_code == 200
+
+    wb_restored = openpyxl.load_workbook(patched_path)
+    assert wb_restored[anchor.sheet_name][anchor.cell_address].value == original_value
+
+
+def test_patch_element_xlsx_agent_write_and_foundation_undo(client, monkeypatch, tmp_path):
+    """Verifies that an Agent-governed write followed by normal Foundation Undo roundtrips cleanly."""
+    import openpyxl
+    from perception.parser import extract_geometry
+    from perception.anchor_builder import assign_anchors
+    from perception.element_classifier import classify_blocks
+    import applications.agent.proposal_store as proposal_store_mod
+    import applications.agent.action_executor as action_executor_mod
+    from applications.agent.proposal_store import ProposalStore
+    from applications.agent.action_executor import ActionExecutor
+    from applications.agent.models import ProposedAction
+
+    monkeypatch.setattr(proposal_store_mod, "UPLOAD_ROOT", tmp_path)
+    monkeypatch.setattr(action_executor_mod, "UPLOAD_ROOT", tmp_path)
+
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "Sheet1"
+    ws["A1"] = "Original Label"
+    ws["B1"] = "Original Value"
+
+    session_id, doc_id = str(uuid.uuid4()), str(uuid.uuid4())
+    session_dir, stored_path = _seed_document(tmp_path, session_id, doc_id, "agent_test.xlsx", wb)
+
+    blocks = extract_geometry(str(stored_path))
+    anchors = assign_anchors(blocks, "xlsx")
+    elements = classify_blocks(blocks, "xlsx", anchors)
+    target_el = next(e for e in elements if e.anchor.cell_address == "B1")
+
+    # 1. Propose action via Agent proposal store
+    action_id = str(uuid.uuid4())
+    proposal = ProposedAction(
+        action_id=action_id,
+        session_id=session_id,
+        doc_id=doc_id,
+        doc_name="agent_test.xlsx",
+        element_id=target_el.element_id,
+        element_name="Sheet1!B1",
+        current_value=target_el.text,
+        proposed_value="Agent Edited Value",
+        rationale="Automated test proposal",
+        status="proposed",
+        target_anchor=target_el.anchor.model_dump(mode="json"),
+    )
+    ProposalStore.save_proposal(session_id, proposal)
+
+    # 2. Execute proposal via ActionExecutor (governed write)
+    exec_result = ActionExecutor.execute_confirmed_action(session_id, action_id)
+    assert exec_result["status"] == "success"
+
+    patched_path = stored_path.with_name(f"{stored_path.stem}_patched.xlsx")
+    wb_edited = openpyxl.load_workbook(patched_path)
+    assert wb_edited["Sheet1"]["B1"].value == "Agent Edited Value"
+
+    # 3. Normal Foundation Undo on the element
+    r_undo = client.patch(
+        f"/api/documents/{session_id}/elements/{doc_id}",
+        json={"anchor": target_el.anchor.model_dump(mode="json"), "value": target_el.text},
+    )
+    assert r_undo.status_code == 200
+
+    wb_restored = openpyxl.load_workbook(patched_path)
+    assert wb_restored["Sheet1"]["B1"].value == target_el.text

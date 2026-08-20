@@ -24,6 +24,7 @@ from perception.anchor_builder import (  # noqa: E402
     resolve_pdf_anchor,
     resolve_xlsx_anchor,
 )
+from perception.models import AnchorXLSX  # noqa: E402
 from perception.parser import parse_docx, parse_pdf, parse_xlsx  # noqa: E402
 
 FIXTURES = Path(__file__).resolve().parent / "fixtures"
@@ -356,7 +357,9 @@ def test_xlsx_resolve_self_heals_when_row_inserted_above(tmp_path):
     assert message is not None and "Self-healed" in message
 
 
-def test_xlsx_resolve_raises_when_row_label_gone(tmp_path):
+def test_xlsx_resolve_falls_back_to_cell_address_when_row_label_edited(tmp_path):
+    """When a row label is edited in place (or replaced), resolve_xlsx_anchor
+    falls back to the canonical cell_address with a Strategy 2 message."""
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = "FA"
@@ -375,8 +378,38 @@ def test_xlsx_resolve_raises_when_row_label_gone(tmp_path):
     wb2.save(path)
 
     wb3 = openpyxl.load_workbook(path)
+    cell, message = resolve_xlsx_anchor(wb3, anchor)
+    assert cell.coordinate == "B1"
+    assert cell.value == 2000
+    assert message is not None and "Strategy 2" in message
+
+
+def test_xlsx_resolve_raises_on_invalid_sheet(tmp_path):
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "FA"
+    ws["A1"] = "Revenue"
+    path = tmp_path / "fs.xlsx"
+    wb.save(path)
+
+    anchor = AnchorXLSX(sheet_name="NonExistentSheet", cell_address="A1")
+    wb2 = openpyxl.load_workbook(path)
+    with pytest.raises(ValueError, match="sheet not found"):
+        resolve_xlsx_anchor(wb2, anchor)
+
+
+def test_xlsx_resolve_raises_on_invalid_cell_address(tmp_path):
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = "FA"
+    ws["A1"] = "Revenue"
+    path = tmp_path / "fs.xlsx"
+    wb.save(path)
+
+    anchor = AnchorXLSX(sheet_name="FA", cell_address="INVALID_COORD_$$$")
+    wb2 = openpyxl.load_workbook(path)
     with pytest.raises(ValueError):
-        resolve_xlsx_anchor(wb3, anchor)
+        resolve_xlsx_anchor(wb2, anchor)
 
 
 # --- PDF resolve ---------------------------------------------------------------

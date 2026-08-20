@@ -392,9 +392,9 @@ def resolve_xlsx_anchor(wb, anchor: AnchorXLSX) -> Tuple[Any, Optional[str]]:
             if _row_label_fingerprint(ws, row_number) == anchor.row_label_fingerprint:
                 return ws[f"{col_letter}{row_number}"], f"Drift detected. Self-healed row {cell.row} -> {row_number} by row label"
 
-    raise ValueError(
-        f"Failed to resolve XLSX anchor: {anchor!r} — row label drifted and no matching row found"
-    )
+    # If row label drifted/was edited in place and no other row matches the recorded
+    # fingerprint, fall back to direct cell_address (the canonical coordinate identity).
+    return cell, "Strategy 2: matched by cell_address — row label fingerprint not found (label may have been edited)"
 
 
 _PDF_BBOX_TOLERANCE = 0.02  # relative units — ~same line position
