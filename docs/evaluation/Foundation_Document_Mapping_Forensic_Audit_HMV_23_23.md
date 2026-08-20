@@ -125,11 +125,199 @@ All 7 verification suites executed cleanly with zero regressions:
 
 ---
 
-## 7. Remaining Limitations & Honest Non-Guessed Elements
+# Residual 20 Element Audit
 
-The 20 remaining unavailable elements out of 4,764 in Fixture C:
-1. **17 EMF Images**: Windows Enhanced Metafiles where `docx-preview` does not emit an `<img>` tag or container with preserved `docPr` metadata.
-2. **2 Canvas Drawings**: Deeply nested `wpc:wpc` shapes inside composite diagrams where `docx-preview` omits outer `docPr` identity.
-3. **1 Paragraph**: A trailing empty style placeholder not rendered into the DOM.
+This section documents the exhaustive forensic investigation into the 20 residual unmapped elements in `HMV 23&23 EN compare.docx` (Fixture C).
 
-Per Foundation architectural principles, these 20 elements remain **honestly classified as `unavailable`** rather than guessed via fragile positional heuristics. Every other element (4,744 / 4,764) is 100% interactive and mapped to its true document region.
+```
+========================================================================================
+RESIDUAL 20 UNMAPPED ELEMENTS INVENTORY
+========================================================================================
+  Paragraph :  1 / 412 unmapped  (411 mapped = 99.76%)
+  Images    : 17 /  31 unmapped  ( 14 mapped = 45.16%)
+  Drawings  :  2 /   4 unmapped  (  2 mapped = 50.00%)
+  Cells     :  0 /4231 unmapped  (4231 mapped = 100.0%)
+  Headings  :  0 /  71 unmapped  (  71 mapped = 100.0%)
+  Footnotes :  0 /  14 unmapped  (  14 mapped = 100.0%)
+  Footers   :  0 /   1 unmapped  (   1 mapped = 100.0%)
+========================================================================================
+```
+
+---
+
+## 1. Element Count Reconciliation (4,763 → 4,764, Paragraphs 411 → 412)
+
+During the forensic audit before Fix A, top-level paragraph extraction relied on `doc.paragraphs` with standard python-docx `p.text`.
+
+### Newly Discovered Element:
+- **`element_id`**: `44eeb2e3-cca5-5585-887a-87e212864e9c`
+- **`type`**: `para`
+- **`anchor`**: `{"format": "docx", "paragraph_index": 260, "style_id": "BodyText", "text_fingerprint": "12984920", ...}`
+- **Source XML Location**: Paragraph index 260 (`<w:p w14:paraId="3E7926FE">`).
+- **Why Previously Absent**: In python-docx, `p.text` only inspects direct `<w:r>` runs of `<w:p>`. Paragraph 260 contains a Wordprocessing Canvas diagram (`<wpc:wpc>`) with text contained entirely inside `<wps:wsp><wps:txbx><w:txbxContent>`. Python-docx's `p.text` returned empty string `""`, so it was skipped by the legacy empty check.
+- **Why Now Present**: Fix A switched paragraph extraction to `extract_paragraph_visible_text(p._p)`, which traverses all `<w:t>` elements in document order including shape textboxes (`<w:txbxContent>`), finding the visible diagram labels `"Pinghu Hestra Trading Co., Ltd.HMVMMAB(2)(1)Overse..."` and creating 1 additional canonical element.
+
+---
+
+## 2. Audit of the 1 Unavailable Paragraph
+
+- **Target**: Element `44eeb2e3-cca5-5585-887a-87e212864e9c` (p_idx=260).
+- **Source XML Construct**:
+  ```xml
+  <w:p w14:paraId="3E7926FE">
+    <w:pPr><w:pStyle w:val="BodyText"/></w:pPr>
+    <w:ins w:id="847" w:author="KPMG_PQH">
+      <w:r>
+        <mc:AlternateContent>
+          <mc:Choice Requires="wps">
+            <w:drawing>
+              <wp:inline>
+                <wp:docPr id="1386" name="Canvas 1386"/>
+                <a:graphic>
+                  <a:graphicData uri=".../wordprocessingCanvas">
+                    <wpc:wpc>
+                      <wps:wsp>
+                        <wps:txbx>
+                          <w:txbxContent>
+                            <w:p><w:r><w:t>Pinghu Hestra Trading Co., Ltd.</w:t></w:r></w:p>
+                          </w:txbxContent>
+                        </wps:txbx>
+                      </wps:wsp>
+                    </wpc:wpc>
+                  </a:graphicData>
+                </a:graphic>
+              </wp:inline>
+            </w:drawing>
+          </mc:Choice>
+        </mc:AlternateContent>
+      </w:r>
+    </w:ins>
+  </w:p>
+  ```
+- **Why Parser Created It**: Parser perceived this paragraph as containing visible text (the diagram label textboxes) and classified it as a `para` block. It also created a separate `drawing` element (`Drawing [03]`, `docPr id="1386"`).
+- **Why Renderer Does Not Render It as `<p>`**: `docx-preview` renders the Canvas drawing as an SVG shape tree (`<div data-drawing-id="1386">`). It does **not** render a standalone prose `<p>` element in the body flow.
+- **Why Mapper Fails for this Paragraph**:
+  - `mapDrawings` successfully maps `Drawing [03]` to `<div data-drawing-id="1386">` (**AVAILABLE**).
+  - `mapTextFlowElements` searches for a prose `<p data-el-rawtext="Pinghu Hestra Trading...">` in the document body, which does not exist in the DOM.
+- **Classification**: **Perception / Structural Semantics Mismatch** (a Canvas diagram container whose internal labels were dual-extracted as a body paragraph).
+- **Recommendation**: **Accept as honest representation limitation** (the Canvas diagram itself is 100% mapped and interactive).
+
+---
+
+## 3. Audit of the 17 Unavailable Images
+
+Every one of the 31 image elements in `HMV 23&23 EN compare.docx` references a Windows Enhanced Metafile (`.emf`) in `word/media/`:
+
+| Index | Element ID | Paragraph Index | `relationship_id` | `drawing_id` | Media File | Track Changes Status | Rendered in DOM? | Available in Mapper? |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **00** | `2de8ee5f-0907-5c6f-91d8-c67c7a783365` | 191 | `rId21` | `43` | `media/image1.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **01** | `826b8367-a2f0-5452-9b22-1fc82b8813a3` | 191 | `rId22` | `466604494` | `media/image2.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **02** | `20e4905d-4c7d-5642-8852-6055f7493bec` | 232 | `rId44` | `2` | `media/image6.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **03** | `04a795b6-79cf-5f21-888e-49b08fcf58b6` | 234 | `rId45` | `305312056` | `media/image7.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **04** | `7b41d649-d6e4-5466-9b9f-0ded47529069` | 379 | `rId21` | `42` | `media/image1.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **05** | `b7c8703d-82d2-5a2d-b0ad-ea1578338947` | 380 | `rId22` | `240645108` | `media/image2.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **06** | `40dc19fe-96e4-5736-abe0-4a485d04dce5` | 393 | `rId47` | `23` | `media/image8.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **07** | `25d77b49-b003-5182-9017-d7ffc12948bb` | 393 | `rId48` | `179548501` | `media/image9.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **08** | `d722ca31-1057-5e1f-b4f0-3bd4896ba150` | 630 | `rId49` | `25` | `media/image10.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **09** | `e953a3f3-60bc-5dc4-b6e3-ac208a02ee54` | 631 | `rId50` | `26` | `media/image11.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **10** | `49b2a354-20b9-5927-95b9-6656622ffa7c` | 632 | `rId51` | `27` | `media/image12.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **11** | `78ea6c7d-4a24-58fd-96bd-ba40d96eba9a` | 633 | `rId52` | `28` | `media/image13.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **12** | `cb2bf313-daaf-5c59-9a64-f4a5b16475ba` | 634 | `rId53` | `29` | `media/image14.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **13** | `b1ffadce-6992-5b9d-81e0-bd44f299296a` | 635 | `rId54` | `33` | `media/image15.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **14** | `46986dc1-c9d6-5083-bd3f-aac413747d79` | 636 | `rId55` | `34` | `media/image16.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **15** | `0b30918c-10ce-5520-b2ce-ba562deabc1c` | 637 | `rId56` | `35` | `media/image17.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **16** | `47d2e28e-0808-5746-bcb5-8e2d6740e7a6` | 638 | `rId57` | `36` | `media/image18.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **17** | `7422b93c-4b16-575b-889f-f2a903f1519f` | 639 | `rId58` | `37` | `media/image19.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **18** | `981c7349-77a9-5aa2-997c-9918c92c80a8` | 640 | `rId59` | `38` | `media/image20.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **19** | `b81bdd59-455f-54be-bcee-2b2191aece75` | 641 | `rId60` | `39` | `media/image21.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **20** | `9f1e7e3a-c9c5-5726-a106-1077da9c678a` | 642 | `rId61` | `40` | `media/image22.emf` | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **21** | `906b45e3-59bc-5214-9c56-d9c70630082b` | 643 | `rId62` | `1895033957` | `media/image23.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **22** | `add46777-6625-58a6-a159-c544061445bb` | 644 | `rId63` | `1989677892` | `media/image24.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **23** | `6baa5ce5-451e-5a91-831e-dd207fd75a22` | 645 | `rId64` | `652092078` | `media/image25.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **24** | `40de9cb3-1740-5b2f-8beb-f1d244d1d5bf` | 646 | `rId65` | `690953527` | `media/image26.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **25** | `8cbae6df-2377-50ca-a598-d200bca37499` | 647 | `rId66` | `1874070158` | `media/image27.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **26** | `0f4cfbc3-1141-52c8-abf7-91fd9213ed88` | 648 | `rId67` | `533763859` | `media/image28.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **27** | `da60a7ea-f690-5d6e-ac68-4e7ee34ddb63` | 649 | `rId68` | `1910060685` | `media/image29.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **28** | `35ec1547-e898-5307-b23c-9cae3c761b45` | 650 | `rId69` | `149682384` | `media/image30.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **29** | `1e2bf92d-05c5-58d8-a6ce-13e6b415f564` | 651 | `rId70` | `1137587160` | `media/image31.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **30** | `4d0f34ae-e9e8-5cf9-9adc-2683d329338e` | 652 | `rId71` | `169117232` | `media/image32.emf` | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+
+### Verified Finding:
+- **100% of the 14 Available Images are `<w:ins>` (Track Changes Inserted)**.
+- **100% of the 17 Unavailable Images are `<w:del>` (Track Changes Deleted)**.
+- `docx-preview` correctly renders only the active revision in document flow (omitting `<w:del>` drawing elements).
+- Because the deleted images are not rendered by the engine, the mapper honestly marks them `unavailable`.
+
+---
+
+## 4. Audit of the 2 Unavailable Drawings
+
+| Index | Element ID | Paragraph Index | `drawing_id` | Type | Track Changes Status | Rendered in DOM? | Available in Mapper? |
+| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |
+| **00** | `ffa7e3b5-1d3a-52fb-9337-296a34f8f4be` | 215 | `2142777214` | SmartArt Diagram | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **01** | `3fea14d7-4b50-51b4-b73f-288ce93505cc` | 218 | `3` | SmartArt Diagram | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+| **02** | `9def2599-33d0-58fb-9686-cb04bced14b7` | 259 | `1800650922` | Canvas (`wpc:wpc`) | **`INSIDE <w:del>` (Deleted)** | NO | **UNAVAILABLE** |
+| **03** | `197e9ad2-a161-50f5-8472-32d99cc9d704` | 260 | `1386` | Canvas (`wpc:wpc`) | **`INSIDE <w:ins>` (Inserted)** | **YES** | **AVAILABLE** |
+
+### Verified Finding:
+- **Drawing 00 & Drawing 02** are older revisions of diagrams that were deleted in Track Changes (`<w:del>`).
+- **Drawing 01 & Drawing 03** are the replacement inserted diagrams (`<w:ins>`), rendered in the DOM with stamped `data-drawing-id="3"` and `data-drawing-id="1386"`, and 100% mapped and interactive.
+
+---
+
+## 5. Working vs. Failing Comparison Matrix
+
+```
++-----------------------------------------------------------------------------------------------+
+| ASSET CATEGORY  | TOTAL | WORKING (AVAILABLE)         | FAILING (UNAVAILABLE)                 |
++-----------------+-------+-----------------------------+---------------------------------------+
+| Images (EMF)    |   31  | 14 images in <w:ins>        | 17 images in <w:del> (Deleted by Word)|
+| Drawings        |    4  |  2 drawings in <w:ins>      |  2 drawings in <w:del> (Deleted)      |
+| Paragraphs      |  412  | 411 body prose paragraphs   |  1 synthetic canvas paragraph (p=260) |
+| Table Cells     | 4231  | 4231 active grid cells      |  0 (100% mapped)                      |
+| Headings        |   71  |   71 active headings        |  0 (100% mapped)                      |
+| Footnotes       |   14  |   14 active footnotes       |  0 (100% mapped)                      |
+| Footers         |    1  |    1 active footer          |  0 (100% mapped)                      |
++-----------------------------------------------------------------------------------------------+
+```
+
+---
+
+## 6. Complete Residual 20 Matrix
+
+| # | `element_id` | Type | Source Identity (`p_idx`, `docPr`, `rId`) | Rendered in DOM? | Mapper Identity | Exact Forensic Reason | Safely Fixable? |
+| :---: | :--- | :--- | :--- | :---: | :--- | :--- | :---: |
+| **1** | `44eeb2e3-cca5-5585-887a-87e212864e9c` | `para` | `p=260` | NO (as `<p>`) | Style + Text | Canvas labels dual-extracted as para | No (Canvas is mapped) |
+| **2** | `2de8ee5f-0907-5c6f-91d8-c67c7a783365` | `image` | `p=191, drw=43, rId21` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **3** | `20e4905d-4c7d-5642-8852-6055f7493bec` | `image` | `p=232, drw=2, rId44` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **4** | `7b41d649-d6e4-5466-9b9f-0ded47529069` | `image` | `p=379, drw=42, rId21` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **5** | `40dc19fe-96e4-5736-abe0-4a485d04dce5` | `image` | `p=393, drw=23, rId47` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **6** | `d722ca31-1057-5e1f-b4f0-3bd4896ba150` | `image` | `p=630, drw=25, rId49` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **7** | `e953a3f3-60bc-5dc4-b6e3-ac208a02ee54` | `image` | `p=631, drw=26, rId50` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **8** | `49b2a354-20b9-5927-95b9-6656622ffa7c` | `image` | `p=632, drw=27, rId51` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **9** | `78ea6c7d-4a24-58fd-96bd-ba40d96eba9a` | `image` | `p=633, drw=28, rId52` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **10** | `cb2bf313-daaf-5c59-9a64-f4a5b16475ba` | `image` | `p=634, drw=29, rId53` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **11** | `b1ffadce-6992-5b9d-81e0-bd44f299296a` | `image` | `p=635, drw=33, rId54` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **12** | `46986dc1-c9d6-5083-bd3f-aac413747d79` | `image` | `p=636, drw=34, rId55` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **13** | `0b30918c-10ce-5520-b2ce-ba562deabc1c` | `image` | `p=637, drw=35, rId56` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **14** | `47d2e28e-0808-5746-bcb5-8e2d6740e7a6` | `image` | `p=638, drw=36, rId57` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **15** | `7422b93c-4b16-575b-889f-f2a903f1519f` | `image` | `p=639, drw=37, rId58` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **16** | `981c7349-77a9-5aa2-997c-9918c92c80a8` | `image` | `p=640, drw=38, rId59` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **17** | `b81bdd59-455f-54be-bcee-2b2191aece75` | `image` | `p=641, drw=39, rId60` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **18** | `9f1e7e3a-c9c5-5726-a106-1077da9c678a` | `image` | `p=642, drw=40, rId61` | NO | `drawing_id` | Track Changes `<w:del>` image | No (Deleted in Word) |
+| **19** | `ffa7e3b5-1d3a-52fb-9337-296a34f8f4be` | `drawing` | `p=215, drw=2142777214` | NO | `drawing_id` | Track Changes `<w:del>` SmartArt | No (Deleted in Word) |
+| **20** | `9def2599-33d0-58fb-9686-cb04bced14b7` | `drawing` | `p=259, drw=1800650922` | NO | `drawing_id` | Track Changes `<w:del>` Canvas | No (Deleted in Word) |
+
+---
+
+## 7. Architectural Decisions & Recommendations
+
+### Category 1: The 17 Images & 2 Drawings inside `<w:del>`
+- **Verdict**: **ACCEPT AS HONEST RENDERER LIMITATION (or filter in perception)**.
+- **Rationale**: In OOXML Track Changes documents, deleted elements (`<w:del>`) are historically preserved in XML for revision comparison but are absent from the rendered current-state view.
+- Positional guessing to map deleted assets to unrelated rendered elements would violate Foundation safety guarantees. The mapper's honest classification of `unavailable` is the correct, safe behavior.
+- *Optional future enhancement*: In `parser.py::_docx_drawings`, check if parent tag is `<w:del>` to omit deleted drawings from the primary perception model, bringing coverage to 4,744 / 4,745 (99.98%).
+
+### Category 2: The 1 Canvas Paragraph (`p=260`)
+- **Verdict**: **ACCEPT AS HONEST RENDERER LIMITATION**.
+- **Rationale**: The underlying Wordprocessing Canvas diagram is already 100% mapped (`Drawing [03]`, `docPr id="1386"`). The duplicate body paragraph extraction was a synthetic aggregation of internal diagram labels.
