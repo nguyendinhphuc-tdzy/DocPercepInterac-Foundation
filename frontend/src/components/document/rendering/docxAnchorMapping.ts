@@ -212,7 +212,16 @@ function mapTextFlowElements(
     const ordinal = seenOrdinal.get(key) ?? 0;
     seenOrdinal.set(key, ordinal + 1);
 
-    const candidates = renderedByKey.get(key);
+    let candidates = renderedByKey.get(key);
+    if ((!candidates || candidates.length === 0) && !isChrome) {
+      // Style-agnostic fallback if docx-preview resolved style differently
+      const fallbackKey = textKey('__text_only__', text);
+      const fallbackCandidates = renderedByKey.get(fallbackKey);
+      if (fallbackCandidates && fallbackCandidates.length > 0) {
+        candidates = fallbackCandidates;
+      }
+    }
+
     const node = candidates?.[ordinal];
     if (node) {
       nodeByElementId.set(id, node);
@@ -488,26 +497,43 @@ async function mapImages(
     return { img, base64: m ? m[1] : null };
   });
 
+  const renderedByDrawingId = new Map<string, HTMLElement>();
+  for (const node of container.querySelectorAll<HTMLElement>('[data-drawing-id]')) {
+    const dId = node.dataset.drawingId;
+    if (dId && !renderedByDrawingId.has(dId)) renderedByDrawingId.set(dId, node);
+  }
+
   await Promise.all(imageElements.map(async (el) => {
     const id = idOf(el);
     const mediaId = isDocxAnchor(el.anchor) ? el.anchor.media_id : null;
-    if (!mediaId) {
-      statusByElementId.set(id, 'unavailable');
-      return;
+    const drawingId = isDocxAnchor(el.anchor) ? el.anchor.drawing_id : null;
+
+    // 1. Authoritative drawing_id (wp:docPr @id) match on rendered container (supports EMF vector images)
+    if (drawingId) {
+      const drawingNode = renderedByDrawingId.get(drawingId);
+      if (drawingNode) {
+        const imgNode = drawingNode.querySelector<HTMLElement>('img') ?? drawingNode;
+        nodeByElementId.set(id, imgNode);
+        statusByElementId.set(id, 'available');
+        return;
+      }
     }
-    const bytes = await fetchMediaBytes(mediaId);
-    if (!bytes) {
-      statusByElementId.set(id, 'unavailable');
-      return;
+
+    // 2. Raw byte matching via media manifest if available
+    if (mediaId) {
+      const bytes = await fetchMediaBytes(mediaId);
+      if (bytes) {
+        const expectedBase64 = bufferToBase64(bytes);
+        const match = renderedPayloads.find((p) => p.base64 === expectedBase64);
+        if (match) {
+          nodeByElementId.set(id, match.img);
+          statusByElementId.set(id, 'available');
+          return;
+        }
+      }
     }
-    const expectedBase64 = bufferToBase64(bytes);
-    const match = renderedPayloads.find((p) => p.base64 === expectedBase64);
-    if (match) {
-      nodeByElementId.set(id, match.img);
-      statusByElementId.set(id, 'available');
-    } else {
-      statusByElementId.set(id, 'unavailable');
-    }
+
+    statusByElementId.set(id, 'unavailable');
   }));
 }
 

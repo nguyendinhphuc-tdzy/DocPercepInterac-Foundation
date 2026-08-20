@@ -98,21 +98,18 @@ def _base_block(kind: str, text: str = "", **extra: Any) -> GeometryBlock:
 
 _WP_NS = "http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing"
 _W_INS_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+_W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
 
 
-def _paragraph_text(para) -> tuple[str, bool]:
-    """`para.text`, extended to include text tracked-inserted via `<w:ins>`.
+def extract_paragraph_visible_text(p_elem) -> tuple[str, bool]:
+    """Extract canonical visible text from a <w:p> XML element in document order.
 
     python-docx's own `Paragraph.text` is `''.join(r.text for r in
     self.runs)`, and `self.runs` comes from `CT_P.r_lst` — an XPath for
     direct `<w:r>` children of `<w:p>` only. A tracked insertion wraps its
     run(s) one level deeper (`<w:p><w:ins><w:r>...</w:r></w:ins></w:p>`),
     so python-docx never sees that text at all — not "sees it but drops
-    formatting", genuinely invisible. Confirmed against the real KPMG
-    fixture: one paragraph (all runs insertion-wrapped) produced empty
-    `.text` and was silently skipped by the `if para.text.strip():` check
-    below entirely; two more had their inserted trailing clause missing
-    from otherwise-normal `.text`.
+    formatting", genuinely invisible.
 
     Deleted text (`<w:del>` / `<w:delText>`) is deliberately NOT included
     here: docx-preview's default render (this project doesn't set
@@ -123,28 +120,86 @@ def _paragraph_text(para) -> tuple[str, bool]:
     does not; adding deleted text back in would make this MORE complete
     than the document that's actually displayed to the user.
 
-    Walks `para._p`'s direct children in document order so normal and
-    inserted runs interleave correctly (never a separate "append insertions
-    at the end" pass), matching a plain `<w:r>` at a given position and
-    recursing one level into a `<w:ins>` at that position for its own
-    `<w:r>` children. Returns (text, had_insertion) — the flag lets a
-    caller record that this text is partly sourced from a tracked change
-    without needing a full revision/diff model.
+    Includes:
+      - <w:t> text inside normal runs <w:r>
+      - <w:t> text inside tracked insertions <w:ins>
+      - <w:t> text inside hyperlinks <w:hyperlink>, content controls <w:sdt>, etc.
+      - <w:tab/> as '\t'
+      - <w:noBreakHyphen/> as '-'
+      - <w:br/> (textWrapping / default) as '\n'
+    Excludes:
+      - <w:del> / <w:delText> (deleted text in accepted-changes view)
+      - <w:drawing>, <w:pict> (drawings/images)
+      - <w:instrText> (field instructions)
     """
-    from docx.text.run import Run
+    ins_tag = f"{{{_W_NS}}}ins"
+    r_tag = f"{{{_W_NS}}}r"
+    hyperlink_tag = f"{{{_W_NS}}}hyperlink"
+    sdt_tag = f"{{{_W_NS}}}sdt"
 
-    ins_tag = f"{{{_W_INS_NS}}}ins"
-    r_tag = f"{{{_W_INS_NS}}}r"
+    t_tag = f"{{{_W_NS}}}t"
+    tab_tag = f"{{{_W_NS}}}tab"
+    noBreakHyphen_tag = f"{{{_W_NS}}}noBreakHyphen"
+    br_tag = f"{{{_W_NS}}}br"
+
     parts: list[str] = []
     had_insertion = False
-    for child in para._p:
-        if child.tag == r_tag:
-            parts.append(Run(child, para).text)
-        elif child.tag == ins_tag:
-            for r in child.findall(r_tag):
-                parts.append(Run(r, para).text)
-                had_insertion = True
+
+    def _extract_run(r_elem):
+        for child in r_elem:
+            tag = child.tag
+            if tag == t_tag:
+                if child.text:
+                    parts.append(child.text)
+            elif tag == tab_tag:
+                parts.append("\t")
+            elif tag == noBreakHyphen_tag:
+                parts.append("-")
+            elif tag == br_tag:
+                br_type = child.get(f"{{{_W_NS}}}type")
+                if not br_type or br_type == "textWrapping":
+                    parts.append("\n")
+
+    for child in p_elem:
+        tag = child.tag
+        if tag == r_tag:
+            _extract_run(child)
+        elif tag == ins_tag:
+            had_insertion = True
+            for r in child.findall(f".//{{{_W_NS}}}r"):
+                _extract_run(r)
+        elif tag == hyperlink_tag:
+            for r in child.findall(f".//{{{_W_NS}}}r"):
+                _extract_run(r)
+        elif tag == sdt_tag:
+            for r in child.findall(f".//{{{_W_NS}}}r"):
+                _extract_run(r)
+
     return "".join(parts), had_insertion
+
+
+def _paragraph_text(para) -> tuple[str, bool]:
+    """`para.text`, extended to include text tracked-inserted via `<w:ins>` and nested elements."""
+    return extract_paragraph_visible_text(para._p)
+
+
+def extract_cell_visible_text(cell) -> tuple[str, bool]:
+    """Extract canonical visible text of a table cell, joining direct child paragraphs with '\\n'.
+
+    Mirrors python-docx's `_Cell.text` ('\\n'.join(p.text for p in self.paragraphs))
+    while correctly including tracked insertions from <w:ins> and excluding <w:del>.
+    Direct children of <w:tc> only (nested tables excluded).
+    """
+    p_tag = f"{{{_W_NS}}}p"
+    cell_paras = [child for child in cell._tc if child.tag == p_tag]
+    texts: list[str] = []
+    had_ins = False
+    for p in cell_paras:
+        p_text, p_had_ins = extract_paragraph_visible_text(p)
+        texts.append(p_text)
+        if p_had_ins:
+            had_ins = True
+    return "\n".join(texts), had_ins
 _A_NS = "http://schemas.openxmlformats.org/drawingml/2006/main"
 _R_NS = "http://schemas.openxmlformats.org/officeDocument/2006/relationships"
 _C_NS = "http://schemas.openxmlformats.org/drawingml/2006/chart"
@@ -294,11 +349,14 @@ def parse_docx(path: str) -> list[GeometryBlock]:
                 # Unlike paragraphs, empty table cells are kept — a blank
                 # cell in a financial template is a real placeholder a
                 # user (or a mapping rule) is meant to fill in, not noise.
-                block = _base_block("table_cell", text=cell.text)
+                cell_text, cell_had_ins = extract_cell_visible_text(cell)
+                block = _base_block("table_cell", text=cell_text)
                 block["table_index"] = t_idx
                 block["table_hash"] = t_hash
                 block["row_index"] = r_idx
                 block["col_index"] = c_idx
+                if cell_had_ins:
+                    block["extra"] = {"has_tracked_insertion": True}
                 blocks.append(block)
 
     blocks.extend(_docx_headers_footers(doc))

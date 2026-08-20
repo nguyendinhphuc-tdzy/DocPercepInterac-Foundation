@@ -49,12 +49,18 @@ if TYPE_CHECKING:
 
 
 def build_table_hash(table) -> str:
-    """Creates a fingerprint (hash) based on the first row of a DOCX table."""
+    """Creates a fingerprint (hash) based on the first row of a DOCX table.
+
+    Uses canonical visible cell text (including tracked insertions from <w:ins> and
+    excluding <w:del>), matching parser.py and docxAnchorMapping.ts.
+    """
     if not table.rows:
         return "empty"
 
+    from perception.parser import extract_cell_visible_text
+
     # Concatenate all cell text in the first row
-    header_text = "".join([cell.text.strip() for cell in table.rows[0].cells])
+    header_text = "".join([extract_cell_visible_text(cell)[0].strip() for cell in table.rows[0].cells])
 
     # Compute SHA256, keep first 8 chars for brevity
     fingerprint = hashlib.sha256(header_text.encode('utf-8')).hexdigest()[:8]

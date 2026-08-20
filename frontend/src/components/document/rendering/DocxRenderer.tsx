@@ -135,7 +135,7 @@ export const DocxRenderer: React.FC<DocumentRendererProps> = ({
             // (patches/docx-preview+0.4.0.patch), since upstream silently
             // discarded it. Stamped here, matched in docxAnchorMapping.ts's
             // mapDrawings against anchor.drawing_id.
-            if (elem.foundationDrawingId != null && node.tagName === 'DIV') {
+            if (elem.foundationDrawingId != null) {
               node.setAttribute('data-drawing-id', String(elem.foundationDrawingId));
               return;
             }

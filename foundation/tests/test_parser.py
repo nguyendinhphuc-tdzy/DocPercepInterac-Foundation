@@ -149,3 +149,62 @@ def test_parse_xlsx_extracts_correct_geometry(tmp_path):
     assert blocks[1]["text"] == "World"
     assert blocks[1]["cell_address"] == "B2"
     assert blocks[1]["named_range"] is None
+
+
+def test_parse_docx_table_cells_with_tracked_changes(tmp_path):
+    """Test OOXML table cells with <w:ins>, multiple runs, mixed text, and <w:del>."""
+    from docx import Document as DocxDocument
+    from docx.oxml import parse_xml
+    from perception.anchor_builder import build_table_hash
+
+    doc = DocxDocument()
+    table = doc.add_table(rows=2, cols=2)
+    # Row 0, Cell 0: Header with <w:ins>
+    cell_0_0 = table.rows[0].cells[0]
+    p_0_0 = cell_0_0.paragraphs[0]
+    p_0_0.text = "Normal Header "
+
+    _W_NS = "http://schemas.openxmlformats.org/wordprocessingml/2006/main"
+    ins = parse_xml(f'<w:ins xmlns:w="{_W_NS}"><w:r><w:t>Inserted Part</w:t></w:r></w:ins>')
+    p_0_0._p.append(ins)
+
+    # Append <w:del> with deleted text (must be ignored)
+    w_del = parse_xml(f'<w:del xmlns:w="{_W_NS}"><w:r><w:delText> [DELETED SHOULD NOT APPEAR]</w:delText></w:r></w:del>')
+    p_0_0._p.append(w_del)
+
+    # Row 0, Cell 1: Plain text
+    table.rows[0].cells[1].text = "Col 2"
+
+    # Row 1, Cell 0: Row label with multiple inserted runs
+    p_1_0 = table.rows[1].cells[0].paragraphs[0]
+    p_1_0.text = "Row "
+    ins2 = parse_xml(f'<w:ins xmlns:w="{_W_NS}"><w:r><w:t>Label </w:t></w:r><w:r><w:t>Extra</w:t></w:r></w:ins>')
+    p_1_0._p.append(ins2)
+
+    # Row 1, Cell 1: Value
+    table.rows[1].cells[1].text = "100.00"
+
+    doc_path = tmp_path / "tracked_changes_table.docx"
+    doc.save(doc_path)
+
+    blocks = parse_docx(str(doc_path))
+    cell_blocks = [b for b in blocks if b["table_index"] is not None]
+    assert len(cell_blocks) == 4
+
+    # 1. Verify Cell (0, 0) extracted text includes <w:ins> and excludes <w:del>
+    c00 = next(b for b in cell_blocks if b["row_index"] == 0 and b["col_index"] == 0)
+    assert c00["text"] == "Normal Header Inserted Part"
+    assert c00["extra"] == {"has_tracked_insertion": True}
+
+    # 2. Verify Cell (1, 0) extracted text includes multiple inserted runs
+    c10 = next(b for b in cell_blocks if b["row_index"] == 1 and b["col_index"] == 0)
+    assert c10["text"] == "Row Label Extra"
+    assert c10["extra"] == {"has_tracked_insertion": True}
+
+    # 3. Verify Table Hash matches canonical visible text of header row
+    t_hash = build_table_hash(table)
+    assert c00["table_hash"] == t_hash
+    import hashlib
+    expected_header_text = "Normal Header Inserted PartCol 2"
+    expected_hash = hashlib.sha256(expected_header_text.encode("utf-8")).hexdigest()[:8]
+    assert t_hash == expected_hash
