@@ -26,7 +26,7 @@ import requests
 
 # Fixed configuration per integration-tests/Test Call Workbenh API directly 1.py
 BASE_URL = "https://api.workbench.kpmg/genai/azure/openai"
-MODEL = "gpt-5-4-2026-03-05-gs-ae"
+MODEL = "gpt-5-6-luna-2026-07-09-gs-ae"
 API_VERSION = "2024-12-01-preview"
 REGION_OVERRIDE = "australiaeast"
 REQUEST_TIMEOUT = 60  # seconds
@@ -71,15 +71,17 @@ def _get_credentials() -> tuple[str, str]:
 def chat_completion(
     messages: list[dict[str, str]],
     temperature: float = 0.3,
+    model: str = MODEL,
 ) -> WorkbenchResponse:
     """Send a chat completion request to the KPMG Workbench.
 
     Args:
         messages: List of {"role": ..., "content": ...} dicts.
         temperature: Sampling temperature (default 0.3 for document tasks).
+        model: Specific Workbench deployment name (default Luna).
 
     Returns:
-        WorkbenchResponse with the assistant's content.
+        WorkbenchResponse with the assistant's content and resolved model.
 
     Raises:
         WorkbenchConfigError: Missing credentials.
@@ -88,7 +90,7 @@ def chat_completion(
     """
     subscription_key, charge_code = _get_credentials()
 
-    url = f"{BASE_URL}/deployments/{MODEL}/chat/completions"
+    url = f"{BASE_URL}/deployments/{model}/chat/completions"
     params = {"api-version": API_VERSION}
 
     headers = {
@@ -124,7 +126,7 @@ def chat_completion(
         elif response.status_code == 403:
             detail = "Request denied (verify WORKBENCH_CHARGE_CODE and subscription access)."
         elif response.status_code == 404:
-            detail = f"Deployment '{MODEL}' not found — do NOT silently fall back to another model."
+            detail = f"Deployment '{model}' not found — do NOT silently fall back to another model."
         elif response.status_code == 429:
             retry_after = response.headers.get("Retry-After", "unknown")
             detail = f"Rate limited. Retry-After: {retry_after}s."
@@ -149,6 +151,6 @@ def chat_completion(
 
     return WorkbenchResponse(
         content=content,
-        model=body.get("model", MODEL),
+        model=model,
         usage=body.get("usage", {}),
     )

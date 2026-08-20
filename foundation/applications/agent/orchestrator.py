@@ -15,10 +15,13 @@ from typing import Any, Optional
 from applications.agent.models import (
     AgentContext,
     AgentIntent,
+    AgentModelId,
     AgentResponse,
     AgentStep,
     Citation,
     ProposedAction,
+    resolve_agent_model,
+    get_model_key,
 )
 from applications.agent.context_builder import ContextBuilder, perceive_session_document
 from applications.agent.proposal_store import ProposalStore
@@ -40,10 +43,15 @@ class AgentOrchestrator:
         message: str,
         session_id: Optional[str] = None,
         context_input: Optional[dict[str, Any]] = None,
+        model: Optional[str] = None,
     ) -> AgentResponse:
         context_input = context_input or {}
         active_doc_id = context_input.get("active_doc_id")
         selected_element_id = context_input.get("selected_element_id")
+
+        # Resolve selected model against server allowlist (default Luna)
+        deployment_name = resolve_agent_model(model)
+        model_key: AgentModelId = get_model_key(model)
 
         # 1. Build authoritative context from Foundation
         context = ContextBuilder.build_context(
@@ -73,6 +81,7 @@ class AgentOrchestrator:
                     status="success",
                     run_id=run_id,
                     intent="clarify_target",
+                    model=model_key,
                     steps=steps,
                     citations=[],
                     proposed_actions=[],
@@ -104,6 +113,7 @@ class AgentOrchestrator:
                     status="success",
                     run_id=run_id,
                     intent="propose_edit",
+                    model=model_key,
                     steps=steps,
                     citations=[
                         Citation(
@@ -174,6 +184,7 @@ class AgentOrchestrator:
                 status="success",
                 run_id=run_id,
                 intent="propose_edit",
+                model=model_key,
                 steps=steps,
                 citations=citations,
                 proposed_actions=proposed_actions,
@@ -210,6 +221,7 @@ class AgentOrchestrator:
                     f"It has `{sel.get('capabilities', {}).get('extracted')}` extraction fidelity and "
                     f"{'is editable' if sel.get('capabilities', {}).get('editable') else 'is read-only'}."
                 ),
+                model=deployment_name,
             )
             steps.append(AgentStep(label="Generated element summary with citation", status="done"))
 
@@ -218,6 +230,7 @@ class AgentOrchestrator:
                 status="success",
                 run_id=run_id,
                 intent="summarize_element",
+                model=model_key,
                 steps=steps,
                 citations=citations,
                 proposed_actions=[],
@@ -237,6 +250,7 @@ class AgentOrchestrator:
                     status="success",
                     run_id=run_id,
                     intent="clarify_document",
+                    model=model_key,
                     steps=steps,
                     citations=[],
                     proposed_actions=[],
@@ -283,6 +297,7 @@ class AgentOrchestrator:
                             f"Found **{len(search_results)}** matching elements for **'{query_term}'** in document:\n\n"
                             + "\n".join([f"- **{r['name']}** (`{r['type']}`): {r['text'][:120]}" for r in search_results])
                         ),
+                        model=deployment_name,
                     )
                     steps.append(AgentStep(label="Generated provenance answer", status="done"))
 
@@ -291,6 +306,7 @@ class AgentOrchestrator:
                         status="success",
                         run_id=run_id,
                         intent="search_elements",
+                        model=model_key,
                         steps=steps,
                         citations=citations,
                         proposed_actions=[],
@@ -302,6 +318,7 @@ class AgentOrchestrator:
                         status="success",
                         run_id=run_id,
                         intent="search_elements",
+                        model=model_key,
                         steps=steps,
                         citations=[],
                         proposed_actions=[],
@@ -319,6 +336,7 @@ class AgentOrchestrator:
                     status="success",
                     run_id=run_id,
                     intent="clarify_comparison",
+                    model=model_key,
                     steps=steps,
                     citations=[],
                     proposed_actions=[],
@@ -353,6 +371,7 @@ class AgentOrchestrator:
                     f"1. **Structure**: Document 1 contains {context.available_documents[0]['element_count']} elements; Document 2 contains {context.available_documents[1]['element_count']} elements.\n"
                     f"2. **Alignment**: Elements map across canonical types without data loss.\n"
                 ),
+                model=deployment_name,
             )
             steps.append(AgentStep(label="Generated comparison summary", status="done"))
 
@@ -361,6 +380,7 @@ class AgentOrchestrator:
                 status="success",
                 run_id=run_id,
                 intent="compare_documents",
+                model=model_key,
                 steps=steps,
                 citations=citations,
                 proposed_actions=[],
@@ -379,7 +399,7 @@ class AgentOrchestrator:
             "Select an element or ask a specific question to analyze details."
         )
 
-        llm_text = cls._call_workbench_or_fallback(message, system_prompt, fallback_text)
+        llm_text = cls._call_workbench_or_fallback(message, system_prompt, fallback_text, model=deployment_name)
         steps.append(AgentStep(label="Generated response", status="done"))
 
         return AgentResponse(
@@ -387,6 +407,7 @@ class AgentOrchestrator:
             status="success",
             run_id=run_id,
             intent="general_query",
+            model=model_key,
             steps=steps,
             citations=citations,
             proposed_actions=[],
@@ -396,15 +417,20 @@ class AgentOrchestrator:
     # LLM Helper & Prompt Construction
     # ------------------------------------------------------------------------
     @classmethod
-    def _call_workbench_or_fallback(cls, message: str, system_prompt: str, fallback_text: str) -> str:
+    def _call_workbench_or_fallback(
+        cls, message: str, system_prompt: str, fallback_text: str, model: Optional[str] = None
+    ) -> str:
         try:
-            res = chat_completion(
-                messages=[
+            kwargs: dict[str, Any] = {
+                "messages": [
                     {"role": "system", "content": system_prompt},
                     {"role": "user", "content": message},
                 ],
-                temperature=0.3,
-            )
+                "temperature": 0.3,
+            }
+            if model:
+                kwargs["model"] = model
+            res = chat_completion(**kwargs)
             return res.content
         except (WorkbenchConfigError, WorkbenchApiError, Exception):
             return fallback_text

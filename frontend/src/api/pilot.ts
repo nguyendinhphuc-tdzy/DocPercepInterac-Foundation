@@ -26,6 +26,9 @@ export interface PilotEventFields {
   reason?: string;
   comment?: string;
   confidence?: number;
+  model?: string;
+  previous_model?: string;
+  new_model?: string;
 }
 
 export function sendPilotEvent(eventType: string, fields: PilotEventFields = {}): void {

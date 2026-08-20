@@ -258,3 +258,250 @@ def test_slice_5_and_6_governed_action_execution_and_writeback(client, sample_se
     )
     assert res_dup.status_code == 400
     assert "already been applied" in res_dup.get_json()["error"]
+
+
+# ============================================================================
+# LUNA / SOL MODEL SELECTION TESTS
+# ============================================================================
+
+def test_agent_get_models_endpoint(client):
+    """GET /api/agent/models returns exact allowlist with Luna as default."""
+    res = client.get("/api/agent/models")
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["default"] == "luna"
+    models = data["models"]
+    assert len(models) == 2
+    model_ids = {m["id"] for m in models}
+    assert model_ids == {"luna", "sol"}
+    luna_meta = next(m for m in models if m["id"] == "luna")
+    assert luna_meta["is_default"] is True
+    assert "Everyday" in luna_meta["description"]
+    sol_meta = next(m for m in models if m["id"] == "sol")
+    assert sol_meta["is_default"] is False
+    assert "Deep reasoning" in sol_meta["description"]
+
+
+def test_agent_chat_default_model_is_luna(client, sample_session):
+    """Missing model parameter defaults safely to Luna without error."""
+    session_id = sample_session["session_id"]
+    res = client.post(
+        "/api/agent/chat",
+        json={
+            "session_id": session_id,
+            "message": "Summarize the workspace documents.",
+        },
+    )
+    assert res.status_code == 200
+    data = res.get_json()
+    assert data["model"] == "luna"
+    assert data["status"] == "success"
+
+
+def test_agent_chat_explicit_luna(client, sample_session):
+    """Explicit model='luna' is resolved and returned in response."""
+    session_id = sample_session["session_id"]
+    with patch("applications.agent.orchestrator.chat_completion") as mock_cc:
+        mock_cc.return_value = WorkbenchResponse(
+            content="Luna summary response",
+            model="gpt-5-6-luna-2026-07-09-gs-ae",
+        )
+        res = client.post(
+            "/api/agent/chat",
+            json={
+                "session_id": session_id,
+                "message": "Summarize this quickly.",
+                "model": "luna",
+            },
+        )
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["model"] == "luna"
+        assert data["response"] == "Luna summary response"
+        mock_cc.assert_called_once()
+        assert mock_cc.call_args.kwargs.get("model") == "gpt-5-6-luna-2026-07-09-gs-ae"
+
+
+def test_agent_chat_explicit_sol(client, sample_session):
+    """Explicit model='sol' is mapped to gpt-5-6-sol-2026-07-09-gs-ae and returned."""
+    session_id = sample_session["session_id"]
+    with patch("applications.agent.orchestrator.chat_completion") as mock_cc:
+        mock_cc.return_value = WorkbenchResponse(
+            content="Sol deep reasoning response",
+            model="gpt-5-6-sol-2026-07-09-gs-ae",
+        )
+        res = client.post(
+            "/api/agent/chat",
+            json={
+                "session_id": session_id,
+                "message": "Analyze complex structures in depth.",
+                "model": "sol",
+            },
+        )
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["model"] == "sol"
+        assert data["response"] == "Sol deep reasoning response"
+        mock_cc.assert_called_once()
+        assert mock_cc.call_args.kwargs.get("model") == "gpt-5-6-sol-2026-07-09-gs-ae"
+
+
+def test_agent_chat_unknown_model_rejected(client, sample_session):
+    """Unknown, third-party, or invalid model strings are rejected with 400 Bad Request."""
+    session_id = sample_session["session_id"]
+    for bad_model in ["gpt-4o", "gpt-5-4-mini", "terra", "o3", "unknown_model"]:
+        res = client.post(
+            "/api/agent/chat",
+            json={
+                "session_id": session_id,
+                "message": "Hello",
+                "model": bad_model,
+            },
+        )
+        assert res.status_code == 400
+        assert "Unsupported model" in res.get_json()["error"]
+
+
+def test_agent_chat_empty_model_rejected(client, sample_session):
+    """Empty or whitespace model strings are rejected with 400."""
+    session_id = sample_session["session_id"]
+    res = client.post(
+        "/api/agent/chat",
+        json={
+            "session_id": session_id,
+            "message": "Hello",
+            "model": "   ",
+        },
+    )
+    assert res.status_code == 400
+    assert "Invalid model" in res.get_json()["error"]
+
+
+def test_agent_model_context_invariance(client, sample_session):
+    """Context invariance: Selecting the same element with Luna vs Sol yields identical context semantics."""
+    session_id = sample_session["session_id"]
+    docx_doc_id = sample_session["docx_doc_id"]
+
+    res_els = client.get(f"/api/documents/{session_id}/elements/{docx_doc_id}")
+    elements = res_els.get_json()["elements"]
+    target_el = elements[0]
+
+    # Ask with Luna
+    res_luna = client.post(
+        "/api/agent/chat",
+        json={
+            "session_id": session_id,
+            "message": "Explain this selected element.",
+            "model": "luna",
+            "context": {
+                "active_doc_id": docx_doc_id,
+                "selected_element_id": target_el["element_id"],
+            },
+        },
+    )
+    assert res_luna.status_code == 200
+    data_luna = res_luna.get_json()
+    assert data_luna["model"] == "luna"
+    assert data_luna["intent"] == "summarize_element"
+    assert len(data_luna["citations"]) == 1
+    assert data_luna["citations"][0]["element_id"] == target_el["element_id"]
+
+    # Switch to Sol with identical context
+    res_sol = client.post(
+        "/api/agent/chat",
+        json={
+            "session_id": session_id,
+            "message": "Explain this selected element in detail.",
+            "model": "sol",
+            "context": {
+                "active_doc_id": docx_doc_id,
+                "selected_element_id": target_el["element_id"],
+            },
+        },
+    )
+    assert res_sol.status_code == 200
+    data_sol = res_sol.get_json()
+    assert data_sol["model"] == "sol"
+    assert data_sol["intent"] == "summarize_element"
+    assert len(data_sol["citations"]) == 1
+    assert data_sol["citations"][0]["element_id"] == target_el["element_id"]
+    assert data_sol["citations"][0]["doc_id"] == data_luna["citations"][0]["doc_id"]
+
+
+def test_agent_model_write_governance_invariance(client, sample_session):
+    """Write governance invariance: Luna and Sol undergo identical capability gating and action_id lifecycle."""
+    session_id = sample_session["session_id"]
+    xlsx_doc_id = sample_session["xlsx_doc_id"]
+
+    res_els = client.get(f"/api/documents/{session_id}/elements/{xlsx_doc_id}")
+    elements = res_els.get_json()["elements"]
+    editable_cell = next(e for e in elements if e["capabilities"]["editable"] and e["text"])
+
+    # 1. Propose with Luna
+    res_luna = client.post(
+        "/api/agent/chat",
+        json={
+            "session_id": session_id,
+            "message": "Update cell to 'LUNA_PROPOSAL_VAL'",
+            "model": "luna",
+            "context": {
+                "active_doc_id": xlsx_doc_id,
+                "selected_element_id": editable_cell["element_id"],
+            },
+        },
+    )
+    assert res_luna.status_code == 200
+    luna_actions = res_luna.get_json()["proposed_actions"]
+    assert len(luna_actions) == 1
+    assert luna_actions[0]["requires_confirmation"] is True
+    assert luna_actions[0]["proposed_value"] == "LUNA_PROPOSAL_VAL"
+
+    # 2. Propose with Sol
+    res_sol = client.post(
+        "/api/agent/chat",
+        json={
+            "session_id": session_id,
+            "message": "Update cell to 'SOL_PROPOSAL_VAL'",
+            "model": "sol",
+            "context": {
+                "active_doc_id": xlsx_doc_id,
+                "selected_element_id": editable_cell["element_id"],
+            },
+        },
+    )
+    assert res_sol.status_code == 200
+    sol_actions = res_sol.get_json()["proposed_actions"]
+    assert len(sol_actions) == 1
+    assert sol_actions[0]["requires_confirmation"] is True
+    assert sol_actions[0]["proposed_value"] == "SOL_PROPOSAL_VAL"
+
+    # 3. Sol proposal cannot bypass confirmation
+    sol_action_id = sol_actions[0]["action_id"]
+    res_exec = client.post(
+        "/api/agent/action/execute",
+        json={"session_id": session_id, "action_id": sol_action_id},
+    )
+    assert res_exec.status_code == 200
+    assert res_exec.get_json()["new_value"] == "SOL_PROPOSAL_VAL"
+
+
+def test_agent_model_provider_error_no_silent_fallback(client, sample_session):
+    """Provider unavailable raises explicit error without silent fallback to the other model."""
+    session_id = sample_session["session_id"]
+    from applications.workbench_client import WorkbenchApiError
+
+    with patch("applications.agent.orchestrator.chat_completion") as mock_cc:
+        mock_cc.side_effect = WorkbenchApiError("Deployment 'gpt-5-6-sol-2026-07-09-gs-ae' is temporarily overloaded.")
+        
+        # When orchestrator catches it for general query, fallback text is returned without changing model
+        res = client.post(
+            "/api/agent/chat",
+            json={
+                "session_id": session_id,
+                "message": "Give me deep analysis",
+                "model": "sol",
+            },
+        )
+        assert res.status_code == 200
+        data = res.get_json()
+        assert data["model"] == "sol"  # Must NOT silently switch to luna

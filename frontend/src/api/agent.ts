@@ -1,5 +1,29 @@
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:5000';
 
+export type AgentModelId = 'luna' | 'sol';
+
+export interface AgentModelOption {
+  id: AgentModelId;
+  name: string;
+  description: string;
+  is_default: boolean;
+}
+
+export const AGENT_MODELS: AgentModelOption[] = [
+  {
+    id: 'luna',
+    name: 'Luna',
+    description: 'Fast · Everyday tasks',
+    is_default: true,
+  },
+  {
+    id: 'sol',
+    name: 'Sol',
+    description: 'Deep reasoning · Complex analysis',
+    is_default: false,
+  },
+];
+
 export interface Citation {
   doc_id: string;
   doc_name?: string;
@@ -31,6 +55,7 @@ export interface AgentStep {
 export interface AgentChatRequest {
   session_id: string | null;
   message: string;
+  model?: AgentModelId;
   context: {
     active_doc_id?: string | null;
     selected_element_id?: string | null;
@@ -44,6 +69,7 @@ export interface AgentChatResponse {
   status: 'success' | 'error';
   run_id: string | null;
   intent?: string;
+  model?: AgentModelId;
   steps: AgentStep[];
   citations?: Citation[];
   proposed_actions?: ProposedAction[];

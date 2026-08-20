@@ -3,10 +3,12 @@ import {
   sendAgentChat,
   executeAgentAction,
   rejectAgentAction,
+  type AgentModelId,
   type AgentStep,
   type Citation,
   type ProposedAction,
 } from '../api/agent';
+import { sendPilotEvent } from '../api/pilot';
 import { useWorkspaceStore } from './workspaceStore';
 import { useSyncStore } from './syncStore';
 
@@ -17,6 +19,7 @@ export interface AgentMessage {
   role: 'user' | 'assistant';
   content: string;
   timestamp: string;
+  model?: AgentModelId;
   steps?: AgentStep[];
   citations?: Citation[];
   proposedActions?: ProposedAction[];
@@ -27,6 +30,8 @@ interface AgentState {
   messages: AgentMessage[];
   status: AgentStatus;
   error: string | null;
+  selectedModel: AgentModelId;
+  setSelectedModel: (model: AgentModelId) => void;
   sendMessage: (content: string) => Promise<void>;
   confirmAction: (messageId: string, actionId: string) => Promise<void>;
   rejectAction: (messageId: string, actionId: string) => Promise<void>;
@@ -40,19 +45,33 @@ function nextId(): string {
   return `msg-${Date.now()}-${Math.random().toString(36).slice(2, 9)}`;
 }
 
-export const useAgentStore = create<AgentState>((set) => ({
+export const useAgentStore = create<AgentState>((set, get) => ({
   messages: [],
   status: 'idle',
   error: null,
+  selectedModel: 'luna',
+
+  setSelectedModel: (model: AgentModelId) => {
+    const prev = get().selectedModel;
+    if (prev === model) return;
+    set({ selectedModel: model });
+    sendPilotEvent('agent.model.changed', {
+      previous_model: prev,
+      new_model: model,
+    });
+  },
 
   sendMessage: async (content: string) => {
     if (!content.trim()) return;
+
+    const currentModel = get().selectedModel;
 
     const userMsg: AgentMessage = {
       id: nextId(),
       role: 'user',
       content: content.trim(),
       timestamp: new Date().toISOString(),
+      model: currentModel,
     };
 
     set((state) => ({
@@ -73,6 +92,7 @@ export const useAgentStore = create<AgentState>((set) => ({
       const response = await sendAgentChat({
         session_id: ws.sessionId,
         message: content.trim(),
+        model: currentModel,
         context: {
           active_doc_id: activeDoc?.docId ?? null,
           selected_element_id: sync.selectedElementId,
@@ -86,6 +106,7 @@ export const useAgentStore = create<AgentState>((set) => ({
         role: 'assistant',
         content: response.response,
         timestamp: new Date().toISOString(),
+        model: response.model ?? currentModel,
         steps: response.steps,
         citations: response.citations,
         proposedActions: response.proposed_actions,
@@ -104,6 +125,7 @@ export const useAgentStore = create<AgentState>((set) => ({
         role: 'assistant',
         content: `Error: ${errorMsg}`,
         timestamp: new Date().toISOString(),
+        model: currentModel,
       };
 
       set((state) => ({
@@ -190,6 +212,6 @@ export const useAgentStore = create<AgentState>((set) => ({
     }));
   },
 
-  clearMessages: () => set({ messages: [], status: 'idle', error: null }),
+  clearMessages: () => set({ messages: [], status: 'idle', error: null, selectedModel: 'luna' }),
 }));
 

@@ -68,6 +68,9 @@ ALLOWED_FIELDS = frozenset({
     "error_category",
     "confidence",
     "origin",
+    "model",
+    "previous_model",
+    "new_model",
 })
 
 # Known event_type vocabulary from the pilot instrumentation spec. Unknown
@@ -95,6 +98,7 @@ KNOWN_EVENT_TYPES = frozenset({
     "agent.undo.completed",
     "agent.citation.clicked",
     "agent.reveal.completed",
+    "agent.model.changed",
     "pilot.feedback.submitted",
 })
 

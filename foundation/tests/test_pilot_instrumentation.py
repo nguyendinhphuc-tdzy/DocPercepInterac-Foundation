@@ -282,3 +282,51 @@ def test_pilot_event_emission_never_raises(isolated_pilot_log, monkeypatch):
     monkeypatch.setattr(PilotEventLogger, "_log_path", staticmethod(_boom))
     result = PilotEventLogger.emit("agent.request.started", session_id="s1")
     assert result is None  # dropped, not raised
+
+
+def test_pilot_model_changed_event_ingestion(client, isolated_pilot_log):
+    """agent.model.changed event records previous_model and new_model via POST /api/pilot/event."""
+    res = client.post(
+        "/api/pilot/event",
+        json={
+            "event_type": "agent.model.changed",
+            "previous_model": "luna",
+            "new_model": "sol",
+            "session_id": "sess-1",
+        },
+    )
+    assert res.status_code == 200
+    events = PilotEventLogger.read_all(isolated_pilot_log)
+    assert len(events) == 1
+    ev = events[0]
+    assert ev["event_type"] == "agent.model.changed"
+    assert ev["previous_model"] == "luna"
+    assert ev["new_model"] == "sol"
+    assert ev["origin"] == "frontend"
+
+
+def test_pilot_telemetry_model_tracking_and_privacy(client, isolated_pilot_log, sample_session):
+    """Telemetry records product model keys ('luna'/'sol') without leaking raw deployment IDs, document text, or prompt."""
+    session_id = sample_session["session_id"]
+    res = client.post(
+        "/api/agent/chat",
+        json={
+            "session_id": session_id,
+            "message": "SECRET_FINANCIAL_PROMPT_CONTENT",
+            "model": "sol",
+        },
+    )
+    assert res.status_code == 200
+
+    events = PilotEventLogger.read_all(isolated_pilot_log)
+    assert len(events) >= 1
+
+    # Check all events
+    for ev in events:
+        # Check allowed fields enforcement
+        assert "message" not in ev
+        assert "prompt" not in ev
+        assert "SECRET_FINANCIAL_PROMPT_CONTENT" not in json.dumps(ev)
+        assert "gpt-5-6-sol-2026-07-09-gs-ae" not in json.dumps(ev)  # raw deployment name must not be in telemetry
+        if "model" in ev:
+            assert ev["model"] in ("luna", "sol")

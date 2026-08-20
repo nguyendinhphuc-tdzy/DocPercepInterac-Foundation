@@ -81,6 +81,32 @@ export const AgentMessage: React.FC<AgentMessageProps> = ({ message }) => {
 
       {/* Content */}
       <div style={{ flex: 1, minWidth: 0 }}>
+        {!isUser && message.model && (
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            gap: '4px',
+            marginBottom: '4px',
+          }}>
+            <span
+              data-testid="agent-message-model-tag"
+              style={{
+                fontSize: '10px',
+                fontWeight: 600,
+                color: message.model === 'sol' ? 'var(--accent)' : 'var(--text-secondary)',
+                background: message.model === 'sol' ? 'var(--bg-active)' : 'var(--bg-hover)',
+                border: `1px solid ${message.model === 'sol' ? 'var(--accent-border)' : 'var(--border)'}`,
+                padding: '1px 5px',
+                borderRadius: 'var(--radius-sm)',
+                lineHeight: 1.2,
+                letterSpacing: '0.02em',
+              }}
+            >
+              {message.model === 'sol' ? 'Sol' : 'Luna'}
+            </span>
+          </div>
+        )}
+
         <div className={`agent-bubble ${message.role}`} style={{ whiteSpace: 'pre-wrap' }}>
           {message.content}
         </div>
