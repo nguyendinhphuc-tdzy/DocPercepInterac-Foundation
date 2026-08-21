@@ -288,6 +288,39 @@ def test_safety_finish_reason_with_no_text_raises_content_blocked(gemini_enabled
             GeminiProvider().chat(messages=MESSAGES, model="gemini-3.6-flash")
 
 
+def test_malformed_function_call_finish_reason_raises_response_error_not_blocked(gemini_enabled):
+    """Regression test for a live-reproduced failure (Gemini_Provider_and_Mapping_
+    Grounding_Audit.md, 2026-08-21): gemini-3.6-flash and gemini-3.5-flash both
+    intermittently return HTTP 200 with `finishReason: MALFORMED_FUNCTION_CALL`
+    and an empty `content.parts` list — with NO tools ever declared in the
+    request. This is a real, stochastic model-side failure mode (reproduced live:
+    same exact request, repeated, alternated between this and a normal STOP
+    response), not a parser bug and not something caused by prompt language or
+    content.
+
+    MALFORMED_FUNCTION_CALL is not a safety finish reason, so it must raise
+    ProviderResponseError (-> error_type='malformed_response', HTTP 502), NOT
+    ProviderContentBlockedError and NOT a silently-empty success. The finish
+    reason must appear in the raised message so it is diagnosable without
+    logging prompt or response content."""
+    from tests.gemini_mocks import FakeResponse
+
+    payload = {
+        "candidates": [
+            {"content": {"parts": [], "role": "model"}, "finishReason": "MALFORMED_FUNCTION_CALL", "index": 0}
+        ],
+        "usageMetadata": {"promptTokenCount": 84, "thoughtsTokenCount": 219, "totalTokenCount": 581},
+    }
+    with patch("applications.agent.providers.gemini_provider.requests.post") as mock_post:
+        mock_post.return_value = FakeResponse(200, payload)
+        with pytest.raises(ProviderResponseError) as exc:
+            GeminiProvider().chat(messages=MESSAGES, model="gemini-3.6-flash")
+
+    assert "MALFORMED_FUNCTION_CALL" in str(exc.value)
+    # Must not be misclassified as a safety block — retry semantics differ.
+    assert not isinstance(exc.value, ProviderContentBlockedError)
+
+
 # ============================================================================
 # CREDENTIAL HYGIENE
 # ============================================================================
