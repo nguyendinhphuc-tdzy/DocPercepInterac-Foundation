@@ -1,5 +1,5 @@
 {
-  "profile_id": "rfp-3639eb8a1c77",
+  "profile_id": "rfp-775f757e5dd2",
   "template_document_id": "doc-tmpl-decree20",
   "template_filename": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
   "historical_filename": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
@@ -7,7 +7,7 @@
     "HMV-FA&RPT FY2024.xlsx",
     "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx"
   ],
-  "generated_at": "2026-08-21T06:47:30.884092+00:00",
+  "generated_at": "2026-08-21T07:14:19.208759+00:00",
   "statistics": {
     "total_regions": 104,
     "static_count": 18,
@@ -1148,8 +1148,8 @@
     "schema_version": "1.0.0",
     "manifest_version": 1,
     "parent_version": null,
-    "manifest_id": "rfm-06decef0383e",
-    "session_id": "session-profile-a9109bf7",
+    "manifest_id": "rfm-de9a27021369",
+    "session_id": "session-profile-168c9816",
     "historical_document_id": "doc-hist-fy2023",
     "template_document_id": "doc-tmpl-decree20",
     "current_source_document_ids": [
@@ -5285,8 +5285,8 @@
     "approved_by": null,
     "approved_at": null,
     "approved_manifest_version": null,
-    "created_at": "2026-08-21T06:47:30.676573+00:00",
-    "updated_at": "2026-08-21T06:47:30.676573+00:00"
+    "created_at": "2026-08-21T07:14:18.979491+00:00",
+    "updated_at": "2026-08-21T07:14:18.979491+00:00"
   },
   "ground_truth_evaluation": {
     "total_evaluated_regions": 104,
