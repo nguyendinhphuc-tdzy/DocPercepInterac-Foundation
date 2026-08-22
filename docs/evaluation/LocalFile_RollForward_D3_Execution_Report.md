@@ -1,15 +1,15 @@
 # Local File Roll-Forward Full Document Execution Report (Phase D3)
 
-**Execution ID**: `exec-7243cb111dd0`  
-**Manifest**: `rfm-d7a1ccab1e32` version `1`  
-**Approver**: `tax-partner@kpmg.com` at `2026-08-22T17:36:59.883525+00:00`  
-**Mutation Plan**: `plan-88ebe4b9` (digest `4873e39b3d0288cc...`)  
+**Execution ID**: `exec-a48f015a1ad9`  
+**Manifest**: `rfm-4ff607f823a4` version `1`  
+**Approver**: `tax-partner@kpmg.com` at `2026-08-22T18:34:35.384147+00:00`  
+**Mutation Plan**: `plan-12bb2da0` (digest `9fa36eab2fbe7923...`)  
 **Template**: `Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx` (SHA256 `5fdf55e4e6007a16...`)  
-**Started / Ended**: `2026-08-22T17:37:00.606921+00:00` / `2026-08-22T17:37:06.070543+00:00`  
+**Started / Ended**: `2026-08-22T18:34:36.031135+00:00` / `2026-08-22T18:34:40.753073+00:00`  
 **Final Status**: **`COMPLETED`**  
 **Publication State**: **`FINAL_VALIDATED`**  
 **Output**: `docs/evaluation/output/Generated_LocalFile_FY2024_PhaseD3.docx`  
-**Output SHA256**: `34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd`  
+**Output SHA256**: `aa182aee81614f9452ddf4828c09c7557975dc70f83a6f3639037dd15c75ec15`  
 
 ---
 
@@ -108,7 +108,7 @@ Total excluded: **101** of 104 manifest regions.
 | Execution manifest status | `COMPLETED` |
 | State transitions | `APPROVED->EXECUTING → EXECUTING->VALIDATED → VALIDATED->COMPLETED` |
 | Publication state | **`FINAL_VALIDATED`** |
-| Output SHA256 | `34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd` |
+| Output SHA256 | `aa182aee81614f9452ddf4828c09c7557975dc70f83a6f3639037dd15c75ec15` |
 
 ## 7. Lineage
 

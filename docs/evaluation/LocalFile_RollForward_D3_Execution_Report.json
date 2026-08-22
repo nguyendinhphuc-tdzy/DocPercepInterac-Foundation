@@ -1,20 +1,20 @@
 {
-  "execution_id": "exec-7243cb111dd0",
-  "manifest_id": "rfm-d7a1ccab1e32",
+  "execution_id": "exec-a48f015a1ad9",
+  "manifest_id": "rfm-4ff607f823a4",
   "manifest_version": 1,
   "approved_manifest_version": 1,
   "approver": "tax-partner@kpmg.com",
-  "approved_at": "2026-08-22T17:36:59.883525+00:00",
-  "mutation_plan_id": "plan-88ebe4b9",
-  "mutation_plan_digest": "4873e39b3d0288cc20cf3cefc32d1d1e98cf3a3605d29c9757770c40d979b47a",
+  "approved_at": "2026-08-22T18:34:35.384147+00:00",
+  "mutation_plan_id": "plan-12bb2da0",
+  "mutation_plan_digest": "9fa36eab2fbe792367d05a561a5585e9c96df608b3e1b680b91ce7c1068b4a01",
   "template_document": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
   "template_hash": "5fdf55e4e6007a164908af84bf8c001c767bf46f66c5be6e6cfd7afe1222f47c",
   "source_hashes": {
     "HMV-FA&RPT FY2024.xlsx": "9574dcc037af9ff708ae31e7c67586d6baa37a584e8fa602e1409c36fb6358f2",
     "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx": "80e0b0deb594aef403e58bd3db836cd9e6172167bb8ed8ef8153951dccbde3e3"
   },
-  "started_at": "2026-08-22T17:37:00.606921+00:00",
-  "ended_at": "2026-08-22T17:37:06.070543+00:00",
+  "started_at": "2026-08-22T18:34:36.031135+00:00",
+  "ended_at": "2026-08-22T18:34:40.753073+00:00",
   "executed_regions": [
     {
       "region_id": "rfr-071",
@@ -1381,31 +1381,31 @@
         }
       },
       {
-        "id": "manifest:rfm-d7a1ccab1e32:v1",
+        "id": "manifest:rfm-4ff607f823a4:v1",
         "type": "MANIFEST_VERSION",
         "metadata": {
-          "manifest_id": "rfm-d7a1ccab1e32",
+          "manifest_id": "rfm-4ff607f823a4",
           "manifest_version": 1,
           "approved_manifest_version": 1,
           "approver": "tax-partner@kpmg.com",
-          "approved_at": "2026-08-22T17:36:59.883525+00:00"
+          "approved_at": "2026-08-22T18:34:35.384147+00:00"
         }
       },
       {
-        "id": "mutation_plan:plan-88ebe4b9",
+        "id": "mutation_plan:plan-12bb2da0",
         "type": "MUTATION_PLAN",
         "metadata": {
-          "plan_id": "plan-88ebe4b9",
-          "plan_digest": "4873e39b3d0288cc20cf3cefc32d1d1e98cf3a3605d29c9757770c40d979b47a",
+          "plan_id": "plan-12bb2da0",
+          "plan_digest": "9fa36eab2fbe792367d05a561a5585e9c96df608b3e1b680b91ce7c1068b4a01",
           "table_mutations": 3
         }
       },
       {
-        "id": "execution:exec-7243cb111dd0",
+        "id": "execution:exec-a48f015a1ad9",
         "type": "EXECUTION",
         "metadata": {
-          "execution_id": "exec-7243cb111dd0",
-          "started_at": "2026-08-22T17:37:00.606921+00:00",
+          "execution_id": "exec-a48f015a1ad9",
+          "started_at": "2026-08-22T18:34:36.031135+00:00",
           "template_hash": "5fdf55e4e6007a164908af84bf8c001c767bf46f66c5be6e6cfd7afe1222f47c"
         }
       },
@@ -2595,16 +2595,16 @@
         }
       },
       {
-        "id": "generated_document:34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd",
+        "id": "generated_document:aa182aee81614f9452ddf4828c09c7557975dc70f83a6f3639037dd15c75ec15",
         "type": "GENERATED_DOCUMENT",
         "metadata": {
           "output_path": "C:\\Users\\PC\\Downloads\\DocPercepInterac Foundation\\docs\\evaluation\\output\\Generated_LocalFile_FY2024_PhaseD3.docx",
-          "output_hash": "34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd",
+          "output_hash": "aa182aee81614f9452ddf4828c09c7557975dc70f83a6f3639037dd15c75ec15",
           "publication_state": "FINAL_VALIDATED"
         }
       },
       {
-        "id": "validation_result:exec-7243cb111dd0",
+        "id": "validation_result:exec-a48f015a1ad9",
         "type": "VALIDATION_RESULT",
         "metadata": {
           "status": "COMPLETED",
@@ -2680,31 +2680,31 @@
       },
       {
         "from": "source_binding:approved",
-        "to": "manifest:rfm-d7a1ccab1e32:v1",
+        "to": "manifest:rfm-4ff607f823a4:v1",
         "relation": "DECLARED_IN"
       },
       {
-        "from": "manifest:rfm-d7a1ccab1e32:v1",
-        "to": "mutation_plan:plan-88ebe4b9",
+        "from": "manifest:rfm-4ff607f823a4:v1",
+        "to": "mutation_plan:plan-12bb2da0",
         "relation": "AUTHORIZES"
       },
       {
-        "from": "mutation_plan:plan-88ebe4b9",
-        "to": "execution:exec-7243cb111dd0",
+        "from": "mutation_plan:plan-12bb2da0",
+        "to": "execution:exec-a48f015a1ad9",
         "relation": "EXECUTED_AS"
       },
       {
-        "from": "execution:exec-7243cb111dd0",
+        "from": "execution:exec-a48f015a1ad9",
         "to": "target_region:rfr-071:table10",
         "relation": "MUTATED"
       },
       {
-        "from": "execution:exec-7243cb111dd0",
+        "from": "execution:exec-a48f015a1ad9",
         "to": "target_region:rfr-098:table14",
         "relation": "MUTATED"
       },
       {
-        "from": "execution:exec-7243cb111dd0",
+        "from": "execution:exec-a48f015a1ad9",
         "to": "target_region:rfr-101:table15",
         "relation": "MUTATED"
       },
@@ -3069,13 +3069,13 @@
         "relation": "CONTAINS_CELL"
       },
       {
-        "from": "execution:exec-7243cb111dd0",
-        "to": "generated_document:34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd",
+        "from": "execution:exec-a48f015a1ad9",
+        "to": "generated_document:aa182aee81614f9452ddf4828c09c7557975dc70f83a6f3639037dd15c75ec15",
         "relation": "PRODUCED"
       },
       {
-        "from": "generated_document:34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd",
-        "to": "validation_result:exec-7243cb111dd0",
+        "from": "generated_document:aa182aee81614f9452ddf4828c09c7557975dc70f83a6f3639037dd15c75ec15",
+        "to": "validation_result:exec-a48f015a1ad9",
         "relation": "VALIDATED_BY"
       }
     ]
@@ -3085,7 +3085,7 @@
   "template_preserved": true,
   "idempotent_noop": false,
   "output_path": "C:\\Users\\PC\\Downloads\\DocPercepInterac Foundation\\docs\\evaluation\\output\\Generated_LocalFile_FY2024_PhaseD3.docx",
-  "output_hash": "34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd",
+  "output_hash": "aa182aee81614f9452ddf4828c09c7557975dc70f83a6f3639037dd15c75ec15",
   "status": "COMPLETED",
   "publication_state": "FINAL_VALIDATED",
   "failure_code": null,

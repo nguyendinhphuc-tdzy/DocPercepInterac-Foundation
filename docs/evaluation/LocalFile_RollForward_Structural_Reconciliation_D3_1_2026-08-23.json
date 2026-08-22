@@ -1,0 +1,1515 @@
+{
+  "audit_id": "AUDIT-LF-ROLLFORWARD-STRUCTURAL-D3.1-20260823",
+  "phase": "D3.1 — Roll-Forward Structural Reconciliation Audit",
+  "mode": "AUDIT_ONLY",
+  "generated_at": "2026-08-23",
+  "constraints_honoured": [
+    "No production code modified.",
+    "DELETE_ROWS not implemented.",
+    "No mutation capability expanded.",
+    "No historical report altered.",
+    "No prior number rewritten to force agreement.",
+    "Ground Truth used for evaluation and diagnosis only; no planning artifact changed."
+  ],
+  "artifacts": {
+    "historical_fy2023": {
+      "path": "anonymize client/Demo files/Demo files/Compare LF/HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+      "sha256": "8b51f941e1068c97385fecbd49808e1dc356601e4e3eb8f9c2d0d7c39fb290c5",
+      "table_count": 22
+    },
+    "master_template": {
+      "path": "anonymize client/Demo files/Demo files/Compare LF/Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+      "sha256": "5fdf55e4e6007a164908af84bf8c001c767bf46f66c5be6e6cfd7afe1222f47c",
+      "table_count": 16
+    },
+    "ground_truth_fy2024": {
+      "path": "anonymize client/Demo files/Demo files/Compare LF/HMV-26-Final-Local File for FY2024-EN-R2901KPMG.docx",
+      "sha256": "9ce8121d7a88be3205c41d78159452d72ffa5b00cbdcf364e996a723613b8b66",
+      "table_count": 19
+    },
+    "current_source_farpt": {
+      "path": "anonymize client/Demo files/Demo files/FA&RPTS & Appendix I/FA&RPTs/HMV-FA&RPT FY2024.xlsx",
+      "sha256": "9574dcc037af9ff708ae31e7c67586d6baa37a584e8fa602e1409c36fb6358f2",
+      "sheets": [
+        "I. Related parties",
+        "FS",
+        "RPTs",
+        "Financial Analysis",
+        "III. Summary-RPTs"
+      ]
+    },
+    "current_source_appendix_i": {
+      "path": "anonymize client/Demo files/Demo files/FA&RPTS & Appendix I/Appendix I/HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "sha256": "80e0b0deb594aef403e58bd3db836cd9e6172167bb8ed8ef8153951dccbde3e3",
+      "sheets": [
+        "Checklist",
+        "Full Appendix I",
+        "I. Related parties",
+        "Country list",
+        "III. Summary-RPTs",
+        "IV. Segmented data",
+        "FS",
+        "Interest expenses",
+        "Types of relationship",
+        "Transfer pricing method",
+        "Note FS",
+        "P&L",
+        "CF",
+        "Exchange rate calculation",
+        "TỶ giá ngày TCB",
+        "Lãi vay vốn hóa - PBC",
+        "IV. Segmented data_banking",
+        "IV. Segmented data_securities"
+      ]
+    },
+    "phase_b_profile": {
+      "path": "docs/evaluation/LocalFile_RollForward_Template_Profile_2026-08-21.json"
+    },
+    "phase_c_manifest": {
+      "path": "docs/evaluation/LocalFile_RollForward_Manifest_V1.json"
+    },
+    "d1_report": {
+      "path": "docs/evaluation/LocalFile_RollForward_Structural_Writeback_D1_2026-08-21.md"
+    },
+    "d2_report": {
+      "path": "docs/evaluation/LocalFile_RollForward_Data_Reconciliation_D2_2026-08-21.md"
+    },
+    "d3_report": {
+      "path": "docs/evaluation/LocalFile_RollForward_D3_Execution_Report.json"
+    },
+    "d3_output": {
+      "path": "docs/evaluation/output/Generated_LocalFile_FY2024_PhaseD3.docx",
+      "sha256": "34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd",
+      "table_count": 16
+    }
+  },
+  "document_table_inventories": {
+    "HIST_FY2023": [
+      {
+        "table_index": 0,
+        "rows": 3,
+        "cols": 1,
+        "header": "Hestra Matsuoka Vietnam Co., Ltd"
+      },
+      {
+        "table_index": 1,
+        "rows": 3,
+        "cols": 1,
+        "header": "This report contains  pages"
+      },
+      {
+        "table_index": 2,
+        "rows": 25,
+        "cols": 4,
+        "header": "No. | Documents | Prepared and archived | Point of reference in the Local File"
+      },
+      {
+        "table_index": 3,
+        "rows": 2,
+        "cols": 4,
+        "header": "Transactions | Transfer pricing method | Profit Level Indicator | Tested party"
+      },
+      {
+        "table_index": 4,
+        "rows": 1,
+        "cols": 3,
+        "header": " |  | "
+      },
+      {
+        "table_index": 5,
+        "rows": 6,
+        "cols": 5,
+        "header": "HMV | HMV | REPORTS TO | REPORTS TO | REPORTS TO"
+      },
+      {
+        "table_index": 6,
+        "rows": 2,
+        "cols": 6,
+        "header": "Transaction | Related party | Country | Relationship | Amount / (VND) | % of Net sales"
+      },
+      {
+        "table_index": 7,
+        "rows": 5,
+        "cols": 4,
+        "header": "Transaction | Related party | Amount / (VND) | % over Total costs/ Net sales"
+      },
+      {
+        "table_index": 8,
+        "rows": 29,
+        "cols": 5,
+        "header": "Time of reporting | Credit institutions | Currency | Period | Annual interest rate range"
+      },
+      {
+        "table_index": 9,
+        "rows": 27,
+        "cols": 3,
+        "header": "Functions/Assets/Risks | HMV | MMAB"
+      },
+      {
+        "table_index": 10,
+        "rows": 2,
+        "cols": 3,
+        "header": "NCP | = | EBIT"
+      },
+      {
+        "table_index": 11,
+        "rows": 14,
+        "cols": 4,
+        "header": "No | Company | Country | Ticker"
+      },
+      {
+        "table_index": 12,
+        "rows": 7,
+        "cols": 2,
+        "header": "SIC Code | Description"
+      },
+      {
+        "table_index": 13,
+        "rows": 4,
+        "cols": 2,
+        "header": "NAICS Code | Description"
+      },
+      {
+        "table_index": 14,
+        "rows": 6,
+        "cols": 2,
+        "header": "Code | Description"
+      },
+      {
+        "table_index": 15,
+        "rows": 10,
+        "cols": 4,
+        "header": "Step | Search criteria | Search criteria | Passed"
+      },
+      {
+        "table_index": 16,
+        "rows": 15,
+        "cols": 3,
+        "header": "Screening criteria | Eliminated | Retained"
+      },
+      {
+        "table_index": 17,
+        "rows": 10,
+        "cols": 4,
+        "header": "Step | Search criteria | Search criteria | Passed"
+      },
+      {
+        "table_index": 18,
+        "rows": 17,
+        "cols": 3,
+        "header": "Screening criteria | Eliminated | Retained"
+      },
+      {
+        "table_index": 19,
+        "rows": 14,
+        "cols": 4,
+        "header": "No | Company | Country | Ticker"
+      },
+      {
+        "table_index": 20,
+        "rows": 31,
+        "cols": 4,
+        "header": "No. | Company name | Stock Code | Reason for rejection"
+      },
+      {
+        "table_index": 21,
+        "rows": 348,
+        "cols": 4,
+        "header": "No. | Company name | Country | Reason for rejection"
+      }
+    ],
+    "TEMPLATE": [
+      {
+        "table_index": 0,
+        "rows": 3,
+        "cols": 1,
+        "header": "ABC Vietnam Co., Ltd."
+      },
+      {
+        "table_index": 1,
+        "rows": 3,
+        "cols": 1,
+        "header": "This report contains  pages"
+      },
+      {
+        "table_index": 2,
+        "rows": 4,
+        "cols": 3,
+        "header": "Transactions | TP methods | Findings"
+      },
+      {
+        "table_index": 3,
+        "rows": 8,
+        "cols": 4,
+        "header": "Transaction | Related party | Type of relationship | Amount (VND)"
+      },
+      {
+        "table_index": 4,
+        "rows": 4,
+        "cols": 5,
+        "header": "Related party lender | Principal (USD) | Financing date | Maturity date | Actual interest rate"
+      },
+      {
+        "table_index": 5,
+        "rows": 28,
+        "cols": 3,
+        "header": "Functions/Assets/Risks | ABC | RELATED PARTY"
+      },
+      {
+        "table_index": 6,
+        "rows": 2,
+        "cols": 3,
+        "header": "NCP | = | EBIT"
+      },
+      {
+        "table_index": 7,
+        "rows": 2,
+        "cols": 3,
+        "header": "OM | = | EBIT"
+      },
+      {
+        "table_index": 8,
+        "rows": 2,
+        "cols": 3,
+        "header": "ROA | = | EBIT"
+      },
+      {
+        "table_index": 9,
+        "rows": 14,
+        "cols": 6,
+        "header": "No. | Company name | FY20ww | FY20yy | FY20xx | WA 20ww-20xx"
+      },
+      {
+        "table_index": 10,
+        "rows": 6,
+        "cols": 3,
+        "header": "Item | FY20xx | WA (FY20ww-20xx)"
+      },
+      {
+        "table_index": 11,
+        "rows": 9,
+        "cols": 3,
+        "header": "Unit: VND | Index | FY20xx"
+      },
+      {
+        "table_index": 12,
+        "rows": 25,
+        "cols": 3,
+        "header": "No. | Details | Point of reference in this Local File"
+      },
+      {
+        "table_index": 13,
+        "rows": 23,
+        "cols": 2,
+        "header": "Database used | Bureau van Dijk’s TP Catalyst (“TP Cat”) database"
+      },
+      {
+        "table_index": 14,
+        "rows": 8,
+        "cols": 6,
+        "header": "No | Company | Province | Tax code | VN SIC Code | Business description"
+      },
+      {
+        "table_index": 15,
+        "rows": 7,
+        "cols": 5,
+        "header": "No | Company | Country | Ticker symbol/ / Tax code | Business description"
+      }
+    ],
+    "GT_FY2024": [
+      {
+        "table_index": 0,
+        "rows": 3,
+        "cols": 1,
+        "header": "Hestra Vietnam Limited Liability Company"
+      },
+      {
+        "table_index": 1,
+        "rows": 3,
+        "cols": 1,
+        "header": "This report contains  pages"
+      },
+      {
+        "table_index": 2,
+        "rows": 25,
+        "cols": 4,
+        "header": "No. | Documents | Prepared and archived | Point of reference in the Local File"
+      },
+      {
+        "table_index": 3,
+        "rows": 2,
+        "cols": 4,
+        "header": "Transactions | Transfer pricing method | Profit Level Indicator | Tested party"
+      },
+      {
+        "table_index": 4,
+        "rows": 1,
+        "cols": 3,
+        "header": " |  | "
+      },
+      {
+        "table_index": 5,
+        "rows": 6,
+        "cols": 5,
+        "header": "HMV | HMV | REPORTS TO | REPORTS TO | REPORTS TO"
+      },
+      {
+        "table_index": 6,
+        "rows": 2,
+        "cols": 6,
+        "header": "Transaction | Related party | Country | Relationship | Amount / (VND) | % of Net sales"
+      },
+      {
+        "table_index": 7,
+        "rows": 5,
+        "cols": 4,
+        "header": "Transaction | Related party | Amount / (VND) | % over Total costs/ Net sales"
+      },
+      {
+        "table_index": 8,
+        "rows": 27,
+        "cols": 3,
+        "header": "Functions/Assets/Risks | HMV | MMAB"
+      },
+      {
+        "table_index": 9,
+        "rows": 2,
+        "cols": 3,
+        "header": "NCP | = | EBIT"
+      },
+      {
+        "table_index": 10,
+        "rows": 11,
+        "cols": 4,
+        "header": "No | Company | Country | Ticker"
+      },
+      {
+        "table_index": 11,
+        "rows": 7,
+        "cols": 2,
+        "header": "SIC Code | Description"
+      },
+      {
+        "table_index": 12,
+        "rows": 4,
+        "cols": 2,
+        "header": "NAICS Code | Description"
+      },
+      {
+        "table_index": 13,
+        "rows": 6,
+        "cols": 2,
+        "header": "Code | Description"
+      },
+      {
+        "table_index": 14,
+        "rows": 10,
+        "cols": 4,
+        "header": "Step | Search criteria | Search criteria | Passed"
+      },
+      {
+        "table_index": 15,
+        "rows": 16,
+        "cols": 3,
+        "header": "Screening criteria | Eliminated | Retained"
+      },
+      {
+        "table_index": 16,
+        "rows": 11,
+        "cols": 4,
+        "header": "No | Company | Country | Ticker"
+      },
+      {
+        "table_index": 17,
+        "rows": 431,
+        "cols": 4,
+        "header": "No. | Company name | Stock code | Reason for rejection"
+      },
+      {
+        "table_index": 18,
+        "rows": 25,
+        "cols": 5,
+        "header": "Time of reporting | Credit institutions | Currency | Period | Annual interest rate range"
+      }
+    ],
+    "D3_OUTPUT": [
+      {
+        "table_index": 0,
+        "rows": 3,
+        "cols": 1,
+        "header": "ABC Vietnam Co., Ltd."
+      },
+      {
+        "table_index": 1,
+        "rows": 3,
+        "cols": 1,
+        "header": "This report contains  pages"
+      },
+      {
+        "table_index": 2,
+        "rows": 4,
+        "cols": 3,
+        "header": "Transactions | TP methods | Findings"
+      },
+      {
+        "table_index": 3,
+        "rows": 8,
+        "cols": 4,
+        "header": "Transaction | Related party | Type of relationship | Amount (VND)"
+      },
+      {
+        "table_index": 4,
+        "rows": 4,
+        "cols": 5,
+        "header": "Related party lender | Principal (USD) | Financing date | Maturity date | Actual interest rate"
+      },
+      {
+        "table_index": 5,
+        "rows": 28,
+        "cols": 3,
+        "header": "Functions/Assets/Risks | ABC | RELATED PARTY"
+      },
+      {
+        "table_index": 6,
+        "rows": 2,
+        "cols": 3,
+        "header": "NCP | = | EBIT"
+      },
+      {
+        "table_index": 7,
+        "rows": 2,
+        "cols": 3,
+        "header": "OM | = | EBIT"
+      },
+      {
+        "table_index": 8,
+        "rows": 2,
+        "cols": 3,
+        "header": "ROA | = | EBIT"
+      },
+      {
+        "table_index": 9,
+        "rows": 14,
+        "cols": 6,
+        "header": "No. | Company name | FY20ww | FY20yy | FY20xx | WA 20ww-20xx"
+      },
+      {
+        "table_index": 10,
+        "rows": 11,
+        "cols": 3,
+        "header": "Item | FY20xx | WA (FY20ww-20xx)"
+      },
+      {
+        "table_index": 11,
+        "rows": 9,
+        "cols": 3,
+        "header": "Unit: VND | Index | FY20xx"
+      },
+      {
+        "table_index": 12,
+        "rows": 25,
+        "cols": 3,
+        "header": "No. | Details | Point of reference in this Local File"
+      },
+      {
+        "table_index": 13,
+        "rows": 23,
+        "cols": 2,
+        "header": "Database used | Bureau van Dijk’s TP Catalyst (“TP Cat”) database"
+      },
+      {
+        "table_index": 14,
+        "rows": 10,
+        "cols": 6,
+        "header": "No | Company | Province | Tax code | VN SIC Code | Business description"
+      },
+      {
+        "table_index": 15,
+        "rows": 16,
+        "cols": 5,
+        "header": "No | Company | Country | Ticker symbol/ / Tax code | Business description"
+      }
+    ]
+  },
+  "root_cause": {
+    "finding": "POSITIONAL_TABLE_INDEX_CORRELATION_ACROSS_STRUCTURALLY_DIFFERENT_DOCUMENTS",
+    "statement": "Phase C's structural deltas were produced by reading the table at the SAME POSITIONAL INDEX in three documents that have different table inventories (FY2023 = 22 tables, Template = 16, FY2024 Ground Truth = 19). The tables at a given index are semantically unrelated across these documents, so every 'growth' figure is an artifact of index misalignment, not an observed roll-forward delta.",
+    "proof": [
+      {
+        "table_index": 10,
+        "phase_c_claimed_historical_rows": 2,
+        "measured_HIST_tables_at_same_index": 2,
+        "historical_matches_positional": true,
+        "phase_c_claimed_target_rows": 11,
+        "measured_GT_tables_at_same_index": 11,
+        "target_matches_positional": true,
+        "phase_c_template_rows": 6,
+        "measured_TEMPLATE_tables_at_same_index": 6,
+        "template_matches": true,
+        "phase_c_insert_count": 9,
+        "insert_equals_GT_minus_HIST": true,
+        "insert_equals_GT_minus_TEMPLATE": false,
+        "HIST_table_at_index_identity": "NCP | = | EBIT",
+        "TEMPLATE_table_at_index_identity": "Item | FY20xx | WA (FY20ww-20xx)",
+        "GT_table_at_index_identity": "No | Company | Country | Ticker"
+      },
+      {
+        "table_index": 13,
+        "phase_c_claimed_historical_rows": 4,
+        "measured_HIST_tables_at_same_index": 4,
+        "historical_matches_positional": true,
+        "phase_c_claimed_target_rows": 6,
+        "measured_GT_tables_at_same_index": 6,
+        "target_matches_positional": true,
+        "phase_c_template_rows": 23,
+        "measured_TEMPLATE_tables_at_same_index": 23,
+        "template_matches": true,
+        "phase_c_insert_count": 2,
+        "insert_equals_GT_minus_HIST": true,
+        "insert_equals_GT_minus_TEMPLATE": false,
+        "HIST_table_at_index_identity": "NAICS Code | Description",
+        "TEMPLATE_table_at_index_identity": "Database used | Bureau van Dijk’s TP Catalyst (“TP Cat”) database",
+        "GT_table_at_index_identity": "Code | Description"
+      },
+      {
+        "table_index": 14,
+        "phase_c_claimed_historical_rows": 6,
+        "measured_HIST_tables_at_same_index": 6,
+        "historical_matches_positional": true,
+        "phase_c_claimed_target_rows": 10,
+        "measured_GT_tables_at_same_index": 10,
+        "target_matches_positional": true,
+        "phase_c_template_rows": 8,
+        "measured_TEMPLATE_tables_at_same_index": 8,
+        "template_matches": true,
+        "phase_c_insert_count": 4,
+        "insert_equals_GT_minus_HIST": true,
+        "insert_equals_GT_minus_TEMPLATE": false,
+        "HIST_table_at_index_identity": "Code | Description",
+        "TEMPLATE_table_at_index_identity": "No | Company | Province | Tax code | VN SIC Code | Business description",
+        "GT_table_at_index_identity": "Step | Search criteria | Search criteria | Passed"
+      },
+      {
+        "table_index": 15,
+        "phase_c_claimed_historical_rows": 10,
+        "measured_HIST_tables_at_same_index": 10,
+        "historical_matches_positional": true,
+        "phase_c_claimed_target_rows": 16,
+        "measured_GT_tables_at_same_index": 16,
+        "target_matches_positional": true,
+        "phase_c_template_rows": 7,
+        "measured_TEMPLATE_tables_at_same_index": 7,
+        "template_matches": true,
+        "phase_c_insert_count": 6,
+        "insert_equals_GT_minus_HIST": true,
+        "insert_equals_GT_minus_TEMPLATE": false,
+        "HIST_table_at_index_identity": "Step | Search criteria | Search criteria | Passed",
+        "TEMPLATE_table_at_index_identity": "No | Company | Country | Ticker symbol/ / Tax code | Business description",
+        "GT_table_at_index_identity": "Screening criteria | Eliminated | Retained"
+      }
+    ],
+    "proof_summary": {
+      "historical_rows_match_HIST_at_same_index": "4/4",
+      "target_rows_match_GT_at_same_index": "4/4",
+      "insert_count_equals_GT_minus_HIST": "4/4",
+      "all_confirmed": true
+    },
+    "secondary_finding": "Because target_rows == GT.tables[i].rows, the Ground Truth document materially determined a PLANNING artifact. This contradicts the evaluation-only rule that Phases B/C/D1/D2/D3 otherwise enforce. The values are hardcoded literals in the Phase C planner, so the leak happened at authoring time rather than at runtime — but the dependency is real.",
+    "tertiary_finding": "A single StructuralDelta simultaneously carries numbers from three different documents: template_rows from the Template, target_rows from the Ground Truth, and insert_count = target_rows - historical_rows from Ground Truth minus FY2023. No two of its fields describe the same document, which is why target_rows - template_rows != insert_count in all four cases."
+  },
+  "authoritative_matrix": [
+    {
+      "region_id": "rfr-071",
+      "table_identity": {
+        "template_table_index": 10,
+        "template_header": "Item | FY20xx | WA (FY20ww-20xx)",
+        "semantic_identity": "Standard arm's-length range summary (35th / Median / 75th percentile + tested party PLI)",
+        "semantic_note": "Neither FY2023 nor FY2024 expresses this as a table; the range definition appears in body prose (HIST p282 / GT p274). The template introduces it as a 6-row placeholder table."
+      },
+      "historical_row_count": {
+        "positional_HIST_tables_at_index": 2,
+        "positional_identity": "NCP | = | EBIT",
+        "positional_is_semantically_related": false,
+        "semantic_counterpart_tables": [],
+        "semantic_row_count": null,
+        "used_by_phase_c": 2,
+        "source_of_number": "Phase C hardcoded literal == HIST.tables[i].rows (positional)",
+        "evidence_artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+        "confidence": "MEASURED"
+      },
+      "template_row_count": {
+        "measured": 6,
+        "measured_cols": 3,
+        "phase_b_recorded": 6,
+        "phase_c_recorded": 6,
+        "agreement": true,
+        "source_of_number": "Measured live from Master Template; corroborated by Phase B table_signatures",
+        "evidence_artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx + LocalFile_RollForward_Template_Profile_2026-08-21.json",
+        "confidence": "MEASURED"
+      },
+      "current_source_record_count": {
+        "bound_workbooks": [
+          "HMV-FA&RPT FY2024.xlsx",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx"
+        ],
+        "records_available": 1,
+        "detail": "Of the four values template T10 requires (35th percentile, median, 75th percentile, tested-party PLI), only the tested-party PLI exists in a bound source: FA&RPT 'Financial Analysis'. The three benchmarking percentiles have no source in either workbook.",
+        "source_of_number": "Measured: enumerated all 5 FA&RPT sheets and all 18 Appendix I sheets",
+        "evidence_artifact": "HMV-FA&RPT FY2024.xlsx, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "confidence": "MEASURED"
+      },
+      "planned_target_row_count": {
+        "phase_c_structural_delta_target_rows": 11,
+        "phase_c_insert_count": 9,
+        "internally_consistent": false,
+        "source_of_number": "Hardcoded literal in foundation/tests/evaluation/rollforward_source_binding.py :: StructuralPlanningEngine.plan_manifest",
+        "evidence_artifact": "LocalFile_RollForward_Manifest_V1.json",
+        "confidence": "QUOTED"
+      },
+      "D1_mutation_precondition": {
+        "synthetic_case": "2 rows -> 11 rows (+9)",
+        "synthetic_test": "test_golden_case_table_10_growth_2_to_11",
+        "synthetic_fixture": "clean_test_doc.tables[1] (3 cols)",
+        "real_fixture_present": true,
+        "real_initial_row_count": 6,
+        "real_precondition_hash": "live FingerprintService.compute_table_semantic_fingerprint(template table)",
+        "source_of_number": "foundation/tests/test_structural_writeback.py",
+        "confidence": "QUOTED"
+      },
+      "D1_expected_postcondition": {
+        "real_fixture_value": "\"dummy\" (literal placeholder string)",
+        "is_a_real_fingerprint": false,
+        "consequence": "Idempotence NOOP detection in StructuralWritebackEngine compares the live table fingerprint against this field; a placeholder can never match, so D1-level idempotence is inert on every real-fixture run.",
+        "target_row_count_declared": 11,
+        "source_of_number": "foundation/tests/test_structural_writeback.py / test_rollforward_data_reconciliation.py",
+        "confidence": "QUOTED"
+      },
+      "D2_coverage": {
+        "kind": "REAL_FIXTURE",
+        "test": "test_four_golden_tables_real_fixture_reconciliation_and_lineage",
+        "region_id_used": "rfr-071",
+        "cells_reconciled": 15,
+        "rows_before": 6,
+        "rows_after": 11,
+        "fixture": null,
+        "source_of_number": "foundation/tests/test_rollforward_data_reconciliation.py",
+        "confidence": "QUOTED"
+      },
+      "D3_actual_before_rows": 6,
+      "D3_actual_after_rows": 11,
+      "D3_output_measured_rows": 11,
+      "D3_status": "EXECUTED",
+      "D3_exclusion_detail": null,
+      "ground_truth_row_count": {
+        "positional_GT_tables_at_index": 11,
+        "positional_identity": "No | Company | Country | Ticker",
+        "positional_is_semantically_related": false,
+        "semantic_counterpart_tables": [],
+        "semantic_row_count": null,
+        "source_of_number": "Measured live from Ground Truth FY2024",
+        "evidence_artifact": "HMV-26-Final-Local File for FY2024-EN-R2901KPMG.docx",
+        "confidence": "MEASURED"
+      },
+      "structural_status": "MISCLASSIFIED. Template T10 is a fixed 6-row arm's-length-range summary whose value cells are 'xx%' placeholders. It is an UPDATE / placeholder-activation region, not REPEATABLE. Its planned target of 11 rows has no basis in any document."
+    },
+    {
+      "region_id": "rfr-093",
+      "table_identity": {
+        "template_table_index": 13,
+        "template_header": "Database used | Bureau van Dijk’s TP Catalyst (“TP Cat”) database",
+        "semantic_identity": "Search & screening strategy matrix (Decree 20-2025 key/value format)",
+        "semantic_note": "FY2023 and FY2024 express the same information as TWO tables (Step matrix 4 cols + Screening criteria 3 cols). The template replaces both with one 23-row key/value table. This is a FORMAT REDESIGN, not a row-count delta."
+      },
+      "historical_row_count": {
+        "positional_HIST_tables_at_index": 4,
+        "positional_identity": "NAICS Code | Description",
+        "positional_is_semantically_related": false,
+        "semantic_counterpart_tables": [
+          {
+            "table_index": 15,
+            "rows": 10
+          },
+          {
+            "table_index": 16,
+            "rows": 15
+          }
+        ],
+        "semantic_row_count": [
+          10,
+          15
+        ],
+        "used_by_phase_c": 4,
+        "source_of_number": "Phase C hardcoded literal == HIST.tables[i].rows (positional)",
+        "evidence_artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+        "confidence": "MEASURED"
+      },
+      "template_row_count": {
+        "measured": 23,
+        "measured_cols": 2,
+        "phase_b_recorded": 23,
+        "phase_c_recorded": 23,
+        "agreement": true,
+        "source_of_number": "Measured live from Master Template; corroborated by Phase B table_signatures",
+        "evidence_artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx + LocalFile_RollForward_Template_Profile_2026-08-21.json",
+        "confidence": "MEASURED"
+      },
+      "current_source_record_count": {
+        "bound_workbooks": [
+          "HMV-FA&RPT FY2024.xlsx",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx"
+        ],
+        "records_available": 0,
+        "detail": "No screening/search-strategy data exists in either bound workbook. FA&RPT has 5 sheets (Related parties, FS, RPTs, Financial Analysis, Summary-RPTs); Appendix I has 18, none benchmarking-related.",
+        "source_of_number": "Measured: enumerated all 5 FA&RPT sheets and all 18 Appendix I sheets",
+        "evidence_artifact": "HMV-FA&RPT FY2024.xlsx, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "confidence": "MEASURED"
+      },
+      "planned_target_row_count": {
+        "phase_c_structural_delta_target_rows": 6,
+        "phase_c_insert_count": 2,
+        "internally_consistent": false,
+        "source_of_number": "Hardcoded literal in foundation/tests/evaluation/rollforward_source_binding.py :: StructuralPlanningEngine.plan_manifest",
+        "evidence_artifact": "LocalFile_RollForward_Manifest_V1.json",
+        "confidence": "QUOTED"
+      },
+      "D1_mutation_precondition": {
+        "synthetic_case": "4 rows -> 6 rows (+2)",
+        "synthetic_test": "test_golden_case_table_13_growth_4_to_6",
+        "synthetic_fixture": "clean_test_doc.tables[1] (3 cols, 2 rows added at runtime)",
+        "real_fixture_present": false,
+        "real_initial_row_count": null,
+        "real_precondition_hash": null,
+        "source_of_number": "foundation/tests/test_structural_writeback.py",
+        "confidence": "QUOTED"
+      },
+      "D1_expected_postcondition": {
+        "real_fixture_value": null,
+        "is_a_real_fingerprint": null,
+        "consequence": null,
+        "target_row_count_declared": null,
+        "source_of_number": "foundation/tests/test_structural_writeback.py / test_rollforward_data_reconciliation.py",
+        "confidence": "QUOTED"
+      },
+      "D2_coverage": {
+        "kind": "SYNTHETIC",
+        "test": "test_exact_source_to_output_mapping_table_13",
+        "region_id_used": "rfr-096",
+        "cells_reconciled": 4,
+        "rows_before": 3,
+        "rows_after": 3,
+        "fixture": "tmp_path/t13_doc.docx — 3 rows x 2 cols, BVD independence codes, insert_count=0",
+        "source_of_number": "foundation/tests/test_rollforward_data_reconciliation.py",
+        "confidence": "QUOTED"
+      },
+      "D3_actual_before_rows": null,
+      "D3_actual_after_rows": null,
+      "D3_output_measured_rows": 23,
+      "D3_status": "EXCLUDED: UNSUPPORTED_OPERATION",
+      "D3_exclusion_detail": "Plan implies row deletion (23 -> 6); the D1 writeback engine supports row insertion only.",
+      "ground_truth_row_count": {
+        "positional_GT_tables_at_index": 6,
+        "positional_identity": "Code | Description",
+        "positional_is_semantically_related": false,
+        "semantic_counterpart_tables": [
+          {
+            "table_index": 14,
+            "rows": 10
+          },
+          {
+            "table_index": 15,
+            "rows": 16
+          }
+        ],
+        "semantic_row_count": [
+          10,
+          16
+        ],
+        "source_of_number": "Measured live from Ground Truth FY2024",
+        "evidence_artifact": "HMV-26-Final-Local File for FY2024-EN-R2901KPMG.docx",
+        "confidence": "MEASURED"
+      },
+      "structural_status": "MISCLASSIFIED AND FORMAT-SHIFTED. Template T13 is a complete 23-row screening narrative with 'zz/yy/xx companies' placeholders. FY2023 and FY2024 express the same content as two differently-shaped tables. This is a format transformation requiring placeholder activation and possibly row removal — not insertion. It was correctly left unexecuted, though for a reason that does not hold up."
+    },
+    {
+      "region_id": "rfr-098",
+      "table_identity": {
+        "template_table_index": 14,
+        "template_header": "No | Company | Province | Tax code | VN SIC Code | Business description",
+        "semantic_identity": "Vietnamese comparable companies (No / Company / Province / Tax code / VN SIC / Business description)",
+        "semantic_note": "No FY2023 or FY2024 table uses the Province / VN SIC column schema. The FY2024 engagement presented its (all-Vietnamese) comparable set using the template T15 schema instead."
+      },
+      "historical_row_count": {
+        "positional_HIST_tables_at_index": 6,
+        "positional_identity": "Code | Description",
+        "positional_is_semantically_related": false,
+        "semantic_counterpart_tables": [],
+        "semantic_row_count": null,
+        "used_by_phase_c": 6,
+        "source_of_number": "Phase C hardcoded literal == HIST.tables[i].rows (positional)",
+        "evidence_artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+        "confidence": "MEASURED"
+      },
+      "template_row_count": {
+        "measured": 8,
+        "measured_cols": 6,
+        "phase_b_recorded": 8,
+        "phase_c_recorded": 8,
+        "agreement": true,
+        "source_of_number": "Measured live from Master Template; corroborated by Phase B table_signatures",
+        "evidence_artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx + LocalFile_RollForward_Template_Profile_2026-08-21.json",
+        "confidence": "MEASURED"
+      },
+      "current_source_record_count": {
+        "bound_workbooks": [
+          "HMV-FA&RPT FY2024.xlsx",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx"
+        ],
+        "records_available": 0,
+        "detail": "No Vietnamese comparable-company records exist in either bound workbook.",
+        "source_of_number": "Measured: enumerated all 5 FA&RPT sheets and all 18 Appendix I sheets",
+        "evidence_artifact": "HMV-FA&RPT FY2024.xlsx, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "confidence": "MEASURED"
+      },
+      "planned_target_row_count": {
+        "phase_c_structural_delta_target_rows": 10,
+        "phase_c_insert_count": 4,
+        "internally_consistent": false,
+        "source_of_number": "Hardcoded literal in foundation/tests/evaluation/rollforward_source_binding.py :: StructuralPlanningEngine.plan_manifest",
+        "evidence_artifact": "LocalFile_RollForward_Manifest_V1.json",
+        "confidence": "QUOTED"
+      },
+      "D1_mutation_precondition": {
+        "synthetic_case": "6 rows -> 10 rows (+4)",
+        "synthetic_test": "test_golden_case_table_14_growth_6_to_10",
+        "synthetic_fixture": "clean_test_doc.tables[1]",
+        "real_fixture_present": true,
+        "real_initial_row_count": 8,
+        "real_precondition_hash": "live FingerprintService.compute_table_semantic_fingerprint(template table)",
+        "source_of_number": "foundation/tests/test_structural_writeback.py",
+        "confidence": "QUOTED"
+      },
+      "D1_expected_postcondition": {
+        "real_fixture_value": "\"dummy\" (literal placeholder string)",
+        "is_a_real_fingerprint": false,
+        "consequence": "Idempotence NOOP detection in StructuralWritebackEngine compares the live table fingerprint against this field; a placeholder can never match, so D1-level idempotence is inert on every real-fixture run.",
+        "target_row_count_declared": 10,
+        "source_of_number": "foundation/tests/test_structural_writeback.py / test_rollforward_data_reconciliation.py",
+        "confidence": "QUOTED"
+      },
+      "D2_coverage": {
+        "kind": "REAL_FIXTURE",
+        "test": "test_four_golden_tables_real_fixture_reconciliation_and_lineage",
+        "region_id_used": "rfr-097",
+        "cells_reconciled": 12,
+        "rows_before": 8,
+        "rows_after": 10,
+        "fixture": null,
+        "source_of_number": "foundation/tests/test_rollforward_data_reconciliation.py",
+        "confidence": "QUOTED"
+      },
+      "D3_actual_before_rows": 8,
+      "D3_actual_after_rows": 10,
+      "D3_output_measured_rows": 10,
+      "D3_status": "EXECUTED",
+      "D3_exclusion_detail": null,
+      "ground_truth_row_count": {
+        "positional_GT_tables_at_index": 10,
+        "positional_identity": "Step | Search criteria | Search criteria | Passed",
+        "positional_is_semantically_related": false,
+        "semantic_counterpart_tables": [],
+        "semantic_row_count": null,
+        "source_of_number": "Measured live from Ground Truth FY2024",
+        "evidence_artifact": "HMV-26-Final-Local File for FY2024-EN-R2901KPMG.docx",
+        "confidence": "MEASURED"
+      },
+      "structural_status": "MISCLASSIFIED. No FY2023 or FY2024 table uses this column schema; the FY2024 engagement used the T15 schema for its all-Vietnamese set. Requires a human decision on which presentation applies. Its planned target of 10 rows has no basis."
+    },
+    {
+      "region_id": "rfr-101",
+      "table_identity": {
+        "template_table_index": 15,
+        "template_header": "No | Company | Country | Ticker symbol/ / Tax code | Business description",
+        "semantic_identity": "Comparable companies list (No / Company / Country / Ticker / Business description)",
+        "semantic_note": "The only golden table with a genuine cross-document counterpart. FY2023 carried 13 comparables (mixed Vietnam + India); FY2024 carried 10 (Vietnam only). GT drops the Business description column."
+      },
+      "historical_row_count": {
+        "positional_HIST_tables_at_index": 10,
+        "positional_identity": "Step | Search criteria | Search criteria | Passed",
+        "positional_is_semantically_related": false,
+        "semantic_counterpart_tables": [
+          {
+            "table_index": 11,
+            "rows": 14
+          },
+          {
+            "table_index": 19,
+            "rows": 14
+          }
+        ],
+        "semantic_row_count": [
+          14,
+          14
+        ],
+        "used_by_phase_c": 10,
+        "source_of_number": "Phase C hardcoded literal == HIST.tables[i].rows (positional)",
+        "evidence_artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+        "confidence": "MEASURED"
+      },
+      "template_row_count": {
+        "measured": 7,
+        "measured_cols": 5,
+        "phase_b_recorded": 7,
+        "phase_c_recorded": 7,
+        "agreement": true,
+        "source_of_number": "Measured live from Master Template; corroborated by Phase B table_signatures",
+        "evidence_artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx + LocalFile_RollForward_Template_Profile_2026-08-21.json",
+        "confidence": "MEASURED"
+      },
+      "current_source_record_count": {
+        "bound_workbooks": [
+          "HMV-FA&RPT FY2024.xlsx",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx"
+        ],
+        "records_available": 0,
+        "detail": "No comparable-company records exist in either bound workbook.",
+        "source_of_number": "Measured: enumerated all 5 FA&RPT sheets and all 18 Appendix I sheets",
+        "evidence_artifact": "HMV-FA&RPT FY2024.xlsx, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "confidence": "MEASURED"
+      },
+      "planned_target_row_count": {
+        "phase_c_structural_delta_target_rows": 16,
+        "phase_c_insert_count": 6,
+        "internally_consistent": false,
+        "source_of_number": "Hardcoded literal in foundation/tests/evaluation/rollforward_source_binding.py :: StructuralPlanningEngine.plan_manifest",
+        "evidence_artifact": "LocalFile_RollForward_Manifest_V1.json",
+        "confidence": "QUOTED"
+      },
+      "D1_mutation_precondition": {
+        "synthetic_case": "10 rows -> 16 rows (+6)",
+        "synthetic_test": "test_golden_case_table_15_growth_10_to_16",
+        "synthetic_fixture": "clean_test_doc.tables[1]",
+        "real_fixture_present": true,
+        "real_initial_row_count": 7,
+        "real_precondition_hash": "live FingerprintService.compute_table_semantic_fingerprint(template table)",
+        "source_of_number": "foundation/tests/test_structural_writeback.py",
+        "confidence": "QUOTED"
+      },
+      "D1_expected_postcondition": {
+        "real_fixture_value": "\"dummy\" (literal placeholder string)",
+        "is_a_real_fingerprint": false,
+        "consequence": "Idempotence NOOP detection in StructuralWritebackEngine compares the live table fingerprint against this field; a placeholder can never match, so D1-level idempotence is inert on every real-fixture run.",
+        "target_row_count_declared": 16,
+        "source_of_number": "foundation/tests/test_structural_writeback.py / test_rollforward_data_reconciliation.py",
+        "confidence": "QUOTED"
+      },
+      "D2_coverage": {
+        "kind": "REAL_FIXTURE",
+        "test": "test_four_golden_tables_real_fixture_reconciliation_and_lineage",
+        "region_id_used": "rfr-098",
+        "cells_reconciled": 45,
+        "rows_before": 7,
+        "rows_after": 16,
+        "fixture": null,
+        "source_of_number": "foundation/tests/test_rollforward_data_reconciliation.py",
+        "confidence": "QUOTED"
+      },
+      "D3_actual_before_rows": 7,
+      "D3_actual_after_rows": 16,
+      "D3_output_measured_rows": 16,
+      "D3_status": "EXECUTED",
+      "D3_exclusion_detail": null,
+      "ground_truth_row_count": {
+        "positional_GT_tables_at_index": 16,
+        "positional_identity": "Screening criteria | Eliminated | Retained",
+        "positional_is_semantically_related": false,
+        "semantic_counterpart_tables": [
+          {
+            "table_index": 10,
+            "rows": 11
+          },
+          {
+            "table_index": 16,
+            "rows": 11
+          }
+        ],
+        "semantic_row_count": [
+          11,
+          11
+        ],
+        "source_of_number": "Measured live from Ground Truth FY2024",
+        "evidence_artifact": "HMV-26-Final-Local File for FY2024-EN-R2901KPMG.docx",
+        "confidence": "MEASURED"
+      },
+      "structural_status": "PARTIALLY CORRECT CONCEPT, WRONG NUMBERS. This is the only golden table with a genuine counterpart. The real roll-forward is 13 FY2023 comparables -> 10 FY2024 comparables, i.e. a target of 11 rows (header + 10) achieved by REPLACING 6 placeholder rows — a net +4. The planned target of 16 is a positional artifact."
+    }
+  ],
+  "phase_b_reconciliation": {
+    "verdict": "CORRECT — not a source of the discrepancy",
+    "evidence": [
+      {
+        "table_index": 10,
+        "phase_b_row_count": 6,
+        "measured_template_row_count": 6,
+        "phase_b_col_count": 3,
+        "phase_b_table_hash": "2bd8b27f",
+        "safe_to_clone": true,
+        "agrees": true
+      },
+      {
+        "table_index": 13,
+        "phase_b_row_count": 23,
+        "measured_template_row_count": 23,
+        "phase_b_col_count": 2,
+        "phase_b_table_hash": "b1384e4e",
+        "safe_to_clone": true,
+        "agrees": true
+      },
+      {
+        "table_index": 14,
+        "phase_b_row_count": 8,
+        "measured_template_row_count": 8,
+        "phase_b_col_count": 6,
+        "phase_b_table_hash": "515cf63c",
+        "safe_to_clone": true,
+        "agrees": true
+      },
+      {
+        "table_index": 15,
+        "phase_b_row_count": 7,
+        "measured_template_row_count": 7,
+        "phase_b_col_count": 5,
+        "phase_b_table_hash": "d7c319bd",
+        "safe_to_clone": true,
+        "agrees": true
+      }
+    ],
+    "structural_delta_assessment": "Phase B does not emit StructuralDelta at all. Its table_signatures record only template-side facts (row_count, col_count, table_hash, header_signature, gridspan/vmerge topology, prototype_row_idx, safe_to_clone), and every one of them matches the live template exactly.",
+    "row_template_assessment": "RowTemplate.prototype_row_idx = 1 is structurally defensible for T14/T15 (row 1 is a real placeholder data row). It is semantically wrong for T10, whose row 1 is '35th Percentile' — a unique statistical label, not a repeatable record — and for T13, whose row 1 is blank.",
+    "safe_to_clone_assessment": "safe_to_clone=True is TRUE AS SPECIFIED: the field means the row's OOXML topology can be deep-copied without corrupting the package, and that holds for all four. It does NOT mean the table is semantically repeatable, and nothing downstream distinguishes the two. This is a naming/contract hazard rather than an incorrect value.",
+    "domain_model_gap": "Phase B has no field for historical_rows, current_source_rows or target_rows — correctly, since it profiles only the template. The gap is that no LATER phase introduced a structure to hold them either, so Phase C had to overload StructuralDelta."
+  },
+  "phase_c_reconciliation": {
+    "verdict": "INCORRECT — this is the origin of the discrepancy",
+    "mechanism": "StructuralDelta exposes exactly two row-count fields, template_rows and target_rows, plus insert_count/delete_count. Phase C needed four distinct concepts and had two slots, so it put template_rows in the template slot, Ground-Truth rows in the target slot, and buried the FY2023 count in the untyped observation_context dict.",
+    "evidence": [
+      {
+        "region_id": "rfr-071",
+        "table_index": 10,
+        "structural_delta": {
+          "template_rows": 6,
+          "target_rows": 11,
+          "insert_count": 9,
+          "delete_count": 0,
+          "observation_context": {
+            "historical_rows": 2,
+            "target_rows": 11,
+            "growth": "+9"
+          }
+        },
+        "target_minus_template": 5,
+        "declared_insert_count": 9,
+        "arithmetic_consistent": false
+      },
+      {
+        "region_id": "rfr-093",
+        "table_index": 13,
+        "structural_delta": {
+          "template_rows": 23,
+          "target_rows": 6,
+          "insert_count": 2,
+          "delete_count": 0,
+          "observation_context": {
+            "historical_rows": 4,
+            "target_rows": 6,
+            "growth": "+2"
+          }
+        },
+        "target_minus_template": -17,
+        "declared_insert_count": 2,
+        "arithmetic_consistent": false
+      },
+      {
+        "region_id": "rfr-098",
+        "table_index": 14,
+        "structural_delta": {
+          "template_rows": 8,
+          "target_rows": 10,
+          "insert_count": 4,
+          "delete_count": 0,
+          "observation_context": {
+            "historical_rows": 6,
+            "target_rows": 10,
+            "growth": "+4"
+          }
+        },
+        "target_minus_template": 2,
+        "declared_insert_count": 4,
+        "arithmetic_consistent": false
+      },
+      {
+        "region_id": "rfr-101",
+        "table_index": 15,
+        "structural_delta": {
+          "template_rows": 7,
+          "target_rows": 16,
+          "insert_count": 6,
+          "delete_count": 0,
+          "observation_context": {
+            "historical_rows": 10,
+            "target_rows": 16,
+            "growth": "+6"
+          }
+        },
+        "target_minus_template": 9,
+        "declared_insert_count": 6,
+        "arithmetic_consistent": false
+      }
+    ],
+    "derivation_method": "The values are HARDCODED LITERALS in the planning engine, not measurements. No code path in Phase C opens the FY2023 document or counts source records; source_binding only verifies that named Excel ranges exist.",
+    "no_silent_normalization": "The existing manifest JSON has been left byte-for-byte as produced. This audit records the discrepancy; it does not rewrite it."
+  },
+  "d1_reconciliation": {
+    "verdict": "SYNTHETIC GOLDEN CASES; REAL-FIXTURE RUN COVERED ONLY 3 OF 4 TABLES",
+    "case_labels": {
+      "10": {
+        "label": "SYNTHETIC — historical-to-Ground-Truth positional delta reproduced on a purpose-built fixture; the fixture table is neither the template table nor any real document table",
+        "synthetic_growth": "2 -> 11",
+        "equals_HIST_to_GT_positional": true,
+        "real_fixture_case": "TEMPLATE-TO-GROUND-TRUTH: 6 -> 11"
+      },
+      "13": {
+        "label": "SYNTHETIC — historical-to-Ground-Truth positional delta reproduced on a purpose-built fixture; the fixture table is neither the template table nor any real document table",
+        "synthetic_growth": "4 -> 6",
+        "equals_HIST_to_GT_positional": true,
+        "real_fixture_case": "ABSENT from the real-fixture test"
+      },
+      "14": {
+        "label": "SYNTHETIC — historical-to-Ground-Truth positional delta reproduced on a purpose-built fixture; the fixture table is neither the template table nor any real document table",
+        "synthetic_growth": "6 -> 10",
+        "equals_HIST_to_GT_positional": true,
+        "real_fixture_case": "TEMPLATE-TO-GROUND-TRUTH: 8 -> 10"
+      },
+      "15": {
+        "label": "SYNTHETIC — historical-to-Ground-Truth positional delta reproduced on a purpose-built fixture; the fixture table is neither the template table nor any real document table",
+        "synthetic_growth": "10 -> 16",
+        "equals_HIST_to_GT_positional": true,
+        "real_fixture_case": "TEMPLATE-TO-GROUND-TRUTH: 7 -> 16"
+      }
+    },
+    "overclaim": {
+      "artifact": "docs\\evaluation\\LocalFile_RollForward_Structural_Writeback_D1_2026-08-21.md",
+      "claim": "'The four golden table-growth cases ... were verified end-to-end against the real Master Template', with Table 13 listed as APPLIED & VERIFIED.",
+      "reality": "foundation/tests/test_structural_writeback.py::test_real_fixture_end_to_end_all_4_tables builds exactly three TableMutationSpec objects (tables 10, 14, 15). No Table 13 spec exists in it. The test name says 'all_4_tables'; the body executes three.",
+      "status": "OVERCLAIM — CONFIRMED"
+    },
+    "region_id_drift": {
+      "d1_report_mapping": {
+        "table_13": "rfr-096",
+        "table_14": "rfr-097",
+        "table_15": "rfr-098"
+      },
+      "phase_c_anchor_mapping": {
+        "table_13": "rfr-093",
+        "table_14": "rfr-098",
+        "table_15": "rfr-101"
+      },
+      "note": "The D1 report and the D1/D2 real-fixture tests use region ids that disagree with the row-template anchors Phase C actually emitted. rfr-098 denotes Table 15 in the D1 report but Table 14 in the manifest."
+    },
+    "idempotence_gap": "Every real-fixture MutationPlan sets expected_postcondition_hash='dummy'. StructuralWritebackEngine's NOOP check compares a live fingerprint against that field, so it can never trigger on a real-fixture run. D1's idempotence test passes only because it patches the field with a real fingerprint before the second call."
+  },
+  "d2_reconciliation": {
+    "verdict": "THE '4 / 4 GOLDEN TABLES' HEADLINE MIXES 3 REAL-FIXTURE TABLES WITH 1 SYNTHETIC UNIT TEST",
+    "real_fixture_run": {
+      "test": "test_four_golden_tables_real_fixture_reconciliation_and_lineage",
+      "tables": [
+        10,
+        14,
+        15
+      ],
+      "assertion_in_test": "assert summary.total_tables == 3",
+      "cells": 72,
+      "cell_breakdown": {
+        "table_10": 15,
+        "table_14": 12,
+        "table_15": 45
+      }
+    },
+    "table_13_reality": {
+      "kind": "SYNTHETIC",
+      "test": "test_exact_source_to_output_mapping_table_13",
+      "fixture": "tmp_path/t13_doc.docx built in-test: 3 rows x 2 cols, BVD independence codes A/B",
+      "insert_count": 0,
+      "relation_to_template_table_13": "NONE — template T13 is a 23-row x 2-col screening matrix",
+      "relation_to_the_4_to_6_claim": "NONE — the synthetic fixture is 3 rows and does not grow. The report's '4 template rows -> 6 expanded rows' line for Table 13 is not produced by any executed test.",
+      "region_id_used": "rfr-096"
+    },
+    "explicit_answer": "D2 reported 4/4 because the report author counted four table-level unit tests, three of which ran against the real Master Template output and one of which ran against an in-test synthetic document. The real-fixture reconciliation itself asserts three tables.",
+    "what_the_72_cells_do_and_do_not_prove": {
+      "proves": "Every cell value the approved MutationPlan declared was written into the generated document exactly as declared, with unit-aware semantic and display comparison.",
+      "does_not_prove": "That those values came from the FY2024 sources. Measured from the D3 lineage: 0 of 72 cells carry a source cell address. 15 cells (Table 10) name a workbook and sheet; 57 cells (Tables 14 and 15) name only a workbook and carry harness-generated placeholder values."
+    },
+    "no_history_rewritten": "The D2 report file is unmodified."
+  },
+  "d3_reconciliation": {
+    "verdict": "MECHANICALLY SOUND, SEMANTICALLY WRONG TARGETS — D3 faithfully executed an incorrect plan",
+    "executed": [
+      {
+        "region_id": "rfr-071",
+        "table_index": 10,
+        "rows_before": 6,
+        "rows_after": 11,
+        "rows_inserted": 5
+      },
+      {
+        "region_id": "rfr-098",
+        "table_index": 14,
+        "rows_before": 8,
+        "rows_after": 10,
+        "rows_inserted": 2
+      },
+      {
+        "region_id": "rfr-101",
+        "table_index": 15,
+        "rows_before": 7,
+        "rows_after": 16,
+        "rows_inserted": 9
+      }
+    ],
+    "excluded_table_13": {
+      "region_id": "rfr-093",
+      "section_name": "Search for comparable companies in Vietnam",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 13,
+      "exclusion_reason": "UNSUPPORTED_OPERATION",
+      "reason_detail": "Plan implies row deletion (23 -> 6); the D1 writeback engine supports row insertion only.",
+      "review_state": "PENDING"
+    },
+    "table_13_exclusion_assessment": "The right outcome, reached from a premise that does not hold. D3 refused because target_rows(6) < initial_rows(23) implies deletion. But the '6' was never a target for that table — it is GT.tables[13].rows, the FY2024 BVD independence-code table. The correct reason to exclude template T13 is that it has no bound current source and requires placeholder activation, not row insertion.",
+    "semantic_defects_in_published_output": [
+      {
+        "table_index": 10,
+        "defect": "WRONG_TABLE",
+        "detail": "Five FY2024 P&L line items (Net Sales, COGS, Gross Profit, EBIT, NCP) were appended to the arm's-length-range table, below rows '35th Percentile', 'Median', '75th Percentile' and \"ABC's PLI in FY20xx\". The values are real and correctly traced to FA&RPT, but they belong to a different table. The 'xx%' placeholders they were meant to inform remain unfilled.",
+        "evidence": "docs/evaluation/output/Generated_LocalFile_FY2024_PhaseD3.docx table 10 rows 6-10"
+      },
+      {
+        "table_index": 14,
+        "defect": "INSERTED_AFTER_FOOTER_ROW",
+        "detail": "Template T14 row 7 is a full-width footer (\"ABC's VN SIC Code: xxx\"). The engine appends after the last row, so both new data rows landed BELOW the footer. Placeholder rows 'Company 1'-'Company 5' and the ellipsis row remain above it.",
+        "evidence": "docs/evaluation/output/Generated_LocalFile_FY2024_PhaseD3.docx table 14 rows 8-9"
+      },
+      {
+        "table_index": 15,
+        "defect": "PLACEHOLDERS_RETAINED_AND_COLUMN_MISMATCH",
+        "detail": "Nine rows were appended after the ellipsis placeholder row; 'Company 1'-'Company 5' and the ellipsis remain. Column 4 is 'Business description' but received a percentage ('4.20%'), because the harness row template was written for a benchmarking-margin table.",
+        "evidence": "docs/evaluation/output/Generated_LocalFile_FY2024_PhaseD3.docx table 15 rows 7-15"
+      }
+    ],
+    "what_the_34_validation_checks_did_and_did_not_cover": {
+      "covered": "Package integrity, perception, element inventory, declared target row/column/header invariants, non-target semantic drift, merge topology, media and relationships, headers/footers, sections, headings, body reading order.",
+      "not_covered": "Whether an inserted row belongs in that table at all; whether the insertion position respects a table's footer or placeholder rows; whether the column semantics of the value match the column header. No registered rule expresses table-level semantic fit, so all 34 passed on a semantically incoherent output."
+    }
+  },
+  "ground_truth_comparison": {
+    "rule": "Ground Truth is evaluation-only. This section diagnoses; it changes no planning artifact.",
+    "inventory_mismatch": {
+      "hist_tables": 22,
+      "template_tables": 16,
+      "gt_tables": 19,
+      "implication": "The three documents cannot be correlated by table index. Any correlation must be by header schema and content."
+    },
+    "per_table": [
+      {
+        "template_table_index": 10,
+        "template_identity": "Arm's-length range summary (6r x 3c)",
+        "hist_counterpart": "NONE (range defined in prose, HIST paragraph 282)",
+        "gt_counterpart": "NONE (range defined in prose, GT paragraph 274)",
+        "true_delta": "No table-level delta exists. Placeholder activation only.",
+        "d3_produced": "11 rows containing 5 P&L line items that belong elsewhere",
+        "verdict": "CONTRADICTED"
+      },
+      {
+        "template_table_index": 13,
+        "template_identity": "Screening matrix, key/value (23r x 2c)",
+        "hist_counterpart": "HIST T15 Step matrix (10r x 4c) + HIST T16 Screening criteria (15r x 3c)",
+        "gt_counterpart": "GT T14 Step matrix (10r x 4c) + GT T15 Screening criteria (16r x 3c)",
+        "true_delta": "Format redesign: two tables in FY2023/FY2024 collapse into one 23-row key/value table in the Decree 20-2025 template. Row counts are not comparable.",
+        "d3_produced": "Not executed (excluded)",
+        "verdict": "INFERRED — exclusion was correct, stated reason was not"
+      },
+      {
+        "template_table_index": 14,
+        "template_identity": "VN comparables, Province/VN SIC schema (8r x 6c)",
+        "hist_counterpart": "NONE with this schema",
+        "gt_counterpart": "NONE with this schema; GT used the T15 schema for its Vietnam-only set",
+        "true_delta": "Undetermined — requires a human decision on presentation.",
+        "d3_produced": "10 rows, 2 appended below the footer row",
+        "verdict": "CONTRADICTED"
+      },
+      {
+        "template_table_index": 15,
+        "template_identity": "Comparables, Country/Ticker schema (7r x 5c)",
+        "hist_counterpart": "HIST T11 and T19 (14r x 4c) = 13 comparables, Vietnam + India",
+        "gt_counterpart": "GT T10 and T16 (11r x 4c) = 10 comparables, Vietnam only",
+        "true_delta": "13 FY2023 comparables -> 10 FY2024 comparables (a DECREASE of 3). Target shape is 11 rows. GT also drops the Business description column (5 template cols -> 4).",
+        "d3_produced": "16 rows of placeholder peers",
+        "verdict": "CONTRADICTED"
+      }
+    ],
+    "summary": "Of the four golden tables, exactly one (T15) has a genuine cross-document counterpart, and its real delta is negative. None of the four 'growth' figures used by Phases C, D1, D2 or D3 is supported by the Ground Truth."
+  },
+  "domain_model_gaps": [
+    {
+      "gap_id": "GAP-01",
+      "severity": "CRITICAL",
+      "title": "StructuralDelta cannot express four distinct row-count concepts",
+      "location": "foundation/applications/rollforward/models.py :: StructuralDelta",
+      "current_fields": [
+        "template_rows",
+        "target_rows",
+        "insert_count",
+        "delete_count",
+        "column_delta"
+      ],
+      "missing_concepts": [
+        "historical_rows",
+        "current_source_record_count",
+        "placeholder_row_count",
+        "data_region_start_idx",
+        "data_region_end_idx",
+        "footer_row_count"
+      ],
+      "consequence": "Phase C had two slots for four concepts and silently mixed three documents into one object. Every downstream consumer then read those fields as if they described a single document."
+    },
+    {
+      "gap_id": "GAP-02",
+      "severity": "CRITICAL",
+      "title": "No provenance on any row count",
+      "location": "StructuralDelta.observation_source / observation_context (free-form str and untyped dict)",
+      "consequence": "There is no typed way to say which document a number was measured from, so a Ground-Truth-derived figure is indistinguishable from a template measurement. This is what let Ground Truth reach a planning artifact undetected."
+    },
+    {
+      "gap_id": "GAP-03",
+      "severity": "HIGH",
+      "title": "safe_to_clone conflates OOXML safety with semantic repeatability",
+      "location": "foundation/applications/rollforward/models.py :: RowTemplate.safe_to_clone",
+      "consequence": "The docstring correctly limits it to XML topology, but no separate field records whether a table is semantically row-repeatable. All four golden tables report safe_to_clone=True, including a fixed statistical summary and a screening narrative."
+    },
+    {
+      "gap_id": "GAP-04",
+      "severity": "HIGH",
+      "title": "No table anatomy: header / data region / placeholder rows / footer",
+      "location": "RowTemplate and TableMutationSpec",
+      "consequence": "StructuralWritebackEngine always appends after the last row, so rows land below footers (observed in template T14), and placeholder rows are never replaced."
+    },
+    {
+      "gap_id": "GAP-05",
+      "severity": "HIGH",
+      "title": "mutation_strategy is a free-form string, not a typed operation",
+      "location": "RollForwardRegion.mutation_strategy (str) and TableMutationSpec.operation (str)",
+      "consequence": "Only INSERT_ROWS is implemented, so any region that needs UPDATE, placeholder activation, or removal is either misrepresented as an insertion or blocked with a misleading reason."
+    },
+    {
+      "gap_id": "GAP-06",
+      "severity": "MEDIUM",
+      "title": "Region-to-table binding is carried in a parsed anchor string",
+      "location": "RowTemplate.row_anchor, parsed with str.split in the D3 scope resolver",
+      "consequence": "There is no typed target_table_index, which is how the D1 report and the D1/D2 tests came to use region ids that disagree with the manifest anchors."
+    },
+    {
+      "gap_id": "GAP-07",
+      "severity": "MEDIUM",
+      "title": "No column-schema delta concept",
+      "location": "StructuralDelta.column_delta (int only)",
+      "consequence": "Template T15 has 5 columns and its FY2024 counterpart has 4. An integer delta cannot say which column was dropped, so no validation can catch a value written into a column whose header does not match it."
+    },
+    {
+      "gap_id": "GAP-08",
+      "severity": "MEDIUM",
+      "title": "Reconciliation cannot distinguish a bound source value from a plan-authored literal",
+      "location": "CellMutationSpec (source_cell_address is Optional and unenforced)",
+      "consequence": "0 of 72 reconciled cells in the D3 run carry a source cell address, yet the run reports 100% source-to-output match. The metric measures plan-to-output fidelity and is titled source-to-output."
+    }
+  ],
+  "recommended_corrections": [
+    {
+      "id": "REC-01",
+      "priority": "P0",
+      "type": "DOMAIN_MODEL",
+      "recommendation": "Replace StructuralDelta's two row-count slots with four explicitly named, separately provenanced measurements: historical_rows, template_rows, current_source_record_count, target_rows — each carrying the document id, artifact hash and measurement method it came from.",
+      "do_not_do_now": "Not implemented in D3.1. Requires a schema migration and a Phase C re-plan."
+    },
+    {
+      "id": "REC-02",
+      "priority": "P0",
+      "type": "GOVERNANCE",
+      "recommendation": "Add a planning-time assertion that no planning field may be derived from the Ground Truth artifact, and make target_rows require a non-Ground-Truth provenance record."
+    },
+    {
+      "id": "REC-03",
+      "priority": "P0",
+      "type": "PLANNING",
+      "recommendation": "Correlate documents by header schema and content fingerprint, never by positional table index. Emit an explicit UNCORRELATED verdict when no counterpart exists, as is the case for template T10, T13 and T14."
+    },
+    {
+      "id": "REC-04",
+      "priority": "P1",
+      "type": "DOMAIN_MODEL",
+      "recommendation": "Introduce a typed MutationOperation enum — INSERT_ROWS, DELETE_ROWS, UPDATE_CELLS, ACTIVATE_PLACEHOLDER, REPLACE_DATA_REGION — and require every region to declare one. Do not implement the new operations in the same change; land the type first so that unsupported operations are refused by name rather than by arithmetic accident."
+    },
+    {
+      "id": "REC-05",
+      "priority": "P1",
+      "type": "DOMAIN_MODEL",
+      "recommendation": "Add a TableAnatomy value object (header_rows, data_region span, placeholder_row_idxs, footer_rows) so insertion position and placeholder replacement are explicit."
+    },
+    {
+      "id": "REC-06",
+      "priority": "P1",
+      "type": "VALIDATION",
+      "recommendation": "Add a semantic-fit validation family to the D3 FullDocumentValidator: reject an insertion whose row lands outside the declared data region, and reject a value whose type contradicts its column header."
+    },
+    {
+      "id": "REC-07",
+      "priority": "P1",
+      "type": "RECONCILIATION",
+      "recommendation": "Require source_cell_address (or an explicit UNBOUND_LITERAL marker) on every CellMutationSpec, and report bound-cell coverage separately from plan-to-output fidelity so a run can never present 100% match while 0% of cells are source-bound."
+    },
+    {
+      "id": "REC-08",
+      "priority": "P2",
+      "type": "HYGIENE",
+      "recommendation": "Stop using 'dummy' for expected_postcondition_hash in real-fixture plans; compute the true postcondition or leave the field null and let the engine treat null as 'idempotence unavailable' rather than 'never applied'."
+    },
+    {
+      "id": "REC-09",
+      "priority": "P2",
+      "type": "REPORTING",
+      "recommendation": "Label every metric in every evaluation report as REAL_FIXTURE or SYNTHETIC at the point of the number, and never aggregate the two into a single ratio such as '4/4'."
+    },
+    {
+      "id": "REC-10",
+      "priority": "P2",
+      "type": "TRACEABILITY",
+      "recommendation": "Add a typed target_table_index to RollForwardRegion so region-to-table binding stops depending on string parsing and cross-artifact region id drift becomes detectable."
+    }
+  ],
+  "conclusion": {
+    "single_root_cause": "Phase C correlated three structurally different documents by positional table index and recorded the result in a StructuralDelta that has no room for the four row-count concepts involved.",
+    "which_numbers_are_true": {
+      "template_rows (6 / 23 / 8 / 7)": "TRUE — measured, and independently corroborated by Phase B.",
+      "'2 -> 11', '4 -> 6', '6 -> 10', '10 -> 16'": "FALSE as roll-forward deltas. Each is HIST.tables[i].rows -> GT.tables[i].rows for semantically unrelated tables.",
+      "'6 -> 11', '23 -> 6', '8 -> 10', '7 -> 16'": "HALF TRUE. The left side is the real template row count; the right side is the same positional Ground-Truth artifact.",
+      "D2 '72 / 72 cells matched'": "TRUE as plan-to-output fidelity. NOT true as source-to-output traceability: 0 of 72 cells carry a source cell address.",
+      "D2 '4 / 4 golden tables'": "MISLEADING — 3 real-fixture tables plus 1 synthetic unit test.",
+      "D1 'four golden cases verified against the real Master Template'": "OVERCLAIM — the real-fixture test contains three specs, not four.",
+      "D3 '34 / 34 validation checks passed'": "TRUE for what those checks measure. No registered check expresses semantic fit, so the result is compatible with a semantically incoherent document."
+    },
+    "was_4_to_6_only_a_synthetic_benchmark": "YES. Explicitly: '4 -> 6' never described the real Master Template's Table 13 (23 rows). It is HIST.tables[13] (NAICS codes, 4 rows) -> GT.tables[13] (BVD independence codes, 6 rows) — two unrelated tables paired by index. D1 reproduced it on a purpose-built 4-row fixture and D2's Table 13 test used a different synthetic 3-row fixture that does not grow at all.",
+    "what_the_real_template_table_13_needs": "Placeholder activation and selective row removal, not insertion. Its 23 rows are a complete screening narrative containing 'zz companies selected', 'yy companies remained' and 'xx companies selected' counters plus per-screen criteria text. NOT IMPLEMENTED IN THIS PHASE.",
+    "trustworthy_foundation": "Phase B is sound. The D1 mutation mechanics, D2 comparison mathematics and D3 governance, transaction and validation machinery are all sound. What is unsound is the planning input they were given: the four golden growth targets.",
+    "honest_status_of_phase_d3": "D3 did exactly what it was designed to do — it executed an approved plan atomically, reconciled every declared cell, passed every registered structural gate and published a reproducible artifact. The artifact is nevertheless not a usable FY2024 Local File, because the plan it executed targeted the wrong tables with the wrong row counts."
+  }
+}
