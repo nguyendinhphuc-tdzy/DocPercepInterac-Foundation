@@ -1,0 +1,2596 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-21T07:30:00+00:00",
+  "manifest_id": "rfm-50d40c1cb03e",
+  "manifest_version": 1,
+  "overall_status": "MATCH",
+  "metrics": {
+    "total_tables": 3,
+    "total_cells": 72,
+    "matched_cells": 72,
+    "mismatched_cells": 0,
+    "format_mismatches": 0
+  },
+  "nodes": [
+    {
+      "id": "manifest:rfm-50d40c1cb03e:v1",
+      "type": "MANIFEST",
+      "label": "Roll-Forward Manifest (v1)",
+      "metadata": {
+        "manifest_id": "rfm-50d40c1cb03e",
+        "version": 1,
+        "session_id": "localfile-rollforward-manifest-v1"
+      }
+    },
+    {
+      "id": "table:10:rfr-071",
+      "type": "TARGET_TABLE",
+      "label": "Table 10 (rfr-071)",
+      "metadata": {
+        "table_index": 10,
+        "target_region_id": "rfr-071",
+        "row_count": 11,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "cell:T10R6C0",
+      "type": "TARGET_CELL",
+      "label": "R6C0: 'Net Sales'",
+      "metadata": {
+        "row": 6,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:FS:B14",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!FS!B14",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "FS",
+        "address": "B14",
+        "formula": null,
+        "raw_value": "Net Sales"
+      }
+    },
+    {
+      "id": "cell:T10R6C1",
+      "type": "TARGET_CELL",
+      "label": "R6C1: '194,469,728,040'",
+      "metadata": {
+        "row": 6,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:FS:D14",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!FS!D14",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "FS",
+        "address": "D14",
+        "formula": null,
+        "raw_value": "194,469,728,040"
+      }
+    },
+    {
+      "id": "cell:T10R6C2",
+      "type": "TARGET_CELL",
+      "label": "R6C2: '194,469,728,040'",
+      "metadata": {
+        "row": 6,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:FS:D14",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!FS!D14",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "FS",
+        "address": "D14",
+        "formula": null,
+        "raw_value": "194,469,728,040"
+      }
+    },
+    {
+      "id": "cell:T10R7C0",
+      "type": "TARGET_CELL",
+      "label": "R7C0: 'Cost of Goods Sold'",
+      "metadata": {
+        "row": 7,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:A8",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!Financial Analysis!A8",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "Financial Analysis",
+        "address": "A8",
+        "formula": null,
+        "raw_value": "Cost of Goods Sold"
+      }
+    },
+    {
+      "id": "cell:T10R7C1",
+      "type": "TARGET_CELL",
+      "label": "R7C1: '177,646,396,704'",
+      "metadata": {
+        "row": 7,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D8",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!Financial Analysis!D8",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "Financial Analysis",
+        "address": "D8",
+        "formula": null,
+        "raw_value": "177,646,396,704"
+      }
+    },
+    {
+      "id": "cell:T10R7C2",
+      "type": "TARGET_CELL",
+      "label": "R7C2: '177,646,396,704'",
+      "metadata": {
+        "row": 7,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D8",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!Financial Analysis!D8",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "Financial Analysis",
+        "address": "D8",
+        "formula": null,
+        "raw_value": "177,646,396,704"
+      }
+    },
+    {
+      "id": "cell:T10R8C0",
+      "type": "TARGET_CELL",
+      "label": "R8C0: 'Gross Profit'",
+      "metadata": {
+        "row": 8,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:A9",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!Financial Analysis!A9",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "Financial Analysis",
+        "address": "A9",
+        "formula": null,
+        "raw_value": "Gross Profit"
+      }
+    },
+    {
+      "id": "cell:T10R8C1",
+      "type": "TARGET_CELL",
+      "label": "R8C1: '16,823,331,336'",
+      "metadata": {
+        "row": 8,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D9",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!Financial Analysis!D9",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "Financial Analysis",
+        "address": "D9",
+        "formula": null,
+        "raw_value": "16,823,331,336"
+      }
+    },
+    {
+      "id": "cell:T10R8C2",
+      "type": "TARGET_CELL",
+      "label": "R8C2: '16,823,331,336'",
+      "metadata": {
+        "row": 8,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D9",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!Financial Analysis!D9",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "Financial Analysis",
+        "address": "D9",
+        "formula": null,
+        "raw_value": "16,823,331,336"
+      }
+    },
+    {
+      "id": "cell:T10R9C0",
+      "type": "TARGET_CELL",
+      "label": "R9C0: 'Operating Profit (EBIT)'",
+      "metadata": {
+        "row": 9,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:A14",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!Financial Analysis!A14",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "Financial Analysis",
+        "address": "A14",
+        "formula": null,
+        "raw_value": "Operating Profit (EBIT)"
+      }
+    },
+    {
+      "id": "cell:T10R9C1",
+      "type": "TARGET_CELL",
+      "label": "R9C1: '7,224,986,160'",
+      "metadata": {
+        "row": 9,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D14",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!Financial Analysis!D14",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "Financial Analysis",
+        "address": "D14",
+        "formula": null,
+        "raw_value": "7,224,986,160"
+      }
+    },
+    {
+      "id": "cell:T10R9C2",
+      "type": "TARGET_CELL",
+      "label": "R9C2: '7,224,986,160'",
+      "metadata": {
+        "row": 9,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D14",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!Financial Analysis!D14",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "Financial Analysis",
+        "address": "D14",
+        "formula": null,
+        "raw_value": "7,224,986,160"
+      }
+    },
+    {
+      "id": "cell:T10R10C0",
+      "type": "TARGET_CELL",
+      "label": "R10C0: 'Net Cost Plus Margin (NCP)'",
+      "metadata": {
+        "row": 10,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:A34",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!Financial Analysis!A34",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "Financial Analysis",
+        "address": "A34",
+        "formula": null,
+        "raw_value": "Net Cost Plus Margin (NCP)"
+      }
+    },
+    {
+      "id": "cell:T10R10C1",
+      "type": "TARGET_CELL",
+      "label": "R10C1: '6.08%'",
+      "metadata": {
+        "row": 10,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D34",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!Financial Analysis!D34",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "Financial Analysis",
+        "address": "D34",
+        "formula": null,
+        "raw_value": "6.08%"
+      }
+    },
+    {
+      "id": "cell:T10R10C2",
+      "type": "TARGET_CELL",
+      "label": "R10C2: '6.08%'",
+      "metadata": {
+        "row": 10,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D34",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!Financial Analysis!D34",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": "Financial Analysis",
+        "address": "D34",
+        "formula": null,
+        "raw_value": "6.08%"
+      }
+    },
+    {
+      "id": "table:14:rfr-097",
+      "type": "TARGET_TABLE",
+      "label": "Table 14 (rfr-097)",
+      "metadata": {
+        "table_index": 14,
+        "target_region_id": "rfr-097",
+        "row_count": 10,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "cell:T14R8C0",
+      "type": "TARGET_CELL",
+      "label": "R8C0: '7'",
+      "metadata": {
+        "row": 8,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "7"
+      }
+    },
+    {
+      "id": "cell:T14R8C1",
+      "type": "TARGET_CELL",
+      "label": "R8C1: 'LONGAN EXPORT GARMENT JSC'",
+      "metadata": {
+        "row": 8,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "LONGAN EXPORT GARMENT JSC"
+      }
+    },
+    {
+      "id": "cell:T14R8C2",
+      "type": "TARGET_CELL",
+      "label": "R8C2: 'Long An'",
+      "metadata": {
+        "row": 8,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Long An"
+      }
+    },
+    {
+      "id": "cell:T14R8C3",
+      "type": "TARGET_CELL",
+      "label": "R8C3: '1100123456'",
+      "metadata": {
+        "row": 8,
+        "col": 3,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "1100123456"
+      }
+    },
+    {
+      "id": "cell:T14R8C4",
+      "type": "TARGET_CELL",
+      "label": "R8C4: '14100'",
+      "metadata": {
+        "row": 8,
+        "col": 4,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "14100"
+      }
+    },
+    {
+      "id": "cell:T14R8C5",
+      "type": "TARGET_CELL",
+      "label": "R8C5: 'Apparel & Glove Manufacturer'",
+      "metadata": {
+        "row": 8,
+        "col": 5,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Apparel & Glove Manufacturer"
+      }
+    },
+    {
+      "id": "cell:T14R9C0",
+      "type": "TARGET_CELL",
+      "label": "R9C0: '8'",
+      "metadata": {
+        "row": 9,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "8"
+      }
+    },
+    {
+      "id": "cell:T14R9C1",
+      "type": "TARGET_CELL",
+      "label": "R9C1: 'NAM CHAU GARMENT JSC'",
+      "metadata": {
+        "row": 9,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "NAM CHAU GARMENT JSC"
+      }
+    },
+    {
+      "id": "cell:T14R9C2",
+      "type": "TARGET_CELL",
+      "label": "R9C2: 'Dong Nai'",
+      "metadata": {
+        "row": 9,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Dong Nai"
+      }
+    },
+    {
+      "id": "cell:T14R9C3",
+      "type": "TARGET_CELL",
+      "label": "R9C3: '3600987654'",
+      "metadata": {
+        "row": 9,
+        "col": 3,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "3600987654"
+      }
+    },
+    {
+      "id": "cell:T14R9C4",
+      "type": "TARGET_CELL",
+      "label": "R9C4: '14100'",
+      "metadata": {
+        "row": 9,
+        "col": 4,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "14100"
+      }
+    },
+    {
+      "id": "cell:T14R9C5",
+      "type": "TARGET_CELL",
+      "label": "R9C5: 'Leather and textile products'",
+      "metadata": {
+        "row": 9,
+        "col": 5,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Leather and textile products"
+      }
+    },
+    {
+      "id": "table:15:rfr-098",
+      "type": "TARGET_TABLE",
+      "label": "Table 15 (rfr-098)",
+      "metadata": {
+        "table_index": 15,
+        "target_region_id": "rfr-098",
+        "row_count": 16,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "cell:T15R7C0",
+      "type": "TARGET_CELL",
+      "label": "R7C0: '7'",
+      "metadata": {
+        "row": 7,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "7"
+      }
+    },
+    {
+      "id": "cell:T15R7C1",
+      "type": "TARGET_CELL",
+      "label": "R7C1: 'Peer Company 1'",
+      "metadata": {
+        "row": 7,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Peer Company 1"
+      }
+    },
+    {
+      "id": "cell:T15R7C2",
+      "type": "TARGET_CELL",
+      "label": "R7C2: 'Vietnam'",
+      "metadata": {
+        "row": 7,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Vietnam"
+      }
+    },
+    {
+      "id": "cell:T15R7C3",
+      "type": "TARGET_CELL",
+      "label": "R7C3: 'TC-100'",
+      "metadata": {
+        "row": 7,
+        "col": 3,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "TC-100"
+      }
+    },
+    {
+      "id": "cell:T15R7C4",
+      "type": "TARGET_CELL",
+      "label": "R7C4: '4.20%'",
+      "metadata": {
+        "row": 7,
+        "col": 4,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "4.20%"
+      }
+    },
+    {
+      "id": "cell:T15R8C0",
+      "type": "TARGET_CELL",
+      "label": "R8C0: '8'",
+      "metadata": {
+        "row": 8,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "8"
+      }
+    },
+    {
+      "id": "cell:T15R8C1",
+      "type": "TARGET_CELL",
+      "label": "R8C1: 'Peer Company 2'",
+      "metadata": {
+        "row": 8,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Peer Company 2"
+      }
+    },
+    {
+      "id": "cell:T15R8C2",
+      "type": "TARGET_CELL",
+      "label": "R8C2: 'Vietnam'",
+      "metadata": {
+        "row": 8,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Vietnam"
+      }
+    },
+    {
+      "id": "cell:T15R8C3",
+      "type": "TARGET_CELL",
+      "label": "R8C3: 'TC-101'",
+      "metadata": {
+        "row": 8,
+        "col": 3,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "TC-101"
+      }
+    },
+    {
+      "id": "cell:T15R8C4",
+      "type": "TARGET_CELL",
+      "label": "R8C4: '4.50%'",
+      "metadata": {
+        "row": 8,
+        "col": 4,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "4.50%"
+      }
+    },
+    {
+      "id": "cell:T15R9C0",
+      "type": "TARGET_CELL",
+      "label": "R9C0: '9'",
+      "metadata": {
+        "row": 9,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "9"
+      }
+    },
+    {
+      "id": "cell:T15R9C1",
+      "type": "TARGET_CELL",
+      "label": "R9C1: 'Peer Company 3'",
+      "metadata": {
+        "row": 9,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Peer Company 3"
+      }
+    },
+    {
+      "id": "cell:T15R9C2",
+      "type": "TARGET_CELL",
+      "label": "R9C2: 'Vietnam'",
+      "metadata": {
+        "row": 9,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Vietnam"
+      }
+    },
+    {
+      "id": "cell:T15R9C3",
+      "type": "TARGET_CELL",
+      "label": "R9C3: 'TC-102'",
+      "metadata": {
+        "row": 9,
+        "col": 3,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "TC-102"
+      }
+    },
+    {
+      "id": "cell:T15R9C4",
+      "type": "TARGET_CELL",
+      "label": "R9C4: '4.80%'",
+      "metadata": {
+        "row": 9,
+        "col": 4,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "4.80%"
+      }
+    },
+    {
+      "id": "cell:T15R10C0",
+      "type": "TARGET_CELL",
+      "label": "R10C0: '10'",
+      "metadata": {
+        "row": 10,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "10"
+      }
+    },
+    {
+      "id": "cell:T15R10C1",
+      "type": "TARGET_CELL",
+      "label": "R10C1: 'Peer Company 4'",
+      "metadata": {
+        "row": 10,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Peer Company 4"
+      }
+    },
+    {
+      "id": "cell:T15R10C2",
+      "type": "TARGET_CELL",
+      "label": "R10C2: 'Vietnam'",
+      "metadata": {
+        "row": 10,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Vietnam"
+      }
+    },
+    {
+      "id": "cell:T15R10C3",
+      "type": "TARGET_CELL",
+      "label": "R10C3: 'TC-103'",
+      "metadata": {
+        "row": 10,
+        "col": 3,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "TC-103"
+      }
+    },
+    {
+      "id": "cell:T15R10C4",
+      "type": "TARGET_CELL",
+      "label": "R10C4: '5.10%'",
+      "metadata": {
+        "row": 10,
+        "col": 4,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "5.10%"
+      }
+    },
+    {
+      "id": "cell:T15R11C0",
+      "type": "TARGET_CELL",
+      "label": "R11C0: '11'",
+      "metadata": {
+        "row": 11,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "11"
+      }
+    },
+    {
+      "id": "cell:T15R11C1",
+      "type": "TARGET_CELL",
+      "label": "R11C1: 'Peer Company 5'",
+      "metadata": {
+        "row": 11,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Peer Company 5"
+      }
+    },
+    {
+      "id": "cell:T15R11C2",
+      "type": "TARGET_CELL",
+      "label": "R11C2: 'Vietnam'",
+      "metadata": {
+        "row": 11,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Vietnam"
+      }
+    },
+    {
+      "id": "cell:T15R11C3",
+      "type": "TARGET_CELL",
+      "label": "R11C3: 'TC-104'",
+      "metadata": {
+        "row": 11,
+        "col": 3,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "TC-104"
+      }
+    },
+    {
+      "id": "cell:T15R11C4",
+      "type": "TARGET_CELL",
+      "label": "R11C4: '5.40%'",
+      "metadata": {
+        "row": 11,
+        "col": 4,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "5.40%"
+      }
+    },
+    {
+      "id": "cell:T15R12C0",
+      "type": "TARGET_CELL",
+      "label": "R12C0: '12'",
+      "metadata": {
+        "row": 12,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "12"
+      }
+    },
+    {
+      "id": "cell:T15R12C1",
+      "type": "TARGET_CELL",
+      "label": "R12C1: 'Peer Company 6'",
+      "metadata": {
+        "row": 12,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Peer Company 6"
+      }
+    },
+    {
+      "id": "cell:T15R12C2",
+      "type": "TARGET_CELL",
+      "label": "R12C2: 'Vietnam'",
+      "metadata": {
+        "row": 12,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Vietnam"
+      }
+    },
+    {
+      "id": "cell:T15R12C3",
+      "type": "TARGET_CELL",
+      "label": "R12C3: 'TC-105'",
+      "metadata": {
+        "row": 12,
+        "col": 3,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "TC-105"
+      }
+    },
+    {
+      "id": "cell:T15R12C4",
+      "type": "TARGET_CELL",
+      "label": "R12C4: '5.70%'",
+      "metadata": {
+        "row": 12,
+        "col": 4,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "5.70%"
+      }
+    },
+    {
+      "id": "cell:T15R13C0",
+      "type": "TARGET_CELL",
+      "label": "R13C0: '13'",
+      "metadata": {
+        "row": 13,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "13"
+      }
+    },
+    {
+      "id": "cell:T15R13C1",
+      "type": "TARGET_CELL",
+      "label": "R13C1: 'Peer Company 7'",
+      "metadata": {
+        "row": 13,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Peer Company 7"
+      }
+    },
+    {
+      "id": "cell:T15R13C2",
+      "type": "TARGET_CELL",
+      "label": "R13C2: 'Vietnam'",
+      "metadata": {
+        "row": 13,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Vietnam"
+      }
+    },
+    {
+      "id": "cell:T15R13C3",
+      "type": "TARGET_CELL",
+      "label": "R13C3: 'TC-106'",
+      "metadata": {
+        "row": 13,
+        "col": 3,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "TC-106"
+      }
+    },
+    {
+      "id": "cell:T15R13C4",
+      "type": "TARGET_CELL",
+      "label": "R13C4: '6.00%'",
+      "metadata": {
+        "row": 13,
+        "col": 4,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "6.00%"
+      }
+    },
+    {
+      "id": "cell:T15R14C0",
+      "type": "TARGET_CELL",
+      "label": "R14C0: '14'",
+      "metadata": {
+        "row": 14,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "14"
+      }
+    },
+    {
+      "id": "cell:T15R14C1",
+      "type": "TARGET_CELL",
+      "label": "R14C1: 'Peer Company 8'",
+      "metadata": {
+        "row": 14,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Peer Company 8"
+      }
+    },
+    {
+      "id": "cell:T15R14C2",
+      "type": "TARGET_CELL",
+      "label": "R14C2: 'Vietnam'",
+      "metadata": {
+        "row": 14,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Vietnam"
+      }
+    },
+    {
+      "id": "cell:T15R14C3",
+      "type": "TARGET_CELL",
+      "label": "R14C3: 'TC-107'",
+      "metadata": {
+        "row": 14,
+        "col": 3,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "TC-107"
+      }
+    },
+    {
+      "id": "cell:T15R14C4",
+      "type": "TARGET_CELL",
+      "label": "R14C4: '6.30%'",
+      "metadata": {
+        "row": 14,
+        "col": 4,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "6.30%"
+      }
+    },
+    {
+      "id": "cell:T15R15C0",
+      "type": "TARGET_CELL",
+      "label": "R15C0: '15'",
+      "metadata": {
+        "row": 15,
+        "col": 0,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "15"
+      }
+    },
+    {
+      "id": "cell:T15R15C1",
+      "type": "TARGET_CELL",
+      "label": "R15C1: 'Peer Company 9'",
+      "metadata": {
+        "row": 15,
+        "col": 1,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Peer Company 9"
+      }
+    },
+    {
+      "id": "cell:T15R15C2",
+      "type": "TARGET_CELL",
+      "label": "R15C2: 'Vietnam'",
+      "metadata": {
+        "row": 15,
+        "col": 2,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "Vietnam"
+      }
+    },
+    {
+      "id": "cell:T15R15C3",
+      "type": "TARGET_CELL",
+      "label": "R15C3: 'TC-108'",
+      "metadata": {
+        "row": 15,
+        "col": 3,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "TC-108"
+      }
+    },
+    {
+      "id": "cell:T15R15C4",
+      "type": "TARGET_CELL",
+      "label": "R15C4: '6.60%'",
+      "metadata": {
+        "row": 15,
+        "col": 4,
+        "semantic_match": true,
+        "display_match": true,
+        "status": "MATCH"
+      }
+    },
+    {
+      "id": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "type": "SOURCE_CELL",
+      "label": "HMV-FA&RPT FY2024.xlsx!!",
+      "metadata": {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sheet": null,
+        "address": null,
+        "formula": null,
+        "raw_value": "6.60%"
+      }
+    }
+  ],
+  "edges": [
+    {
+      "from": "manifest:rfm-50d40c1cb03e:v1",
+      "to": "table:10:rfr-071",
+      "relation": "CONTAINS_TABLE_MUTATION"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R6C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:FS:B14",
+      "to": "cell:T10R6C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R6C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:FS:D14",
+      "to": "cell:T10R6C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R6C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:FS:D14",
+      "to": "cell:T10R6C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R7C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:A8",
+      "to": "cell:T10R7C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R7C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D8",
+      "to": "cell:T10R7C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R7C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D8",
+      "to": "cell:T10R7C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R8C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:A9",
+      "to": "cell:T10R8C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R8C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D9",
+      "to": "cell:T10R8C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R8C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D9",
+      "to": "cell:T10R8C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R9C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:A14",
+      "to": "cell:T10R9C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R9C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D14",
+      "to": "cell:T10R9C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R9C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D14",
+      "to": "cell:T10R9C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R10C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:A34",
+      "to": "cell:T10R10C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R10C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D34",
+      "to": "cell:T10R10C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:10:rfr-071",
+      "to": "cell:T10R10C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:Financial Analysis:D34",
+      "to": "cell:T10R10C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "manifest:rfm-50d40c1cb03e:v1",
+      "to": "table:14:rfr-097",
+      "relation": "CONTAINS_TABLE_MUTATION"
+    },
+    {
+      "from": "table:14:rfr-097",
+      "to": "cell:T14R8C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T14R8C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:14:rfr-097",
+      "to": "cell:T14R8C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T14R8C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:14:rfr-097",
+      "to": "cell:T14R8C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T14R8C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:14:rfr-097",
+      "to": "cell:T14R8C3",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T14R8C3",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:14:rfr-097",
+      "to": "cell:T14R8C4",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T14R8C4",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:14:rfr-097",
+      "to": "cell:T14R8C5",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T14R8C5",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:14:rfr-097",
+      "to": "cell:T14R9C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T14R9C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:14:rfr-097",
+      "to": "cell:T14R9C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T14R9C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:14:rfr-097",
+      "to": "cell:T14R9C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T14R9C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:14:rfr-097",
+      "to": "cell:T14R9C3",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T14R9C3",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:14:rfr-097",
+      "to": "cell:T14R9C4",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T14R9C4",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:14:rfr-097",
+      "to": "cell:T14R9C5",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T14R9C5",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "manifest:rfm-50d40c1cb03e:v1",
+      "to": "table:15:rfr-098",
+      "relation": "CONTAINS_TABLE_MUTATION"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R7C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R7C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R7C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R7C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R7C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R7C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R7C3",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R7C3",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R7C4",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R7C4",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R8C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R8C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R8C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R8C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R8C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R8C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R8C3",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R8C3",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R8C4",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R8C4",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R9C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R9C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R9C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R9C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R9C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R9C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R9C3",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R9C3",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R9C4",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R9C4",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R10C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R10C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R10C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R10C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R10C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R10C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R10C3",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R10C3",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R10C4",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R10C4",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R11C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R11C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R11C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R11C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R11C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R11C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R11C3",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R11C3",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R11C4",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R11C4",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R12C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R12C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R12C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R12C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R12C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R12C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R12C3",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R12C3",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R12C4",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R12C4",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R13C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R13C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R13C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R13C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R13C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R13C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R13C3",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R13C3",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R13C4",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R13C4",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R14C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R14C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R14C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R14C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R14C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R14C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R14C3",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R14C3",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R14C4",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R14C4",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R15C0",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R15C0",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R15C1",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R15C1",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R15C2",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R15C2",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R15C3",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R15C3",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    },
+    {
+      "from": "table:15:rfr-098",
+      "to": "cell:T15R15C4",
+      "relation": "CONTAINS_CELL"
+    },
+    {
+      "from": "source:HMV-FA&RPT FY2024.xlsx:doc:elem",
+      "to": "cell:T15R15C4",
+      "relation": "BINDS_TO_OUTPUT",
+      "transform": "NONE"
+    }
+  ]
+}

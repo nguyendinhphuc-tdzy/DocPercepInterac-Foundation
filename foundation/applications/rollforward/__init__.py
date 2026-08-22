@@ -75,6 +75,20 @@ __all__ = [
     "StructuralValidator",
     "RePerceptionValidator",
     "StructuralWritebackEngine",
+    "ValueType",
+    "UnitType",
+    "FormulaStatus",
+    "TransformType",
+    "ReconciliationStatus",
+    "CalculationProvenance",
+    "SourceCellReference",
+    "TargetCellReference",
+    "CellReconciliationRecord",
+    "TableReconciliationSummary",
+    "ManifestReconciliationSummary",
+    "SourceFreshnessTracker",
+    "ValueSemanticEvaluator",
+    "DataReconciliationEngine",
 ]
 
 from applications.rollforward.structural_writeback import (
@@ -90,4 +104,20 @@ from applications.rollforward.structural_writeback import (
     StructuralValidator,
     RePerceptionValidator,
     StructuralWritebackEngine,
+)
+from applications.rollforward.data_reconciliation import (
+    ValueType,
+    UnitType,
+    FormulaStatus,
+    TransformType,
+    ReconciliationStatus,
+    CalculationProvenance,
+    SourceCellReference,
+    TargetCellReference,
+    CellReconciliationRecord,
+    TableReconciliationSummary,
+    ManifestReconciliationSummary,
+    SourceFreshnessTracker,
+    ValueSemanticEvaluator,
+    DataReconciliationEngine,
 )
