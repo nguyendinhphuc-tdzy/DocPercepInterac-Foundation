@@ -451,7 +451,12 @@ class StructuralWritebackEngine:
         # --------------------------------------------------------------------
         # 1. APPROVAL & VERSION GATING (Requirement #2 & Requirement #9)
         # --------------------------------------------------------------------
-        if manifest.status != ManifestStatus.APPROVED:
+        # EXECUTING is accepted alongside APPROVED so that a governed orchestrator
+        # (Phase D3) may drive the APPROVED -> EXECUTING transition through the
+        # RollForwardStateMachine *before* delegating the mutation here. The state
+        # machine already enforces is_execution_ready() on that transition, so an
+        # EXECUTING manifest carries strictly stronger provenance than an APPROVED one.
+        if manifest.status not in (ManifestStatus.APPROVED, ManifestStatus.EXECUTING):
             return MutationExecutionResult(
                 outcome=ExecutionOutcome.APPROVAL_INVALID,
                 success=False,

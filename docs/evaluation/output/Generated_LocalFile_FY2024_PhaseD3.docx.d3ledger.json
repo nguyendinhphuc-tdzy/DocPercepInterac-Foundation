@@ -1,0 +1,10 @@
+{
+  "execution_id": "exec-7243cb111dd0",
+  "manifest_id": "rfm-d7a1ccab1e32",
+  "manifest_version": 1,
+  "mutation_plan_id": "plan-88ebe4b9",
+  "mutation_plan_digest": "4873e39b3d0288cc20cf3cefc32d1d1e98cf3a3605d29c9757770c40d979b47a",
+  "output_hash": "34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd",
+  "published_at": "2026-08-22T17:37:05.608747+00:00",
+  "status": "COMPLETED"
+}

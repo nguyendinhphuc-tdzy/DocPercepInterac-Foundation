@@ -1,0 +1,3483 @@
+{
+  "execution_id": "exec-7243cb111dd0",
+  "manifest_id": "rfm-d7a1ccab1e32",
+  "manifest_version": 1,
+  "approved_manifest_version": 1,
+  "approver": "tax-partner@kpmg.com",
+  "approved_at": "2026-08-22T17:36:59.883525+00:00",
+  "mutation_plan_id": "plan-88ebe4b9",
+  "mutation_plan_digest": "4873e39b3d0288cc20cf3cefc32d1d1e98cf3a3605d29c9757770c40d979b47a",
+  "template_document": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+  "template_hash": "5fdf55e4e6007a164908af84bf8c001c767bf46f66c5be6e6cfd7afe1222f47c",
+  "source_hashes": {
+    "HMV-FA&RPT FY2024.xlsx": "9574dcc037af9ff708ae31e7c67586d6baa37a584e8fa602e1409c36fb6358f2",
+    "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx": "80e0b0deb594aef403e58bd3db836cd9e6172167bb8ed8ef8153951dccbde3e3"
+  },
+  "started_at": "2026-08-22T17:37:00.606921+00:00",
+  "ended_at": "2026-08-22T17:37:06.070543+00:00",
+  "executed_regions": [
+    {
+      "region_id": "rfr-071",
+      "section_name": "The standard arm\u2019s length range",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXECUTED",
+      "table_index": 10,
+      "exclusion_reason": null,
+      "reason_detail": "READY and covered by the approved MutationPlan.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-098",
+      "section_name": "Description of comparable companies",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXECUTED",
+      "table_index": 14,
+      "exclusion_reason": null,
+      "reason_detail": "READY and covered by the approved MutationPlan.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-101",
+      "section_name": "Description of comparable companies (Table 15)",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXECUTED",
+      "table_index": 15,
+      "exclusion_reason": null,
+      "reason_detail": "READY and covered by the approved MutationPlan.",
+      "review_state": "PENDING"
+    }
+  ],
+  "excluded_regions": [
+    {
+      "region_id": "rfr-093",
+      "section_name": "Search for comparable companies in Vietnam",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 13,
+      "exclusion_reason": "UNSUPPORTED_OPERATION",
+      "reason_detail": "Plan implies row deletion (23 -> 6); the D1 writeback engine supports row insertion only.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-001",
+      "section_name": "PREAMBLE: General Information (Table 0)",
+      "classification": "UPDATE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-002",
+      "section_name": "PREAMBLE: General Information (Table 1)",
+      "classification": "UPDATE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-003",
+      "section_name": "PREAMBLE: General Information",
+      "classification": "UPDATE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-004",
+      "section_name": "PART A. TAXPAYER INFORMATION\t4",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-005",
+      "section_name": "PART B.  INFORMATION ON TAXPAYER\u2019S RELATED PARTY TRANSACTIONS\t7",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 3,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-006",
+      "section_name": "PART C.  FINANCIAL INFORMATION\t22",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-007",
+      "section_name": "Glossary",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-008",
+      "section_name": "Objective and scope",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-009",
+      "section_name": "Executive Summary",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 2,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-010",
+      "section_name": "Executive Summary (Table 2)",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 2,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-011",
+      "section_name": "Executive Summary",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 2,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-012",
+      "section_name": "PART A. TAXPAYER INFORMATION",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-013",
+      "section_name": "Information on ABC",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-014",
+      "section_name": "Overview of the XYZ Group",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-015",
+      "section_name": "Overview of ABC",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-016",
+      "section_name": "Background",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-017",
+      "section_name": "ABC\u2019s organisation and management structure",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-018",
+      "section_name": "Business strategy",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-019",
+      "section_name": "Business restructurings, capital transfers, or asset transfers of the Group",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-020",
+      "section_name": "Companies having similar products / Key competitors",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-021",
+      "section_name": "PART B.  INFORMATION ON TAXPAYER\u2019S RELATED PARTY TRANSACTIONS",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 3,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-022",
+      "section_name": "Related party transactions",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 3,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-023",
+      "section_name": "Overview",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-024",
+      "section_name": "Overview (Table 3)",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 3,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-025",
+      "section_name": "Overview",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-026",
+      "section_name": "Sales of goods / merchandises / goods",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-027",
+      "section_name": "Purchases of materials / merchandises / goods",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-028",
+      "section_name": "Provision of services",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-029",
+      "section_name": "Receipt of technical support services",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-030",
+      "section_name": "Payment of royalties / licensing fee / trademark fee",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-031",
+      "section_name": "Payment of interest on intercompany loan(s)",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-032",
+      "section_name": "Payment of interest on intercompany loan(s) (Table 4)",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 3,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-033",
+      "section_name": "Payment of interest on intercompany loan(s)",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-034",
+      "section_name": "Purchases / sales of fixed assets",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-035",
+      "section_name": "Other transactions",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-036",
+      "section_name": "Values of intra-group payments and receipts with supporting invoices for each category of related pa",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-037",
+      "section_name": "Copies of intercompany agreements",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-038",
+      "section_name": "Analysis of functions, assets and risks",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-039",
+      "section_name": "Analysis of functions, assets and risks (Table 5)",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-040",
+      "section_name": "Analysis of functions, assets and risks",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-041",
+      "section_name": "Research and development (\u201cR&D\u201d)",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-042",
+      "section_name": "Procurement",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-043",
+      "section_name": "Production/ Operation",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-044",
+      "section_name": "Production/ Operation scheduling",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-045",
+      "section_name": "Production/ Operation process",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-046",
+      "section_name": "Quality control and inspection",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-047",
+      "section_name": "Warehousing and Logistics",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-048",
+      "section_name": "Marketing and Sales",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-049",
+      "section_name": "After-sales services",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-050",
+      "section_name": "General Administration",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-051",
+      "section_name": "Assets used",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-052",
+      "section_name": "Risks assumed",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-053",
+      "section_name": "Characterization of ABC",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-054",
+      "section_name": "Changes from Previous Fiscal Year",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-055",
+      "section_name": "Economic analysis",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-056",
+      "section_name": "Transfer pricing methods",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-057",
+      "section_name": "Internal and external comparable data",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-058",
+      "section_name": "Selection of the most appropriate transfer pricing method(s)",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-059",
+      "section_name": "Application of CPM",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-060",
+      "section_name": "Selection of tested party",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-061",
+      "section_name": "Selection of profit level indicator (\u201cPLI\u201d)",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-062",
+      "section_name": "Selection of profit level indicator (\u201cPLI\u201d) (Table 6)",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-063",
+      "section_name": "Selection of profit level indicator (\u201cPLI\u201d)",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-064",
+      "section_name": "Selection of profit level indicator (\u201cPLI\u201d) (Table 7)",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-065",
+      "section_name": "Selection of profit level indicator (\u201cPLI\u201d)",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-066",
+      "section_name": "Selection of profit level indicator (\u201cPLI\u201d) (Table 8)",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-067",
+      "section_name": "Selection of profit level indicator (\u201cPLI\u201d)",
+      "classification": "STATIC",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-068",
+      "section_name": "Use of standard arm\u2019s length range",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-069",
+      "section_name": "Use of previous year and multiple year data",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-070",
+      "section_name": "Adjustments",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-072",
+      "section_name": "The standard arm\u2019s length range (Table 9)",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 10,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-073",
+      "section_name": "The standard arm\u2019s length range (Table 10)",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 10,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-074",
+      "section_name": "The standard arm\u2019s length range",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 10,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-075",
+      "section_name": "PART C.  FINANCIAL INFORMATION",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-076",
+      "section_name": "Financial information",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-077",
+      "section_name": "ABC\u2019s audited financial statements in FY20xx",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-078",
+      "section_name": "Allocation method used in the calculation of ABC\u2019s operating result for each business segment",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-079",
+      "section_name": "Allocation method used in the calculation of ABC\u2019s operating result for each business segment (Table 11)",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-080",
+      "section_name": "Allocation method used in the calculation of ABC\u2019s operating result for each business segment",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-081",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strate",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-082",
+      "section_name": "Appendices",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-083",
+      "section_name": "List of contents required to be included in the Local File",
+      "classification": "UPDATE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-084",
+      "section_name": "List of contents required to be included in the Local File (Table 12)",
+      "classification": "UPDATE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-085",
+      "section_name": "List of contents required to be included in the Local File",
+      "classification": "UPDATE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-086",
+      "section_name": "The CUP method",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-087",
+      "section_name": "Comparable profit-based methods",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-088",
+      "section_name": "The RPM",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-089",
+      "section_name": "The CPLM",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-090",
+      "section_name": "The CPM",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-091",
+      "section_name": "The PSM",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-092",
+      "section_name": "Search for comparable companies",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-094",
+      "section_name": "Search for comparable companies in Vietnam (Table 13)",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 13,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-095",
+      "section_name": "Search for comparable companies in Vietnam",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 13,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-096",
+      "section_name": "Search for comparable companies in Asia (other than Vietnam)",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-097",
+      "section_name": "Financial data of comparable companies",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 10,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-099",
+      "section_name": "Description of comparable companies (Table 14)",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 14,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-100",
+      "section_name": "Description of comparable companies",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 14,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-102",
+      "section_name": "Description of comparable companies",
+      "classification": "REPEATABLE",
+      "execution_gate": "READY",
+      "status": "EXCLUDED",
+      "table_index": 14,
+      "exclusion_reason": "NOT_IN_APPROVED_PLAN",
+      "reason_detail": "Region is not covered by the approved MutationPlan and was not executed.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-103",
+      "section_name": "Information on interest rates on short-term/ medium- to long-term loans in USD as announced by the S",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    },
+    {
+      "region_id": "rfr-104",
+      "section_name": "APAs and other tax rulings",
+      "classification": "UNKNOWN",
+      "execution_gate": "BLOCKED",
+      "status": "EXCLUDED",
+      "table_index": null,
+      "exclusion_reason": "CLASSIFICATION_UNKNOWN",
+      "reason_detail": "Region classification is UNKNOWN; strictly blocked from auto-execution.",
+      "review_state": "PENDING"
+    }
+  ],
+  "structural_changes": [
+    {
+      "region_id": "rfr-071",
+      "table_index": 10,
+      "operation": "INSERT_ROWS",
+      "rows_before": 6,
+      "rows_after": 11,
+      "rows_inserted": 5,
+      "columns_before": 3,
+      "columns_after": 3,
+      "precondition_fingerprint": "8c492bb51e40ff17",
+      "postcondition_fingerprint": "898e52e9d694932a"
+    },
+    {
+      "region_id": "rfr-098",
+      "table_index": 14,
+      "operation": "INSERT_ROWS",
+      "rows_before": 8,
+      "rows_after": 10,
+      "rows_inserted": 2,
+      "columns_before": 6,
+      "columns_after": 6,
+      "precondition_fingerprint": "811d51b7edb2640a",
+      "postcondition_fingerprint": "c9c599934ea063c7"
+    },
+    {
+      "region_id": "rfr-101",
+      "table_index": 15,
+      "operation": "INSERT_ROWS",
+      "rows_before": 7,
+      "rows_after": 16,
+      "rows_inserted": 9,
+      "columns_before": 5,
+      "columns_after": 5,
+      "precondition_fingerprint": "456dd5b9738428f0",
+      "postcondition_fingerprint": "4a4760b76bf116cb"
+    }
+  ],
+  "reconciliation": {
+    "overall_status": "MATCH",
+    "total_tables": 3,
+    "total_cells": 72,
+    "matched_cells": 72,
+    "mismatched_cells": 0,
+    "missing_cells": 0,
+    "type_mismatches": 0,
+    "format_mismatches": 0,
+    "manual_review_items": 0,
+    "blocked_items": 0,
+    "source_freshness_verified": true,
+    "per_table": [
+      {
+        "table_index": 10,
+        "region_id": "rfr-071",
+        "status": "MATCH",
+        "total_cells": 15,
+        "matched_cells": 15,
+        "mismatched_cells": 0,
+        "inserted_rows": 5,
+        "target_row_count": 11
+      },
+      {
+        "table_index": 14,
+        "region_id": "rfr-098",
+        "status": "MATCH",
+        "total_cells": 12,
+        "matched_cells": 12,
+        "mismatched_cells": 0,
+        "inserted_rows": 2,
+        "target_row_count": 10
+      },
+      {
+        "table_index": 15,
+        "region_id": "rfr-101",
+        "status": "MATCH",
+        "total_cells": 45,
+        "matched_cells": 45,
+        "mismatched_cells": 0,
+        "inserted_rows": 9,
+        "target_row_count": 16
+      }
+    ]
+  },
+  "validation_summary": {
+    "is_valid": true,
+    "total_checks": 34,
+    "passed": 34,
+    "failed": 0,
+    "hard_failures": [],
+    "warnings": [],
+    "by_category": {
+      "PACKAGE_PARSE": {
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0
+      },
+      "PERCEPTION": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0
+      },
+      "ELEMENT_INVENTORY": {
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0
+      },
+      "TARGET_REGIONS": {
+        "passed": 12,
+        "failed": 0,
+        "skipped": 0
+      },
+      "NON_TARGET_INTEGRITY": {
+        "passed": 2,
+        "failed": 0,
+        "skipped": 0
+      },
+      "TABLE_STRUCTURE": {
+        "passed": 4,
+        "failed": 0,
+        "skipped": 0
+      },
+      "MEDIA_RELATIONSHIPS": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0
+      },
+      "HEADERS_FOOTERS": {
+        "passed": 1,
+        "failed": 0,
+        "skipped": 0
+      },
+      "DOCUMENT_STRUCTURE": {
+        "passed": 3,
+        "failed": 0,
+        "skipped": 0
+      }
+    }
+  },
+  "ground_truth_evaluation": {
+    "evaluated": true,
+    "ground_truth_document": "HMV-26-Final-Local File for FY2024-EN-R2901KPMG.docx",
+    "ground_truth_sha256": "9ce8121d7a88be3205c41d78159452d72ffa5b00cbdcf364e996a723613b8b66",
+    "findings": [
+      {
+        "subject": "document.table_count",
+        "status": "CONTRADICTED",
+        "detail": "Generated document has 16 tables; Ground Truth has 19.",
+        "evidence": {
+          "generated": 16,
+          "ground_truth": 19
+        }
+      },
+      {
+        "subject": "table[10].rows",
+        "status": "INFERRED",
+        "detail": "No Ground Truth table could be deterministically correlated to this target table; no claim is made either way.",
+        "evidence": {
+          "region_id": "rfr-071",
+          "generated_rows": 11
+        }
+      },
+      {
+        "subject": "table[14].rows",
+        "status": "STRONGLY_SUPPORTED",
+        "detail": "No header-identical Ground Truth table exists, but table(s) [10, 16] share the leading header cell; Ground Truth row counts [11, 11] vs generated 10. The FY2024 Ground Truth column set evolved relative to the FY20XX template.",
+        "evidence": {
+          "region_id": "rfr-098",
+          "generated_rows": 10,
+          "ground_truth_rows": [
+            11,
+            11
+          ]
+        }
+      },
+      {
+        "subject": "table[15].rows",
+        "status": "STRONGLY_SUPPORTED",
+        "detail": "No header-identical Ground Truth table exists, but table(s) [10, 16] share the leading header cell; Ground Truth row counts [11, 11] vs generated 16. The FY2024 Ground Truth column set evolved relative to the FY20XX template.",
+        "evidence": {
+          "region_id": "rfr-101",
+          "generated_rows": 16,
+          "ground_truth_rows": [
+            11,
+            11
+          ]
+        }
+      }
+    ],
+    "note": "Evaluation-only. Ground Truth was read after execution completed and was never used to generate values, copy structures, or modify the generated output."
+  },
+  "lineage": {
+    "schema_version": "1.0.0",
+    "nodes": [
+      {
+        "id": "source_document:HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "type": "SOURCE_DOCUMENT",
+        "metadata": {
+          "document_name": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+          "sha256": "80e0b0deb594aef403e58bd3db836cd9e6172167bb8ed8ef8153951dccbde3e3"
+        }
+      },
+      {
+        "id": "source_document:HMV-FA&RPT FY2024.xlsx",
+        "type": "SOURCE_DOCUMENT",
+        "metadata": {
+          "document_name": "HMV-FA&RPT FY2024.xlsx",
+          "sha256": "9574dcc037af9ff708ae31e7c67586d6baa37a584e8fa602e1409c36fb6358f2"
+        }
+      },
+      {
+        "id": "source_binding:approved",
+        "type": "SOURCE_BINDING",
+        "metadata": {
+          "verified_bindings": 3,
+          "binding_engine": "Phase C DeterministicSourceBindingEngine"
+        }
+      },
+      {
+        "id": "manifest:rfm-d7a1ccab1e32:v1",
+        "type": "MANIFEST_VERSION",
+        "metadata": {
+          "manifest_id": "rfm-d7a1ccab1e32",
+          "manifest_version": 1,
+          "approved_manifest_version": 1,
+          "approver": "tax-partner@kpmg.com",
+          "approved_at": "2026-08-22T17:36:59.883525+00:00"
+        }
+      },
+      {
+        "id": "mutation_plan:plan-88ebe4b9",
+        "type": "MUTATION_PLAN",
+        "metadata": {
+          "plan_id": "plan-88ebe4b9",
+          "plan_digest": "4873e39b3d0288cc20cf3cefc32d1d1e98cf3a3605d29c9757770c40d979b47a",
+          "table_mutations": 3
+        }
+      },
+      {
+        "id": "execution:exec-7243cb111dd0",
+        "type": "EXECUTION",
+        "metadata": {
+          "execution_id": "exec-7243cb111dd0",
+          "started_at": "2026-08-22T17:37:00.606921+00:00",
+          "template_hash": "5fdf55e4e6007a164908af84bf8c001c767bf46f66c5be6e6cfd7afe1222f47c"
+        }
+      },
+      {
+        "id": "target_region:rfr-071:table10",
+        "type": "TARGET_REGION",
+        "metadata": {
+          "region_id": "rfr-071",
+          "table_index": 10,
+          "rows_before": 6,
+          "rows_after": 11,
+          "rows_inserted": 5
+        }
+      },
+      {
+        "id": "target_region:rfr-098:table14",
+        "type": "TARGET_REGION",
+        "metadata": {
+          "region_id": "rfr-098",
+          "table_index": 14,
+          "rows_before": 8,
+          "rows_after": 10,
+          "rows_inserted": 2
+        }
+      },
+      {
+        "id": "target_region:rfr-101:table15",
+        "type": "TARGET_REGION",
+        "metadata": {
+          "region_id": "rfr-101",
+          "table_index": 15,
+          "rows_before": 7,
+          "rows_after": 16,
+          "rows_inserted": 9
+        }
+      },
+      {
+        "id": "target_cell:T10R6C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 6,
+          "col_idx": 0,
+          "value_digest": "sha256:d68f12d448bc52c5",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "FS",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R6C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 6,
+          "col_idx": 1,
+          "value_digest": "sha256:c815753cadb59fb9",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "Financial Analysis",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R6C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 6,
+          "col_idx": 2,
+          "value_digest": "sha256:c815753cadb59fb9",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "Financial Analysis",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R7C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 7,
+          "col_idx": 0,
+          "value_digest": "sha256:589cc3f2d2be7c49",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "FS",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R7C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 7,
+          "col_idx": 1,
+          "value_digest": "sha256:9142d7327ce79158",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "Financial Analysis",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R7C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 7,
+          "col_idx": 2,
+          "value_digest": "sha256:9142d7327ce79158",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "Financial Analysis",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R8C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 8,
+          "col_idx": 0,
+          "value_digest": "sha256:0f82bf20d35b04b7",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "FS",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R8C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 8,
+          "col_idx": 1,
+          "value_digest": "sha256:ed1ca119f9aa982b",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "Financial Analysis",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R8C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 8,
+          "col_idx": 2,
+          "value_digest": "sha256:ed1ca119f9aa982b",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "Financial Analysis",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R9C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 9,
+          "col_idx": 0,
+          "value_digest": "sha256:0fee1c94dc193de8",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "FS",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R9C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 9,
+          "col_idx": 1,
+          "value_digest": "sha256:f280edd0b0d6f064",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "Financial Analysis",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R9C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 9,
+          "col_idx": 2,
+          "value_digest": "sha256:f280edd0b0d6f064",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "Financial Analysis",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R10C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 10,
+          "col_idx": 0,
+          "value_digest": "sha256:a9312bbaf8a0c314",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "FS",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R10C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 10,
+          "col_idx": 1,
+          "value_digest": "sha256:57a51b6e8d4a93af",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "Financial Analysis",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T10R10C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 10,
+          "row_idx": 10,
+          "col_idx": 2,
+          "value_digest": "sha256:57a51b6e8d4a93af",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": "Financial Analysis",
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T14R8C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 14,
+          "row_idx": 8,
+          "col_idx": 0,
+          "value_digest": "sha256:6b86b273ff34fce1",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T14R8C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 14,
+          "row_idx": 8,
+          "col_idx": 1,
+          "value_digest": "sha256:e20f05afc06cfb2a",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T14R8C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 14,
+          "row_idx": 8,
+          "col_idx": 2,
+          "value_digest": "sha256:f8ebdc03cdfeffba",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T14R8C3",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 14,
+          "row_idx": 8,
+          "col_idx": 3,
+          "value_digest": "sha256:7e8cfcf9f6510a5b",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T14R8C4",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 14,
+          "row_idx": 8,
+          "col_idx": 4,
+          "value_digest": "sha256:28aa7ac9f621f25a",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T14R8C5",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 14,
+          "row_idx": 8,
+          "col_idx": 5,
+          "value_digest": "sha256:b64102c6ae3a18d6",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T14R9C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 14,
+          "row_idx": 9,
+          "col_idx": 0,
+          "value_digest": "sha256:d4735e3a265e16ee",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T14R9C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 14,
+          "row_idx": 9,
+          "col_idx": 1,
+          "value_digest": "sha256:20faa8d423356c91",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T14R9C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 14,
+          "row_idx": 9,
+          "col_idx": 2,
+          "value_digest": "sha256:f8ebdc03cdfeffba",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T14R9C3",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 14,
+          "row_idx": 9,
+          "col_idx": 3,
+          "value_digest": "sha256:46536aa8fe506871",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T14R9C4",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 14,
+          "row_idx": 9,
+          "col_idx": 4,
+          "value_digest": "sha256:28aa7ac9f621f25a",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T14R9C5",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 14,
+          "row_idx": 9,
+          "col_idx": 5,
+          "value_digest": "sha256:b64102c6ae3a18d6",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R7C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 7,
+          "col_idx": 0,
+          "value_digest": "sha256:6b86b273ff34fce1",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R7C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 7,
+          "col_idx": 1,
+          "value_digest": "sha256:501e1040b8347239",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R7C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 7,
+          "col_idx": 2,
+          "value_digest": "sha256:2e5e81066a29cd66",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R7C3",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 7,
+          "col_idx": 3,
+          "value_digest": "sha256:836489ee84ebaeb0",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R7C4",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 7,
+          "col_idx": 4,
+          "value_digest": "sha256:535465eba438ab0c",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R8C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 8,
+          "col_idx": 0,
+          "value_digest": "sha256:d4735e3a265e16ee",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R8C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 8,
+          "col_idx": 1,
+          "value_digest": "sha256:3097e2e85b1e1cf6",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R8C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 8,
+          "col_idx": 2,
+          "value_digest": "sha256:2e5e81066a29cd66",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R8C3",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 8,
+          "col_idx": 3,
+          "value_digest": "sha256:d9e0934d28b0cf2a",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R8C4",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 8,
+          "col_idx": 4,
+          "value_digest": "sha256:6afd4a6c0157b693",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R9C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 9,
+          "col_idx": 0,
+          "value_digest": "sha256:4e07408562bedb8b",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R9C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 9,
+          "col_idx": 1,
+          "value_digest": "sha256:c73ec3242332a496",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R9C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 9,
+          "col_idx": 2,
+          "value_digest": "sha256:2e5e81066a29cd66",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R9C3",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 9,
+          "col_idx": 3,
+          "value_digest": "sha256:7564ec906c881bc3",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R9C4",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 9,
+          "col_idx": 4,
+          "value_digest": "sha256:48c8bcbf4054a757",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R10C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 10,
+          "col_idx": 0,
+          "value_digest": "sha256:4b227777d4dd1fc6",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R10C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 10,
+          "col_idx": 1,
+          "value_digest": "sha256:f1256029d83fbb3c",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R10C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 10,
+          "col_idx": 2,
+          "value_digest": "sha256:2e5e81066a29cd66",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R10C3",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 10,
+          "col_idx": 3,
+          "value_digest": "sha256:bd00e139059c518f",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R10C4",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 10,
+          "col_idx": 4,
+          "value_digest": "sha256:20063e8ef84671a6",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R11C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 11,
+          "col_idx": 0,
+          "value_digest": "sha256:ef2d127de37b942b",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R11C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 11,
+          "col_idx": 1,
+          "value_digest": "sha256:2349d28742cab1ed",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R11C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 11,
+          "col_idx": 2,
+          "value_digest": "sha256:2e5e81066a29cd66",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R11C3",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 11,
+          "col_idx": 3,
+          "value_digest": "sha256:c43634684625ae10",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R11C4",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 11,
+          "col_idx": 4,
+          "value_digest": "sha256:ac81200f1ab4fc00",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R12C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 12,
+          "col_idx": 0,
+          "value_digest": "sha256:e7f6c011776e8db7",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R12C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 12,
+          "col_idx": 1,
+          "value_digest": "sha256:86c0d0415a464d9f",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R12C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 12,
+          "col_idx": 2,
+          "value_digest": "sha256:2e5e81066a29cd66",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R12C3",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 12,
+          "col_idx": 3,
+          "value_digest": "sha256:b652bd4d23a794f2",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R12C4",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 12,
+          "col_idx": 4,
+          "value_digest": "sha256:0f76d72be50141e0",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R13C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 13,
+          "col_idx": 0,
+          "value_digest": "sha256:7902699be42c8a8e",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R13C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 13,
+          "col_idx": 1,
+          "value_digest": "sha256:1e7e395816b91e67",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R13C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 13,
+          "col_idx": 2,
+          "value_digest": "sha256:2e5e81066a29cd66",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R13C3",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 13,
+          "col_idx": 3,
+          "value_digest": "sha256:e7e394ecab63f8ab",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R13C4",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 13,
+          "col_idx": 4,
+          "value_digest": "sha256:1c21ce760588eab5",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R14C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 14,
+          "col_idx": 0,
+          "value_digest": "sha256:2c624232cdd22177",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R14C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 14,
+          "col_idx": 1,
+          "value_digest": "sha256:c7548203bca3202b",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R14C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 14,
+          "col_idx": 2,
+          "value_digest": "sha256:2e5e81066a29cd66",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R14C3",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 14,
+          "col_idx": 3,
+          "value_digest": "sha256:7b5f8d4237b80c41",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R14C4",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 14,
+          "col_idx": 4,
+          "value_digest": "sha256:b5c5ab65759dd391",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R15C0",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 15,
+          "col_idx": 0,
+          "value_digest": "sha256:19581e27de7ced00",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R15C1",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 15,
+          "col_idx": 1,
+          "value_digest": "sha256:53cb8a0900c23db1",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R15C2",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 15,
+          "col_idx": 2,
+          "value_digest": "sha256:2e5e81066a29cd66",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R15C3",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 15,
+          "col_idx": 3,
+          "value_digest": "sha256:93776c76d8ae0810",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "target_cell:T15R15C4",
+        "type": "TARGET_CELL",
+        "metadata": {
+          "table_index": 15,
+          "row_idx": 15,
+          "col_idx": 4,
+          "value_digest": "sha256:20451633816f4a9e",
+          "semantic_match": true,
+          "display_match": true,
+          "status": "MATCH",
+          "source_document": "HMV-FA&RPT FY2024.xlsx",
+          "source_sheet": null,
+          "source_cell": null
+        }
+      },
+      {
+        "id": "generated_document:34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd",
+        "type": "GENERATED_DOCUMENT",
+        "metadata": {
+          "output_path": "C:\\Users\\PC\\Downloads\\DocPercepInterac Foundation\\docs\\evaluation\\output\\Generated_LocalFile_FY2024_PhaseD3.docx",
+          "output_hash": "34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd",
+          "publication_state": "FINAL_VALIDATED"
+        }
+      },
+      {
+        "id": "validation_result:exec-7243cb111dd0",
+        "type": "VALIDATION_RESULT",
+        "metadata": {
+          "status": "COMPLETED",
+          "validation_summary": {
+            "is_valid": true,
+            "total_checks": 34,
+            "passed": 34,
+            "failed": 0,
+            "hard_failures": [],
+            "warnings": [],
+            "by_category": {
+              "PACKAGE_PARSE": {
+                "passed": 4,
+                "failed": 0,
+                "skipped": 0
+              },
+              "PERCEPTION": {
+                "passed": 3,
+                "failed": 0,
+                "skipped": 0
+              },
+              "ELEMENT_INVENTORY": {
+                "passed": 2,
+                "failed": 0,
+                "skipped": 0
+              },
+              "TARGET_REGIONS": {
+                "passed": 12,
+                "failed": 0,
+                "skipped": 0
+              },
+              "NON_TARGET_INTEGRITY": {
+                "passed": 2,
+                "failed": 0,
+                "skipped": 0
+              },
+              "TABLE_STRUCTURE": {
+                "passed": 4,
+                "failed": 0,
+                "skipped": 0
+              },
+              "MEDIA_RELATIONSHIPS": {
+                "passed": 3,
+                "failed": 0,
+                "skipped": 0
+              },
+              "HEADERS_FOOTERS": {
+                "passed": 1,
+                "failed": 0,
+                "skipped": 0
+              },
+              "DOCUMENT_STRUCTURE": {
+                "passed": 3,
+                "failed": 0,
+                "skipped": 0
+              }
+            }
+          },
+          "reconciliation_status": "MATCH"
+        }
+      }
+    ],
+    "edges": [
+      {
+        "from": "source_document:HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "to": "source_binding:approved",
+        "relation": "BOUND_BY"
+      },
+      {
+        "from": "source_document:HMV-FA&RPT FY2024.xlsx",
+        "to": "source_binding:approved",
+        "relation": "BOUND_BY"
+      },
+      {
+        "from": "source_binding:approved",
+        "to": "manifest:rfm-d7a1ccab1e32:v1",
+        "relation": "DECLARED_IN"
+      },
+      {
+        "from": "manifest:rfm-d7a1ccab1e32:v1",
+        "to": "mutation_plan:plan-88ebe4b9",
+        "relation": "AUTHORIZES"
+      },
+      {
+        "from": "mutation_plan:plan-88ebe4b9",
+        "to": "execution:exec-7243cb111dd0",
+        "relation": "EXECUTED_AS"
+      },
+      {
+        "from": "execution:exec-7243cb111dd0",
+        "to": "target_region:rfr-071:table10",
+        "relation": "MUTATED"
+      },
+      {
+        "from": "execution:exec-7243cb111dd0",
+        "to": "target_region:rfr-098:table14",
+        "relation": "MUTATED"
+      },
+      {
+        "from": "execution:exec-7243cb111dd0",
+        "to": "target_region:rfr-101:table15",
+        "relation": "MUTATED"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R6C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R6C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R6C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R7C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R7C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R7C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R8C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R8C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R8C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R9C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R9C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R9C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R10C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R10C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-071:table10",
+        "to": "target_cell:T10R10C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-098:table14",
+        "to": "target_cell:T14R8C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-098:table14",
+        "to": "target_cell:T14R8C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-098:table14",
+        "to": "target_cell:T14R8C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-098:table14",
+        "to": "target_cell:T14R8C3",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-098:table14",
+        "to": "target_cell:T14R8C4",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-098:table14",
+        "to": "target_cell:T14R8C5",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-098:table14",
+        "to": "target_cell:T14R9C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-098:table14",
+        "to": "target_cell:T14R9C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-098:table14",
+        "to": "target_cell:T14R9C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-098:table14",
+        "to": "target_cell:T14R9C3",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-098:table14",
+        "to": "target_cell:T14R9C4",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-098:table14",
+        "to": "target_cell:T14R9C5",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R7C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R7C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R7C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R7C3",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R7C4",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R8C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R8C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R8C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R8C3",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R8C4",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R9C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R9C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R9C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R9C3",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R9C4",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R10C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R10C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R10C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R10C3",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R10C4",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R11C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R11C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R11C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R11C3",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R11C4",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R12C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R12C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R12C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R12C3",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R12C4",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R13C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R13C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R13C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R13C3",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R13C4",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R14C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R14C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R14C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R14C3",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R14C4",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R15C0",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R15C1",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R15C2",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R15C3",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "target_region:rfr-101:table15",
+        "to": "target_cell:T15R15C4",
+        "relation": "CONTAINS_CELL"
+      },
+      {
+        "from": "execution:exec-7243cb111dd0",
+        "to": "generated_document:34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd",
+        "relation": "PRODUCED"
+      },
+      {
+        "from": "generated_document:34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd",
+        "to": "validation_result:exec-7243cb111dd0",
+        "relation": "VALIDATED_BY"
+      }
+    ]
+  },
+  "rollback_occurred": false,
+  "staging_discarded": false,
+  "template_preserved": true,
+  "idempotent_noop": false,
+  "output_path": "C:\\Users\\PC\\Downloads\\DocPercepInterac Foundation\\docs\\evaluation\\output\\Generated_LocalFile_FY2024_PhaseD3.docx",
+  "output_hash": "34bee430c155e7900f87ba65da7244baf1aaf8ddb09c285d6120a2b46918d9bd",
+  "status": "COMPLETED",
+  "publication_state": "FINAL_VALIDATED",
+  "failure_code": null,
+  "failure_detail": "",
+  "execution_manifest_status": "COMPLETED",
+  "state_transitions": [
+    "APPROVED->EXECUTING",
+    "EXECUTING->VALIDATED",
+    "VALIDATED->COMPLETED"
+  ],
+  "unresolved_blocked_summary": {
+    "UNSUPPORTED_OPERATION": 1,
+    "NOT_IN_APPROVED_PLAN": 42,
+    "CLASSIFICATION_UNKNOWN": 58
+  },
+  "inputs": {
+    "historical_local_file": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+    "master_template": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+    "current_source_farpt": "HMV-FA&RPT FY2024.xlsx",
+    "current_source_appendix_i": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+    "ground_truth_oracle": "HMV-26-Final-Local File for FY2024-EN-R2901KPMG.docx"
+  },
+  "blocked_regions_analysis": {
+    "total_blocked_regions": 58,
+    "category_counts": {
+      "TRULY_STATIC_UNMAPPED": 9,
+      "MISSING_CURRENT_SOURCE": 7,
+      "AMBIGUOUS_SOURCE": 8,
+      "UNSUPPORTED_CONSTRUCT": 0,
+      "INSUFFICIENT_EVIDENCE": 31,
+      "MANUAL_REVIEW_REQUIRED": 3
+    },
+    "detailed_breakdown": {
+      "TRULY_STATIC_UNMAPPED": [
+        {
+          "region_id": "rfr-007",
+          "section_name": "Glossary",
+          "element_count": 20,
+          "reason": "Statutory Decree 132/Decree 20 transfer pricing definitions and method mechanics; boilerplate text carried forward without Excel dependency."
+        },
+        {
+          "region_id": "rfr-008",
+          "section_name": "Objective and scope",
+          "element_count": 3,
+          "reason": "Statutory Decree 132/Decree 20 transfer pricing definitions and method mechanics; boilerplate text carried forward without Excel dependency."
+        },
+        {
+          "region_id": "rfr-059",
+          "section_name": "Application of CPM",
+          "element_count": 1,
+          "reason": "Statutory Decree 132/Decree 20 transfer pricing definitions and method mechanics; boilerplate text carried forward without Excel dependency."
+        },
+        {
+          "region_id": "rfr-086",
+          "section_name": "The CUP method",
+          "element_count": 2,
+          "reason": "Statutory Decree 132/Decree 20 transfer pricing definitions and method mechanics; boilerplate text carried forward without Excel dependency."
+        },
+        {
+          "region_id": "rfr-087",
+          "section_name": "Comparable profit-based methods",
+          "element_count": 2,
+          "reason": "Statutory Decree 132/Decree 20 transfer pricing definitions and method mechanics; boilerplate text carried forward without Excel dependency."
+        },
+        {
+          "region_id": "rfr-088",
+          "section_name": "The RPM",
+          "element_count": 2,
+          "reason": "Statutory Decree 132/Decree 20 transfer pricing definitions and method mechanics; boilerplate text carried forward without Excel dependency."
+        },
+        {
+          "region_id": "rfr-089",
+          "section_name": "The CPLM",
+          "element_count": 2,
+          "reason": "Statutory Decree 132/Decree 20 transfer pricing definitions and method mechanics; boilerplate text carried forward without Excel dependency."
+        },
+        {
+          "region_id": "rfr-090",
+          "section_name": "The CPM",
+          "element_count": 2,
+          "reason": "Statutory Decree 132/Decree 20 transfer pricing definitions and method mechanics; boilerplate text carried forward without Excel dependency."
+        },
+        {
+          "region_id": "rfr-091",
+          "section_name": "The PSM",
+          "element_count": 3,
+          "reason": "Statutory Decree 132/Decree 20 transfer pricing definitions and method mechanics; boilerplate text carried forward without Excel dependency."
+        }
+      ],
+      "MISSING_CURRENT_SOURCE": [
+        {
+          "region_id": "rfr-016",
+          "section_name": "Background",
+          "element_count": 3,
+          "reason": "Client-specific corporate narrative required by Decree 20 (competitor analysis, agreements, APAs) that does not exist in FA&RPT or Appendix I Excel workbooks."
+        },
+        {
+          "region_id": "rfr-019",
+          "section_name": "Business restructurings, capital transfers, or asset transfers of the Group",
+          "element_count": 2,
+          "reason": "Client-specific corporate narrative required by Decree 20 (competitor analysis, agreements, APAs) that does not exist in FA&RPT or Appendix I Excel workbooks."
+        },
+        {
+          "region_id": "rfr-020",
+          "section_name": "Companies having similar products / Key competitors",
+          "element_count": 7,
+          "reason": "Client-specific corporate narrative required by Decree 20 (competitor analysis, agreements, APAs) that does not exist in FA&RPT or Appendix I Excel workbooks."
+        },
+        {
+          "region_id": "rfr-037",
+          "section_name": "Copies of intercompany agreements",
+          "element_count": 2,
+          "reason": "Client-specific corporate narrative required by Decree 20 (competitor analysis, agreements, APAs) that does not exist in FA&RPT or Appendix I Excel workbooks."
+        },
+        {
+          "region_id": "rfr-053",
+          "section_name": "Characterization of ABC",
+          "element_count": 2,
+          "reason": "Client-specific corporate narrative required by Decree 20 (competitor analysis, agreements, APAs) that does not exist in FA&RPT or Appendix I Excel workbooks."
+        },
+        {
+          "region_id": "rfr-054",
+          "section_name": "Changes from Previous Fiscal Year",
+          "element_count": 3,
+          "reason": "Client-specific corporate narrative required by Decree 20 (competitor analysis, agreements, APAs) that does not exist in FA&RPT or Appendix I Excel workbooks."
+        },
+        {
+          "region_id": "rfr-104",
+          "section_name": "APAs and other tax rulings",
+          "element_count": 2,
+          "reason": "Client-specific corporate narrative required by Decree 20 (competitor analysis, agreements, APAs) that does not exist in FA&RPT or Appendix I Excel workbooks."
+        }
+      ],
+      "AMBIGUOUS_SOURCE": [
+        {
+          "region_id": "rfr-026",
+          "section_name": "Sales of goods / merchandises / goods",
+          "element_count": 2,
+          "reason": "Transactional narrative sub-clause requiring manual verification against specific line items in FA&RPT 'RPTs' and 'FS Notes' worksheets."
+        },
+        {
+          "region_id": "rfr-027",
+          "section_name": "Purchases of materials / merchandises / goods",
+          "element_count": 2,
+          "reason": "Transactional narrative sub-clause requiring manual verification against specific line items in FA&RPT 'RPTs' and 'FS Notes' worksheets."
+        },
+        {
+          "region_id": "rfr-028",
+          "section_name": "Provision of services",
+          "element_count": 9,
+          "reason": "Transactional narrative sub-clause requiring manual verification against specific line items in FA&RPT 'RPTs' and 'FS Notes' worksheets."
+        },
+        {
+          "region_id": "rfr-029",
+          "section_name": "Receipt of technical support services",
+          "element_count": 3,
+          "reason": "Transactional narrative sub-clause requiring manual verification against specific line items in FA&RPT 'RPTs' and 'FS Notes' worksheets."
+        },
+        {
+          "region_id": "rfr-030",
+          "section_name": "Payment of royalties / licensing fee / trademark fee",
+          "element_count": 3,
+          "reason": "Transactional narrative sub-clause requiring manual verification against specific line items in FA&RPT 'RPTs' and 'FS Notes' worksheets."
+        },
+        {
+          "region_id": "rfr-034",
+          "section_name": "Purchases / sales of fixed assets",
+          "element_count": 2,
+          "reason": "Transactional narrative sub-clause requiring manual verification against specific line items in FA&RPT 'RPTs' and 'FS Notes' worksheets."
+        },
+        {
+          "region_id": "rfr-035",
+          "section_name": "Other transactions",
+          "element_count": 3,
+          "reason": "Transactional narrative sub-clause requiring manual verification against specific line items in FA&RPT 'RPTs' and 'FS Notes' worksheets."
+        },
+        {
+          "region_id": "rfr-036",
+          "section_name": "Values of intra-group payments and receipts with supporting invoices for each category of related pa",
+          "element_count": 2,
+          "reason": "Transactional narrative sub-clause requiring manual verification against specific line items in FA&RPT 'RPTs' and 'FS Notes' worksheets."
+        }
+      ],
+      "UNSUPPORTED_CONSTRUCT": [],
+      "INSUFFICIENT_EVIDENCE": [
+        {
+          "region_id": "rfr-004",
+          "section_name": "PART A. TAXPAYER INFORMATION\t4",
+          "element_count": 5,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-012",
+          "section_name": "PART A. TAXPAYER INFORMATION",
+          "element_count": 1,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-013",
+          "section_name": "Information on ABC",
+          "element_count": 1,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-014",
+          "section_name": "Overview of the XYZ Group",
+          "element_count": 4,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-015",
+          "section_name": "Overview of ABC",
+          "element_count": 1,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-023",
+          "section_name": "Overview",
+          "element_count": 5,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-025",
+          "section_name": "Overview",
+          "element_count": 2,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-031",
+          "section_name": "Payment of interest on intercompany loan(s)",
+          "element_count": 3,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-033",
+          "section_name": "Payment of interest on intercompany loan(s)",
+          "element_count": 4,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-038",
+          "section_name": "Analysis of functions, assets and risks",
+          "element_count": 2,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-040",
+          "section_name": "Analysis of functions, assets and risks",
+          "element_count": 1,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-041",
+          "section_name": "Research and development (\u201cR&D\u201d)",
+          "element_count": 3,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-046",
+          "section_name": "Quality control and inspection",
+          "element_count": 2,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-047",
+          "section_name": "Warehousing and Logistics",
+          "element_count": 4,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-048",
+          "section_name": "Marketing and Sales",
+          "element_count": 2,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-049",
+          "section_name": "After-sales services",
+          "element_count": 2,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-050",
+          "section_name": "General Administration",
+          "element_count": 2,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-051",
+          "section_name": "Assets used",
+          "element_count": 4,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-057",
+          "section_name": "Internal and external comparable data",
+          "element_count": 6,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-060",
+          "section_name": "Selection of tested party",
+          "element_count": 3,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-068",
+          "section_name": "Use of standard arm\u2019s length range",
+          "element_count": 2,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-069",
+          "section_name": "Use of previous year and multiple year data",
+          "element_count": 7,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-070",
+          "section_name": "Adjustments",
+          "element_count": 2,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-075",
+          "section_name": "PART C.  FINANCIAL INFORMATION",
+          "element_count": 1,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-076",
+          "section_name": "Financial information",
+          "element_count": 1,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-077",
+          "section_name": "ABC\u2019s audited financial statements in FY20xx",
+          "element_count": 2,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-081",
+          "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strate",
+          "element_count": 3,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-082",
+          "section_name": "Appendices",
+          "element_count": 1,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-092",
+          "section_name": "Search for comparable companies",
+          "element_count": 1,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-096",
+          "section_name": "Search for comparable companies in Asia (other than Vietnam)",
+          "element_count": 5,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        },
+        {
+          "region_id": "rfr-103",
+          "section_name": "Information on interest rates on short-term/ medium- to long-term loans in USD as announced by the S",
+          "element_count": 2,
+          "reason": "Insufficient deterministic signals to safely auto-bind to current-year Excel data sources."
+        }
+      ],
+      "MANUAL_REVIEW_REQUIRED": [
+        {
+          "region_id": "rfr-006",
+          "section_name": "PART C.  FINANCIAL INFORMATION\t22",
+          "element_count": 12,
+          "reason": "High-risk operational/FAR narrative section (12 elements) requiring human tax practitioner review and client fact verification."
+        },
+        {
+          "region_id": "rfr-017",
+          "section_name": "ABC\u2019s organisation and management structure",
+          "element_count": 19,
+          "reason": "High-risk operational/FAR narrative section (19 elements) requiring human tax practitioner review and client fact verification."
+        },
+        {
+          "region_id": "rfr-052",
+          "section_name": "Risks assumed",
+          "element_count": 14,
+          "reason": "High-risk operational/FAR narrative section (14 elements) requiring human tax practitioner review and client fact verification."
+        }
+      ]
+    }
+  }
+}
