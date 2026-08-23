@@ -641,6 +641,24 @@ class SlotAssignment:
 # ============================================================================
 
 @dataclass(frozen=True)
+class DocumentProfile:
+    """Everything one file's own content says, ready to be applied to a slot.
+
+    Produced by reading the file; consumed without touching it again. That split
+    is what lets the state change be a short atomic step (see
+    WorkflowIntakeSession.profile_document / attach_profiled_document).
+    """
+    slot_id: SlotId
+    artifact_format: ArtifactFormat
+    artifact: Optional[SourceArtifact]
+    signals: Optional[DocumentSignals]
+
+    @property
+    def accepted_format(self) -> bool:
+        return self.artifact is not None
+
+
+@dataclass(frozen=True)
 class SlotVerdict:
     status: SlotValidationStatus
     detected_label: str
@@ -934,6 +952,10 @@ class WorkflowIntakeSession:
         self.session_id = session_id
         self.workflow_id = workflow_id or f"wf-{uuid.uuid4().hex[:16]}"
         self.user_id = user_id
+        # The stored version this instance was loaded from. Carried back into the
+        # repository on save so a write built on a superseded snapshot is rejected
+        # rather than silently discarding another request's slot assignments.
+        self.state_version = 0
         self.workflow_type = workflow_type
         self.target_fiscal_year = target_fiscal_year
         self.created_at = datetime.now(timezone.utc).isoformat()
@@ -989,6 +1011,104 @@ class WorkflowIntakeSession:
 
     # -- assignment -----------------------------------------------------
 
+    @classmethod
+    def profile_document(cls, path: Path, slot_id: SlotId,
+                         actor: str = "user") -> "DocumentProfile":
+        """Read a file and derive everything a slot decision needs from it.
+
+        Deliberately separate from attaching it: this is the expensive, purely
+        file-dependent half (parse, profile, extract signals). Keeping it outside
+        the state mutation means a caller can profile once and then apply the
+        result inside a short, atomic read-modify-write — and a retry of that
+        write never re-reads the document.
+        """
+        spec = SLOT_SPECS[slot_id]
+        fmt = EXTENSION_FORMAT.get(path.suffix.lower(), ArtifactFormat.UNSUPPORTED)
+
+        if fmt not in spec.accepted_formats:
+            # Rejected on format alone — never profiled, never registered.
+            return DocumentProfile(
+                slot_id=slot_id,
+                artifact_format=fmt,
+                artifact=None,
+                signals=DocumentSignals(
+                    artifact_format=fmt, fiscal_year=None, fiscal_year_hits=0,
+                    placeholder_hits=0, observed_roles=(), satisfying_roles=(),
+                    is_local_file_shaped=False, is_blank_template_shaped=False,
+                    record_count=0,
+                ),
+            )
+
+        artifact = SourceIntakeProfiler.ingest(path, spec.supply_scope)
+        return DocumentProfile(
+            slot_id=slot_id,
+            artifact_format=fmt,
+            artifact=artifact,
+            signals=SignalExtractor.extract(path, artifact, spec.supply_scope),
+        )
+
+    def attach_profiled_document(
+        self,
+        slot_id: SlotId,
+        document_id: str,
+        profile: "DocumentProfile",
+        filename: str,
+        perception_status: str = "ready",
+        element_count: Optional[int] = None,
+        actor: str = "user",
+    ) -> SlotAssignment:
+        """Place an already-profiled document in a slot. Touches no file.
+
+        Appending is the default. Only a slot whose cardinality is EXACTLY_ONE
+        replaces its occupant, and only for that slot — a new current-year source
+        never disturbs the documents already assigned to the other slots.
+        """
+        spec = self.slots[slot_id].spec
+
+        # The same document cannot hold two roles at once; moving it is a move,
+        # not a copy. Nothing else is removed.
+        existing = self.find_assignment(document_id)
+        if existing is not None:
+            self.remove_document(existing[0], document_id)
+
+        if (spec.cardinality == Cardinality.EXACTLY_ONE
+                and self.slots[slot_id].assignments):
+            for prior in list(self.slots[slot_id].assignments):
+                self.remove_document(slot_id, prior.document_id)
+
+        artifact = profile.artifact
+        assignment = SlotAssignment(
+            document_id=document_id,
+            slot_id=slot_id,
+            filename=filename,
+            file_format=profile.artifact_format.value.lower(),
+            file_hash=artifact.file_hash if artifact else "",
+            file_size=artifact.file_size if artifact else 0,
+            perception_status=perception_status,
+            element_count=element_count,
+            artifact_id=artifact.artifact_id if artifact else None,
+            expected_label=spec.expected_label,
+            signals=profile.signals,
+        )
+        self.slots[slot_id].assignments.append(assignment)
+
+        if artifact is None:
+            # Format rejection: judged, kept visible, never registered.
+            verdict = SlotRoleValidator.validate(spec, assignment.signals)
+            assignment.validation_status = verdict.status
+            assignment.detected_label = verdict.detected_label
+            assignment.reasons = list(verdict.reasons)
+            return assignment
+
+        # Enter the audited source package so the artifact, its hash and its
+        # roles are what readiness is computed from. Adding never changes
+        # readiness — recalculate_readiness() below is the only path that does.
+        self.registry.package.add(artifact)
+
+        self.revalidate_all()
+        self.recalculate_readiness(actor=actor)
+        return assignment
+
     def assign_document(
         self,
         slot_id: SlotId,
@@ -1004,60 +1124,16 @@ class WorkflowIntakeSession:
         The file must already exist as a perceived document; this method adds a
         workflow ROLE on top of it. It mutates nothing on disk.
         """
-        spec = self.slots[slot_id].spec
-        existing = self.find_assignment(document_id)
-        if existing is not None:
-            self.remove_document(existing[0], document_id)
-
-        if (spec.cardinality == Cardinality.EXACTLY_ONE
-                and self.slots[slot_id].assignments):
-            # A single-file slot replaces rather than accumulates.
-            for prior in list(self.slots[slot_id].assignments):
-                self.remove_document(slot_id, prior.document_id)
-
-        fmt = EXTENSION_FORMAT.get(Path(filename).suffix.lower(), ArtifactFormat.UNSUPPORTED)
-        assignment = SlotAssignment(
-            document_id=document_id,
+        profile = self.profile_document(path, slot_id, actor=actor)
+        return self.attach_profiled_document(
             slot_id=slot_id,
+            document_id=document_id,
+            profile=profile,
             filename=filename,
-            file_format=fmt.value.lower(),
-            file_hash="",
             perception_status=perception_status,
             element_count=element_count,
-            expected_label=spec.expected_label,
+            actor=actor,
         )
-
-        if fmt not in spec.accepted_formats:
-            # Rejected on format alone — never profiled, never registered.
-            assignment.file_hash = ""
-            assignment.signals = DocumentSignals(
-                artifact_format=fmt, fiscal_year=None, fiscal_year_hits=0,
-                placeholder_hits=0, observed_roles=(), satisfying_roles=(),
-                is_local_file_shaped=False, is_blank_template_shaped=False, record_count=0,
-            )
-            verdict = SlotRoleValidator.validate(spec, assignment.signals)
-            assignment.validation_status = verdict.status
-            assignment.detected_label = verdict.detected_label
-            assignment.reasons = list(verdict.reasons)
-            self.slots[slot_id].assignments.append(assignment)
-            return assignment
-
-        artifact = SourceIntakeProfiler.ingest(path, spec.supply_scope)
-        assignment.artifact_id = artifact.artifact_id
-        assignment.file_hash = artifact.file_hash
-        assignment.file_size = artifact.file_size
-        assignment.signals = SignalExtractor.extract(path, artifact, spec.supply_scope)
-
-        # Register through the governed registry so the artifact, its hash and
-        # its roles enter the audited source package. register() never changes
-        # readiness — recalculate_readiness() below is the only path that does.
-        self.registry.register(path, spec.supply_scope, actor=actor,
-                               artifact_id=artifact.artifact_id)
-
-        self.slots[slot_id].assignments.append(assignment)
-        self.revalidate_all()
-        self.recalculate_readiness(actor=actor)
-        return assignment
 
     def remove_document(self, slot_id: SlotId, document_id: str) -> bool:
         state = self.slots[slot_id]
@@ -1368,6 +1444,7 @@ class WorkflowIntakeSession:
             user_id=self.user_id,
             workflow_type=self.workflow_type.value,
             target_fiscal_year=self.target_fiscal_year,
+            state_version=self.state_version,
             created_at=self.created_at,
         )
 
@@ -1413,6 +1490,7 @@ class WorkflowIntakeSession:
             user_id=workflow.user_id,
         )
         session.created_at = workflow.created_at
+        session.state_version = workflow.state_version
         for row in assignments:
             slot_id = SlotId(row.slot_id)
             session.slots[slot_id].assignments.append(SlotAssignment(
@@ -1462,6 +1540,7 @@ __all__ = [
     "SlotRoleValidator",
     "DomainReadiness",
     "InputSlotState",
+    "DocumentProfile",
     "WorkflowIntakeSession",
     "FiscalPeriod",
     "RollForwardPeriods",

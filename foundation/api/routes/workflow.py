@@ -38,14 +38,18 @@ import json
 import sys
 from contextlib import contextmanager
 from pathlib import Path
-from typing import Any, Dict, Iterator, Optional, Tuple
+from typing import Any, Callable, Dict, Iterator, Optional, Tuple
 
 from flask import Blueprint, jsonify, request
 from werkzeug.utils import secure_filename
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from adapters.repository import RepositoryError, get_repositories  # noqa: E402
+from adapters.repository import (  # noqa: E402
+    RepositoryError,
+    WorkflowConflictError,
+    get_repositories,
+)
 from adapters.storage import get_storage  # noqa: E402
 from applications.rollforward.workflow_intake import (  # noqa: E402
     SlotId,
@@ -85,9 +89,46 @@ def _save_session(session: WorkflowIntakeSession) -> None:
     """Persist the whole intake: the workflow row plus its slot assignments."""
     repos = get_repositories()
     workflow, assignments = session.to_records()
-    repos.workflows.save_workflow(workflow)
+    saved = repos.workflows.save_workflow(workflow)
+    session.state_version = saved.state_version
     repos.workflows.replace_assignments(
         workflow.workflow_id, assignments, user_id=session.user_id)
+
+
+MAX_MUTATION_ATTEMPTS = 4
+
+
+def _mutate_session(session_id: str, user_id: str, apply: Callable[[WorkflowIntakeSession], Any]):
+    """Run one change as an atomic read-modify-write on the workflow state.
+
+    Assigning a file rewrites every slot's verdict, not just the target slot's —
+    a new current-year source can change what the historical file means. That
+    makes intake read-modify-write, and two overlapping uploads would otherwise
+    each save their own stale snapshot, the slower one deleting the faster one's
+    assignment. So: take the session's lock, re-read inside it, apply, save. If
+    another instance still slipped in between (different container, no shared
+    lock), the versioned write is rejected and the whole cycle is retried on
+    fresh state rather than overwriting the other change.
+
+    Returns (session, result-of-apply), or (None, None) when there is no intake.
+    """
+    repos = get_repositories()
+    last_conflict: Optional[WorkflowConflictError] = None
+
+    for _attempt in range(MAX_MUTATION_ATTEMPTS):
+        with repos.workflows.lock(session_id):
+            session = _load_session(session_id, user_id)
+            if session is None:
+                return None, None
+            result = apply(session)
+            try:
+                _save_session(session)
+            except WorkflowConflictError as exc:
+                last_conflict = exc
+                continue  # somebody else wrote first — redo on their state
+            return session, result
+
+    raise last_conflict or WorkflowConflictError("Workflow state is being updated concurrently.")
 
 
 # ============================================================================
@@ -179,24 +220,35 @@ def create_workflow_session():
         }), 400
 
     user_id = _get_user_id()
+    repos = get_repositories()
 
-    # Attaching to an existing intake must not silently start a second one: the
-    # repository is the authority on whether this session already has a workflow.
-    existing = _load_session(session_id, user_id)
-    if existing is not None and existing.workflow_type == workflow:
-        return jsonify(existing.to_dict())
+    # Starting the intake twice for one session must never mint a second
+    # workflow_id: assignments are keyed by workflow_id, so the loser's slots
+    # would be orphaned. The check and the insert happen under the session lock,
+    # and the versioned write rejects a second creation from another instance.
+    with repos.workflows.lock(session_id):
+        existing = _load_session(session_id, user_id)
+        if existing is not None and existing.workflow_type == workflow:
+            return jsonify(existing.to_dict())
 
-    # The workflow row references the session row, so make sure the session
-    # exists before writing it (a workflow can be started before any upload).
-    get_repositories().sessions.get_or_create(session_id, user_id=user_id)
+        # The workflow row references the session row, so make sure the session
+        # exists before writing it (a workflow can be started before any upload).
+        repos.sessions.get_or_create(session_id, user_id=user_id)
 
-    session = WorkflowIntakeSession(
-        session_id=session_id,
-        workflow_type=workflow,
-        target_fiscal_year=body.get("target_fiscal_year"),
-        user_id=user_id,
-    )
-    _save_session(session)
+        session = WorkflowIntakeSession(
+            session_id=session_id,
+            workflow_type=workflow,
+            target_fiscal_year=body.get("target_fiscal_year"),
+            user_id=user_id,
+        )
+        try:
+            _save_session(session)
+        except WorkflowConflictError:
+            # Another request created it first: return theirs, never a rival one.
+            existing = _load_session(session_id, user_id)
+            if existing is not None:
+                return jsonify(existing.to_dict())
+            raise
     return jsonify(session.to_dict())
 
 
@@ -221,22 +273,28 @@ def assign_document_to_slot(session_id: str, slot_id: str):
         return jsonify({"error": "doc_id is required."}), 400
 
     user_id = _get_user_id()
-    session = _load_session(session_id, user_id)
-    if session is None:
-        return jsonify({"error": "No workflow intake has been started for this session."}), 404
 
     try:
         slot = _parse_slot(slot_id)
+
+        # Profile the document ONCE, outside the mutation cycle: it is the
+        # expensive part, it depends only on the file's own content, and a retry
+        # must not re-open the workbook.
         with _resolve_document(session_id, doc_id, user_id) as (path, meta):
-            assignment = session.assign_document(
+            profile = WorkflowIntakeSession.profile_document(path, slot, actor=user_id)
+            metadata = dict(meta)
+
+        session, assignment = _mutate_session(
+            session_id, user_id,
+            lambda state: state.attach_profiled_document(
                 slot_id=slot,
                 document_id=doc_id,
-                path=path,
-                filename=meta["filename"],
-                perception_status=meta.get("status", "ready"),
-                element_count=meta.get("element_count"),
-                actor=user_id,
-            )
+                profile=profile,
+                filename=metadata["filename"],
+                perception_status=metadata.get("status", "ready"),
+                element_count=metadata.get("element_count"),
+            ),
+        )
     except WorkflowIntakeError as exc:
         return jsonify({"error": str(exc)}), 400
     except RepositoryError:
@@ -244,7 +302,9 @@ def assign_document_to_slot(session_id: str, slot_id: str):
     except Exception as exc:  # profiling failure must not lose the session
         return jsonify({"error": f"Could not profile this document: {exc}"}), 422
 
-    _save_session(session)
+    if session is None:
+        return jsonify({"error": "No workflow intake has been started for this session."}), 404
+
     return jsonify({"assignment": assignment.to_dict(), **session.to_dict()})
 
 
@@ -252,19 +312,18 @@ def assign_document_to_slot(session_id: str, slot_id: str):
 def remove_document_from_slot(session_id: str, slot_id: str, doc_id: str):
     """Removes a document's role. The document itself stays in the session."""
     user_id = _get_user_id()
-    session = _load_session(session_id, user_id)
-    if session is None:
-        return jsonify({"error": "No workflow intake has been started for this session."}), 404
-
     try:
         slot = _parse_slot(slot_id)
     except WorkflowIntakeError as exc:
         return jsonify({"error": str(exc)}), 400
 
-    if not session.remove_document(slot, doc_id):
-        return jsonify({"error": f"Document '{doc_id}' is not assigned to {slot.value}."}), 404
+    session, removed = _mutate_session(
+        session_id, user_id, lambda state: state.remove_document(slot, doc_id))
 
-    _save_session(session)
+    if session is None:
+        return jsonify({"error": "No workflow intake has been started for this session."}), 404
+    if not removed:
+        return jsonify({"error": f"Document '{doc_id}' is not assigned to {slot.value}."}), 404
     return jsonify(session.to_dict())
 
 
@@ -285,17 +344,16 @@ def review_flagged_document(session_id: str, slot_id: str, doc_id: str):
         }), 400
 
     user_id = _get_user_id()
-    session = _load_session(session_id, user_id)
-    if session is None:
-        return jsonify({"error": "No workflow intake has been started for this session."}), 404
-
     try:
         slot = _parse_slot(slot_id)
-        assignment = session.acknowledge_for_review(slot, doc_id, actor=user_id)
+        session, assignment = _mutate_session(
+            session_id, user_id,
+            lambda state: state.acknowledge_for_review(slot, doc_id, actor=user_id))
     except WorkflowIntakeError as exc:
         return jsonify({"error": str(exc)}), 400
 
-    _save_session(session)
+    if session is None:
+        return jsonify({"error": "No workflow intake has been started for this session."}), 404
     return jsonify({"assignment": assignment.to_dict(), **session.to_dict()})
 
 

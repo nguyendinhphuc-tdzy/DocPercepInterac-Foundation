@@ -50,10 +50,42 @@ and satisfied roles). On load, `WorkflowIntakeSession.from_records()` re-runs va
 that profile, so a stored verdict can never outlive the rule that produced it — and reloading
 never re-opens the document.
 
+### Concurrency: why intake is read-modify-write, and what protects it
+
+Assigning a file rewrites **every** slot's verdict, not just the target slot's — a new
+current-year source can change what the historical file means. So a save writes the whole
+slot set back, which makes overlapping requests dangerous:
+
+> **P0 bug (fixed).** Uploading a source while the historical file was still perceiving
+> made both requests load the state *before* the other had saved. The slower one's write
+> pruned the faster one's row: the historical file vanished from the panel while the
+> document itself sat untouched in storage. Category: workflow-state lost update — not a
+> document loss, not a frontend bug.
+
+Three guards now, one per layer:
+
+1. **Repository** — `IWorkflowRepository.lock(session_id)` serialises a session's
+   mutations, and `WorkflowRecord.state_version` is a compare-and-set: a write that names a
+   superseded version is rejected with `WorkflowConflictError` rather than applied. Locally
+   the lock is a `FileLock`; on Supabase the guard is a single conditional
+   `UPDATE ... WHERE state_version = ?`, which also holds between two Render instances.
+2. **Route** — `_mutate_session()` runs load → apply → save inside the lock, and retries the
+   whole cycle on conflict, so the retry is built on the winner's state instead of
+   overwriting it. Profiling the document (the expensive, file-only half) happens once,
+   outside the cycle: `profile_document()` reads the file, `attach_profiled_document()`
+   applies the result.
+3. **Client** — slot changes are queued one at a time in `workflowStore`, and a response is
+   only applied if it is not older than what the store already holds.
+
+Creating a workflow is idempotent for the same reason: two starts for one session must not
+mint two `workflow_id`s, because assignments are keyed by it and the loser's slots would be
+orphaned.
+
 ### Deployment step
 
 Run [migrations/002_workflow_intake.sql](../foundation/migrations/002_workflow_intake.sql)
-against the Supabase project before deploying. It is additive and safe to re-run.
+against the Supabase project before deploying. It is additive and safe to re-run; it also
+adds `state_version` to an already-deployed `workflow_sessions`.
 
 ---
 

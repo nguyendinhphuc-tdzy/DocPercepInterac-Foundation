@@ -178,7 +178,9 @@ export const AgentComposer: React.FC = () => {
           <div style={{ display: 'flex', alignItems: 'center', gap: 'var(--space-2)', flexWrap: 'wrap' }}>
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
               <Paperclip size={11} />
-              <span>{readyDocuments.length} doc{readyDocuments.length === 1 ? '' : 's'}</span>
+              <span data-testid="workspace-doc-count" data-count={readyDocuments.length}>
+                {readyDocuments.length} doc{readyDocuments.length === 1 ? '' : 's'}
+              </span>
             </div>
 
             {selectedElement && (

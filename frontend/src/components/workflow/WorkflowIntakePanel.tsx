@@ -246,7 +246,7 @@ const SlotSection: React.FC<{
 // ── The panel ───────────────────────────────────────────────────────────────
 
 export const WorkflowIntakePanel: React.FC = () => {
-  const { state, pendingSlot, pendingFilename, error, addFileToSlot, removeFromSlot, keepForReview, refresh }
+  const { state, pendingSlot, pendingFilename, error, addFilesToSlot, removeFromSlot, keepForReview, refresh }
     = useWorkflowStore();
   const sessionId = useWorkspaceStore((s) => s.sessionId);
   const [targetSlot, setTargetSlot] = useState<SlotId | null>(null);
@@ -269,9 +269,9 @@ export const WorkflowIntakePanel: React.FC = () => {
     const files = Array.from(event.target.files ?? []);
     event.target.value = '';
     if (!targetSlot) return;
-    for (const file of files) {
-      await addFileToSlot(targetSlot, file);
-    }
+    // Strictly one at a time — each response carries the whole intake, so
+    // overlapping adds would race to be the last one applied.
+    await addFilesToSlot(targetSlot, files);
   };
 
   const handleReplace = async (slotId: SlotId, docId: string) => {

@@ -96,6 +96,35 @@ async function slotValidation(page, slotId) {
   return page.locator(`[data-testid="workflow-slot-${slotId}"]`).first().getAttribute('data-validation');
 }
 
+/** Filenames currently shown in each slot — the user's own view of the panel. */
+async function slotFilenames(page) {
+  const slots = {};
+  for (const slot of ['HISTORICAL_LOCAL_FILE', 'CURRENT_YEAR_SOURCES', 'MASTER_TEMPLATE']) {
+    slots[slot] = await page.locator(
+      `[data-testid="workflow-slot-${slot}"] [data-testid^="slot-assignment-"]`)
+      .evaluateAll((nodes) => nodes.map((n) => n.innerText.split('\n')[0].trim()));
+  }
+  return slots;
+}
+
+async function documentCount(page) {
+  const badge = page.locator('[data-testid="workspace-doc-count"]').first();
+  if (await badge.count() === 0) return null;
+  return Number(await badge.getAttribute('data-count'));
+}
+
+function assertSlots(actual, expected, label) {
+  const shown = (slot) => actual[slot].map((name) => name.slice(0, 18));
+  const ok = Object.entries(expected).every(([slot, names]) =>
+    actual[slot].length === names.length
+    && names.every((name, i) => actual[slot][i].startsWith(name)));
+  check(label, ok, JSON.stringify({
+    HISTORICAL: shown('HISTORICAL_LOCAL_FILE'),
+    SOURCES: shown('CURRENT_YEAR_SOURCES'),
+    TEMPLATE: shown('MASTER_TEMPLATE'),
+  }));
+}
+
 async function readinessStatuses(page) {
   const rows = page.locator('[data-testid^="readiness-row-"]');
   const count = await rows.count();
@@ -166,6 +195,11 @@ async function run() {
     await uploadToSlot(page, 'HISTORICAL_LOCAL_FILE', FIXTURES.historical);
     check('FY2023 Local File is confirmed in the historical slot',
       (await slotValidation(page, 'HISTORICAL_LOCAL_FILE')) === 'ROLE_CONFIRMED');
+    assertSlots(await slotFilenames(page), {
+      HISTORICAL_LOCAL_FILE: ['HMV-24-Final'], CURRENT_YEAR_SOURCES: [], MASTER_TEMPLATE: [],
+    }, 'Historical file is the only document so far');
+    check('Document count is 1', (await documentCount(page)) === 1,
+      String(await documentCount(page)));
     check('Its detected period comes from the content',
       (await page.locator('[data-testid="workflow-slot-HISTORICAL_LOCAL_FILE"]').innerText()).includes('FY2023'));
     check('Gate now asks for the current-year sources',
@@ -175,7 +209,23 @@ async function run() {
     section('4. CURRENT-YEAR SOURCES (MULTI-FILE)');
     // ------------------------------------------------------------------
     await uploadToSlot(page, 'CURRENT_YEAR_SOURCES', FIXTURES.faRpt);
+    // The P0 regression: adding a source must NOT remove the historical file.
+    assertSlots(await slotFilenames(page), {
+      HISTORICAL_LOCAL_FILE: ['HMV-24-Final'],
+      CURRENT_YEAR_SOURCES: ['HMV-FA&RPT'],
+      MASTER_TEMPLATE: [],
+    }, 'Historical file is STILL there after adding a source');
+    check('Document count is 2', (await documentCount(page)) === 2,
+      String(await documentCount(page)));
+
     await uploadToSlot(page, 'CURRENT_YEAR_SOURCES', FIXTURES.appendixI);
+    assertSlots(await slotFilenames(page), {
+      HISTORICAL_LOCAL_FILE: ['HMV-24-Final'],
+      CURRENT_YEAR_SOURCES: ['HMV-FA&RPT', 'HMV-25-Appendix'],
+      MASTER_TEMPLATE: [],
+    }, 'A second source appends — nothing else moves');
+    check('Document count is 3', (await documentCount(page)) === 3,
+      String(await documentCount(page)));
 
     const sourceCards = page.locator(
       '[data-testid="workflow-slot-CURRENT_YEAR_SOURCES"] [data-testid^="slot-assignment-"]');
@@ -219,6 +269,13 @@ async function run() {
     await uploadToSlot(page, 'MASTER_TEMPLATE', FIXTURES.template);
     check('The blank template is confirmed by its content',
       (await slotValidation(page, 'MASTER_TEMPLATE')) === 'ROLE_CONFIRMED');
+    assertSlots(await slotFilenames(page), {
+      HISTORICAL_LOCAL_FILE: ['HMV-24-Final'],
+      CURRENT_YEAR_SOURCES: ['HMV-FA&RPT', 'HMV-25-Appendix'],
+      MASTER_TEMPLATE: ['Client-25-Template'],
+    }, 'All four documents are held in their own slots');
+    check('Document count is 4', (await documentCount(page)) === 4,
+      String(await documentCount(page)));
     check('All three inputs present — the gate opens',
       (await page.locator('[data-testid="workflow-gate-message"]').getAttribute('data-execution-allowed')) === 'true');
 
@@ -271,6 +328,23 @@ async function run() {
     check('Readiness is unchanged after the reload',
       readinessAfterReload.RELATED_PARTY_TRANSACTIONS === 'SUPPORTED'
       && readinessAfterReload.FAR === 'BLOCKED');
+    assertSlots(await slotFilenames(page), {
+      HISTORICAL_LOCAL_FILE: ['HMV-24-Final'],
+      CURRENT_YEAR_SOURCES: ['HMV-FA&RPT', 'HMV-25-Appendix'],
+      MASTER_TEMPLATE: ['Client-25-Template'],
+    }, 'All four documents survive the reload');
+    check('Document count is still 4 after the reload', (await documentCount(page)) === 4,
+      String(await documentCount(page)));
+
+    // ------------------------------------------------------------------
+    section('8b. EXPLICIT REPLACEMENT CHANGES ONE SLOT ONLY');
+    // ------------------------------------------------------------------
+    await uploadToSlot(page, 'MASTER_TEMPLATE', FIXTURES.template2 ?? FIXTURES.template);
+    assertSlots(await slotFilenames(page), {
+      HISTORICAL_LOCAL_FILE: ['HMV-24-Final'],
+      CURRENT_YEAR_SOURCES: ['HMV-FA&RPT', 'HMV-25-Appendix'],
+      MASTER_TEMPLATE: ['Client-25-Template'],
+    }, 'Replacing the template leaves the sources and the historical file alone');
 
     // ------------------------------------------------------------------
     section('9. ROLE MISMATCH WITH AN INTENTIONALLY WRONG FIXTURE');
@@ -298,6 +372,11 @@ async function run() {
       (await page.locator('[data-testid="workflow-gate-message"]').getAttribute('data-execution-allowed')) === 'false');
     check('The valid sources were not blamed for it',
       (await slotValidation(page, 'CURRENT_YEAR_SOURCES')) === 'ROLE_CONFIRMED');
+    assertSlots(await slotFilenames(page), {
+      HISTORICAL_LOCAL_FILE: ['HMV-26-Final'],
+      CURRENT_YEAR_SOURCES: ['HMV-FA&RPT', 'HMV-25-Appendix'],
+      MASTER_TEMPLATE: ['Client-25-Template'],
+    }, 'Replacing the historical file changed only that slot');
 
     // ------------------------------------------------------------------
     section('10. KEEPING A FLAGGED FILE IS RECORDED, NOT SILENT');

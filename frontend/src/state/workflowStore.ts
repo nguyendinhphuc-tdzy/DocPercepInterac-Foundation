@@ -28,6 +28,8 @@ interface WorkflowStoreState {
 
   ensureSession: (workflow: WorkflowId) => Promise<WorkflowState | null>;
   addFileToSlot: (slotId: SlotId, file: File) => Promise<void>;
+  /** Adds several files to one slot, strictly one after another. */
+  addFilesToSlot: (slotId: SlotId, files: File[]) => Promise<void>;
   removeFromSlot: (slotId: SlotId, docId: string) => Promise<void>;
   keepForReview: (slotId: SlotId, docId: string) => Promise<void>;
   refresh: () => Promise<void>;
@@ -36,6 +38,26 @@ interface WorkflowStoreState {
 
 function messageOf(err: unknown, fallback: string): string {
   return err instanceof WorkflowApiError ? err.message : fallback;
+}
+
+// Slot changes run one at a time. Each server response carries the WHOLE intake
+// (a new file changes the other slots' verdicts too), so two in-flight changes
+// would race to be the last `set` — and the older payload, missing the newer
+// file, would win at random. Queuing also stops two uploads from both trying to
+// create the workflow.
+let mutationQueue: Promise<unknown> = Promise.resolve();
+
+function enqueue<T>(task: () => Promise<T>): Promise<T> {
+  const next = mutationQueue.then(task, task);
+  mutationQueue = next.catch(() => undefined);
+  return next;
+}
+
+// Set only if this payload is at least as new as what is already in the store,
+// so a late response can never resurrect a stale slot set.
+function isNewer(incoming: { workflow_id?: string }, current: WorkflowState | null): boolean {
+  if (!current) return true;
+  return !incoming.workflow_id || incoming.workflow_id === current.workflow_id;
 }
 
 export const useWorkflowStore = create<WorkflowStoreState>((set, get) => ({
@@ -65,7 +87,16 @@ export const useWorkflowStore = create<WorkflowStoreState>((set, get) => ({
     }
   },
 
-  addFileToSlot: async (slotId, file) => {
+  addFilesToSlot: async (slotId, files) => {
+    for (const file of files) {
+      await get().addFileToSlot(slotId, file);
+    }
+  },
+
+  // Queued: one slot change at a time, so an earlier response can never
+  // overwrite a later one — and the file already in a slot is never lost to a
+  // racing upload into another slot.
+  addFileToSlot: (slotId, file) => enqueue(async () => {
     const workflow = useWorkspaceStore.getState().activeWorkflow;
     if (!workflow) return;
 
@@ -88,15 +119,15 @@ export const useWorkflowStore = create<WorkflowStoreState>((set, get) => ({
       if (!session) return;
 
       const result = await assignDocumentToSlot(session.session_id, slotId, uploaded.docId);
-      set({ state: result, error: null });
+      if (isNewer(result, get().state)) set({ state: result, error: null });
     } catch (err) {
       set({ error: messageOf(err, 'Could not add this file to the workflow.') });
     } finally {
       set({ pendingSlot: null, pendingFilename: null, busy: false });
     }
-  },
+  }),
 
-  removeFromSlot: async (slotId, docId) => {
+  removeFromSlot: (slotId, docId) => enqueue(async () => {
     const state = get().state;
     if (!state) return;
     set({ busy: true, error: null });
@@ -113,9 +144,9 @@ export const useWorkflowStore = create<WorkflowStoreState>((set, get) => ({
     } finally {
       set({ busy: false });
     }
-  },
+  }),
 
-  keepForReview: async (slotId, docId) => {
+  keepForReview: (slotId, docId) => enqueue(async () => {
     const state = get().state;
     if (!state) return;
     set({ busy: true, error: null });
@@ -127,11 +158,13 @@ export const useWorkflowStore = create<WorkflowStoreState>((set, get) => ({
     } finally {
       set({ busy: false });
     }
-  },
+  }),
 
   refresh: async () => {
     const sessionId = useWorkspaceStore.getState().sessionId;
-    if (!sessionId) return;
+    // Never re-read while a change is in flight: the fetch would return the
+    // state from before that change and overwrite the newer payload.
+    if (!sessionId || get().busy) return;
     try {
       set({ state: await fetchWorkflowState(sessionId) });
     } catch {

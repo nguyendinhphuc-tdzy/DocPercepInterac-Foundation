@@ -22,9 +22,19 @@ CREATE TABLE IF NOT EXISTS public.workflow_sessions (
     user_id TEXT NOT NULL DEFAULT 'anonymous',
     workflow_type TEXT NOT NULL,
     target_fiscal_year INTEGER,
+    -- Optimistic concurrency. Intake is read-modify-write (a new file changes the
+    -- verdicts of the other slots too), so a write carries the version it was
+    -- based on and only lands if the stored row is still that version. Without
+    -- it, two overlapping uploads each save their own stale slot set and the
+    -- slower one deletes the faster one's assignment.
+    state_version INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
+
+-- Existing deployments of 002 without the column.
+ALTER TABLE public.workflow_sessions
+    ADD COLUMN IF NOT EXISTS state_version INTEGER NOT NULL DEFAULT 0;
 
 -- One workflow per (session, user): re-entering the workflow re-attaches to the
 -- existing intake instead of starting a second, competing one.

@@ -193,6 +193,20 @@ class _StubQuery:
             removed = [r for r in self.table.rows if self._matches(r)]
             self.table.rows = [r for r in self.table.rows if not self._matches(r)]
             return type("Result", (), {"data": removed})
+        if self.operation == "insert":
+            payload = self.payload if isinstance(self.payload, list) else [self.payload]
+            self.table.rows.extend(dict(row) for row in payload)
+            return type("Result", (), {"data": payload})
+        if self.operation == "update":
+            # Conditional update: only rows matching every filter change, and the
+            # result reports what actually changed — that is what makes the
+            # adapter's compare-and-set on state_version meaningful.
+            changed = []
+            for row in self.table.rows:
+                if self._matches(row):
+                    row.update(self.payload)
+                    changed.append(row)
+            return type("Result", (), {"data": changed})
         # upsert
         payload = self.payload if isinstance(self.payload, list) else [self.payload]
         for new_row in payload:
@@ -217,6 +231,12 @@ class _StubTable:
 
     def upsert(self, payload, on_conflict=None):
         return _StubQuery(self, "upsert", payload)
+
+    def insert(self, payload):
+        return _StubQuery(self, "insert", payload)
+
+    def update(self, payload):
+        return _StubQuery(self, "update", payload)
 
     def delete(self):
         return _StubQuery(self, "delete")

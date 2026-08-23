@@ -16,6 +16,7 @@ Enforces:
 from __future__ import annotations
 
 import abc
+from contextlib import contextmanager
 from datetime import datetime, timezone, timedelta
 import json
 from dataclasses import dataclass, field, asdict
@@ -133,6 +134,11 @@ class WorkflowRecord:
     workflow_type: str
     user_id: str = "anonymous"
     target_fiscal_year: Optional[int] = None
+    # Bumped on every write. Two requests that both read the same version and
+    # both try to write it means one of them was working from a stale snapshot —
+    # the second write is rejected instead of silently discarding the first one's
+    # slot assignments (see WorkflowConflictError).
+    state_version: int = 0
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     updated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
@@ -265,6 +271,18 @@ class IPilotEventRepository(abc.ABC):
         """Retrieves pilot events."""
 
 
+class WorkflowConflictError(RepositoryError):
+    """Raised when a write is based on a snapshot another write has superseded.
+
+    Intake is read-modify-write: a request loads the workflow, applies a change,
+    and writes the whole slot set back (a new file changes the verdicts of the
+    OTHER slots too, so they genuinely have to be rewritten). Two overlapping
+    requests would otherwise each save their own stale snapshot, and the slower
+    one would delete the faster one's assignment — a file silently vanishing from
+    its slot. Rejecting the stale write lets the caller redo it on fresh state.
+    """
+
+
 class IWorkflowRepository(abc.ABC):
     """Canonical persistence for structured workflow intake state.
 
@@ -272,7 +290,16 @@ class IWorkflowRepository(abc.ABC):
     it, are production state: they must survive a browser refresh, a container
     restart and a redeploy. Document BYTES are not part of this contract — they
     stay in object storage and are referenced by document_id only.
+
+    Concurrency: `lock()` serialises mutations of one session, and every write
+    carries the `state_version` it was based on. Both matter — the lock keeps a
+    single instance ordered, the version check keeps two instances honest.
     """
+
+    @abc.abstractmethod
+    def lock(self, session_id: str):
+        """Context manager giving exclusive access to one session's state."""
+        ...
 
     @abc.abstractmethod
     def get_workflow(self, session_id: str, user_id: str = "anonymous") -> Optional[WorkflowRecord]:
@@ -570,6 +597,7 @@ class LocalWorkflowRepository(IWorkflowRepository):
 
     def __init__(self, upload_root: Path):
         self.upload_root = upload_root
+        self._locks: Dict[str, FileLock] = {}
 
     # -- file plumbing --------------------------------------------------
 
@@ -582,7 +610,19 @@ class LocalWorkflowRepository(IWorkflowRepository):
     def _lock(self, session_id: str) -> FileLock:
         directory = self._dir(session_id)
         directory.mkdir(parents=True, exist_ok=True)
-        return FileLock(str(directory / "workflow_state.lock"), timeout=10)
+        # One FileLock OBJECT per session, reused. filelock counts acquisitions
+        # per instance, so a route that holds lock() while calling
+        # save_workflow()/replace_assignments() — which take it again — nests
+        # instead of deadlocking against itself.
+        existing = self._locks.get(session_id)
+        if existing is None:
+            existing = FileLock(str(directory / "workflow_state.lock"), timeout=30)
+            self._locks[session_id] = existing
+        return existing
+
+    def lock(self, session_id: str):
+        """Exclusive access to one session's state, for a read-modify-write cycle."""
+        return self._lock(session_id)
 
     def _read(self, session_id: str) -> Dict[str, Any]:
         path = self._path(session_id)
@@ -630,9 +670,24 @@ class LocalWorkflowRepository(IWorkflowRepository):
             if existing and not self._authorized(existing.get("user_id", "anonymous"),
                                                  workflow.user_id):
                 raise RepositoryError("User isolation violation: unauthorized workflow write.")
-            workflow.updated_at = datetime.now(timezone.utc).isoformat()
+
             if existing:
+                stored_version = int(existing.get("state_version", 0))
+                if workflow.state_version != stored_version:
+                    raise WorkflowConflictError(
+                        f"Workflow '{workflow.workflow_id}' changed since this request read it "
+                        f"(version {workflow.state_version} vs stored {stored_version}).")
+                if existing.get("workflow_id") != workflow.workflow_id:
+                    # Another request already started an intake for this session;
+                    # a second workflow_id would orphan every assignment written
+                    # against the first one.
+                    raise WorkflowConflictError(
+                        f"Session '{workflow.session_id}' already has workflow "
+                        f"'{existing.get('workflow_id')}'.")
                 workflow.created_at = existing.get("created_at", workflow.created_at)
+
+            workflow.state_version = (workflow.state_version or 0) + 1
+            workflow.updated_at = datetime.now(timezone.utc).isoformat()
             data["workflow"] = asdict(workflow)
             data.setdefault("assignments", [])
             self._write(workflow.session_id, data)
@@ -1076,6 +1131,13 @@ class SupabaseWorkflowRepository(IWorkflowRepository):
 
     # -- interface ------------------------------------------------------
 
+    @contextmanager
+    def lock(self, session_id: str):
+        """No cross-instance lock is taken: correctness comes from the version
+        check in save_workflow(), which is a single atomic conditional UPDATE and
+        therefore also holds between two Render instances."""
+        yield
+
     def get_workflow(self, session_id: str, user_id: str = "anonymous") -> Optional[WorkflowRecord]:
         try:
             query = self._client.table(self.WORKFLOWS).select("*").eq("session_id", session_id)
@@ -1087,11 +1149,47 @@ class SupabaseWorkflowRepository(IWorkflowRepository):
             raise RepositoryError(f"Supabase get_workflow failed: {exc}") from exc
 
     def save_workflow(self, workflow: WorkflowRecord) -> WorkflowRecord:
+        """Insert, or update ONLY if the stored row is still the version we read.
+
+        The conditional update is what stops two overlapping requests from each
+        writing their own stale slot set — the loser is told to redo its change
+        on fresh state instead of deleting the winner's assignment.
+        """
         try:
-            workflow.updated_at = datetime.now(timezone.utc).isoformat()
-            self._client.table(self.WORKFLOWS).upsert(
-                asdict(workflow), on_conflict="workflow_id").execute()
+            existing = self.get_workflow(workflow.session_id, user_id=workflow.user_id)
+            now = datetime.now(timezone.utc).isoformat()
+
+            if existing is None:
+                workflow.state_version = 1
+                workflow.updated_at = now
+                self._client.table(self.WORKFLOWS).insert(asdict(workflow)).execute()
+                return workflow
+
+            if existing.workflow_id != workflow.workflow_id:
+                raise WorkflowConflictError(
+                    f"Session '{workflow.session_id}' already has workflow "
+                    f"'{existing.workflow_id}'.")
+            if existing.state_version != workflow.state_version:
+                raise WorkflowConflictError(
+                    f"Workflow '{workflow.workflow_id}' changed since this request read it "
+                    f"(version {workflow.state_version} vs stored {existing.state_version}).")
+
+            expected = workflow.state_version
+            workflow.state_version = expected + 1
+            workflow.updated_at = now
+            workflow.created_at = existing.created_at
+            payload = asdict(workflow)
+            res = (self._client.table(self.WORKFLOWS).update(payload)
+                   .eq("workflow_id", workflow.workflow_id)
+                   .eq("state_version", expected)
+                   .execute())
+            if not res.data:
+                workflow.state_version = expected
+                raise WorkflowConflictError(
+                    f"Workflow '{workflow.workflow_id}' was updated concurrently.")
             return workflow
+        except WorkflowConflictError:
+            raise
         except Exception as exc:
             raise RepositoryError(f"Supabase save_workflow failed: {exc}") from exc
 
