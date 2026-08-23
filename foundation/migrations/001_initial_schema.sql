@@ -202,7 +202,7 @@ BEGIN
         CREATE POLICY service_role_all_lineage ON public.lineage_events TO service_role USING (true) WITH CHECK (true);
     END IF;
     IF NOT EXISTS (
-        SELECT 1 FROM pg_policies WHERE tabUATION = 'pilot_events' AND policyname = 'service_role_all_pilot_events'
+        SELECT 1 FROM pg_policies WHERE tablename = 'pilot_events' AND policyname = 'service_role_all_pilot_events'
     ) THEN
         CREATE POLICY service_role_all_pilot_events ON public.pilot_events TO service_role USING (true) WITH CHECK (true);
     END IF;

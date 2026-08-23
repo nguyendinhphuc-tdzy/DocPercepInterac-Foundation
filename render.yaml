@@ -12,7 +12,7 @@ services:
     plan: standard
     rootDir: .
     buildCommand: "pip install -r foundation/requirements.txt"
-    startCommand: "gunicorn --chdir foundation --config foundation/gunicorn.conf.py \"api.app:create_app()\""
+    startCommand: "gunicorn --chdir foundation --config gunicorn.conf.py \"api.app:create_app()\""
     healthCheckPath: /api/health
     autoDeploy: true
     envVars:
