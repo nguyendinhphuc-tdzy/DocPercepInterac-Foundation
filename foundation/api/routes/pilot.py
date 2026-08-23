@@ -1,17 +1,13 @@
-"""Pilot instrumentation routes.
+"""
+Pilot instrumentation routes (Phase DEPLOY-1).
+==============================================
+Location: foundation/api/routes/pilot.py
 
-Access-layer surface for the Agent pilot phase (docs/evaluation/agent-pilot/):
-- POST /api/pilot/event    — ingest a UI-origin pilot event (citation click,
-  reveal, task lifecycle, feedback). Server-origin events (intent resolved,
-  proposal lifecycle, writes) are emitted directly from applications/agent/
-  and do not go through this route.
-- GET  /api/pilot/scenarios — list the controlled pilot scenario definitions
-  (metadata only, no document content) for an optional scenario launcher UI.
+Access-layer surface for the Agent pilot phase:
+- POST /api/pilot/event    — ingest a UI-origin pilot event.
+- GET  /api/pilot/scenarios — list the controlled pilot scenario definitions.
 
-This route intentionally does not import from perception/, output/, or
-applications/gpts/ — it is pilot-evaluation plumbing, not a document
-capability, and must stay generic per the same layer boundary the agent
-route follows.
+Maintains fail-open telemetry guarantee across both file logs and repository sink.
 """
 from __future__ import annotations
 
@@ -24,10 +20,15 @@ from flask import Blueprint, jsonify, request
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 from applications.pilot.event_log import PilotEventLogger  # noqa: E402
+from adapters.repository import PilotEventRecord, get_repositories  # noqa: E402
 
 pilot_bp = Blueprint("pilot", __name__)
 
 SCENARIOS_DIR = Path(__file__).resolve().parents[3] / "docs" / "evaluation" / "agent-pilot" / "scenarios"
+
+
+def _get_user_id() -> str:
+    return request.headers.get("X-User-Id", "anonymous")
 
 
 @pilot_bp.post("/api/pilot/event")
@@ -39,11 +40,28 @@ def ingest_event():
 
     fields = {k: v for k, v in body.items() if k != "event_type"}
     fields["origin"] = "frontend"
+    user_id = _get_user_id()
+
+    # Emit to file sink (existing)
     record = PilotEventLogger.emit(event_type, **fields)
 
-    # Fail-open at the API boundary too: instrumentation must never surface
-    # a hard error that could distract from (or be confused with) a real
-    # Agent failure during a pilot session.
+    # Also emit to repository sink (fail-open)
+    try:
+        repos = get_repositories()
+        repos.pilot.emit(
+            PilotEventRecord(
+                event_type=event_type,
+                session_id=fields.get("session_id"),
+                user_id=user_id,
+                model_id=fields.get("model_id"),
+                provider=fields.get("provider"),
+                status=fields.get("status"),
+                payload=fields,
+            )
+        )
+    except Exception:
+        pass
+
     return jsonify({"status": "recorded" if record is not None else "dropped"})
 
 

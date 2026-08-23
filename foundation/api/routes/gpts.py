@@ -1,21 +1,17 @@
-"""POST /api/gpts/map — GTPS-specific mapping execution.
+"""
+POST /api/gpts/map — GTPS-specific mapping execution (Phase DEPLOY-1).
+======================================================================
+Location: foundation/api/routes/gpts.py
 
 Architecture boundary: this is the ONLY file under api/ that imports from
-applications.gpts.*. It resolves already-perceived documents (via the
-session manifest api/routes/documents.py maintains) into file paths and
-hands them to applications/gpts/mapping_service.py, completely unchanged.
-
-Role assignment (which doc_ids are "source" vs "target") is supplied
-explicitly by the caller in the request body — this route never infers
-roles, and api/routes/documents.py never assigns them. This is the "an
-application explicitly declares a workflow" seam: uploading/perceiving
-documents (documents.py) never implies this route gets called, and this
-route never runs implicitly — it only runs when a caller deliberately
-invokes it with explicit source/target doc_ids.
+applications.gpts.*. Resolves documents using DocumentStorage and DocumentRepository
+with guaranteed temporary file cleanup.
 """
 from __future__ import annotations
 
+import contextlib
 import sys
+import tempfile
 from dataclasses import asdict
 from pathlib import Path
 
@@ -24,10 +20,15 @@ from werkzeug.utils import secure_filename
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from api.routes import documents as documents_module  # noqa: E402
 from applications.gpts.mapping_service import run_mapping  # noqa: E402
+from adapters.storage import get_storage  # noqa: E402
+from adapters.repository import DocumentVersionRecord, get_repositories  # noqa: E402
 
 gpts_bp = Blueprint("gpts", __name__)
+
+
+def _get_user_id() -> str:
+    return request.headers.get("X-User-Id", "anonymous")
 
 
 def _element_to_dict(element) -> dict:
@@ -40,6 +41,7 @@ def run_gpts_mapping():
     session_id = body.get("session_id")
     source_doc_ids = body.get("source_doc_ids") or []
     target_doc_id = body.get("target_doc_id")
+    user_id = _get_user_id()
 
     if not session_id:
         return jsonify({"error": "'session_id' is required"}), 400
@@ -48,41 +50,76 @@ def run_gpts_mapping():
     if not target_doc_id:
         return jsonify({"error": "'target_doc_id' is required"}), 400
 
-    session_dir = documents_module.UPLOAD_ROOT / secure_filename(session_id)
-    if not session_dir.is_dir():
-        return jsonify({"error": "Unknown session_id"}), 404
+    storage = get_storage()
+    repos = get_repositories()
 
-    manifest = documents_module._load_manifest(session_dir)
-    documents = manifest["documents"]
+    target_doc = repos.documents.get_document(session_id, target_doc_id, user_id=user_id)
+    if not target_doc:
+        # Fallback to local session_dir inspection for legacy tests
+        upload_root = Path(__file__).resolve().parents[2] / ".uploads"
+        session_dir = upload_root / secure_filename(session_id)
+        if not session_dir.is_dir():
+            return jsonify({"error": "Unknown session_id"}), 404
 
-    missing = [d for d in [*source_doc_ids, target_doc_id] if d not in documents]
-    if missing:
-        return jsonify({"error": f"Unknown doc_id(s): {missing}"}), 404
+    # Acquire all source and target document paths inside exit stack for guaranteed cleanup
+    with contextlib.ExitStack() as stack:
+        source_paths = []
+        for s_id in source_doc_ids:
+            try:
+                s_path = stack.enter_context(
+                    storage.get_document_path(session_id, s_id, is_patched=False, user_id=user_id)
+                )
+                source_paths.append(str(s_path))
+            except Exception:
+                return jsonify({"error": f"Unknown source doc_id '{s_id}'"}), 404
 
-    # Deliberately the pristine uploaded files (not _current_path_for's
-    # patched-aware resolution) — matches applications/gpts/mapping_service.py's
-    # own "Clone & Replace" design: it always writes a fresh
-    # <target>_patched.docx from the original target, never layers onto an
-    # already-patched file. Using an already-patched target here would
-    # produce a stale/incorrectly-named double-patched file.
-    source_paths = [
-        str(session_dir / documents[d]["stored_filename"]) for d in source_doc_ids
-    ]
-    target_path = str(session_dir / documents[target_doc_id]["stored_filename"])
+        try:
+            t_path = stack.enter_context(
+                storage.get_document_path(session_id, target_doc_id, is_patched=False, user_id=user_id)
+            )
+        except Exception:
+            return jsonify({"error": f"Unknown target doc_id '{target_doc_id}'"}), 404
 
-    try:
-        result = run_mapping(source_paths, target_path, str(session_dir))
-    except Exception as exc:
-        return jsonify({"error": f"Failed to run GTPS mapping: {exc}"}), 422
+        # Run mapping output to a temporary working directory
+        temp_work_dir = tempfile.TemporaryDirectory()
+        stack.enter_context(temp_work_dir)
 
-    # Reuses the generic download route — run_mapping writes
-    # <target>_patched.docx using the same naming convention
-    # api/routes/documents.py's download endpoint already looks for.
-    download_url = (
-        f"/api/documents/{session_id}/download/{target_doc_id}"
-        if result.patched_docx_path
-        else None
-    )
+        try:
+            result = run_mapping(source_paths, str(t_path), temp_work_dir.name)
+        except Exception as exc:
+            return jsonify({"error": f"Failed to run GTPS mapping: {exc}"}), 422
+
+        # If a patched file was written, persist it to storage
+        download_url = None
+        if result.patched_docx_path and Path(result.patched_docx_path).exists():
+            patched_bytes = Path(result.patched_docx_path).read_bytes()
+            filename = target_doc.original_filename if target_doc else Path(t_path).name
+            storage_res = storage.save_document(
+                session_id=session_id,
+                doc_id=target_doc_id,
+                filename=filename,
+                data=patched_bytes,
+                is_patched=True,
+                user_id=user_id,
+            )
+
+            # Record version
+            latest = repos.documents.get_latest_version(session_id, target_doc_id, user_id=user_id)
+            next_ver = (latest.version_number + 1) if latest else 2
+            repos.documents.create_version(
+                DocumentVersionRecord(
+                    version_id=str(tempfile.NamedTemporaryFile().name),
+                    doc_id=target_doc_id,
+                    session_id=session_id,
+                    user_id=user_id,
+                    version_number=next_ver,
+                    sha256=storage_res.file_hash,
+                    storage_path=storage_res.storage_path,
+                    is_patched=True,
+                    size_bytes=storage_res.size_bytes,
+                )
+            )
+            download_url = f"/api/documents/{session_id}/download/{target_doc_id}"
 
     return jsonify({
         "session_id": session_id,

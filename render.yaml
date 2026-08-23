@@ -1,0 +1,42 @@
+# ============================================================================
+# Render Blueprint Specification (Phase DEPLOY-1)
+# ============================================================================
+# DocPercepInterac-Foundation — Backend Flask Web Service
+# ============================================================================
+
+services:
+  - type: web
+    name: docpercepinterac-api
+    env: python
+    region: singapore # Close to APAC/VN user latency
+    plan: standard
+    rootDir: .
+    buildCommand: "pip install -r foundation/requirements.txt"
+    startCommand: "gunicorn --chdir foundation --config foundation/gunicorn.conf.py \"api.app:create_app()\""
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: ENVIRONMENT
+        value: production
+      - key: STORAGE_BACKEND
+        value: supabase
+      - key: DATABASE_BACKEND
+        value: supabase
+      - key: AI_PROVIDER_MODE
+        value: local # Enables Gemini models in addition to Workbench
+      - key: ALLOWED_ORIGINS
+        sync: false # Set to Vercel production URL e.g. https://docpercepinterac.vercel.app
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: GEMINI_API_KEY
+        sync: false
+      - key: WORKBENCH_SUBSCRIPTION_KEY
+        sync: false
+      - key: WORKBENCH_CHARGE_CODE
+        sync: false
+      - key: WEB_CONCURRENCY
+        value: "2"
+      - key: PYTHON_GET_THREADS
+        value: "4"

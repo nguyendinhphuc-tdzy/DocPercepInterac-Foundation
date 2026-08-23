@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "manifest_version": 1,
   "parent_version": null,
-  "manifest_id": "rfm-5c6190569ea5",
+  "manifest_id": "rfm-1eccfee02b38",
   "session_id": "localfile-rollforward-manifest-v1",
   "historical_document_id": "doc-hist-fy2023",
   "template_document_id": "doc-tmpl-decree20",
@@ -4309,19 +4309,19 @@
   ],
   "history": [
     {
-      "log_id": "log-af033b65",
+      "log_id": "log-72792ed2",
       "from_state": "DISCOVERED",
       "to_state": "PLANNED",
-      "timestamp": "2026-08-23T10:16:03.926028+00:00",
+      "timestamp": "2026-08-23T10:48:47.490248+00:00",
       "actor": "system",
       "reason": "Discovered template regions and formulated deterministic roll-forward plan.",
       "manifest_version": 1
     },
     {
-      "log_id": "log-9bcf5117",
+      "log_id": "log-bb5e3881",
       "from_state": "PLANNED",
       "to_state": "REVIEW_REQUIRED",
-      "timestamp": "2026-08-23T10:16:03.926028+00:00",
+      "timestamp": "2026-08-23T10:48:47.490248+00:00",
       "actor": "system",
       "reason": "Manifest contains gated/blocked regions requiring human reviewer action.",
       "manifest_version": 1

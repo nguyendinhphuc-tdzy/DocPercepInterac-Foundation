@@ -186,7 +186,7 @@ function useWorkspaceStoreExtras() {
   const state = useWorkspaceStore();
   const activeDoc = state.documents.find((d) => d.clientId === state.activeDocClientId) ?? null;
   const downloadUrlForActiveDoc = activeDoc?.docId && activeDoc.hasPatch && state.sessionId
-    ? `/api/documents/${state.sessionId}/download/${activeDoc.docId}`
+    ? downloadUrlFor(`/api/documents/${state.sessionId}/download/${activeDoc.docId}`)
     : null;
   return { ...state, downloadUrlForActiveDoc };
 }

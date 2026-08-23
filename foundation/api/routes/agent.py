@@ -245,8 +245,12 @@ def agent_chat():
         )
 
 
-UPLOAD_ROOT = Path(__file__).resolve().parents[2] / ".uploads"
+from adapters.repository import get_repositories  # noqa: E402
 from applications.agent.proposal_store import ProposalStore  # noqa: E402
+
+
+def _get_user_id() -> str:
+    return request.headers.get("X-User-Id", "anonymous")
 
 
 @agent_bp.post("/api/agent/action/execute")
@@ -257,19 +261,21 @@ def execute_action():
     body = request.get_json(silent=True) or {}
     session_id = body.get("session_id")
     action_id = body.get("action_id")
+    user_id = _get_user_id()
 
     if not session_id or not action_id:
         return jsonify({"error": "session_id and action_id are required.", "status": "error"}), 400
 
-    session_dir = UPLOAD_ROOT / session_id
-    if not session_dir.is_dir():
+    repos = get_repositories()
+    proposal = ProposalStore.get_proposal(session_id, action_id, user_id=user_id)
+    if not proposal:
         return jsonify({"error": "Invalid session or action proposal not found.", "status": "rejected"}), 400
 
     PilotEventLogger.emit(
         "agent.proposal.confirmed", session_id=session_id, action_id=action_id,
     )
     try:
-        result = ActionExecutor.execute_confirmed_action(session_id, action_id)
+        result = ActionExecutor.execute_confirmed_action(session_id, action_id, user_id=user_id)
         PilotEventLogger.emit(
             "agent.write.completed",
             session_id=session_id,
@@ -304,15 +310,12 @@ def reject_action():
     body = request.get_json(silent=True) or {}
     session_id = body.get("session_id")
     action_id = body.get("action_id")
+    user_id = _get_user_id()
 
     if not session_id or not action_id:
         return jsonify({"error": "session_id and action_id are required.", "status": "error"}), 400
 
-    session_dir = UPLOAD_ROOT / session_id
-    if not session_dir.is_dir():
-        return jsonify({"error": "Invalid session or action proposal not found.", "status": "rejected"}), 400
-
-    proposal = ProposalStore.get_proposal(session_id, action_id)
+    proposal = ProposalStore.get_proposal(session_id, action_id, user_id=user_id)
     if not proposal:
         return jsonify({"error": f"Action proposal '{action_id}' not found or has expired.", "status": "rejected"}), 404
 
@@ -323,7 +326,7 @@ def reject_action():
         }), 400
 
     try:
-        ProposalStore.update_proposal_status(session_id, action_id, "rejected")
+        ProposalStore.update_proposal_status(session_id, action_id, "rejected", user_id=user_id)
         PilotEventLogger.emit(
             "agent.proposal.rejected", session_id=session_id, action_id=action_id,
         )
