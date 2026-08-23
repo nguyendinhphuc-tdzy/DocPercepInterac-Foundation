@@ -41,6 +41,8 @@ if str(REPO_ROOT / "foundation") not in sys.path:
 
 from foundation.applications.rollforward.data_reconciliation import (
     CalculationProvenance,
+    SourceAddressability,
+    SourceBindingLineageStatus,
     CellReconciliationRecord,
     DataReconciliationEngine,
     FormulaStatus,
@@ -377,11 +379,23 @@ def test_three_level_reconciliation_hierarchy(clean_recon_doc, sample_approved_m
         source_hashes={},
     )
 
-    assert summary.overall_status == ReconciliationStatus.MATCH
+    # --- Phase D3.2 (P0-4) -------------------------------------------------
+    # HISTORICAL REASON: this SYNTHETIC case originally asserted
+    # `overall_status == MATCH`. Its CellMutationSpecs name a source document
+    # but carry no sheet or cell address, so under the LineageAddressabilityGate
+    # the cells are source-UNADDRESSABLE. The value semantics are still perfect;
+    # what changed is that a cell with no source location may no longer be
+    # reported as source-correct. The value verdict is asserted separately below.
+    assert summary.overall_status == ReconciliationStatus.BLOCKED
     assert summary.total_tables == 1
     assert summary.total_cells == 4
-    assert summary.matched_cells == 4
+    assert summary.blocked_items == 4
     assert summary.mismatched_cells == 0
+    # Every cell's VALUE landed correctly; only its traceability is missing.
+    records = summary.table_summaries[0].cell_records
+    assert all(r.value_semantic_status == ReconciliationStatus.MATCH for r in records)
+    assert all(r.source_addressability != SourceAddressability.ADDRESSED for r in records)
+    assert all(r.binding_status == SourceBindingLineageStatus.UNVERIFIED for r in records)
 
 
 def test_negative_missing_source_cell():
@@ -493,9 +507,18 @@ def test_exact_source_to_output_mapping_table_10(clean_recon_doc, sample_approve
         source_hashes={},
     )
 
-    assert summary.overall_status == ReconciliationStatus.MATCH
-    assert summary.matched_cells == 6
+    # --- Phase D3.2 (P0-4) -------------------------------------------------
+    # HISTORICAL REASON: this SYNTHETIC case originally asserted
+    # `overall_status == MATCH`. Its CellMutationSpecs name a source document
+    # but carry no sheet or cell address, so under the LineageAddressabilityGate
+    # the cells are source-UNADDRESSABLE. The value semantics are still perfect;
+    # what changed is that a cell with no source location may no longer be
+    # reported as source-correct. The value verdict is asserted separately below.
+    assert summary.overall_status == ReconciliationStatus.BLOCKED
+    assert summary.blocked_items == 6
     assert summary.mismatched_cells == 0
+    records = summary.table_summaries[0].cell_records
+    assert all(r.value_semantic_status == ReconciliationStatus.MATCH for r in records)
 
 
 def test_exact_source_to_output_mapping_table_13(tmp_path, sample_approved_manifest):
@@ -553,8 +576,17 @@ def test_exact_source_to_output_mapping_table_13(tmp_path, sample_approved_manif
         source_hashes={},
     )
 
-    assert summary.overall_status == ReconciliationStatus.MATCH
-    assert summary.matched_cells == 4
+    # --- Phase D3.2 (P0-4) -------------------------------------------------
+    # HISTORICAL REASON: this SYNTHETIC case originally asserted
+    # `overall_status == MATCH`. Its CellMutationSpecs name a source document
+    # but carry no sheet or cell address, so under the LineageAddressabilityGate
+    # the cells are source-UNADDRESSABLE. The value semantics are still perfect;
+    # what changed is that a cell with no source location may no longer be
+    # reported as source-correct. The value verdict is asserted separately below.
+    assert summary.overall_status == ReconciliationStatus.BLOCKED
+    assert summary.blocked_items == 4
+    records = summary.table_summaries[0].cell_records
+    assert all(r.value_semantic_status == ReconciliationStatus.MATCH for r in records)
 
 
 def test_exact_source_to_output_mapping_table_14(tmp_path, sample_approved_manifest):
@@ -615,8 +647,17 @@ def test_exact_source_to_output_mapping_table_14(tmp_path, sample_approved_manif
         source_hashes={},
     )
 
-    assert summary.overall_status == ReconciliationStatus.MATCH
-    assert summary.matched_cells == 6
+    # --- Phase D3.2 (P0-4) -------------------------------------------------
+    # HISTORICAL REASON: this SYNTHETIC case originally asserted
+    # `overall_status == MATCH`. Its CellMutationSpecs name a source document
+    # but carry no sheet or cell address, so under the LineageAddressabilityGate
+    # the cells are source-UNADDRESSABLE. The value semantics are still perfect;
+    # what changed is that a cell with no source location may no longer be
+    # reported as source-correct. The value verdict is asserted separately below.
+    assert summary.overall_status == ReconciliationStatus.BLOCKED
+    assert summary.blocked_items == 6
+    records = summary.table_summaries[0].cell_records
+    assert all(r.value_semantic_status == ReconciliationStatus.MATCH for r in records)
 
 
 def test_exact_source_to_output_mapping_table_15(tmp_path, sample_approved_manifest):
@@ -668,8 +709,17 @@ def test_exact_source_to_output_mapping_table_15(tmp_path, sample_approved_manif
         source_hashes={},
     )
 
-    assert summary.overall_status == ReconciliationStatus.MATCH
-    assert summary.matched_cells == 3
+    # --- Phase D3.2 (P0-4) -------------------------------------------------
+    # HISTORICAL REASON: this SYNTHETIC case originally asserted
+    # `overall_status == MATCH`. Its CellMutationSpecs name a source document
+    # but carry no sheet or cell address, so under the LineageAddressabilityGate
+    # the cells are source-UNADDRESSABLE. The value semantics are still perfect;
+    # what changed is that a cell with no source location may no longer be
+    # reported as source-correct. The value verdict is asserted separately below.
+    assert summary.overall_status == ReconciliationStatus.BLOCKED
+    assert summary.blocked_items == 3
+    records = summary.table_summaries[0].cell_records
+    assert all(r.value_semantic_status == ReconciliationStatus.MATCH for r in records)
 
 
 def test_negative_silent_transformation_detected():
@@ -918,13 +968,52 @@ def test_four_golden_tables_real_fixture_reconciliation_and_lineage():
         source_hashes=source_hashes,
     )
 
+    # --- Phase D3.2 (P0-4) -------------------------------------------------
+    # HISTORICAL REASON: this REAL-FIXTURE case originally asserted
+    # `overall_status == MATCH` with `matched_cells == total_cells` (72/72).
+    # The Phase D3.1 audit established that 0 of those 72 cells carried a source
+    # cell address: the figure measured plan-to-output fidelity, not
+    # source-to-output traceability. Under the LineageAddressabilityGate the run
+    # is BLOCKED. The value semantics are unchanged and are asserted explicitly.
     assert summary.source_freshness_verified is True
-    assert summary.overall_status == ReconciliationStatus.MATCH
     assert summary.total_tables == 3
     assert summary.total_cells > 0
-    assert summary.matched_cells == summary.total_cells
     assert summary.mismatched_cells == 0
     assert summary.missing_cells == 0
+
+    all_records = [r for t in summary.table_summaries for r in t.cell_records]
+    assert len(all_records) == summary.total_cells
+
+    # Value semantics: every planned value still landed in its cell exactly.
+    assert all(r.value_semantic_status == ReconciliationStatus.MATCH for r in all_records)
+
+    # Source correctness: only the Table 10 specs in THIS plan name a sheet and a
+    # cell address (FS / Financial Analysis). The Table 14 and Table 15 specs name
+    # a workbook and nothing else, so they are not source-addressable and the whole
+    # manifest is BLOCKED rather than MATCH.
+    #
+    # (The separate "0 of 72" figure in the Phase D3.1 audit belongs to the Phase D3
+    # execution harness, whose plan carries no cell address on ANY table. Both are
+    # true of their own plan; they are not the same plan.)
+    by_table = {t.table_index: t for t in summary.table_summaries}
+    t10 = by_table[10].cell_records
+    assert t10 and all(
+        r.source_addressability == SourceAddressability.ADDRESSED for r in t10),         "Table 10 specs name FS / Financial Analysis cell addresses and must be ADDRESSED"
+    assert all(r.binding_status == SourceBindingLineageStatus.VERIFIED for r in t10)
+    assert by_table[10].status == ReconciliationStatus.MATCH
+
+    for t_idx in (14, 15):
+        records = by_table[t_idx].cell_records
+        assert records and all(
+            r.source_addressability == SourceAddressability.PARTIAL for r in records),             f"Table {t_idx} specs name only a workbook, so they cannot be ADDRESSED"
+        assert all(r.binding_status == SourceBindingLineageStatus.UNVERIFIED for r in records)
+        assert by_table[t_idx].status == ReconciliationStatus.BLOCKED
+
+    addressed = [r for r in all_records
+                 if r.source_addressability == SourceAddressability.ADDRESSED]
+    assert len(addressed) == len(t10) == 15
+    assert summary.overall_status == ReconciliationStatus.BLOCKED
+    assert summary.blocked_items == len(all_records) - len(addressed) == 57
 
     # 7. Generate Data Lineage JSON Artifact
     lineage_graph = DataReconciliationEngine.generate_lineage_graph(summary)

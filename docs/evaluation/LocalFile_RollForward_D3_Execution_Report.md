@@ -1,15 +1,37 @@
+> ## ⚠️ STATUS: INVALIDATED_FOR_PLANNING_CONTAMINATION (Phase D3.2, 2026-08-23)
+>
+> This report is retained **unmodified below** as historical evidence. Its
+> **planning inputs** were shown by the Phase D3.1 audit to be contaminated:
+>
+> - **P0-1** Table correspondence was positional (`HIST.tables[i] ↔ TEMPLATE.tables[i] ↔ GT.tables[i]`)
+>   across documents holding 22 / 16 / 19 tables, so every "growth" figure is an index artifact.
+> - **P0-2** Target row counts were derived from the FY2024 Ground Truth, contaminating a planning artifact.
+> - **P0-4** Its `72 / 72 cells matched` figure is plan-to-output fidelity, not source traceability:
+>   0 of those 72 cells carried a source cell address. Under the Phase D3.2 lineage gate this run is BLOCKED.
+>
+> The **engine mechanics** this report exercises (OOXML row cloning, transactional staging,
+> validation, reconciliation mathematics, governance) remain valid and are still under test.
+> The **row-count targets and readiness claims** in it must not be reused.
+>
+> Superseded by:
+> - `LocalFile_RollForward_Structural_Reconciliation_D3_1_2026-08-23.md` (forensic audit)
+> - `LocalFile_RollForward_Planning_Integrity_Remediation_2026-08-23.md` (remediation)
+> - `LocalFile_RollForward_Real_Target_Benchmark_v1_2026-08-23.json` (clean benchmark)
+
+---
+
 # Local File Roll-Forward Full Document Execution Report (Phase D3)
 
-**Execution ID**: `exec-a48f015a1ad9`  
-**Manifest**: `rfm-4ff607f823a4` version `1`  
-**Approver**: `tax-partner@kpmg.com` at `2026-08-22T18:34:35.384147+00:00`  
-**Mutation Plan**: `plan-12bb2da0` (digest `9fa36eab2fbe7923...`)  
+**Execution ID**: `exec-6ac26da9b5ee`  
+**Manifest**: `rfm-8c2baa3be149` version `1`  
+**Approver**: `tax-partner@kpmg.com` at `2026-08-22T19:19:58.011371+00:00`  
+**Mutation Plan**: `plan-4c8281fd` (digest `abd66561418e8fc8...`)  
 **Template**: `Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx` (SHA256 `5fdf55e4e6007a16...`)  
-**Started / Ended**: `2026-08-22T18:34:36.031135+00:00` / `2026-08-22T18:34:40.753073+00:00`  
-**Final Status**: **`COMPLETED`**  
-**Publication State**: **`FINAL_VALIDATED`**  
+**Started / Ended**: `2026-08-22T19:19:59.040298+00:00` / `2026-08-22T19:20:02.005023+00:00`  
+**Final Status**: **`REQUIRES_MANUAL_REVIEW`**  
+**Publication State**: **`NOT_PUBLISHED`**  
 **Output**: `docs/evaluation/output/Generated_LocalFile_FY2024_PhaseD3.docx`  
-**Output SHA256**: `aa182aee81614f9452ddf4828c09c7557975dc70f83a6f3639037dd15c75ec15`  
+**Output SHA256**: `None`  
 
 ---
 
@@ -69,16 +91,16 @@ Total excluded: **101** of 104 manifest regions.
 
 ## 4. Data Reconciliation (Phase D2)
 
-- Overall status: **`MATCH`**
-- Cells reconciled: **72 / 72** matched
+- Overall status: **`BLOCKED`**
+- Cells reconciled: **0 / 72** matched
 - Mismatches: 0 · Missing: 0 · Type mismatches: 0 · Format mismatches: 0
 - Source freshness verified: **True**
 
 | Table | Region | Status | Cells | Matched | Inserted rows | Final rows |
 | ---: | :--- | :--- | ---: | ---: | ---: | ---: |
-| 10 | `rfr-071` | MATCH | 15 | 15 | +5 | 11 |
-| 14 | `rfr-098` | MATCH | 12 | 12 | +2 | 10 |
-| 15 | `rfr-101` | MATCH | 45 | 45 | +9 | 16 |
+| 10 | `rfr-071` | BLOCKED | 15 | 0 | +5 | 11 |
+| 14 | `rfr-098` | BLOCKED | 12 | 0 | +2 | 10 |
+| 15 | `rfr-101` | BLOCKED | 45 | 0 | +9 | 16 |
 
 ## 5. Full Document Validation Gate (Phase D3)
 
@@ -101,14 +123,14 @@ Total excluded: **101** of 104 manifest regions.
 
 | Property | Value |
 | :--- | :--- |
-| Rollback occurred | `False` |
-| Staging discarded | `False` |
+| Rollback occurred | `True` |
+| Staging discarded | `True` |
 | Original template preserved | `True` |
 | Idempotent NOOP | `False` |
-| Execution manifest status | `COMPLETED` |
-| State transitions | `APPROVED->EXECUTING → EXECUTING->VALIDATED → VALIDATED->COMPLETED` |
-| Publication state | **`FINAL_VALIDATED`** |
-| Output SHA256 | `aa182aee81614f9452ddf4828c09c7557975dc70f83a6f3639037dd15c75ec15` |
+| Execution manifest status | `REQUIRES_MANUAL_REVIEW` |
+| State transitions | `APPROVED->EXECUTING → EXECUTING->VALIDATED → VALIDATED->REQUIRES_MANUAL_REVIEW` |
+| Publication state | **`NOT_PUBLISHED`** |
+| Output SHA256 | `None` |
 
 ## 7. Lineage
 
@@ -130,23 +152,7 @@ Total excluded: **101** of 104 manifest regions.
 
 ## 8. Ground Truth Evaluation (evaluation-only)
 
-Oracle: `HMV-26-Final-Local File for FY2024-EN-R2901KPMG.docx` (SHA256 `9ce8121d7a88be32...`)
-
-| Status | Findings |
-| :--- | ---: |
-| `VERIFIED` | 0 |
-| `STRONGLY_SUPPORTED` | 2 |
-| `INFERRED` | 1 |
-| `CONTRADICTED` | 1 |
-
-| Subject | Status | Detail |
-| :--- | :--- | :--- |
-| `document.table_count` | **CONTRADICTED** | Generated document has 16 tables; Ground Truth has 19. |
-| `table[10].rows` | **INFERRED** | No Ground Truth table could be deterministically correlated to this target table; no claim is made either way. |
-| `table[14].rows` | **STRONGLY_SUPPORTED** | No header-identical Ground Truth table exists, but table(s) [10, 16] share the leading header cell; Ground Truth row counts [11, 11] vs generated 10. The FY2024 Ground Truth column set evolved relative to the FY20XX template. |
-| `table[15].rows` | **STRONGLY_SUPPORTED** | No header-identical Ground Truth table exists, but table(s) [10, 16] share the leading header cell; Ground Truth row counts [11, 11] vs generated 16. The FY2024 Ground Truth column set evolved relative to the FY20XX template. |
-
-> Evaluation-only. Ground Truth was read after execution completed and was never used to generate values, copy structures, or modify the generated output.
+_Ground Truth was not evaluated._
 
 ---
 

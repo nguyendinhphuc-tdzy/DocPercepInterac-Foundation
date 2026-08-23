@@ -229,6 +229,48 @@ def approved_golden_manifest(golden_doc) -> RollForwardManifest:
     return manifest
 
 
+SYNTHETIC_SOURCE_SHEET = "FS"
+
+
+def build_synthetic_source_workbook(doc_path: Path) -> Path:
+    """Writes a REAL workbook holding the exact values the golden plan writes.
+
+    Phase D3.2 (§18) forbids fabricated source ranges. The golden plan is
+    synthetic, so its source must be a real synthetic workbook rather than an
+    invented address inside a real client file: every `source_cell_address` the
+    plan cites resolves here and holds the planned value.
+    """
+    import openpyxl
+
+    wb_path = doc_path.parent / "synthetic_source.xlsx"
+    wb = openpyxl.Workbook()
+    ws = wb.active
+    ws.title = SYNTHETIC_SOURCE_SHEET
+    row = 1
+    for t_idx in sorted(GOLDEN_TABLES):
+        initial, target, cols, label = GOLDEN_TABLES[t_idx]
+        for i in range(target - initial):
+            for c in range(cols):
+                ws.cell(row=row, column=c + 1, value=f"{label} NEW R{i}C{c}")
+            row += 1
+    wb.save(str(wb_path))
+    wb.close()
+    return wb_path
+
+
+def golden_source_address(t_idx: int, i: int, c: int) -> str:
+    """The real cell in the synthetic workbook that backs one planned value."""
+    import openpyxl
+
+    row = 1
+    for idx in sorted(GOLDEN_TABLES):
+        initial, target, _cols, _label = GOLDEN_TABLES[idx]
+        if idx == t_idx:
+            return f"{openpyxl.utils.get_column_letter(c + 1)}{row + i}"
+        row += target - initial
+    raise KeyError(t_idx)
+
+
 def build_golden_plan(
     manifest: RollForwardManifest,
     doc_path: Path,
@@ -236,6 +278,7 @@ def build_golden_plan(
 ) -> MutationPlan:
     """Builds a version-locked MutationPlan over the four golden tables."""
     doc = Document(str(doc_path))
+    source_wb = build_synthetic_source_workbook(doc_path)
     specs = []
     for t_idx in sorted(GOLDEN_TABLES):
         initial, target, cols, label = GOLDEN_TABLES[t_idx]
@@ -258,9 +301,9 @@ def build_golden_plan(
                         cells=[
                             CellMutationSpec(
                                 col_idx=c,
-                                source_doc_name="HMV-FA&RPT FY2024.xlsx",
-                                source_sheet="FS",
-                                source_cell_address=f"D{7 + i}",
+                                source_doc_name=source_wb.name,
+                                source_sheet=SYNTHETIC_SOURCE_SHEET,
+                                source_cell_address=golden_source_address(t_idx, i, c),
                                 value=f"{label} NEW R{i}C{c}",
                             )
                             for c in range(cols)
@@ -285,7 +328,10 @@ def build_golden_plan(
                 row_mutations=[
                     RowMutationSpec(
                         row_idx=3,
-                        cells=[CellMutationSpec(col_idx=0, source_doc_name="x.xlsx", value="ILLEGAL")],
+                        # Deliberately unaddressed: this region is blocked and must
+                        # never reach execution, so it has no real source.
+                        cells=[CellMutationSpec(col_idx=0, source_doc_name="unbound.xlsx",
+                                                value="ILLEGAL")],
                     )
                 ],
             )
@@ -320,6 +366,60 @@ def build_request(
     if "expected_template_hash" not in kwargs:
         kwargs["expected_template_hash"] = compute_file_sha256(doc_path)
     return ExecutionRequest(**kwargs)
+
+
+# ============================================================================
+# 0. SOURCE ADDRESSABILITY OF THE SYNTHETIC FIXTURE (Phase D3.2 §18)
+# ============================================================================
+
+def test_every_planned_source_address_resolves_to_a_real_cell(tmp_path, golden_doc,
+                                                              approved_golden_manifest):
+    """No fabricated source ranges: every cited address exists and holds its value."""
+    import openpyxl
+
+    plan = build_golden_plan(approved_golden_manifest, golden_doc)
+    wb_path = golden_doc.parent / "synthetic_source.xlsx"
+    assert wb_path.exists(), "the plan must cite a source workbook that actually exists"
+
+    wb = openpyxl.load_workbook(str(wb_path))
+    try:
+        for spec in plan.table_mutations:
+            if spec.target_region_id == "rfr-blocked-ambiguous":
+                continue  # deliberately unaddressed; never executes
+            for row_mut in spec.row_mutations:
+                for cell in row_mut.cells:
+                    assert cell.source_sheet in wb.sheetnames
+                    assert cell.source_cell_address
+                    actual = wb[cell.source_sheet][cell.source_cell_address].value
+                    assert actual == cell.value, (
+                        f"{cell.source_doc_name}!{cell.source_sheet}!"
+                        f"{cell.source_cell_address} holds {actual!r}, "
+                        f"but the plan writes {cell.value!r}"
+                    )
+    finally:
+        wb.close()
+
+
+def test_golden_path_cells_pass_the_lineage_addressability_gate(tmp_path, golden_doc,
+                                                                approved_golden_manifest):
+    """The synthetic golden path is source-addressable, so it may publish."""
+    from foundation.applications.rollforward.data_reconciliation import (
+        SourceAddressability, SourceBindingLineageStatus,
+    )
+
+    output = tmp_path / "out" / "addressable.docx"
+    report = RollForwardOrchestrator.execute(
+        build_request(approved_golden_manifest, golden_doc, output)
+    )
+    assert report.status == ExecutionStatus.COMPLETED, report.failure_detail
+    assert report.reconciliation.overall_status == ReconciliationStatus.MATCH.value
+    assert report.reconciliation.blocked_items == 0
+
+    cell_nodes = [n for n in report.lineage.nodes if n["type"] == "TARGET_CELL"]
+    assert cell_nodes
+    for node in cell_nodes:
+        assert node["metadata"]["source_cell"], "every published cell must cite a source cell"
+        assert node["metadata"]["source_sheet"] == SYNTHETIC_SOURCE_SHEET
 
 
 # ============================================================================
@@ -1220,87 +1320,111 @@ def test_no_ledger_is_written_for_a_failed_execution(tmp_path, golden_doc, appro
 # ============================================================================
 
 def test_real_fixture_end_to_end_acceptance(tmp_path):
-    """Full workflow on FY2023 Local File + Template + FY2024 FA&RPT + Appendix I."""
+    """Full workflow on FY2023 Local File + Template + FY2024 FA&RPT + Appendix I.
+
+    Phase D3.2 (P0-4) HISTORICAL REASON
+    -----------------------------------
+    This test originally asserted COMPLETED / FINAL_VALIDATED with
+    "72 / 72 cells matched". The Phase D3.1 audit established that not one of
+    those 72 cells carried a source cell address, so the figure measured
+    plan-to-output fidelity while being presented as source-to-output
+    traceability. Under the LineageAddressabilityGate the same run is now
+    withheld from publication.
+
+    The test is kept and strengthened rather than deleted: it still exercises
+    the entire orchestrated pipeline and asserts that the ENGINE MECHANICS are
+    sound (structural mutation, full-document validation, transaction, exclusion
+    reporting) while the artifact is correctly NOT published because its plan
+    cannot be traced to real source cells.
+
+    It writes no artifacts: the historical Phase D3 report is preserved on disk
+    under its INVALIDATED_FOR_PLANNING_CONTAMINATION banner.
+    """
+    from foundation.applications.rollforward.data_reconciliation import (
+        SourceAddressability,
+    )
     from foundation.tests.evaluation.rollforward_d3_execution import (
-        DEFAULT_OUTPUT_PATH,
-        REPORT_JSON_PATH,
-        REPORT_MD_PATH,
-        run_d3_execution,
+        build_execution_request,
     )
 
-    if DEFAULT_OUTPUT_PATH.exists():
-        DEFAULT_OUTPUT_PATH.unlink()
-    ledger_path = DEFAULT_OUTPUT_PATH.with_name(DEFAULT_OUTPUT_PATH.name + ".d3ledger.json")
-    if ledger_path.exists():
-        ledger_path.unlink()
+    output = tmp_path / "Generated_LocalFile_FY2024_PhaseD3_gated.docx"
+    request, manifest, _targets = build_execution_request(
+        output_path=output, with_ground_truth=True
+    )
+    report = orch_module.RollForwardOrchestrator.execute(request)
 
-    report, manifest, _targets = run_d3_execution()
+    # --- the gate holds: nothing is published --------------------------------
+    assert report.status.value == "REQUIRES_MANUAL_REVIEW", report.failure_detail
+    assert report.publication_state.value == "NOT_PUBLISHED"
+    assert report.failure_code.value == "DATA_RECONCILIATION_MANUAL_REVIEW"
+    assert not output.exists(), "an artifact whose cells are not source-addressable must not publish"
+    assert report.output_hash is None
+    assert ExecutionLedger.load(output) is None
+    assert report.rollback_occurred is True
+    assert report.template_preserved is True
 
-    assert report.status.value == "COMPLETED", report.failure_detail
-    assert report.publication_state.value == "FINAL_VALIDATED"
-    assert DEFAULT_OUTPUT_PATH.exists()
-    assert report.output_hash == compute_file_sha256(DEFAULT_OUTPUT_PATH)
+    # --- the reason is addressability, not a value error ---------------------
+    assert report.reconciliation.overall_status == "BLOCKED"
+    assert report.reconciliation.mismatched_cells == 0
+    assert report.reconciliation.missing_cells == 0
+    assert report.reconciliation.blocked_items == report.reconciliation.total_cells
 
-    # The three golden regions executable on the real Master Template.
-    executed = {r.region_id: r for r in report.executed_regions}
-    assert set(executed) == {"rfr-071", "rfr-098", "rfr-101"}
+    # --- the mechanics still work --------------------------------------------
+    executed = {r.region_id for r in report.executed_regions}
+    assert executed == {"rfr-071", "rfr-098", "rfr-101"}
     changes = {c.table_index: c for c in report.structural_changes}
     assert (changes[10].rows_before, changes[10].rows_after) == (6, 11)
     assert (changes[14].rows_before, changes[14].rows_after) == (8, 10)
     assert (changes[15].rows_before, changes[15].rows_after) == (7, 16)
-
-    # Table 13's Phase C delta implies row deletion, which D1 does not support:
-    # it is excluded with an explicit reason rather than best-effort executed.
-    excluded = {r.region_id: r for r in report.excluded_regions}
-    assert excluded["rfr-093"].exclusion_reason.value == "UNSUPPORTED_OPERATION"
-    assert "row deletion" in excluded["rfr-093"].reason_detail
-
-    # Blocked Phase C regions stay blocked and are reported, never resolved.
-    assert len(report.excluded_regions) == len(manifest.regions) - len(report.executed_regions)
-    assert report.unresolved_blocked_summary.get("CLASSIFICATION_UNKNOWN", 0) > 0
-
-    assert report.reconciliation.overall_status == "MATCH"
-    assert report.reconciliation.matched_cells == report.reconciliation.total_cells
     assert report.validation_summary["is_valid"] is True
     assert report.validation_summary["failed"] == 0
 
-    assert report.ground_truth_evaluation is not None
-    assert report.ground_truth_evaluation.evaluated is True
+    # --- blocked Phase C regions still stay blocked ---------------------------
+    excluded = {r.region_id: r for r in report.excluded_regions}
+    assert excluded["rfr-093"].exclusion_reason.value == "UNSUPPORTED_OPERATION"
+    assert len(report.excluded_regions) == len(manifest.regions) - len(report.executed_regions)
+    assert report.unresolved_blocked_summary.get("CLASSIFICATION_UNKNOWN", 0) > 0
 
-    assert REPORT_JSON_PATH.exists()
-    assert REPORT_MD_PATH.exists()
+    # --- lineage records the addressability verdict ---------------------------
+    cell_nodes = [n for n in report.lineage.nodes if n["type"] == "TARGET_CELL"]
+    assert cell_nodes
+    assert all(n["metadata"]["source_cell"] is None for n in cell_nodes), (
+        "the Phase D3 harness plan names no cell address on any table; that is "
+        "precisely why this run cannot publish"
+    )
 
-    doc_out = Document(str(DEFAULT_OUTPUT_PATH))
-    assert len(doc_out.tables[10].rows) == 11
-    assert len(doc_out.tables[14].rows) == 10
-    assert len(doc_out.tables[15].rows) == 16
-    assert len(doc_out.tables[13].rows) == 23  # untouched
+    # --- the historical, contaminated report is untouched ---------------------
+    historical = REPO_ROOT / "docs/evaluation/LocalFile_RollForward_D3_Execution_Report.md"
+    if historical.exists():
+        assert "INVALIDATED_FOR_PLANNING_CONTAMINATION" in historical.read_text(encoding="utf-8")
 
 
-def test_real_fixture_second_execution_is_idempotent(tmp_path):
-    """Re-running the same approved real-fixture execution returns NOOP, not a duplicate."""
+def test_real_fixture_run_is_stable_and_writes_no_ledger(tmp_path):
+    """A run that cannot publish must not become idempotent-NOOP on a re-run.
+
+    Phase D3.2 (P0-4) HISTORICAL REASON
+    -----------------------------------
+    This replaces a test that asserted the second real-fixture execution
+    returned NOOP. That behaviour depended on the first execution publishing,
+    which the addressability gate now correctly prevents. Idempotence itself is
+    still covered end-to-end by the synthetic golden-path tests
+    (`test_second_identical_execution_is_a_noop`), whose plan IS source-addressable.
+    """
     from foundation.tests.evaluation.rollforward_d3_execution import build_execution_request
 
-    output = tmp_path / "Generated_LocalFile_FY2024_PhaseD3_idempotence.docx"
+    output = tmp_path / "Generated_LocalFile_FY2024_PhaseD3_stability.docx"
     request, _manifest, _targets = build_execution_request(
         output_path=output, with_ground_truth=False
     )
 
     first = orch_module.RollForwardOrchestrator.execute(request)
-    assert first.status.value == "COMPLETED", first.failure_detail
-    assert first.publication_state.value == "FINAL_VALIDATED"
-    first_hash = compute_file_sha256(output)
-    assert first.output_hash == first_hash
-
     second = orch_module.RollForwardOrchestrator.execute(request)
 
-    assert second.status.value == "NOOP"
-    assert second.idempotent_noop is True
-    assert second.output_hash == first_hash
-    assert compute_file_sha256(output) == first_hash
-
-    # No duplicate mutation: the golden tables kept their approved row counts.
-    doc_out = Document(str(output))
-    assert len(doc_out.tables[10].rows) == 11
-    assert len(doc_out.tables[14].rows) == 10
-    assert len(doc_out.tables[15].rows) == 16
+    assert first.status.value == "REQUIRES_MANUAL_REVIEW"
+    assert second.status.value == "REQUIRES_MANUAL_REVIEW"
+    assert second.idempotent_noop is False, (
+        "a run that never published must not be mistaken for an already-applied one"
+    )
+    assert not output.exists()
+    assert ExecutionLedger.load(output) is None
+    assert first.reconciliation.overall_status == second.reconciliation.overall_status == "BLOCKED"

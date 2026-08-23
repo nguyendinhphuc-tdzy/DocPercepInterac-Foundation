@@ -116,6 +116,24 @@ class ReconciliationStatus(str, Enum):
     BLOCKED = "BLOCKED"
 
 
+class SourceAddressability(str, Enum):
+    """Whether a reconciled cell can be traced back to a located source cell.
+
+    Phase D3.1 finding P0-4: a run reported 72/72 MATCH while 0/72 cells
+    carried a source address. Value equality is not source correctness, so
+    addressability is now recorded separately and gates VERIFIED.
+    """
+    ADDRESSED = "ADDRESSED"              # document + sheet/element + cell address or range
+    PARTIAL = "PARTIAL"                  # document named, but no cell address or range
+    UNADDRESSED = "UNADDRESSED"          # no source location at all
+
+
+class SourceBindingLineageStatus(str, Enum):
+    """Lineage-level binding status of one reconciled cell."""
+    VERIFIED = "VERIFIED"
+    UNVERIFIED = "UNVERIFIED"
+
+
 # ============================================================================
 # 2. SOURCE & TARGET CELL PROVENANCE MODELS
 # ============================================================================
@@ -232,6 +250,14 @@ class CellReconciliationRecord:
     status: ReconciliationStatus = ReconciliationStatus.MATCH
     discrepancy_reason: Optional[str] = None
     precision_notes: Optional[str] = None
+    # --- Phase D3.2 lineage hard gate -----------------------------------
+    # `value_semantic_status` keeps the pure value verdict (did the planned
+    # value land in the cell). `status` is the SOURCE-CORRECTNESS verdict and
+    # can never be MATCH for a cell with no source location.
+    value_semantic_status: ReconciliationStatus = ReconciliationStatus.MATCH
+    source_addressability: SourceAddressability = SourceAddressability.UNADDRESSED
+    binding_status: SourceBindingLineageStatus = SourceBindingLineageStatus.UNVERIFIED
+    addressability_reason: Optional[str] = None
 
     def to_dict(self) -> Dict[str, Any]:
         return {
@@ -249,6 +275,10 @@ class CellReconciliationRecord:
             "semantic_match": self.semantic_match,
             "display_match": self.display_match,
             "status": self.status.value,
+            "value_semantic_status": self.value_semantic_status.value,
+            "source_addressability": self.source_addressability.value,
+            "binding_status": self.binding_status.value,
+            "addressability_reason": self.addressability_reason,
             "discrepancy_reason": self.discrepancy_reason,
             "precision_notes": self.precision_notes,
         }
@@ -583,6 +613,71 @@ class ValueSemanticEvaluator:
 
 
 # ============================================================================
+# 5b. LINEAGE ADDRESSABILITY HARD GATE (Phase D3.2)
+# ============================================================================
+
+class LineageAddressabilityGate:
+    """A cell may be VERIFIED only if it can be traced to a located source cell.
+
+    Phase D3.1 finding P0-4 showed that `72 / 72 cells matched` was a
+    plan-to-output fidelity measure being presented as source-to-output
+    traceability, because not one of those cells carried a source address.
+
+    The gate keeps the two answers apart:
+
+      * `value_semantic_status` -- did the planned value land in the cell?
+      * `status`                -- is this cell traceable to a real source?
+
+    A cell with no source location keeps its (possibly perfect) value verdict
+    and is still reported as BLOCKED, never MATCH.
+    """
+
+    @staticmethod
+    def classify(source: Optional[SourceCellReference]) -> Tuple[SourceAddressability, str]:
+        if source is None:
+            return (SourceAddressability.UNADDRESSED,
+                    "no SourceCellReference attached to this cell")
+        if not source.document_name and not source.document_id:
+            return (SourceAddressability.UNADDRESSED, "source carries no document identity")
+        has_location = bool(source.cell_address or source.cell_range or source.element_id)
+        if not has_location:
+            return (SourceAddressability.PARTIAL,
+                    f"source document '{source.document_name}' named, but no cell_address, "
+                    f"cell_range or element_id was recorded")
+        if source.element_id and not (source.cell_address or source.cell_range):
+            return (SourceAddressability.ADDRESSED,
+                    f"authoritative source element_id '{source.element_id}'")
+        if source.sheet_name:
+            return (SourceAddressability.ADDRESSED,
+                    f"{source.document_name}!{source.sheet_name}!"
+                    f"{source.cell_address or source.cell_range}")
+        return (SourceAddressability.PARTIAL,
+                f"cell location '{source.cell_address or source.cell_range}' recorded but no "
+                f"sheet_name or element_id to resolve it against")
+
+    @classmethod
+    def apply(cls, record: CellReconciliationRecord) -> CellReconciliationRecord:
+        """Stamps addressability onto a record and downgrades an unbacked MATCH."""
+        record.value_semantic_status = record.status
+        addressability, reason = cls.classify(record.source)
+        record.source_addressability = addressability
+        record.addressability_reason = reason
+
+        if addressability == SourceAddressability.ADDRESSED:
+            record.binding_status = SourceBindingLineageStatus.VERIFIED
+            return record
+
+        record.binding_status = SourceBindingLineageStatus.UNVERIFIED
+        record.status = ReconciliationStatus.BLOCKED
+        record.discrepancy_reason = (
+            f"SOURCE_NOT_ADDRESSABLE ({addressability.value}): {reason}. "
+            f"Value semantics were {record.value_semantic_status.value}, but a cell without a "
+            f"source location cannot be reported as source-correct."
+        )
+        return record
+
+
+# ============================================================================
 # 6. DATA RECONCILIATION & LINEAGE ENGINE
 # ============================================================================
 
@@ -687,6 +782,7 @@ class DataReconciliationEngine:
         format_mismatches_count = 0
         transformed_cells_count = 0
         manual_review_count = 0
+        unaddressed_cells_count = 0
 
         # 3. Process each table in the mutation plan
         for t_spec in mutation_plan.table_mutations:
@@ -702,6 +798,7 @@ class DataReconciliationEngine:
             tbl_format_mismatches = 0
             tbl_transformed = 0
             tbl_manual_review = 0
+            tbl_unaddressed = 0
 
             # Match each row mutation spec
             for r_spec in t_spec.row_mutations:
@@ -727,7 +824,7 @@ class DataReconciliationEngine:
                             status=ReconciliationStatus.MISSING_OUTPUT,
                             discrepancy_reason=f"Row {r_idx} does not exist in output table",
                         )
-                        cell_records.append(rec)
+                        cell_records.append(LineageAddressabilityGate.apply(rec))
                         tbl_missing += 1
                     continue
 
@@ -753,7 +850,7 @@ class DataReconciliationEngine:
                             status=ReconciliationStatus.MISSING_OUTPUT,
                             discrepancy_reason=f"Column {c_idx} does not exist in output row {r_idx}",
                         )
-                        cell_records.append(rec)
+                        cell_records.append(LineageAddressabilityGate.apply(rec))
                         tbl_missing += 1
                         continue
 
@@ -797,9 +894,14 @@ class DataReconciliationEngine:
                         manifest_version=manifest.manifest_version,
                         mutation_id=t_spec.target_region_id,
                     )
+                    # Phase D3.2 hard gate: a cell with no located source can never
+                    # be reported as MATCH, however perfect its value semantics.
+                    rec = LineageAddressabilityGate.apply(rec)
                     cell_records.append(rec)
 
-                    if rec.status == ReconciliationStatus.MATCH:
+                    if rec.status == ReconciliationStatus.BLOCKED:
+                        tbl_unaddressed += 1
+                    elif rec.status == ReconciliationStatus.MATCH:
                         tbl_matched_cells += 1
                     elif rec.status == ReconciliationStatus.MISMATCH:
                         tbl_mismatches += 1
@@ -816,6 +918,8 @@ class DataReconciliationEngine:
             tbl_status = ReconciliationStatus.MATCH
             if tbl_mismatches > 0 or tbl_type_mismatches > 0 or tbl_missing > 0:
                 tbl_status = ReconciliationStatus.MISMATCH
+            elif tbl_unaddressed > 0:
+                tbl_status = ReconciliationStatus.BLOCKED
             elif tbl_format_mismatches > 0:
                 tbl_status = ReconciliationStatus.FORMAT_MISMATCH
             elif tbl_manual_review > 0:
@@ -844,6 +948,7 @@ class DataReconciliationEngine:
             )
             table_summaries.append(t_summary)
 
+            unaddressed_cells_count += tbl_unaddressed
             total_cells_count += len(cell_records)
             matched_cells_count += tbl_matched_cells
             mismatched_cells_count += tbl_mismatches
@@ -857,6 +962,9 @@ class DataReconciliationEngine:
         overall_status = ReconciliationStatus.MATCH
         if mismatched_cells_count > 0 or type_mismatches_count > 0 or missing_cells_count > 0:
             overall_status = ReconciliationStatus.MISMATCH
+        elif unaddressed_cells_count > 0:
+            # Phase D3.2: source-unaddressable cells block the whole manifest.
+            overall_status = ReconciliationStatus.BLOCKED
         elif format_mismatches_count > 0:
             overall_status = ReconciliationStatus.FORMAT_MISMATCH
         elif manual_review_count > 0:
@@ -874,7 +982,7 @@ class DataReconciliationEngine:
             type_mismatches=type_mismatches_count,
             format_mismatches=format_mismatches_count,
             manual_review_items=manual_review_count,
-            blocked_items=0,
+            blocked_items=unaddressed_cells_count,
             source_freshness_verified=True,
             reperception_verified=True,
             overall_status=overall_status,

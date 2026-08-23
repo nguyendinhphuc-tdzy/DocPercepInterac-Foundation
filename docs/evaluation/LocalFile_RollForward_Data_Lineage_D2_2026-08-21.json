@@ -1,23 +1,23 @@
 {
   "schema_version": "1.0.0",
   "generated_at": "2026-08-21T07:30:00+00:00",
-  "manifest_id": "rfm-25ec239b5c37",
+  "manifest_id": "rfm-d5ec588fd2ae",
   "manifest_version": 1,
-  "overall_status": "MATCH",
+  "overall_status": "BLOCKED",
   "metrics": {
     "total_tables": 3,
     "total_cells": 72,
-    "matched_cells": 72,
+    "matched_cells": 15,
     "mismatched_cells": 0,
     "format_mismatches": 0
   },
   "nodes": [
     {
-      "id": "manifest:rfm-25ec239b5c37:v1",
+      "id": "manifest:rfm-d5ec588fd2ae:v1",
       "type": "MANIFEST",
       "label": "Roll-Forward Manifest (v1)",
       "metadata": {
-        "manifest_id": "rfm-25ec239b5c37",
+        "manifest_id": "rfm-d5ec588fd2ae",
         "version": 1,
         "session_id": "localfile-rollforward-manifest-v1"
       }
@@ -401,7 +401,7 @@
         "table_index": 14,
         "target_region_id": "rfr-097",
         "row_count": 10,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -413,7 +413,7 @@
         "col": 0,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -437,7 +437,7 @@
         "col": 1,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -461,7 +461,7 @@
         "col": 2,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -485,7 +485,7 @@
         "col": 3,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -509,7 +509,7 @@
         "col": 4,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -533,7 +533,7 @@
         "col": 5,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -557,7 +557,7 @@
         "col": 0,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -581,7 +581,7 @@
         "col": 1,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -605,7 +605,7 @@
         "col": 2,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -629,7 +629,7 @@
         "col": 3,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -653,7 +653,7 @@
         "col": 4,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -677,7 +677,7 @@
         "col": 5,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -700,7 +700,7 @@
         "table_index": 15,
         "target_region_id": "rfr-098",
         "row_count": 16,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -712,7 +712,7 @@
         "col": 0,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -736,7 +736,7 @@
         "col": 1,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -760,7 +760,7 @@
         "col": 2,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -784,7 +784,7 @@
         "col": 3,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -808,7 +808,7 @@
         "col": 4,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -832,7 +832,7 @@
         "col": 0,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -856,7 +856,7 @@
         "col": 1,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -880,7 +880,7 @@
         "col": 2,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -904,7 +904,7 @@
         "col": 3,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -928,7 +928,7 @@
         "col": 4,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -952,7 +952,7 @@
         "col": 0,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -976,7 +976,7 @@
         "col": 1,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1000,7 +1000,7 @@
         "col": 2,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1024,7 +1024,7 @@
         "col": 3,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1048,7 +1048,7 @@
         "col": 4,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1072,7 +1072,7 @@
         "col": 0,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1096,7 +1096,7 @@
         "col": 1,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1120,7 +1120,7 @@
         "col": 2,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1144,7 +1144,7 @@
         "col": 3,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1168,7 +1168,7 @@
         "col": 4,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1192,7 +1192,7 @@
         "col": 0,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1216,7 +1216,7 @@
         "col": 1,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1240,7 +1240,7 @@
         "col": 2,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1264,7 +1264,7 @@
         "col": 3,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1288,7 +1288,7 @@
         "col": 4,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1312,7 +1312,7 @@
         "col": 0,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1336,7 +1336,7 @@
         "col": 1,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1360,7 +1360,7 @@
         "col": 2,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1384,7 +1384,7 @@
         "col": 3,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1408,7 +1408,7 @@
         "col": 4,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1432,7 +1432,7 @@
         "col": 0,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1456,7 +1456,7 @@
         "col": 1,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1480,7 +1480,7 @@
         "col": 2,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1504,7 +1504,7 @@
         "col": 3,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1528,7 +1528,7 @@
         "col": 4,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1552,7 +1552,7 @@
         "col": 0,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1576,7 +1576,7 @@
         "col": 1,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1600,7 +1600,7 @@
         "col": 2,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1624,7 +1624,7 @@
         "col": 3,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1648,7 +1648,7 @@
         "col": 4,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1672,7 +1672,7 @@
         "col": 0,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1696,7 +1696,7 @@
         "col": 1,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1720,7 +1720,7 @@
         "col": 2,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1744,7 +1744,7 @@
         "col": 3,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1768,7 +1768,7 @@
         "col": 4,
         "semantic_match": true,
         "display_match": true,
-        "status": "MATCH"
+        "status": "BLOCKED"
       }
     },
     {
@@ -1786,7 +1786,7 @@
   ],
   "edges": [
     {
-      "from": "manifest:rfm-25ec239b5c37:v1",
+      "from": "manifest:rfm-d5ec588fd2ae:v1",
       "to": "table:10:rfr-071",
       "relation": "CONTAINS_TABLE_MUTATION"
     },
@@ -1956,7 +1956,7 @@
       "transform": "NONE"
     },
     {
-      "from": "manifest:rfm-25ec239b5c37:v1",
+      "from": "manifest:rfm-d5ec588fd2ae:v1",
       "to": "table:14:rfr-097",
       "relation": "CONTAINS_TABLE_MUTATION"
     },
@@ -2093,7 +2093,7 @@
       "transform": "NONE"
     },
     {
-      "from": "manifest:rfm-25ec239b5c37:v1",
+      "from": "manifest:rfm-d5ec588fd2ae:v1",
       "to": "table:15:rfr-098",
       "relation": "CONTAINS_TABLE_MUTATION"
     },

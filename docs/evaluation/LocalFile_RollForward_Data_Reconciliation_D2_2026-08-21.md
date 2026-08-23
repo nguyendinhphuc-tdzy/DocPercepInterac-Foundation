@@ -1,3 +1,23 @@
+> ## ⚠️ STATUS: INVALIDATED_FOR_PLANNING_CONTAMINATION (Phase D3.2, 2026-08-23)
+>
+> This report is retained **unmodified below** as historical evidence. Its
+> **planning inputs** were shown by the Phase D3.1 audit to be contaminated:
+>
+> - **P0-1** Table correspondence was positional (`HIST.tables[i] ↔ TEMPLATE.tables[i] ↔ GT.tables[i]`)
+>   across documents holding 22 / 16 / 19 tables, so every "growth" figure is an index artifact.
+> - **P0-2** Target row counts were derived from the FY2024 Ground Truth, contaminating a planning artifact.
+>
+> The **engine mechanics** this report exercises (OOXML row cloning, transactional staging,
+> validation, reconciliation mathematics, governance) remain valid and are still under test.
+> The **row-count targets and readiness claims** in it must not be reused.
+>
+> Superseded by:
+> - `LocalFile_RollForward_Structural_Reconciliation_D3_1_2026-08-23.md` (forensic audit)
+> - `LocalFile_RollForward_Planning_Integrity_Remediation_2026-08-23.md` (remediation)
+> - `LocalFile_RollForward_Real_Target_Benchmark_v1_2026-08-23.json` (clean benchmark)
+
+---
+
 # Local File Roll-Forward Source-to-Output Data Reconciliation & Lineage Report (Phase D2)
 
 **Document ID**: `REPORT-LF-ROLLFORWARD-RECONCILIATION-D2-20260821`  

@@ -1,0 +1,5195 @@
+{
+  "benchmark_id": "REAL_TARGET_BENCHMARK_V1",
+  "phase": "C2 / D3.2 — Roll-Forward Planning Integrity Remediation",
+  "generated_at": "2026-08-23",
+  "planning_inputs": {
+    "historical_fy2023": {
+      "path": "anonymize client/Demo files/Demo files/Compare LF/HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+      "sha256": "8b51f941e1068c97385fecbd49808e1dc356601e4e3eb8f9c2d0d7c39fb290c5"
+    },
+    "master_template": {
+      "path": "anonymize client/Demo files/Demo files/Compare LF/Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+      "sha256": "5fdf55e4e6007a164908af84bf8c001c767bf46f66c5be6e6cfd7afe1222f47c"
+    },
+    "current_source_farpt": {
+      "path": "anonymize client/Demo files/Demo files/FA&RPTS & Appendix I/FA&RPTs/HMV-FA&RPT FY2024.xlsx",
+      "sha256": "9574dcc037af9ff708ae31e7c67586d6baa37a584e8fa602e1409c36fb6358f2"
+    },
+    "current_source_appendix_i": {
+      "path": "anonymize client/Demo files/Demo files/FA&RPTS & Appendix I/Appendix I/HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "sha256": "80e0b0deb594aef403e58bd3db836cd9e6172167bb8ed8ef8153951dccbde3e3"
+    }
+  },
+  "ground_truth": {
+    "used_in_planning": false,
+    "quarantine": "GroundTruthQuarantine armed for the whole planning run; any attempt to open the Ground Truth raises GroundTruthContaminationError.",
+    "document_not_opened": "HMV-26-Final-Local File for FY2024-EN-R2901KPMG.docx"
+  },
+  "identity_policy": {
+    "positional_table_identity_used": false,
+    "method": "multi-factor position-free signature (section context, heading context, header signature, column schema, row schema, merge topology, neighbouring paragraphs, semantic labels)",
+    "ordinal_role": "display and intra-document locator only",
+    "resolver_proof": "TableCorrespondenceResolver.assert_no_positional_input()"
+  },
+  "source_capability": [
+    {
+      "document_name": "HMV-FA&RPT FY2024.xlsx",
+      "document_sha256": "9574dcc037af9ff708ae31e7c67586d6baa37a584e8fa602e1409c36fb6358f2",
+      "sheet_count": 5,
+      "roles_present": [
+        "FINANCIAL_ANALYSIS",
+        "FINANCIAL_STATEMENTS",
+        "INTEREST_EXPENSE",
+        "RPT_DATA"
+      ],
+      "roles_absent": [
+        "FIXED_ASSETS",
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS",
+        "NARRATIVE_DISCLOSURE",
+        "RELATED_PARTIES_REGISTER",
+        "SEGMENTED_DATA",
+        "REFERENCE_LIST",
+        "CHECKLIST"
+      ],
+      "sheets": [
+        {
+          "sheet_name": "I. Related parties",
+          "max_row": 18,
+          "max_column": 19,
+          "header_row_index": 9,
+          "headers": [
+            "STT",
+            "Tên bên liên kết",
+            "Quốc gia",
+            "Mã số thuế",
+            "Hình thức liên kết",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "Ghi chú",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "STT",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "No."
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "Tên bên liên kết",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "Name of related party"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "Quốc gia",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "Country"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "Mã số thuế",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "Tax code"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "Hình thức liên kết",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 4,
+              "sample": "Type of relationship"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 6,
+              "sample": "B"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "C"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 2,
+              "sample": "D"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "Đ"
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "E"
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "G"
+            },
+            {
+              "index": 11,
+              "letter": "L",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "H"
+            },
+            {
+              "index": 12,
+              "letter": "M",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "I"
+            },
+            {
+              "index": 13,
+              "letter": "N",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "K"
+            },
+            {
+              "index": 14,
+              "letter": "O",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "L"
+            },
+            {
+              "index": 15,
+              "letter": "P",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "M"
+            },
+            {
+              "index": 16,
+              "letter": "Q",
+              "header": "Ghi chú",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "Note"
+            },
+            {
+              "index": 17,
+              "letter": "R",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 2,
+              "sample": "No transaction in CY"
+            },
+            {
+              "index": 18,
+              "letter": "S",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 8,
+          "data_domain": "ENTITY",
+          "units_detected": [
+            "%",
+            "eur"
+          ],
+          "formula_cell_count": 0,
+          "roles": [
+            "UNKNOWN"
+          ],
+          "role_evidence": {}
+        },
+        {
+          "sheet_name": "FS",
+          "max_row": 66,
+          "max_column": 9,
+          "header_row_index": 10,
+          "headers": [
+            "No./ STT",
+            "Item/ Mục",
+            "Value (USD)/ Giá trị (USD) (*)",
+            "Value (VND)/ Giá trị (VNĐ) (*)",
+            "KPMG's notes/ Lưu ý của KPMG",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "No./ STT",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 23,
+              "sample": "1"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "Item/ Mục",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 41,
+              "sample": "Doanh thu bán hàng và cung cấp dịch vụ/ Gross revenue"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "Value (USD)/ Giá trị (USD) (*)",
+              "inferred_type": "text",
+              "unit_hint": "usd",
+              "non_empty": 26,
+              "sample": "0"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "Value (VND)/ Giá trị (VNĐ) (*)",
+              "inferred_type": "numeric",
+              "unit_hint": "vnd",
+              "non_empty": 41,
+              "sample": "194469728040"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "KPMG's notes/ Lưu ý của KPMG",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 5,
+              "sample": "Thông tin cung cấp bởi HMV theo email ngày 31-03-2025"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "259.89"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 3,
+              "sample": "Acct record from Tbeam"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 45,
+          "data_domain": "MIXED",
+          "units_detected": [
+            "vnd",
+            "usd"
+          ],
+          "formula_cell_count": 30,
+          "roles": [
+            "FINANCIAL_ANALYSIS",
+            "FINANCIAL_STATEMENTS",
+            "INTEREST_EXPENSE"
+          ],
+          "role_evidence": {
+            "INTEREST_EXPENSE": [
+              "interest",
+              "loan"
+            ],
+            "FINANCIAL_STATEMENTS": [
+              "net sales",
+              "revenue",
+              "cost of goods sold",
+              "gross profit"
+            ],
+            "FINANCIAL_ANALYSIS": [
+              "net cost plus",
+              "operating margin",
+              "ebit",
+              "ratio",
+              "margin"
+            ]
+          }
+        },
+        {
+          "sheet_name": "RPTs",
+          "max_row": 17,
+          "max_column": 7,
+          "header_row_index": 3,
+          "headers": [
+            "Transaction",
+            "Related party",
+            "Country",
+            "Relationship",
+            "Transaction Amount (VND)",
+            "% of total net sales/total operating costs",
+            "Pricing method (If information is available)"
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "Transaction",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 5,
+              "sample": "Purchase of raw materials and tools"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "Related party",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 8,
+              "sample": "Pinghu Hestra Trading Co., Ltd."
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "Country",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 12,
+              "sample": "China"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "Relationship",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 5,
+              "sample": "B"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "Transaction Amount (VND)",
+              "inferred_type": "numeric",
+              "unit_hint": "vnd",
+              "non_empty": 12,
+              "sample": "2956409617"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "% of total net sales/total operating costs",
+              "inferred_type": "numeric",
+              "unit_hint": "%",
+              "non_empty": 5,
+              "sample": "0.015774963313967317"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "Pricing method (If information is available)",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 12,
+          "data_domain": "MIXED",
+          "units_detected": [
+            "vnd",
+            "%"
+          ],
+          "formula_cell_count": 27,
+          "roles": [
+            "RPT_DATA"
+          ],
+          "role_evidence": {
+            "RPT_DATA": [
+              "related party",
+              "transaction",
+              "amount (vnd)"
+            ]
+          }
+        },
+        {
+          "sheet_name": "Financial Analysis",
+          "max_row": 71,
+          "max_column": 7,
+          "header_row_index": 3,
+          "headers": [
+            "Unit: VND",
+            "Index",
+            "2023",
+            "2024",
+            "",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "Unit: VND",
+              "inferred_type": "text",
+              "unit_hint": "vnd",
+              "non_empty": 49,
+              "sample": "Financial data from the Company's Audited Financial Statemen"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "Index",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 39,
+              "sample": "A"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "2023",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 36,
+              "sample": "31/12/2023"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "2024",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 36,
+              "sample": "31/12/2024"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 3,
+              "sample": "0.038551454765451604"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 5,
+              "sample": "187411505064"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "7167640704.1512"
+            }
+          ],
+          "record_count": 51,
+          "data_domain": "MIXED",
+          "units_detected": [
+            "vnd"
+          ],
+          "formula_cell_count": 47,
+          "roles": [
+            "FINANCIAL_ANALYSIS",
+            "FINANCIAL_STATEMENTS"
+          ],
+          "role_evidence": {
+            "FINANCIAL_STATEMENTS": [
+              "net sales",
+              "cost of goods sold",
+              "gross profit"
+            ],
+            "FINANCIAL_ANALYSIS": [
+              "ncp",
+              "net cost plus",
+              "operating margin",
+              "profit level indicator",
+              "ratio",
+              "margin"
+            ]
+          }
+        },
+        {
+          "sheet_name": "III. Summary-RPTs",
+          "max_row": 64,
+          "max_column": 27,
+          "header_row_index": 10,
+          "headers": [
+            "Chỉ tiêu theo Phụ lục I/ Item per Appendix I",
+            "Loại giao dịch/ Transactions category",
+            "Tên giao dịch (tiếng Anh)/ Name of transactions (English)",
+            "Tên giao dịch (tiếng Việt)/ Name of transactions (Vietnamese)",
+            "Tên của Bên liên kết (Tiếng Anh)/ Name of related party (English)",
+            "Tên của Bên liên kết (Tiếng Việt)/ Name of related party (Vietnamese)",
+            "Giá trị theo đồng nước ngoài/ Value in foreign currency",
+            "Giá trị giao dịch (VND)/ (*) Transaction value (VND)",
+            "",
+            "",
+            "",
+            "",
+            "Mô tả giao dịch và phương pháp xác định giá/ Description of transactions and transfer pricing methods",
+            "Kê khai phương pháp xác định giá trên Phụ lục I/ Disclosure of transfer pricing method in Appendix I",
+            "Lưu ý của KPMG/ KPMG's notes",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "Chỉ tiêu theo Phụ lục I/ Item per Appendix I",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 23,
+              "sample": "(1)"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "Loại giao dịch/ Transactions category",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 10,
+              "sample": "(2)"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "Tên giao dịch (tiếng Anh)/ Name of transactions (English)",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "(3)"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "Tên giao dịch (tiếng Việt)/ Name of transactions (Vietnamese)",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "(4)"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "Tên của Bên liên kết (Tiếng Anh)/ Name of related party (English)",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "(5)"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "Tên của Bên liên kết (Tiếng Việt)/ Name of related party (Vietnamese)",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 6,
+              "sample": "Pinghu Hestra Trading Co., Ltd."
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "Giá trị theo đồng nước ngoài/ Value in foreign currency",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 8,
+              "sample": "[Nhập tỷ giá]/ [Please input FX]"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "Giá trị giao dịch (VND)/ (*) Transaction value (VND)",
+              "inferred_type": "numeric",
+              "unit_hint": "vnd",
+              "non_empty": 19,
+              "sample": "Giá trị bán ra/ Sale amount"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 16,
+              "sample": "Giá trị xác định lại theo giá giao dịch độc lập (**)/ Value "
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 20,
+              "sample": "Giá trị mua vào/ Purchase amount"
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 20,
+              "sample": "Giá trị xác định lại theo giá giao dịch độc lập (**)/ Value "
+            },
+            {
+              "index": 11,
+              "letter": "L",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "Tổng thu hộ, chi hộ, phân bổ cơ sở thường trú/ Payment on be"
+            },
+            {
+              "index": 12,
+              "letter": "M",
+              "header": "Mô tả giao dịch và phương pháp xác định giá/ Description of transactions and transfer pricing methods",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "(12)"
+            },
+            {
+              "index": 13,
+              "letter": "N",
+              "header": "Kê khai phương pháp xác định giá trên Phụ lục I/ Disclosure of transfer pricing method in Appendix I",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 6,
+              "sample": "(13)"
+            },
+            {
+              "index": 14,
+              "letter": "O",
+              "header": "Lưu ý của KPMG/ KPMG's notes",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 5,
+              "sample": "(14)"
+            },
+            {
+              "index": 15,
+              "letter": "P",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 16,
+              "letter": "Q",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 17,
+              "letter": "R",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 18,
+              "letter": "S",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 19,
+              "letter": "T",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 20,
+              "letter": "U",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 21,
+              "letter": "V",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 22,
+              "letter": "W",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 23,
+              "letter": "X",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 24,
+              "letter": "Y",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 25,
+              "letter": "Z",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 26,
+              "letter": "AA",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 37,
+          "data_domain": "MIXED",
+          "units_detected": [
+            "vnd",
+            "%"
+          ],
+          "formula_cell_count": 64,
+          "roles": [
+            "INTEREST_EXPENSE",
+            "RPT_DATA"
+          ],
+          "role_evidence": {
+            "RPT_DATA": [
+              "related party",
+              "transaction"
+            ],
+            "INTEREST_EXPENSE": [
+              "interest",
+              "loan"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "document_name": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "document_sha256": "80e0b0deb594aef403e58bd3db836cd9e6172167bb8ed8ef8153951dccbde3e3",
+      "sheet_count": 18,
+      "roles_present": [
+        "RPT_DATA",
+        "REFERENCE_LIST",
+        "SEGMENTED_DATA",
+        "INTEREST_EXPENSE",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "FIXED_ASSETS"
+      ],
+      "roles_absent": [
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS",
+        "NARRATIVE_DISCLOSURE",
+        "RELATED_PARTIES_REGISTER",
+        "CHECKLIST"
+      ],
+      "sheets": [
+        {
+          "sheet_name": "Checklist",
+          "max_row": 123,
+          "max_column": 14,
+          "header_row_index": 1,
+          "headers": [
+            "Company name:",
+            "Hestra Matsuoka Vietnam Limited Liability Company",
+            "",
+            "",
+            "",
+            "",
+            "Name",
+            "Date",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "Company name:",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 22,
+              "sample": "Tax code"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "Hestra Matsuoka Vietnam Limited Liability Company",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 61,
+              "sample": "0201824857"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 4,
+              "sample": "KDC engaged"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "Name",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 29,
+              "sample": "TTNA"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "Date",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 12,
+              "sample": "2025-03-27 00:00:00"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 25,
+              "sample": "MẪU 01 - Kê khai Thông tin về Quan hệ liên kết và Giao dịch "
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 56,
+              "sample": "Kê khai các thông tin về Bên liên kết và Giao dịch liên kết "
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 11,
+              "letter": "L",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 12,
+              "letter": "M",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 13,
+              "letter": "N",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 68,
+          "data_domain": "ENTITY",
+          "units_detected": [],
+          "formula_cell_count": 0,
+          "roles": [
+            "RPT_DATA",
+            "REFERENCE_LIST",
+            "SEGMENTED_DATA"
+          ],
+          "role_evidence": {
+            "RPT_DATA": [
+              "related party",
+              "transaction",
+              "rpt"
+            ],
+            "SEGMENTED_DATA": [
+              "segment",
+              "segmented"
+            ],
+            "REFERENCE_LIST": [
+              "code",
+              "description"
+            ]
+          }
+        },
+        {
+          "sheet_name": "Full Appendix I",
+          "max_row": 184,
+          "max_column": 35,
+          "header_row_index": null,
+          "headers": [],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 121,
+              "sample": "PHỤ LỤC I"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 108,
+              "sample": "Tên người nộp thuế:"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 8,
+              "sample": "Công ty TNHH Hestra Việt Nam"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "2"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "0"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 30,
+              "sample": "1"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 3,
+              "sample": "8"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 4,
+              "sample": "2"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 51,
+              "sample": "4"
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 5,
+              "sample": "8"
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 3,
+              "sample": "5"
+            },
+            {
+              "index": 11,
+              "letter": "L",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 36,
+              "sample": "7"
+            },
+            {
+              "index": 12,
+              "letter": "M",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 17,
+              "sample": "B"
+            },
+            {
+              "index": 13,
+              "letter": "N",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 20,
+              "sample": "[08]"
+            },
+            {
+              "index": 14,
+              "letter": "O",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 3,
+              "sample": "Email:"
+            },
+            {
+              "index": 15,
+              "letter": "P",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 26,
+              "sample": "Đ"
+            },
+            {
+              "index": 16,
+              "letter": "Q",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 2,
+              "sample": "E"
+            },
+            {
+              "index": 17,
+              "letter": "R",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 25,
+              "sample": "G"
+            },
+            {
+              "index": 18,
+              "letter": "S",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 25,
+              "sample": "H"
+            },
+            {
+              "index": 19,
+              "letter": "T",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "I"
+            },
+            {
+              "index": 20,
+              "letter": "U",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "K"
+            },
+            {
+              "index": 21,
+              "letter": "V",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 62,
+              "sample": "L"
+            },
+            {
+              "index": 22,
+              "letter": "W",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 2,
+              "sample": "M"
+            },
+            {
+              "index": 23,
+              "letter": "X",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 22,
+              "sample": "Thuộc diện miễn trừ**"
+            },
+            {
+              "index": 24,
+              "letter": "Y",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 3,
+              "sample": "Đơn vị tiền: Đồng Việt Nam"
+            },
+            {
+              "index": 25,
+              "letter": "Z",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 39,
+              "sample": "Lợi nhuận tăng do xác định lại theo giá giao dịch độc lập In"
+            },
+            {
+              "index": 26,
+              "letter": "AA",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 27,
+              "letter": "AB",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 28,
+              "letter": "AC",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 9,
+              "sample": "Thu hộ, chi hộ, phân bổ cơ sở thường trú***/ Payment on beha"
+            },
+            {
+              "index": 29,
+              "letter": "AD",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 8,
+              "sample": "Tổng giá trị chi hộ Total payment on behalf"
+            },
+            {
+              "index": 30,
+              "letter": "AE",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 6,
+              "sample": "Tổng giá trị doanh thu phân bổ cho cơ sở thường trú Total re"
+            },
+            {
+              "index": 31,
+              "letter": "AF",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 6,
+              "sample": "Tổng giá trị chi phí phân bổ cho cơ sở thường trú Total expe"
+            },
+            {
+              "index": 32,
+              "letter": "AG",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 16,
+              "sample": "Đơn vị tiền: Đồng Việt Nam/ Unit: VND"
+            },
+            {
+              "index": 33,
+              "letter": "AH",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 34,
+              "letter": "AI",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 152,
+          "data_domain": "MIXED",
+          "units_detected": [],
+          "formula_cell_count": 314,
+          "roles": [
+            "RPT_DATA"
+          ],
+          "role_evidence": {
+            "RPT_DATA": [
+              "related party",
+              "transaction",
+              "rpt"
+            ]
+          }
+        },
+        {
+          "sheet_name": "I. Related parties",
+          "max_row": 18,
+          "max_column": 19,
+          "header_row_index": 9,
+          "headers": [
+            "STT",
+            "Tên bên liên kết",
+            "Quốc gia",
+            "Mã số thuế",
+            "Hình thức liên kết",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "Ghi chú",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "STT",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "No."
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "Tên bên liên kết",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "Name of related party"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "Quốc gia",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "Country"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "Mã số thuế",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "Tax code"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "Hình thức liên kết",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 4,
+              "sample": "Type of relationship"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 6,
+              "sample": "B"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "C"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 2,
+              "sample": "D"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "Đ"
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "E"
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "G"
+            },
+            {
+              "index": 11,
+              "letter": "L",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "H"
+            },
+            {
+              "index": 12,
+              "letter": "M",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "I"
+            },
+            {
+              "index": 13,
+              "letter": "N",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "K"
+            },
+            {
+              "index": 14,
+              "letter": "O",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "L"
+            },
+            {
+              "index": 15,
+              "letter": "P",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "M"
+            },
+            {
+              "index": 16,
+              "letter": "Q",
+              "header": "Ghi chú",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "Note"
+            },
+            {
+              "index": 17,
+              "letter": "R",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 2,
+              "sample": "No transaction in CY"
+            },
+            {
+              "index": 18,
+              "letter": "S",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 8,
+          "data_domain": "ENTITY",
+          "units_detected": [
+            "%",
+            "eur"
+          ],
+          "formula_cell_count": 0,
+          "roles": [
+            "UNKNOWN"
+          ],
+          "role_evidence": {}
+        },
+        {
+          "sheet_name": "Country list",
+          "max_row": 275,
+          "max_column": 2,
+          "header_row_index": 0,
+          "headers": [
+            "<ten_quocGia>",
+            "<ma_quocGia>"
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "<ten_quocGia>",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 274,
+              "sample": "Việt Nam"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "<ma_quocGia>",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 274,
+              "sample": "VN"
+            }
+          ],
+          "record_count": 274,
+          "data_domain": "ENTITY",
+          "units_detected": [],
+          "formula_cell_count": 0,
+          "roles": [
+            "UNKNOWN"
+          ],
+          "role_evidence": {}
+        },
+        {
+          "sheet_name": "III. Summary-RPTs",
+          "max_row": 64,
+          "max_column": 27,
+          "header_row_index": 10,
+          "headers": [
+            "Chỉ tiêu theo Phụ lục I/ Item per Appendix I",
+            "Loại giao dịch/ Transactions category",
+            "Tên giao dịch (tiếng Anh)/ Name of transactions (English)",
+            "Tên giao dịch (tiếng Việt)/ Name of transactions (Vietnamese)",
+            "Tên của Bên liên kết (Tiếng Anh)/ Name of related party (English)",
+            "Tên của Bên liên kết (Tiếng Việt)/ Name of related party (Vietnamese)",
+            "Giá trị theo đồng nước ngoài/ Value in foreign currency",
+            "Giá trị giao dịch (VND)/ (*) Transaction value (VND)",
+            "",
+            "",
+            "",
+            "",
+            "Mô tả giao dịch và phương pháp xác định giá/ Description of transactions and transfer pricing methods",
+            "Kê khai phương pháp xác định giá trên Phụ lục I/ Disclosure of transfer pricing method in Appendix I",
+            "Lưu ý của KPMG/ KPMG's notes",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "Chỉ tiêu theo Phụ lục I/ Item per Appendix I",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 23,
+              "sample": "(1)"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "Loại giao dịch/ Transactions category",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 10,
+              "sample": "(2)"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "Tên giao dịch (tiếng Anh)/ Name of transactions (English)",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "(3)"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "Tên giao dịch (tiếng Việt)/ Name of transactions (Vietnamese)",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "(4)"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "Tên của Bên liên kết (Tiếng Anh)/ Name of related party (English)",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "(5)"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "Tên của Bên liên kết (Tiếng Việt)/ Name of related party (Vietnamese)",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 6,
+              "sample": "Pinghu Hestra Trading Co., Ltd."
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "Giá trị theo đồng nước ngoài/ Value in foreign currency",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 8,
+              "sample": "[Nhập tỷ giá]/ [Please input FX]"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "Giá trị giao dịch (VND)/ (*) Transaction value (VND)",
+              "inferred_type": "numeric",
+              "unit_hint": "vnd",
+              "non_empty": 19,
+              "sample": "Giá trị bán ra/ Sale amount"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 16,
+              "sample": "Giá trị xác định lại theo giá giao dịch độc lập (**)/ Value "
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 20,
+              "sample": "Giá trị mua vào/ Purchase amount"
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 20,
+              "sample": "Giá trị xác định lại theo giá giao dịch độc lập (**)/ Value "
+            },
+            {
+              "index": 11,
+              "letter": "L",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "Tổng thu hộ, chi hộ, phân bổ cơ sở thường trú/ Payment on be"
+            },
+            {
+              "index": 12,
+              "letter": "M",
+              "header": "Mô tả giao dịch và phương pháp xác định giá/ Description of transactions and transfer pricing methods",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "(12)"
+            },
+            {
+              "index": 13,
+              "letter": "N",
+              "header": "Kê khai phương pháp xác định giá trên Phụ lục I/ Disclosure of transfer pricing method in Appendix I",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 6,
+              "sample": "(13)"
+            },
+            {
+              "index": 14,
+              "letter": "O",
+              "header": "Lưu ý của KPMG/ KPMG's notes",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 5,
+              "sample": "(14)"
+            },
+            {
+              "index": 15,
+              "letter": "P",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 16,
+              "letter": "Q",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 17,
+              "letter": "R",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 18,
+              "letter": "S",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 19,
+              "letter": "T",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 20,
+              "letter": "U",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 21,
+              "letter": "V",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 22,
+              "letter": "W",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 23,
+              "letter": "X",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 24,
+              "letter": "Y",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 25,
+              "letter": "Z",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 26,
+              "letter": "AA",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 37,
+          "data_domain": "MIXED",
+          "units_detected": [
+            "vnd",
+            "%"
+          ],
+          "formula_cell_count": 77,
+          "roles": [
+            "INTEREST_EXPENSE",
+            "RPT_DATA"
+          ],
+          "role_evidence": {
+            "RPT_DATA": [
+              "related party",
+              "transaction"
+            ],
+            "INTEREST_EXPENSE": [
+              "interest",
+              "loan"
+            ]
+          }
+        },
+        {
+          "sheet_name": "IV. Segmented data",
+          "max_row": 40,
+          "max_column": 20,
+          "header_row_index": 11,
+          "headers": [
+            "(1)",
+            "(2)",
+            "(3)",
+            "(4)",
+            "(5)",
+            "(6)=(3)+(4)+(5)",
+            "(7)",
+            "(8)",
+            "(9)",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "(1)",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 27,
+              "sample": "1"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "(2)",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 28,
+              "sample": "Doanh thu bán hàng và cung cấp dịch vụ Revenue from sales of"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "(3)",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 10,
+              "sample": "194469728040"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "(4)",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "(5)",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 9,
+              "sample": "0"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "(6)=(3)+(4)+(5)",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 24,
+              "sample": "194469728040"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "(7)",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 9,
+              "sample": "EPE"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "(8)",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 14,
+              "sample": "194469728040"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "(9)",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 14,
+              "sample": "0"
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "True"
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 11,
+              "letter": "L",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 12,
+              "letter": "M",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 13,
+              "letter": "N",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 14,
+              "letter": "O",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 15,
+              "letter": "P",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 16,
+              "letter": "Q",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 17,
+              "letter": "R",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 18,
+              "letter": "S",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 19,
+              "letter": "T",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 28,
+          "data_domain": "MONETARY",
+          "units_detected": [
+            "%"
+          ],
+          "formula_cell_count": 75,
+          "roles": [
+            "FINANCIAL_STATEMENTS",
+            "INTEREST_EXPENSE"
+          ],
+          "role_evidence": {
+            "INTEREST_EXPENSE": [
+              "interest",
+              "loan"
+            ],
+            "FINANCIAL_STATEMENTS": [
+              "revenue",
+              "cost of goods sold"
+            ]
+          }
+        },
+        {
+          "sheet_name": "FS",
+          "max_row": 66,
+          "max_column": 9,
+          "header_row_index": 10,
+          "headers": [
+            "No./ STT",
+            "Item/ Mục",
+            "Value (USD)/ Giá trị (USD) (*)",
+            "Value (VND)/ Giá trị (VNĐ) (*)",
+            "KPMG's notes/ Lưu ý của KPMG",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "No./ STT",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 23,
+              "sample": "1"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "Item/ Mục",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 41,
+              "sample": "Doanh thu bán hàng và cung cấp dịch vụ/ Gross revenue"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "Value (USD)/ Giá trị (USD) (*)",
+              "inferred_type": "text",
+              "unit_hint": "usd",
+              "non_empty": 26,
+              "sample": "0"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "Value (VND)/ Giá trị (VNĐ) (*)",
+              "inferred_type": "numeric",
+              "unit_hint": "vnd",
+              "non_empty": 41,
+              "sample": "194469728040"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "KPMG's notes/ Lưu ý của KPMG",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 5,
+              "sample": "Thông tin cung cấp bởi HMV theo email ngày 31-03-2025"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 5,
+              "sample": "259.89"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 3,
+              "sample": "Acct record from Tbeam"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 45,
+          "data_domain": "MIXED",
+          "units_detected": [
+            "vnd",
+            "usd"
+          ],
+          "formula_cell_count": 47,
+          "roles": [
+            "FINANCIAL_ANALYSIS",
+            "FINANCIAL_STATEMENTS",
+            "INTEREST_EXPENSE"
+          ],
+          "role_evidence": {
+            "INTEREST_EXPENSE": [
+              "interest",
+              "loan"
+            ],
+            "FINANCIAL_STATEMENTS": [
+              "net sales",
+              "revenue",
+              "cost of goods sold",
+              "gross profit"
+            ],
+            "FINANCIAL_ANALYSIS": [
+              "net cost plus",
+              "operating margin",
+              "ebit",
+              "ratio",
+              "margin"
+            ]
+          }
+        },
+        {
+          "sheet_name": "Interest expenses",
+          "max_row": 63,
+          "max_column": 14,
+          "header_row_index": 0,
+          "headers": [
+            "Working papers (For internal reference only, not for submission to the tax authority)",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "BACK TO SEGMENTED DATA",
+            "",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "Working papers (For internal reference only, not for submission to the tax authority)",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 27,
+              "sample": "Company name: Hestra Matsuoka Vietnam Limited Liability Comp"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 22,
+              "sample": "Mô tả/ Description"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 14,
+              "sample": "[If not applicable, please remove the below section]"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 13,
+              "sample": "Giá trị (VNĐ)/ Amount (VND)"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "Chú dẫn/ Index"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "Interest expenses allowed to carry forward (*)"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 8,
+              "sample": "Ghi chú/ Note"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "Remaining interest expenses available for utilisation in cur"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "Net interest expenses utilised in current year [To be disclo"
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "Remaining interest expenses to be carried forward"
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "BACK TO SEGMENTED DATA",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 10,
+              "sample": "Expiry year"
+            },
+            {
+              "index": 11,
+              "letter": "L",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 12,
+              "letter": "M",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "Decree 132/2020/NĐ-CP, Article 16, Point 3(b)"
+            },
+            {
+              "index": 13,
+              "letter": "N",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 37,
+          "data_domain": "MIXED",
+          "units_detected": [
+            "vnd",
+            "%"
+          ],
+          "formula_cell_count": 69,
+          "roles": [
+            "SEGMENTED_DATA"
+          ],
+          "role_evidence": {
+            "SEGMENTED_DATA": [
+              "segment",
+              "segmented"
+            ]
+          }
+        },
+        {
+          "sheet_name": "Types of relationship",
+          "max_row": 18,
+          "max_column": 5,
+          "header_row_index": 4,
+          "headers": [
+            "STT/ No.",
+            "Hình thức liên kết/ Type of relationship",
+            "Kê khai trên Phụ lục I/ Disclosure in Appendix I",
+            "Lưu ý của KPMG/ KPMG's note",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "STT/ No.",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 13,
+              "sample": "1"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "Hình thức liên kết/ Type of relationship",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 12,
+              "sample": "Một doanh nghiệp nắm giữ trực tiếp hoặc gián tiếp ít nhất 25"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "Kê khai trên Phụ lục I/ Disclosure in Appendix I",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 12,
+              "sample": "A"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "Lưu ý của KPMG/ KPMG's note",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 3,
+              "sample": "Amended under Decree 20/2025/NĐ-CP"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 13,
+          "data_domain": "NARRATIVE",
+          "units_detected": [
+            "%"
+          ],
+          "formula_cell_count": 0,
+          "roles": [
+            "UNKNOWN"
+          ],
+          "role_evidence": {}
+        },
+        {
+          "sheet_name": "Transfer pricing method",
+          "max_row": 24,
+          "max_column": 6,
+          "header_row_index": 4,
+          "headers": [
+            "STT",
+            "Phương pháp xác định giá",
+            "Mô tả",
+            "Chi tiết",
+            "Kê khai trên Phụ lục I",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "STT",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "1"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "Phương pháp xác định giá",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "Phương pháp so sánh giá giao dịch độc lập (\"CUP\")"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "Mô tả",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "CUP so sánh giữa giá của hàng hóa hoặc dịch vụ trong GDLK (t"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "Chi tiết",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "Phương pháp giá bán lại: Giá mua vào của hàng hóa, dịch vụ, "
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "Kê khai trên Phụ lục I",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "PP1"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 11,
+          "data_domain": "NARRATIVE",
+          "units_detected": [],
+          "formula_cell_count": 0,
+          "roles": [
+            "UNKNOWN"
+          ],
+          "role_evidence": {}
+        },
+        {
+          "sheet_name": "Note FS",
+          "max_row": 427,
+          "max_column": 19,
+          "header_row_index": 6,
+          "headers": [
+            "",
+            "2024-12-31 00:00:00",
+            "2023-12-31 00:00:00",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "2024-12-31 00:00:00",
+            "2023-12-31 00:00:00",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 221,
+              "sample": "Cash"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "2024-12-31 00:00:00",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 255,
+              "sample": "USD"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "2023-12-31 00:00:00",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 250,
+              "sample": "USD"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 107,
+              "sample": "Total"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 90,
+              "sample": "Provision"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 29,
+              "sample": "0"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 65,
+              "sample": "Total"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 28,
+              "sample": "0"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 24,
+              "sample": "Historical cost"
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "2024-12-31 00:00:00",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 257,
+              "sample": "VND"
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "2023-12-31 00:00:00",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 241,
+              "sample": "VND"
+            },
+            {
+              "index": 11,
+              "letter": "L",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 87,
+              "sample": "2023-12-31 00:00:00"
+            },
+            {
+              "index": 12,
+              "letter": "M",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 72,
+              "sample": "Provision"
+            },
+            {
+              "index": 13,
+              "letter": "N",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 37,
+              "sample": "Total"
+            },
+            {
+              "index": 14,
+              "letter": "O",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 39,
+              "sample": "0"
+            },
+            {
+              "index": 15,
+              "letter": "P",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 24,
+              "sample": "0"
+            },
+            {
+              "index": 16,
+              "letter": "Q",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 8,
+              "sample": "RPT"
+            },
+            {
+              "index": 17,
+              "letter": "R",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 9,
+              "sample": "False"
+            },
+            {
+              "index": 18,
+              "letter": "S",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 4,
+              "sample": "Note"
+            }
+          ],
+          "record_count": 344,
+          "data_domain": "MONETARY",
+          "units_detected": [
+            "vnd",
+            "usd"
+          ],
+          "formula_cell_count": 889,
+          "roles": [
+            "UNKNOWN"
+          ],
+          "role_evidence": {}
+        },
+        {
+          "sheet_name": "P&L",
+          "max_row": 35,
+          "max_column": 11,
+          "header_row_index": 10,
+          "headers": [
+            "Including: interest expense",
+            "Trong đó: chi phí lãi vay",
+            "PL23",
+            "150082",
+            "31579",
+            "25032",
+            "23842",
+            "3756852624",
+            "752906518",
+            "leave",
+            "Manual input is needed for this row"
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "Including: interest expense",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 12,
+              "sample": "Selling expenses"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "Trong đó: chi phí lãi vay",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 12,
+              "sample": "Chi phí bán hàng"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "PL23",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 12,
+              "sample": "PL25"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "150082",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 12,
+              "sample": "-41136"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "31579",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 10,
+              "sample": "-54042"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "25032",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 9,
+              "sample": "25032"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "23842",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 9,
+              "sample": "23842"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "3756852624",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 10,
+              "sample": "-1029716352"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "752906518",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 9,
+              "sample": "-1288469364"
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "leave",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 10,
+              "sample": "leave"
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "Manual input is needed for this row",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 14,
+          "data_domain": "MIXED",
+          "units_detected": [],
+          "formula_cell_count": 104,
+          "roles": [
+            "UNKNOWN"
+          ],
+          "role_evidence": {}
+        },
+        {
+          "sheet_name": "CF",
+          "max_row": 65536,
+          "max_column": 11,
+          "header_row_index": 1,
+          "headers": [
+            "",
+            "",
+            "Code",
+            "Year 2024",
+            "Year 2023",
+            "Exchange rate",
+            "Exchange rate",
+            "Year 2024",
+            "Year 2023",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 42,
+              "sample": "Cash flows from operating activities"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 42,
+              "sample": "Lưu chuyển tiền từ hoạt động kinh doanh"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "Code",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 38,
+              "sample": "01"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "Year 2024",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 40,
+              "sample": "USD"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "Year 2023",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 40,
+              "sample": "USD"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "Exchange rate",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 32,
+              "sample": "2024"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "Exchange rate",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 32,
+              "sample": "2023"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "Year 2024",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 39,
+              "sample": "VND"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "Year 2023",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 39,
+              "sample": "VND"
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 44,
+              "sample": "leave"
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "4345780488"
+            }
+          ],
+          "record_count": 46,
+          "data_domain": "MONETARY",
+          "units_detected": [
+            "vnd",
+            "usd"
+          ],
+          "formula_cell_count": 166,
+          "roles": [
+            "FIXED_ASSETS",
+            "INTEREST_EXPENSE"
+          ],
+          "role_evidence": {
+            "FIXED_ASSETS": [
+              "fixed asset",
+              "depreciation"
+            ],
+            "INTEREST_EXPENSE": [
+              "interest",
+              "loan"
+            ]
+          }
+        },
+        {
+          "sheet_name": "Exchange rate calculation",
+          "max_row": 29,
+          "max_column": 8,
+          "header_row_index": 3,
+          "headers": [
+            "",
+            "",
+            "2024-12-31 00:00:00",
+            "2023-12-31 00:00:00",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 19,
+              "sample": "Assets"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 11,
+              "sample": "BS"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "2024-12-31 00:00:00",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 17,
+              "sample": "25320"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "2023-12-31 00:00:00",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 18,
+              "sample": "24100"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 8,
+              "sample": "Bán ra (CK)"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 1,
+              "sample": "Ngân hàng"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 9,
+              "sample": "Amount in USD"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 9,
+              "sample": "Coverted to VND"
+            }
+          ],
+          "record_count": 21,
+          "data_domain": "MONETARY",
+          "units_detected": [
+            "vnd",
+            "usd"
+          ],
+          "formula_cell_count": 14,
+          "roles": [
+            "UNKNOWN"
+          ],
+          "role_evidence": {}
+        },
+        {
+          "sheet_name": "TỶ giá ngày TCB",
+          "max_row": 440,
+          "max_column": 12,
+          "header_row_index": 3,
+          "headers": [
+            "",
+            "",
+            "Tiền mặt/séc",
+            "Chuyển khoản",
+            "CK",
+            "TM",
+            "Tỷ giá BQ ngày",
+            "Variance",
+            "Absolute value",
+            "",
+            "BQ theo ngày cả năm",
+            "25031.657103825135"
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 12,
+              "sample": "Tháng 1"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 369,
+              "sample": "2024-01-01 00:00:00"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "Tiền mặt/séc",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 366,
+              "sample": "24079"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "Chuyển khoản",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 371,
+              "sample": "24100"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "CK",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 371,
+              "sample": "24450"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "TM",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 366,
+              "sample": "24463"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "Tỷ giá BQ ngày",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 366,
+              "sample": "24275"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "Variance",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 366,
+              "sample": "0.0311702205489242"
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "Absolute value",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 366,
+              "sample": "0.0311702205489242"
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 366,
+              "sample": "Over"
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "BQ theo ngày cả năm",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 14,
+              "sample": "Số ngày có tỷ giá trong năm"
+            },
+            {
+              "index": 11,
+              "letter": "L",
+              "header": "25031.657103825135",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 5,
+              "sample": "366"
+            }
+          ],
+          "record_count": 371,
+          "data_domain": "MONETARY",
+          "units_detected": [],
+          "formula_cell_count": 1480,
+          "roles": [
+            "UNKNOWN"
+          ],
+          "role_evidence": {}
+        },
+        {
+          "sheet_name": "Lãi vay vốn hóa - PBC",
+          "max_row": 125,
+          "max_column": 14,
+          "header_row_index": 0,
+          "headers": [
+            "Detail Trial Balance",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "Saturday, March 29, 2025",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "Detail Trial Balance",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 111,
+              "sample": "Period: 01/01/24..02/28/25"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 105,
+              "sample": "Document No."
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 20,
+              "sample": "External Document No."
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 105,
+              "sample": "Description"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 106,
+              "sample": "VAT Amount"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 71,
+              "sample": "Net Change"
+            },
+            {
+              "index": 9,
+              "letter": "J",
+              "header": "Saturday, March 29, 2025",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 2,
+              "sample": "Page 1 / 1"
+            },
+            {
+              "index": 10,
+              "letter": "K",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 11,
+              "letter": "L",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 41,
+              "sample": "Credit"
+            },
+            {
+              "index": 12,
+              "letter": "M",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 13,
+              "letter": "N",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 107,
+              "sample": "Balance"
+            }
+          ],
+          "record_count": 118,
+          "data_domain": "MIXED",
+          "units_detected": [
+            "usd"
+          ],
+          "formula_cell_count": 2,
+          "roles": [
+            "UNKNOWN"
+          ],
+          "role_evidence": {}
+        },
+        {
+          "sheet_name": "IV. Segmented data_banking",
+          "max_row": 39,
+          "max_column": 9,
+          "header_row_index": 0,
+          "headers": [
+            "Working papers (For internal reference only, not for submission to the tax authority)",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "BACK TO FULL APPENDIX I",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "Working papers (For internal reference only, not for submission to the tax authority)",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 32,
+              "sample": "Company name: Hestra Matsuoka Vietnam Limited Liability Comp"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 27,
+              "sample": "Please input segmented data in VND for related & unrelated t"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 8,
+              "sample": "Giá trị GDLK/ Value of RPTs"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 2,
+              "sample": "Giá trị xác định giá theo APA/ Value determined based on APA"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 7,
+              "sample": "Giá trị giao dịch với các bên độc lập/ Value of transactions"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 19,
+              "sample": "Tổng giá trị phát sinh từ hoạt động kinh doanh trong kỳ (VNĐ"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 15,
+              "sample": "Ghi chú/ Note"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "BACK TO FULL APPENDIX I",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 34,
+          "data_domain": "MIXED",
+          "units_detected": [
+            "vnd"
+          ],
+          "formula_cell_count": 30,
+          "roles": [
+            "UNKNOWN"
+          ],
+          "role_evidence": {}
+        },
+        {
+          "sheet_name": "IV. Segmented data_securities",
+          "max_row": 82,
+          "max_column": 9,
+          "header_row_index": 0,
+          "headers": [
+            "Working papers (For internal reference only, not for submission to the tax authority)",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "BACK TO FULL APPENDIX I",
+            ""
+          ],
+          "record_schema": [
+            {
+              "index": 0,
+              "letter": "A",
+              "header": "Working papers (For internal reference only, not for submission to the tax authority)",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 74,
+              "sample": "Company name: Hestra Matsuoka Vietnam Limited Liability Comp"
+            },
+            {
+              "index": 1,
+              "letter": "B",
+              "header": "",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 69,
+              "sample": "Please input segmented data in VND for related & unrelated t"
+            },
+            {
+              "index": 2,
+              "letter": "C",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 10,
+              "sample": "Giá trị GDLK/ Value of RPTs"
+            },
+            {
+              "index": 3,
+              "letter": "D",
+              "header": "",
+              "inferred_type": "text",
+              "unit_hint": null,
+              "non_empty": 2,
+              "sample": "Giá trị xác định giá theo APA/ Value determined based on APA"
+            },
+            {
+              "index": 4,
+              "letter": "E",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 9,
+              "sample": "Giá trị giao dịch với các bên độc lập/ Value of transactions"
+            },
+            {
+              "index": 5,
+              "letter": "F",
+              "header": "",
+              "inferred_type": "numeric",
+              "unit_hint": null,
+              "non_empty": 50,
+              "sample": "Tổng giá trị phát sinh từ hoạt động kinh doanh trong kỳ (VNĐ"
+            },
+            {
+              "index": 6,
+              "letter": "G",
+              "header": "",
+              "inferred_type": "narrative",
+              "unit_hint": null,
+              "non_empty": 2,
+              "sample": "Ghi chú/ Note"
+            },
+            {
+              "index": 7,
+              "letter": "H",
+              "header": "BACK TO FULL APPENDIX I",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            },
+            {
+              "index": 8,
+              "letter": "I",
+              "header": "",
+              "inferred_type": "empty",
+              "unit_hint": null,
+              "non_empty": 0,
+              "sample": null
+            }
+          ],
+          "record_count": 76,
+          "data_domain": "MIXED",
+          "units_detected": [
+            "vnd"
+          ],
+          "formula_cell_count": 67,
+          "roles": [
+            "INTEREST_EXPENSE"
+          ],
+          "role_evidence": {
+            "INTEREST_EXPENSE": [
+              "interest",
+              "loan"
+            ]
+          }
+        }
+      ]
+    }
+  ],
+  "readiness_summary": {
+    "READY": 1,
+    "BLOCKED": 11,
+    "MANUAL_REVIEW": 4
+  },
+  "readiness_principle": "A BLOCKED case is a correct outcome. No case was promoted to READY without independent evidence.",
+  "cases": [
+    {
+      "case_id": "rft-d46c200d",
+      "template_ordinal_display_only": 0,
+      "table_identity_key": "d46c200d26f19ff0",
+      "semantic_domain": "COVER_BLOCK",
+      "section_path": [],
+      "header_cells": [
+        "ABC Vietnam Co., Ltd."
+      ],
+      "historical_state": {
+        "correspondence": "WEAK",
+        "score": 0.508,
+        "hist_ordinal_display_only": 0,
+        "rows": 3,
+        "columns": 1,
+        "data_rows": 2,
+        "matched_factors": [
+          "semantic_label(COVER_BLOCK)",
+          "column_schema_alignment",
+          "header_token_overlap",
+          "merge_topology"
+        ],
+        "note": "Matched on semantic_label(COVER_BLOCK), column_schema_alignment, header_token_overlap, merge_topology (score 0.508); ordinal was not an input."
+      },
+      "template_state": {
+        "rows": 3,
+        "columns": 1,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          2
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [],
+        "row_semantics": "UNKNOWN",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "ABC Vietnam Co., Ltd.",
+            "role": "FREE_TEXT"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [],
+        "binding_verdict": "INSUFFICIENT_EVIDENCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "Target domain COVER_BLOCK declares no required source dataset role, so no source can be proven compatible with it."
+        ]
+      },
+      "target_state": {
+        "rows": null,
+        "basis": "UNKNOWABLE_FROM_APPROVED_INPUTS",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "UPDATE_CELLS",
+      "strategy_is_implemented": false,
+      "readiness": "BLOCKED",
+      "source_evidence": [],
+      "blocking_reasons": [
+        "INSUFFICIENT_EVIDENCE: target domain COVER_BLOCK declares no required source dataset role, so no source can be proven compatible.",
+        "STRATEGY_NOT_IMPLEMENTED: this region requires UPDATE_CELLS, which the D1 writeback engine does not provide (it implements INSERT_ROWS only). Not implemented in this phase by instruction."
+      ],
+      "manual_review_reasons": [
+        "Historical correspondence is WEAK (score 0.508); a reviewer must confirm that FY2023 table 0 is the same table."
+      ],
+      "real_postcondition_hash_current": "3a9d9a9aabb01c94b65922a22408b67b"
+    },
+    {
+      "case_id": "rft-4d3280f7",
+      "template_ordinal_display_only": 1,
+      "table_identity_key": "4d3280f73b63728f",
+      "semantic_domain": "COVER_BLOCK",
+      "section_path": [],
+      "header_cells": [
+        "This report contains pages"
+      ],
+      "historical_state": {
+        "correspondence": "EXACT",
+        "score": 0.94,
+        "hist_ordinal_display_only": 1,
+        "rows": 3,
+        "columns": 1,
+        "data_rows": 2,
+        "matched_factors": [
+          "header_signature",
+          "semantic_label(COVER_BLOCK)",
+          "column_schema_alignment",
+          "header_token_overlap",
+          "merge_topology"
+        ],
+        "note": "Matched on header_signature, semantic_label(COVER_BLOCK), column_schema_alignment, header_token_overlap, merge_topology (score 0.940); ordinal was not an input."
+      },
+      "template_state": {
+        "rows": 3,
+        "columns": 1,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          2
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [
+          2
+        ],
+        "row_semantics": "UNKNOWN",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "This report contains pages",
+            "role": "FREE_TEXT"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [],
+        "binding_verdict": "INSUFFICIENT_EVIDENCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "Target domain COVER_BLOCK declares no required source dataset role, so no source can be proven compatible with it."
+        ]
+      },
+      "target_state": {
+        "rows": null,
+        "basis": "UNKNOWABLE_FROM_APPROVED_INPUTS",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "UPDATE_CELLS",
+      "strategy_is_implemented": false,
+      "readiness": "BLOCKED",
+      "source_evidence": [],
+      "blocking_reasons": [
+        "INSUFFICIENT_EVIDENCE: target domain COVER_BLOCK declares no required source dataset role, so no source can be proven compatible.",
+        "STRATEGY_NOT_IMPLEMENTED: this region requires UPDATE_CELLS, which the D1 writeback engine does not provide (it implements INSERT_ROWS only). Not implemented in this phase by instruction."
+      ],
+      "manual_review_reasons": [],
+      "real_postcondition_hash_current": "db0cd2d4fc28120a4fbbf8e2a2267dc4"
+    },
+    {
+      "case_id": "rft-4ece4587",
+      "template_ordinal_display_only": 2,
+      "table_identity_key": "4ece458761d2fdec",
+      "semantic_domain": "UNKNOWN",
+      "section_path": [
+        "Executive Summary"
+      ],
+      "header_cells": [
+        "Transactions",
+        "TP methods",
+        "Findings"
+      ],
+      "historical_state": {
+        "correspondence": "UNCORRELATED",
+        "rows": null,
+        "columns": null,
+        "matched_factors": [],
+        "note": "No FY2023 table could be correlated to this template table by header signature, semantic label, column schema or section context."
+      },
+      "template_state": {
+        "rows": 4,
+        "columns": 3,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          3
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [],
+        "row_semantics": "UNKNOWN",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "Transactions",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 1,
+            "header": "TP methods",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 2,
+            "header": "Findings",
+            "role": "FREE_TEXT"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [],
+        "binding_verdict": "INSUFFICIENT_EVIDENCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "Target domain UNKNOWN declares no required source dataset role, so no source can be proven compatible with it."
+        ]
+      },
+      "target_state": {
+        "rows": null,
+        "basis": "UNKNOWABLE_FROM_APPROVED_INPUTS",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "NO_STRATEGY_DETERMINABLE",
+      "strategy_is_implemented": false,
+      "readiness": "BLOCKED",
+      "source_evidence": [],
+      "blocking_reasons": [
+        "STRATEGY_NOT_IMPLEMENTED: this region requires NO_STRATEGY_DETERMINABLE, which the D1 writeback engine does not provide (it implements INSERT_ROWS only). Not implemented in this phase by instruction."
+      ],
+      "manual_review_reasons": [],
+      "real_postcondition_hash_current": "d176a09b615b08d946b16d3ef215e612"
+    },
+    {
+      "case_id": "rft-e6ca1000",
+      "template_ordinal_display_only": 3,
+      "table_identity_key": "e6ca100094cac4f3",
+      "semantic_domain": "RELATED_PARTY_TRANSACTIONS",
+      "section_path": [
+        "Related party transactions",
+        "Overview"
+      ],
+      "header_cells": [
+        "Transaction",
+        "Related party",
+        "Type of relationship",
+        "Amount (VND)"
+      ],
+      "historical_state": {
+        "correspondence": "WEAK",
+        "score": 0.3753,
+        "hist_ordinal_display_only": 6,
+        "rows": 2,
+        "columns": 6,
+        "data_rows": 1,
+        "matched_factors": [
+          "semantic_label(RELATED_PARTY_TRANSACTIONS)",
+          "column_schema_alignment",
+          "header_token_overlap",
+          "section_context"
+        ],
+        "note": "Matched on semantic_label(RELATED_PARTY_TRANSACTIONS), column_schema_alignment, header_token_overlap, section_context (score 0.375); ordinal was not an input."
+      },
+      "template_state": {
+        "rows": 8,
+        "columns": 4,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          7
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [],
+        "row_semantics": "ENTITY_RECORD",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "Transaction",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 1,
+            "header": "Related party",
+            "role": "ENTITY_NAME"
+          },
+          {
+            "index": 2,
+            "header": "Type of relationship",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 3,
+            "header": "Amount (VND)",
+            "role": "MONETARY"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [
+          "RPT_DATA"
+        ],
+        "binding_verdict": "VERIFIED",
+        "roles_found": [
+          "RPT_DATA"
+        ],
+        "candidate_sheets": [
+          "HMV-FA&RPT FY2024.xlsx!RPTs",
+          "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+        ],
+        "source_record_count": 152,
+        "violations": []
+      },
+      "target_state": {
+        "rows": 153,
+        "basis": "header + current-source record count + footer",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "INSERT_ROWS",
+      "strategy_is_implemented": true,
+      "readiness": "MANUAL_REVIEW",
+      "source_evidence": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs carries RPT_DATA (12 records; evidence ['related party', 'transaction', 'amount (vnd)'])",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs carries RPT_DATA (37 records; evidence ['related party', 'transaction'])",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist carries RPT_DATA (68 records; evidence ['related party', 'transaction', 'rpt'])",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I carries RPT_DATA (152 records; evidence ['related party', 'transaction', 'rpt'])",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs carries RPT_DATA (37 records; evidence ['related party', 'transaction'])"
+      ],
+      "blocking_reasons": [],
+      "manual_review_reasons": [
+        "Historical correspondence is WEAK (score 0.375); a reviewer must confirm that FY2023 table 6 is the same table."
+      ],
+      "real_postcondition_hash_current": "ee886f03e9da6c689aa267972f47ab5e"
+    },
+    {
+      "case_id": "rft-2b942dc4",
+      "template_ordinal_display_only": 4,
+      "table_identity_key": "2b942dc4774b8484",
+      "semantic_domain": "INTEREST_SCHEDULE",
+      "section_path": [
+        "Related party transactions",
+        "Details of related party transactions",
+        "Payment of interest on intercompany loan(s)"
+      ],
+      "header_cells": [
+        "Related party lender",
+        "Principal (USD)",
+        "Financing date",
+        "Maturity date",
+        "Actual interest rate"
+      ],
+      "historical_state": {
+        "correspondence": "UNCORRELATED",
+        "rows": null,
+        "columns": null,
+        "matched_factors": [],
+        "note": "No FY2023 table could be correlated to this template table by header signature, semantic label, column schema or section context."
+      },
+      "template_state": {
+        "rows": 4,
+        "columns": 5,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          3
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [
+          1,
+          2,
+          3
+        ],
+        "row_semantics": "ENTITY_RECORD",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "Related party lender",
+            "role": "ENTITY_NAME"
+          },
+          {
+            "index": 1,
+            "header": "Principal (USD)",
+            "role": "MONETARY"
+          },
+          {
+            "index": 2,
+            "header": "Financing date",
+            "role": "DATE"
+          },
+          {
+            "index": 3,
+            "header": "Maturity date",
+            "role": "DATE"
+          },
+          {
+            "index": 4,
+            "header": "Actual interest rate",
+            "role": "FREE_TEXT"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [
+          "INTEREST_EXPENSE"
+        ],
+        "binding_verdict": "VERIFIED",
+        "roles_found": [
+          "INTEREST_EXPENSE"
+        ],
+        "candidate_sheets": [
+          "HMV-FA&RPT FY2024.xlsx!FS",
+          "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!CF",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data_securities"
+        ],
+        "source_record_count": 76,
+        "violations": []
+      },
+      "target_state": {
+        "rows": 77,
+        "basis": "header + current-source record count + footer",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "REPLACE_DATA_REGION",
+      "strategy_is_implemented": false,
+      "readiness": "BLOCKED",
+      "source_evidence": [
+        "HMV-FA&RPT FY2024.xlsx!FS carries INTEREST_EXPENSE (45 records; evidence ['interest', 'loan'])",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs carries INTEREST_EXPENSE (37 records; evidence ['interest', 'loan'])",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs carries INTEREST_EXPENSE (37 records; evidence ['interest', 'loan'])",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data carries INTEREST_EXPENSE (28 records; evidence ['interest', 'loan'])",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS carries INTEREST_EXPENSE (45 records; evidence ['interest', 'loan'])",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!CF carries INTEREST_EXPENSE (46 records; evidence ['interest', 'loan'])",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data_securities carries INTEREST_EXPENSE (76 records; evidence ['interest', 'loan'])"
+      ],
+      "blocking_reasons": [
+        "STRATEGY_NOT_IMPLEMENTED: this region requires REPLACE_DATA_REGION, which the D1 writeback engine does not provide (it implements INSERT_ROWS only). Not implemented in this phase by instruction."
+      ],
+      "manual_review_reasons": [],
+      "real_postcondition_hash_current": "c828caf03b508b7d371901da7c991537"
+    },
+    {
+      "case_id": "rft-886c68a9",
+      "template_ordinal_display_only": 5,
+      "table_identity_key": "886c68a9cbaee49a",
+      "semantic_domain": "FUNCTIONAL_ANALYSIS",
+      "section_path": [
+        "Analysis of functions, assets and risks"
+      ],
+      "header_cells": [
+        "Functions/Assets/Risks",
+        "ABC",
+        "RELATED PARTY"
+      ],
+      "historical_state": {
+        "correspondence": "WEAK",
+        "score": 0.4092,
+        "hist_ordinal_display_only": 9,
+        "rows": 27,
+        "columns": 3,
+        "data_rows": 26,
+        "matched_factors": [
+          "semantic_label(FUNCTIONAL_ANALYSIS)",
+          "section_context"
+        ],
+        "note": "Matched on semantic_label(FUNCTIONAL_ANALYSIS), section_context (score 0.409); ordinal was not an input."
+      },
+      "template_state": {
+        "rows": 28,
+        "columns": 3,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          27
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [],
+        "row_semantics": "UNKNOWN",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "Functions/Assets/Risks",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 1,
+            "header": "ABC",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 2,
+            "header": "RELATED PARTY",
+            "role": "ENTITY_NAME"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [],
+        "binding_verdict": "INSUFFICIENT_EVIDENCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "Target domain FUNCTIONAL_ANALYSIS declares no required source dataset role, so no source can be proven compatible with it."
+        ]
+      },
+      "target_state": {
+        "rows": null,
+        "basis": "UNKNOWABLE_FROM_APPROVED_INPUTS",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "CARRY_FORWARD_STATIC",
+      "strategy_is_implemented": true,
+      "readiness": "MANUAL_REVIEW",
+      "source_evidence": [],
+      "blocking_reasons": [],
+      "manual_review_reasons": [
+        "Historical correspondence is WEAK (score 0.409); a reviewer must confirm that FY2023 table 9 is the same table.",
+        "Static carry-forward region whose FY2023 counterpart is not an exact structural match; a reviewer must confirm the content still applies."
+      ],
+      "real_postcondition_hash_current": "45adb8bb3a311617235b80a9e8daec88"
+    },
+    {
+      "case_id": "rft-d530d596",
+      "template_ordinal_display_only": 6,
+      "table_identity_key": "d530d5963267f6b2",
+      "semantic_domain": "PLI_FORMULA",
+      "section_path": [
+        "Economic analysis",
+        "Application of CPM",
+        "Selection of profit level indicator (“PLI”)"
+      ],
+      "header_cells": [
+        "NCP",
+        "=",
+        "EBIT"
+      ],
+      "historical_state": {
+        "correspondence": "EXACT",
+        "score": 0.9333,
+        "hist_ordinal_display_only": 10,
+        "rows": 2,
+        "columns": 3,
+        "data_rows": 1,
+        "matched_factors": [
+          "header_signature",
+          "semantic_label(PLI_FORMULA)",
+          "column_schema_alignment",
+          "header_token_overlap",
+          "section_context",
+          "merge_topology"
+        ],
+        "note": "Matched on header_signature, semantic_label(PLI_FORMULA), column_schema_alignment, header_token_overlap, section_context, merge_topology (score 0.933); ordinal was not an input."
+      },
+      "template_state": {
+        "rows": 2,
+        "columns": 3,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          1
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [],
+        "row_semantics": "UNKNOWN",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "NCP",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 1,
+            "header": "=",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 2,
+            "header": "EBIT",
+            "role": "FREE_TEXT"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [],
+        "binding_verdict": "INSUFFICIENT_EVIDENCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "Target domain PLI_FORMULA declares no required source dataset role, so no source can be proven compatible with it."
+        ]
+      },
+      "target_state": {
+        "rows": null,
+        "basis": "UNKNOWABLE_FROM_APPROVED_INPUTS",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "CARRY_FORWARD_STATIC",
+      "strategy_is_implemented": true,
+      "readiness": "READY",
+      "source_evidence": [],
+      "blocking_reasons": [],
+      "manual_review_reasons": [],
+      "real_postcondition_hash_current": "e0e38a617f6a3892ab6610a077835e7c"
+    },
+    {
+      "case_id": "rft-1428592f",
+      "template_ordinal_display_only": 7,
+      "table_identity_key": "1428592fc8d46ebd",
+      "semantic_domain": "PLI_FORMULA",
+      "section_path": [
+        "Economic analysis",
+        "Application of CPM",
+        "Selection of profit level indicator (“PLI”)"
+      ],
+      "header_cells": [
+        "OM",
+        "=",
+        "EBIT"
+      ],
+      "historical_state": {
+        "correspondence": "WEAK",
+        "score": 0.4767,
+        "hist_ordinal_display_only": 10,
+        "rows": 2,
+        "columns": 3,
+        "data_rows": 1,
+        "matched_factors": [
+          "semantic_label(PLI_FORMULA)",
+          "header_token_overlap",
+          "section_context",
+          "merge_topology"
+        ],
+        "note": "Matched on semantic_label(PLI_FORMULA), header_token_overlap, section_context, merge_topology (score 0.477); ordinal was not an input."
+      },
+      "template_state": {
+        "rows": 2,
+        "columns": 3,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          1
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [],
+        "row_semantics": "UNKNOWN",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "OM",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 1,
+            "header": "=",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 2,
+            "header": "EBIT",
+            "role": "FREE_TEXT"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [],
+        "binding_verdict": "INSUFFICIENT_EVIDENCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "Target domain PLI_FORMULA declares no required source dataset role, so no source can be proven compatible with it."
+        ]
+      },
+      "target_state": {
+        "rows": null,
+        "basis": "UNKNOWABLE_FROM_APPROVED_INPUTS",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "CARRY_FORWARD_STATIC",
+      "strategy_is_implemented": true,
+      "readiness": "MANUAL_REVIEW",
+      "source_evidence": [],
+      "blocking_reasons": [],
+      "manual_review_reasons": [
+        "Historical correspondence is WEAK (score 0.477); a reviewer must confirm that FY2023 table 10 is the same table.",
+        "Static carry-forward region whose FY2023 counterpart is not an exact structural match; a reviewer must confirm the content still applies."
+      ],
+      "real_postcondition_hash_current": "f72b70b5dd3d7742fc06131c5b50b641"
+    },
+    {
+      "case_id": "rft-faf9f501",
+      "template_ordinal_display_only": 8,
+      "table_identity_key": "faf9f50139bee705",
+      "semantic_domain": "PLI_FORMULA",
+      "section_path": [
+        "Economic analysis",
+        "Application of CPM",
+        "Selection of profit level indicator (“PLI”)"
+      ],
+      "header_cells": [
+        "ROA",
+        "=",
+        "EBIT"
+      ],
+      "historical_state": {
+        "correspondence": "WEAK",
+        "score": 0.4069,
+        "hist_ordinal_display_only": 10,
+        "rows": 2,
+        "columns": 3,
+        "data_rows": 1,
+        "matched_factors": [
+          "semantic_label(PLI_FORMULA)",
+          "merge_topology"
+        ],
+        "note": "Matched on semantic_label(PLI_FORMULA), merge_topology (score 0.407); ordinal was not an input."
+      },
+      "template_state": {
+        "rows": 2,
+        "columns": 3,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          1
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [],
+        "row_semantics": "UNKNOWN",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "ROA",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 1,
+            "header": "=",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 2,
+            "header": "EBIT",
+            "role": "FREE_TEXT"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [],
+        "binding_verdict": "INSUFFICIENT_EVIDENCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "Target domain PLI_FORMULA declares no required source dataset role, so no source can be proven compatible with it."
+        ]
+      },
+      "target_state": {
+        "rows": null,
+        "basis": "UNKNOWABLE_FROM_APPROVED_INPUTS",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "CARRY_FORWARD_STATIC",
+      "strategy_is_implemented": true,
+      "readiness": "MANUAL_REVIEW",
+      "source_evidence": [],
+      "blocking_reasons": [],
+      "manual_review_reasons": [
+        "Historical correspondence is WEAK (score 0.407); a reviewer must confirm that FY2023 table 10 is the same table.",
+        "Static carry-forward region whose FY2023 counterpart is not an exact structural match; a reviewer must confirm the content still applies."
+      ],
+      "real_postcondition_hash_current": "6f75c765916181adda2e37571e21aa8b"
+    },
+    {
+      "case_id": "rft-851d9e27",
+      "template_ordinal_display_only": 9,
+      "table_identity_key": "851d9e27f3a0b81b",
+      "semantic_domain": "UNKNOWN",
+      "section_path": [
+        "Economic analysis",
+        "Application of CPM",
+        "The standard arm’s length range"
+      ],
+      "header_cells": [
+        "No.",
+        "Company name",
+        "FY20ww",
+        "FY20yy",
+        "FY20xx",
+        "WA 20ww-20xx"
+      ],
+      "historical_state": {
+        "correspondence": "UNCORRELATED",
+        "rows": null,
+        "columns": null,
+        "matched_factors": [],
+        "note": "No FY2023 table could be correlated to this template table by header signature, semantic label, column schema or section context."
+      },
+      "template_state": {
+        "rows": 14,
+        "columns": 6,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          13
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [
+          6,
+          12
+        ],
+        "row_semantics": "UNKNOWN",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "No.",
+            "role": "ORDINAL"
+          },
+          {
+            "index": 1,
+            "header": "Company name",
+            "role": "ENTITY_NAME"
+          },
+          {
+            "index": 2,
+            "header": "FY20ww",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 3,
+            "header": "FY20yy",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 4,
+            "header": "FY20xx",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 5,
+            "header": "WA 20ww-20xx",
+            "role": "FREE_TEXT"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [],
+        "binding_verdict": "INSUFFICIENT_EVIDENCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "Target domain UNKNOWN declares no required source dataset role, so no source can be proven compatible with it."
+        ]
+      },
+      "target_state": {
+        "rows": null,
+        "basis": "UNKNOWABLE_FROM_APPROVED_INPUTS",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "NO_STRATEGY_DETERMINABLE",
+      "strategy_is_implemented": false,
+      "readiness": "BLOCKED",
+      "source_evidence": [],
+      "blocking_reasons": [
+        "STRATEGY_NOT_IMPLEMENTED: this region requires NO_STRATEGY_DETERMINABLE, which the D1 writeback engine does not provide (it implements INSERT_ROWS only). Not implemented in this phase by instruction."
+      ],
+      "manual_review_reasons": [],
+      "real_postcondition_hash_current": "7eb1f3e3381cc55240f9055bef10f03f"
+    },
+    {
+      "case_id": "rft-d64bd129",
+      "template_ordinal_display_only": 10,
+      "table_identity_key": "d64bd1292a678a2c",
+      "semantic_domain": "ARMS_LENGTH_RANGE",
+      "section_path": [
+        "Economic analysis",
+        "Application of CPM",
+        "The standard arm’s length range"
+      ],
+      "header_cells": [
+        "Item",
+        "FY20xx",
+        "WA (FY20ww-20xx)"
+      ],
+      "historical_state": {
+        "correspondence": "UNCORRELATED",
+        "rows": null,
+        "columns": null,
+        "matched_factors": [],
+        "note": "No FY2023 table could be correlated to this template table by header signature, semantic label, column schema or section context."
+      },
+      "template_state": {
+        "rows": 6,
+        "columns": 3,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          5
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [
+          4
+        ],
+        "row_semantics": "STATISTIC",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "Item",
+            "role": "STATISTIC_LABEL"
+          },
+          {
+            "index": 1,
+            "header": "FY20xx",
+            "role": "FREE_TEXT"
+          },
+          {
+            "index": 2,
+            "header": "WA (FY20ww-20xx)",
+            "role": "FREE_TEXT"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [
+          "IQR_RESULTS",
+          "BENCHMARKING_DATA"
+        ],
+        "binding_verdict": "MISSING_CURRENT_SOURCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "No bound workbook contains any of the required dataset roles ['IQR_RESULTS', 'BENCHMARKING_DATA'] for target domain ARMS_LENGTH_RANGE. Sheets were profiled by content, not by name."
+        ]
+      },
+      "target_state": {
+        "rows": 6,
+        "basis": "fixed-shape table; row count does not change under roll-forward",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "ACTIVATE_PLACEHOLDER",
+      "strategy_is_implemented": false,
+      "readiness": "BLOCKED",
+      "source_evidence": [
+        "HMV-FA&RPT FY2024.xlsx: roles present = ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'INTEREST_EXPENSE', 'RPT_DATA']",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx: roles present = ['RPT_DATA', 'REFERENCE_LIST', 'SEGMENTED_DATA', 'INTEREST_EXPENSE', 'FINANCIAL_STATEMENTS', 'FINANCIAL_ANALYSIS', 'FIXED_ASSETS']"
+      ],
+      "blocking_reasons": [
+        "MISSING_CURRENT_SOURCE: no bound workbook contains ['IQR_RESULTS', 'BENCHMARKING_DATA']. Content profiling of 23 sheets found no such dataset.",
+        "STRATEGY_NOT_IMPLEMENTED: this region requires ACTIVATE_PLACEHOLDER, which the D1 writeback engine does not provide (it implements INSERT_ROWS only). Not implemented in this phase by instruction."
+      ],
+      "manual_review_reasons": [],
+      "real_postcondition_hash_current": "f499fe78194a71a88688609946d3ef85"
+    },
+    {
+      "case_id": "rft-8fb821ad",
+      "template_ordinal_display_only": 11,
+      "table_identity_key": "8fb821ad2a482245",
+      "semantic_domain": "FINANCIAL_INDICATORS",
+      "section_path": [
+        "Financial information",
+        "Allocation method used in the calculation of ABC’s operating result for each business segment"
+      ],
+      "header_cells": [
+        "Unit: VND",
+        "Index",
+        "FY20xx"
+      ],
+      "historical_state": {
+        "correspondence": "UNCORRELATED",
+        "rows": null,
+        "columns": null,
+        "matched_factors": [],
+        "note": "No FY2023 table could be correlated to this template table by header signature, semantic label, column schema or section context."
+      },
+      "template_state": {
+        "rows": 9,
+        "columns": 3,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          8
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [],
+        "row_semantics": "LINE_ITEM",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "Unit: VND",
+            "role": "MONETARY"
+          },
+          {
+            "index": 1,
+            "header": "Index",
+            "role": "STATISTIC_LABEL"
+          },
+          {
+            "index": 2,
+            "header": "FY20xx",
+            "role": "FREE_TEXT"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS"
+        ],
+        "binding_verdict": "VERIFIED",
+        "roles_found": [
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS"
+        ],
+        "candidate_sheets": [
+          "HMV-FA&RPT FY2024.xlsx!FS",
+          "HMV-FA&RPT FY2024.xlsx!Financial Analysis",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data",
+          "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS"
+        ],
+        "source_record_count": 51,
+        "violations": []
+      },
+      "target_state": {
+        "rows": null,
+        "basis": "UNKNOWABLE_FROM_APPROVED_INPUTS",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "UPDATE_CELLS",
+      "strategy_is_implemented": false,
+      "readiness": "BLOCKED",
+      "source_evidence": [
+        "HMV-FA&RPT FY2024.xlsx!FS carries FINANCIAL_STATEMENTS (45 records; evidence ['net sales', 'revenue', 'cost of goods sold', 'gross profit'])",
+        "HMV-FA&RPT FY2024.xlsx!Financial Analysis carries FINANCIAL_STATEMENTS (51 records; evidence ['net sales', 'cost of goods sold', 'gross profit'])",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data carries FINANCIAL_STATEMENTS (28 records; evidence ['revenue', 'cost of goods sold'])",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS carries FINANCIAL_STATEMENTS (45 records; evidence ['net sales', 'revenue', 'cost of goods sold', 'gross profit'])"
+      ],
+      "blocking_reasons": [
+        "STRATEGY_NOT_IMPLEMENTED: this region requires UPDATE_CELLS, which the D1 writeback engine does not provide (it implements INSERT_ROWS only). Not implemented in this phase by instruction."
+      ],
+      "manual_review_reasons": [],
+      "real_postcondition_hash_current": "a56d80486871f9c8376cc553ccbf5b5b"
+    },
+    {
+      "case_id": "rft-cbfc855f",
+      "template_ordinal_display_only": 12,
+      "table_identity_key": "cbfc855f1ed1946c",
+      "semantic_domain": "DOCUMENT_CHECKLIST",
+      "section_path": [
+        "Financial information",
+        "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more"
+      ],
+      "header_cells": [
+        "No.",
+        "Details",
+        "Point of reference in this Local File"
+      ],
+      "historical_state": {
+        "correspondence": "WEAK",
+        "score": 0.3612,
+        "hist_ordinal_display_only": 2,
+        "rows": 25,
+        "columns": 4,
+        "data_rows": 24,
+        "matched_factors": [
+          "semantic_label(DOCUMENT_CHECKLIST)"
+        ],
+        "note": "Matched on semantic_label(DOCUMENT_CHECKLIST) (score 0.361); ordinal was not an input."
+      },
+      "template_state": {
+        "rows": 25,
+        "columns": 3,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          24
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [],
+        "row_semantics": "UNKNOWN",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "No.",
+            "role": "ORDINAL"
+          },
+          {
+            "index": 1,
+            "header": "Details",
+            "role": "DESCRIPTION"
+          },
+          {
+            "index": 2,
+            "header": "Point of reference in this Local File",
+            "role": "FREE_TEXT"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [],
+        "binding_verdict": "INSUFFICIENT_EVIDENCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "Target domain DOCUMENT_CHECKLIST declares no required source dataset role, so no source can be proven compatible with it."
+        ]
+      },
+      "target_state": {
+        "rows": null,
+        "basis": "UNKNOWABLE_FROM_APPROVED_INPUTS",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "UPDATE_CELLS",
+      "strategy_is_implemented": false,
+      "readiness": "BLOCKED",
+      "source_evidence": [],
+      "blocking_reasons": [
+        "INSUFFICIENT_EVIDENCE: target domain DOCUMENT_CHECKLIST declares no required source dataset role, so no source can be proven compatible.",
+        "STRATEGY_NOT_IMPLEMENTED: this region requires UPDATE_CELLS, which the D1 writeback engine does not provide (it implements INSERT_ROWS only). Not implemented in this phase by instruction."
+      ],
+      "manual_review_reasons": [
+        "Historical correspondence is WEAK (score 0.361); a reviewer must confirm that FY2023 table 2 is the same table."
+      ],
+      "real_postcondition_hash_current": "6a835444e01b967fec99c71dd129235b"
+    },
+    {
+      "case_id": "rft-268c5ad2",
+      "template_ordinal_display_only": 13,
+      "table_identity_key": "268c5ad2bd7fe689",
+      "semantic_domain": "SCREENING_STRATEGY",
+      "section_path": [
+        "Financial information",
+        "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more"
+      ],
+      "header_cells": [
+        "Database used",
+        "Bureau van Dijk’s TP Catalyst (“TP Cat”) database"
+      ],
+      "historical_state": {
+        "correspondence": "UNCORRELATED",
+        "rows": null,
+        "columns": null,
+        "matched_factors": [],
+        "note": "No FY2023 table could be correlated to this template table by header signature, semantic label, column schema or section context."
+      },
+      "template_state": {
+        "rows": 23,
+        "columns": 2,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          21
+        ],
+        "footer_rows": [
+          22
+        ],
+        "placeholder_rows": [
+          1
+        ],
+        "row_semantics": "KEY_VALUE",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "Database used",
+            "role": "CRITERION_LABEL"
+          },
+          {
+            "index": 1,
+            "header": "Bureau van Dijk’s TP Catalyst (“TP Cat”) database",
+            "role": "FREE_TEXT"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [
+          "SCREENING_RESULTS",
+          "BENCHMARKING_DATA"
+        ],
+        "binding_verdict": "MISSING_CURRENT_SOURCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "No bound workbook contains any of the required dataset roles ['SCREENING_RESULTS', 'BENCHMARKING_DATA'] for target domain SCREENING_STRATEGY. Sheets were profiled by content, not by name."
+        ]
+      },
+      "target_state": {
+        "rows": 23,
+        "basis": "fixed-shape table; row count does not change under roll-forward",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "ACTIVATE_PLACEHOLDER",
+      "strategy_is_implemented": false,
+      "readiness": "BLOCKED",
+      "source_evidence": [
+        "HMV-FA&RPT FY2024.xlsx: roles present = ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'INTEREST_EXPENSE', 'RPT_DATA']",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx: roles present = ['RPT_DATA', 'REFERENCE_LIST', 'SEGMENTED_DATA', 'INTEREST_EXPENSE', 'FINANCIAL_STATEMENTS', 'FINANCIAL_ANALYSIS', 'FIXED_ASSETS']"
+      ],
+      "blocking_reasons": [
+        "MISSING_CURRENT_SOURCE: no bound workbook contains ['SCREENING_RESULTS', 'BENCHMARKING_DATA']. Content profiling of 23 sheets found no such dataset.",
+        "STRATEGY_NOT_IMPLEMENTED: this region requires ACTIVATE_PLACEHOLDER, which the D1 writeback engine does not provide (it implements INSERT_ROWS only). Not implemented in this phase by instruction."
+      ],
+      "manual_review_reasons": [],
+      "real_postcondition_hash_current": "34b7f59398dac2c216baffe7b27ded05"
+    },
+    {
+      "case_id": "rft-4b8dca9d",
+      "template_ordinal_display_only": 14,
+      "table_identity_key": "4b8dca9dd20e953d",
+      "semantic_domain": "COMPARABLE_COMPANIES",
+      "section_path": [
+        "Financial information",
+        "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more"
+      ],
+      "header_cells": [
+        "No",
+        "Company",
+        "Province",
+        "Tax code",
+        "VN SIC Code",
+        "Business description"
+      ],
+      "historical_state": {
+        "correspondence": "UNCORRELATED",
+        "rows": null,
+        "columns": null,
+        "matched_factors": [],
+        "note": "No FY2023 table could be correlated to this template table by header signature, semantic label, column schema or section context."
+      },
+      "template_state": {
+        "rows": 8,
+        "columns": 6,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          6
+        ],
+        "footer_rows": [
+          7
+        ],
+        "placeholder_rows": [
+          5,
+          6
+        ],
+        "row_semantics": "ENTITY_RECORD",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "No",
+            "role": "ORDINAL"
+          },
+          {
+            "index": 1,
+            "header": "Company",
+            "role": "ENTITY_NAME"
+          },
+          {
+            "index": 2,
+            "header": "Province",
+            "role": "PROVINCE"
+          },
+          {
+            "index": 3,
+            "header": "Tax code",
+            "role": "TAX_CODE"
+          },
+          {
+            "index": 4,
+            "header": "VN SIC Code",
+            "role": "INDUSTRY_CODE"
+          },
+          {
+            "index": 5,
+            "header": "Business description",
+            "role": "DESCRIPTION"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [
+          "COMPARABLE_COMPANIES",
+          "BENCHMARKING_DATA"
+        ],
+        "binding_verdict": "MISSING_CURRENT_SOURCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "No bound workbook contains any of the required dataset roles ['COMPARABLE_COMPANIES', 'BENCHMARKING_DATA'] for target domain COMPARABLE_COMPANIES. Sheets were profiled by content, not by name."
+        ]
+      },
+      "target_state": {
+        "rows": null,
+        "basis": "UNKNOWABLE_FROM_APPROVED_INPUTS",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "REPLACE_DATA_REGION",
+      "strategy_is_implemented": false,
+      "readiness": "BLOCKED",
+      "source_evidence": [
+        "HMV-FA&RPT FY2024.xlsx: roles present = ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'INTEREST_EXPENSE', 'RPT_DATA']",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx: roles present = ['RPT_DATA', 'REFERENCE_LIST', 'SEGMENTED_DATA', 'INTEREST_EXPENSE', 'FINANCIAL_STATEMENTS', 'FINANCIAL_ANALYSIS', 'FIXED_ASSETS']"
+      ],
+      "blocking_reasons": [
+        "MISSING_CURRENT_SOURCE: no bound workbook contains ['COMPARABLE_COMPANIES', 'BENCHMARKING_DATA']. Content profiling of 23 sheets found no such dataset.",
+        "STRATEGY_NOT_IMPLEMENTED: this region requires REPLACE_DATA_REGION, which the D1 writeback engine does not provide (it implements INSERT_ROWS only). Not implemented in this phase by instruction."
+      ],
+      "manual_review_reasons": [],
+      "real_postcondition_hash_current": "cd24e2647495bbb13799926a9b5bf6e6"
+    },
+    {
+      "case_id": "rft-4df4dedc",
+      "template_ordinal_display_only": 15,
+      "table_identity_key": "4df4dedcf13b6fd2",
+      "semantic_domain": "COMPARABLE_COMPANIES",
+      "section_path": [
+        "Financial information",
+        "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more"
+      ],
+      "header_cells": [
+        "No",
+        "Company",
+        "Country",
+        "Ticker symbol/ Tax code",
+        "Business description"
+      ],
+      "historical_state": {
+        "correspondence": "UNCORRELATED",
+        "rows": null,
+        "columns": null,
+        "matched_factors": [],
+        "note": "No FY2023 table could be correlated to this template table by header signature, semantic label, column schema or section context."
+      },
+      "template_state": {
+        "rows": 7,
+        "columns": 5,
+        "header_rows": 1,
+        "data_region": [
+          1,
+          6
+        ],
+        "footer_rows": [],
+        "placeholder_rows": [
+          5,
+          6
+        ],
+        "row_semantics": "ENTITY_RECORD",
+        "column_roles": [
+          {
+            "index": 0,
+            "header": "No",
+            "role": "ORDINAL"
+          },
+          {
+            "index": 1,
+            "header": "Company",
+            "role": "ENTITY_NAME"
+          },
+          {
+            "index": 2,
+            "header": "Country",
+            "role": "COUNTRY"
+          },
+          {
+            "index": 3,
+            "header": "Ticker symbol/ Tax code",
+            "role": "TAX_CODE"
+          },
+          {
+            "index": 4,
+            "header": "Business description",
+            "role": "DESCRIPTION"
+          }
+        ]
+      },
+      "current_source_state": {
+        "required_dataset_roles": [
+          "COMPARABLE_COMPANIES",
+          "BENCHMARKING_DATA"
+        ],
+        "binding_verdict": "MISSING_CURRENT_SOURCE",
+        "roles_found": [],
+        "candidate_sheets": [],
+        "source_record_count": null,
+        "violations": [
+          "No bound workbook contains any of the required dataset roles ['COMPARABLE_COMPANIES', 'BENCHMARKING_DATA'] for target domain COMPARABLE_COMPANIES. Sheets were profiled by content, not by name."
+        ]
+      },
+      "target_state": {
+        "rows": null,
+        "basis": "UNKNOWABLE_FROM_APPROVED_INPUTS",
+        "derived_from_ground_truth": false,
+        "note": "Target row counts are derived from current-source record counts or from the template's own fixed shape. The FY2024 Ground Truth was not consulted."
+      },
+      "recommended_strategy": "REPLACE_DATA_REGION",
+      "strategy_is_implemented": false,
+      "readiness": "BLOCKED",
+      "source_evidence": [
+        "HMV-FA&RPT FY2024.xlsx: roles present = ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'INTEREST_EXPENSE', 'RPT_DATA']",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx: roles present = ['RPT_DATA', 'REFERENCE_LIST', 'SEGMENTED_DATA', 'INTEREST_EXPENSE', 'FINANCIAL_STATEMENTS', 'FINANCIAL_ANALYSIS', 'FIXED_ASSETS']"
+      ],
+      "blocking_reasons": [
+        "MISSING_CURRENT_SOURCE: no bound workbook contains ['COMPARABLE_COMPANIES', 'BENCHMARKING_DATA']. Content profiling of 23 sheets found no such dataset.",
+        "STRATEGY_NOT_IMPLEMENTED: this region requires REPLACE_DATA_REGION, which the D1 writeback engine does not provide (it implements INSERT_ROWS only). Not implemented in this phase by instruction."
+      ],
+      "manual_review_reasons": [],
+      "real_postcondition_hash_current": "dceb31b336bd7263f91dd92a03e6a248"
+    }
+  ]
+}

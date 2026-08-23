@@ -85,6 +85,9 @@ GOLDEN_REGION_IDS = ("rfr-071", "rfr-093", "rfr-098", "rfr-101")
 
 APPROVER = "tax-partner@kpmg.com"
 
+# Marker that protects the historical (contaminated) Phase D3 reports.
+MARKER = "INVALIDATED_FOR_PLANNING_CONTAMINATION"
+
 
 # ============================================================================
 # 1. REAL SOURCE VALUE EXTRACTION
@@ -331,8 +334,16 @@ def write_execution_artifacts(
         "ground_truth_oracle": PATH_GT.name,
     }
     payload["blocked_regions_analysis"] = blocked_analysis
-    REPORT_JSON_PATH.write_text(json.dumps(payload, indent=2), encoding="utf-8")
-    REPORT_MD_PATH.write_text(_render_markdown(report, manifest, blocked_analysis), encoding="utf-8")
+    # Phase D3.2 (§13): the historical Phase D3 reports are marked
+    # INVALIDATED_FOR_PLANNING_CONTAMINATION and must never be overwritten by a
+    # re-run. If the marker is present, emit alongside them instead.
+    json_target, md_target = REPORT_JSON_PATH, REPORT_MD_PATH
+    if REPORT_MD_PATH.exists() and MARKER in REPORT_MD_PATH.read_text(encoding="utf-8"):
+        json_target = REPORT_JSON_PATH.with_name(REPORT_JSON_PATH.stem + "_regenerated.json")
+        md_target = REPORT_MD_PATH.with_name(REPORT_MD_PATH.stem + "_regenerated.md")
+
+    json_target.write_text(json.dumps(payload, indent=2), encoding="utf-8")
+    md_target.write_text(_render_markdown(report, manifest, blocked_analysis), encoding="utf-8")
 
 
 def _relative(path_str: Optional[str]) -> str:

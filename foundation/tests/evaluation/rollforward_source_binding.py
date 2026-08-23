@@ -16,7 +16,32 @@ Core capabilities:
 
 Zero mutation. Zero range guessing. Zero LLM hallucinations.
 """
+
+
 from __future__ import annotations
+
+# ============================================================================
+# PHASE D3.2 STATUS MARKER — DO NOT REUSE THESE PLANNING NUMBERS
+# ============================================================================
+# The Phase D3.1 audit proved that the StructuralDelta literals in this module
+# were produced by POSITIONAL table correspondence across three documents with
+# different table inventories (FY2023 = 22 tables, Template = 16, FY2024 Ground
+# Truth = 19), and that `target_rows` equals `GT.tables[i].rows` in every case.
+#
+#   observation_context["historical_rows"] == HIST.tables[i].rows   (4/4)
+#   structural_delta.target_rows           == GT.tables[i].rows     (4/4)
+#   structural_delta.insert_count          == GT[i] - HIST[i]       (4/4)
+#
+# This module is RETAINED UNCHANGED so the Phase A-D3 test suites keep
+# exercising the engine mechanics they were written for. Its ROW-COUNT TARGETS
+# and READINESS CLASSIFICATIONS are historical evidence, not planning input.
+#
+# Clean replacement:
+#   foundation/tests/evaluation/rollforward_clean_planner_c2.py
+#   docs/evaluation/LocalFile_RollForward_Real_Target_Benchmark_v1_2026-08-23.json
+PLANNING_INTEGRITY_STATUS = "INVALIDATED_FOR_PLANNING_CONTAMINATION"
+PLANNING_INTEGRITY_FINDINGS = ("P0-1", "P0-2")
+SUPERSEDED_BY = "foundation/tests/evaluation/rollforward_clean_planner_c2.py"
 
 import json
 from pathlib import Path
