@@ -1,0 +1,1106 @@
+{
+  "package_id": "LOCALFILE-ROLLFORWARD-SOURCES",
+  "version": 5,
+  "parent_version": 4,
+  "created_at": "2026-08-23T07:01:04.383781+00:00",
+  "status": "DRAFT",
+  "package_hash": "6f000a1fec049a028ed56b494f9446a54df1e76a7ab2c7786b39f21ea10547a9",
+  "artifact_count": 4,
+  "supplying_artifacts": [
+    "src-9574dcc037af",
+    "src-80e0b0deb594"
+  ],
+  "non_supplying_artifacts": [
+    "src-8b51f941e106",
+    "src-5fdf55e4e600"
+  ],
+  "observed_roles_all_scopes": {
+    "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx": [
+      "COMPARABLE_COMPANIES",
+      "IQR_RESULTS",
+      "SCREENING_RESULTS",
+      "INDEPENDENCE_CODES",
+      "BENCHMARKING_DATA",
+      "FAR",
+      "GROUP_NARRATIVE",
+      "BUSINESS_NARRATIVE",
+      "CONTRACTUAL_DATA",
+      "ORGANIZATIONAL_DATA",
+      "OWNERSHIP_STRUCTURE",
+      "TAX_SCHEDULE",
+      "RPT",
+      "INTEREST_EXPENSE",
+      "FINANCIAL_STATEMENTS",
+      "FINANCIAL_ANALYSIS",
+      "APPENDIX_DISCLOSURE",
+      "FIGURE_SOURCE"
+    ],
+    "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx": [
+      "COMPARABLE_COMPANIES",
+      "IQR_RESULTS",
+      "SCREENING_RESULTS",
+      "BENCHMARKING_DATA",
+      "FAR",
+      "GROUP_NARRATIVE",
+      "BUSINESS_NARRATIVE",
+      "CONTRACTUAL_DATA",
+      "OWNERSHIP_STRUCTURE",
+      "TAXPAYER_PROFILE",
+      "RPT",
+      "INTEREST_EXPENSE",
+      "FINANCIAL_STATEMENTS",
+      "FINANCIAL_ANALYSIS",
+      "SEGMENTED_DATA",
+      "APPENDIX_DISCLOSURE"
+    ],
+    "HMV-FA&RPT FY2024.xlsx": [
+      "RPT",
+      "FINANCIAL_ANALYSIS",
+      "FINANCIAL_STATEMENTS",
+      "INTEREST_EXPENSE",
+      "APPENDIX_DISCLOSURE"
+    ],
+    "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx": [
+      "RPT",
+      "APPENDIX_DISCLOSURE",
+      "SEGMENTED_DATA",
+      "INTEREST_EXPENSE",
+      "FINANCIAL_STATEMENTS",
+      "FINANCIAL_ANALYSIS",
+      "FIXED_ASSETS"
+    ]
+  },
+  "available_roles": [
+    "APPENDIX_DISCLOSURE",
+    "FINANCIAL_ANALYSIS",
+    "FINANCIAL_STATEMENTS",
+    "FIXED_ASSETS",
+    "INTEREST_EXPENSE",
+    "RPT",
+    "SEGMENTED_DATA"
+  ],
+  "available_roles_verified_only": [],
+  "artifacts": [
+    {
+      "artifact_id": "src-8b51f941e106",
+      "filename": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+      "file_hash": "8b51f941e1068c97385fecbd49808e1dc356601e4e3eb8f9c2d0d7c39fb290c5",
+      "file_size": 2764267,
+      "format": "DOCX",
+      "source_scope": "HISTORICAL",
+      "dataset_roles": [
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS",
+        "INDEPENDENCE_CODES",
+        "BENCHMARKING_DATA",
+        "FAR",
+        "GROUP_NARRATIVE",
+        "BUSINESS_NARRATIVE",
+        "CONTRACTUAL_DATA",
+        "ORGANIZATIONAL_DATA",
+        "OWNERSHIP_STRUCTURE",
+        "TAX_SCHEDULE",
+        "RPT",
+        "INTEREST_EXPENSE",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "APPENDIX_DISCLOSURE",
+        "FIGURE_SOURCE"
+      ],
+      "role_evidence": [
+        {
+          "role": "COMPARABLE_COMPANIES",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "company name",
+            "ticker",
+            "sic code",
+            "naics",
+            "business description",
+            "stock code",
+            "comparable"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "7 schema signals over 559 structured records."
+        },
+        {
+          "role": "IQR_RESULTS",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "35th percentile",
+            "75th percentile",
+            "median"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "3 schema signals over 559 structured records."
+        },
+        {
+          "role": "SCREENING_RESULTS",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "screening criteria",
+            "eliminated",
+            "retained",
+            "reason for rejection",
+            "rejected",
+            "search criteria",
+            "passed",
+            "search strategy"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "9 schema signals over 559 structured records."
+        },
+        {
+          "role": "INDEPENDENCE_CODES",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "independence indicator",
+            "bvd independence"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "2 content signal(s) over 559 record(s)."
+        },
+        {
+          "role": "BENCHMARKING_DATA",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "tp catalyst",
+            "bureau van dijk",
+            "benchmark"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "3 schema signals over 559 structured records."
+        },
+        {
+          "role": "FAR",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "functions performed",
+            "assets used",
+            "risks assumed",
+            "functional analysis",
+            "functions/assets/risks",
+            "characterisation"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "6 schema signals over 559 structured records."
+        },
+        {
+          "role": "GROUP_NARRATIVE",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "the group",
+            "master file"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "2 content signal(s) over 559 record(s)."
+        },
+        {
+          "role": "BUSINESS_NARRATIVE",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "business strategy",
+            "business restructuring"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "2 content signal(s) over 559 record(s)."
+        },
+        {
+          "role": "CONTRACTUAL_DATA",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "agreement",
+            "the parties",
+            "signed",
+            "clause"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "4 schema signals over 559 structured records."
+        },
+        {
+          "role": "ORGANIZATIONAL_DATA",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "department",
+            "reports to"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "2 content signal(s) over 559 record(s)."
+        },
+        {
+          "role": "OWNERSHIP_STRUCTURE",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "shareholder",
+            "ownership",
+            "parent company"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "3 schema signals over 559 structured records."
+        },
+        {
+          "role": "TAX_SCHEDULE",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "corporate income tax",
+            "cit"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "2 content signal(s) over 559 record(s)."
+        },
+        {
+          "role": "RPT",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "related party",
+            "intercompany",
+            "intra-group",
+            "transaction value"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "4 schema signals over 559 structured records."
+        },
+        {
+          "role": "INTEREST_EXPENSE",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "interest rate",
+            "credit institution",
+            "principal",
+            "loan"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "4 schema signals over 559 structured records."
+        },
+        {
+          "role": "FINANCIAL_STATEMENTS",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "net sales",
+            "revenue",
+            "cost of goods sold",
+            "gross profit"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "4 schema signals over 559 structured records."
+        },
+        {
+          "role": "FINANCIAL_ANALYSIS",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "net cost plus",
+            "operating margin",
+            "return on assets",
+            "profit level indicator",
+            "ebit",
+            "margin"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "6 schema signals over 559 structured records."
+        },
+        {
+          "role": "APPENDIX_DISCLOSURE",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "appendix",
+            "point of reference",
+            "disclosure"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "3 schema signals over 559 structured records."
+        },
+        {
+          "role": "FIGURE_SOURCE",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "edge",
+            "series"
+          ],
+          "record_count": 559,
+          "locations": [
+            "22 table(s)",
+            "493 paragraph(s)"
+          ],
+          "rationale": "2 content signal(s) over 559 record(s)."
+        }
+      ],
+      "created_at": "2026-08-23T07:01:04.389916+00:00",
+      "status": "PROFILED",
+      "can_supply_current_year_roles": false,
+      "profile_summary": {
+        "kind": "document",
+        "paragraphs": 493,
+        "tables": 22,
+        "table_rows": 559,
+        "has_structured_tables": true
+      },
+      "notes": ""
+    },
+    {
+      "artifact_id": "src-5fdf55e4e600",
+      "filename": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+      "file_hash": "5fdf55e4e6007a164908af84bf8c001c767bf46f66c5be6e6cfd7afe1222f47c",
+      "file_size": 2819648,
+      "format": "DOCX",
+      "source_scope": "TEMPLATE",
+      "dataset_roles": [
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS",
+        "BENCHMARKING_DATA",
+        "FAR",
+        "GROUP_NARRATIVE",
+        "BUSINESS_NARRATIVE",
+        "CONTRACTUAL_DATA",
+        "OWNERSHIP_STRUCTURE",
+        "TAXPAYER_PROFILE",
+        "RPT",
+        "INTEREST_EXPENSE",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "SEGMENTED_DATA",
+        "APPENDIX_DISCLOSURE"
+      ],
+      "role_evidence": [
+        {
+          "role": "COMPARABLE_COMPANIES",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "company name",
+            "ticker",
+            "tax code",
+            "sic code",
+            "business description",
+            "province",
+            "comparable"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "7 schema signals over 132 structured records."
+        },
+        {
+          "role": "IQR_RESULTS",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "35th percentile",
+            "75th percentile"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "2 content signal(s) over 132 record(s)."
+        },
+        {
+          "role": "SCREENING_RESULTS",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "screening criteria",
+            "rejected",
+            "step"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "3 schema signals over 132 structured records."
+        },
+        {
+          "role": "BENCHMARKING_DATA",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "tp catalyst",
+            "bureau van dijk",
+            "benchmark"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "3 schema signals over 132 structured records."
+        },
+        {
+          "role": "FAR",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "functions performed",
+            "assets used",
+            "risks assumed",
+            "functions/assets/risks",
+            "characterization"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "5 schema signals over 132 structured records."
+        },
+        {
+          "role": "GROUP_NARRATIVE",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "ultimate parent",
+            "the group",
+            "master file"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "3 schema signals over 132 structured records."
+        },
+        {
+          "role": "BUSINESS_NARRATIVE",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "business strategy",
+            "business restructuring"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "2 content signal(s) over 132 record(s)."
+        },
+        {
+          "role": "CONTRACTUAL_DATA",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "agreement",
+            "the parties",
+            "clause"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "3 schema signals over 132 structured records."
+        },
+        {
+          "role": "OWNERSHIP_STRUCTURE",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "shareholder",
+            "parent company"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "2 content signal(s) over 132 record(s)."
+        },
+        {
+          "role": "TAXPAYER_PROFILE",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "tax code",
+            "fiscal year"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "2 content signal(s) over 132 record(s)."
+        },
+        {
+          "role": "RPT",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "related party",
+            "intercompany",
+            "intra-group",
+            "amount (vnd)",
+            "type of relationship",
+            "transaction value"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "6 schema signals over 132 structured records."
+        },
+        {
+          "role": "INTEREST_EXPENSE",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "interest rate",
+            "principal",
+            "maturity date",
+            "loan"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "4 schema signals over 132 structured records."
+        },
+        {
+          "role": "FINANCIAL_STATEMENTS",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "net sales",
+            "revenue",
+            "cost of goods sold",
+            "gross profit"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "4 schema signals over 132 structured records."
+        },
+        {
+          "role": "FINANCIAL_ANALYSIS",
+          "quality": "VERIFIED",
+          "matched_tokens": [
+            "net cost plus",
+            "operating margin",
+            "return on assets",
+            "profit level indicator",
+            "ebit",
+            "margin"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "6 schema signals over 132 structured records."
+        },
+        {
+          "role": "SEGMENTED_DATA",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "segment",
+            "segmented"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "2 content signal(s) over 132 record(s)."
+        },
+        {
+          "role": "APPENDIX_DISCLOSURE",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "appendix",
+            "point of reference"
+          ],
+          "record_count": 132,
+          "locations": [
+            "16 table(s)",
+            "269 paragraph(s)"
+          ],
+          "rationale": "2 content signal(s) over 132 record(s)."
+        }
+      ],
+      "created_at": "2026-08-23T07:01:04.595892+00:00",
+      "status": "PROFILED",
+      "can_supply_current_year_roles": false,
+      "profile_summary": {
+        "kind": "document",
+        "paragraphs": 269,
+        "tables": 16,
+        "table_rows": 132,
+        "has_structured_tables": true
+      },
+      "notes": ""
+    },
+    {
+      "artifact_id": "src-9574dcc037af",
+      "filename": "HMV-FA&RPT FY2024.xlsx",
+      "file_hash": "9574dcc037af9ff708ae31e7c67586d6baa37a584e8fa602e1409c36fb6358f2",
+      "file_size": 404891,
+      "format": "XLSX",
+      "source_scope": "CURRENT_FINANCIAL",
+      "dataset_roles": [
+        "RPT",
+        "FINANCIAL_ANALYSIS",
+        "FINANCIAL_STATEMENTS",
+        "INTEREST_EXPENSE",
+        "APPENDIX_DISCLOSURE"
+      ],
+      "role_evidence": [
+        {
+          "role": "RPT",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "related party",
+            "type of relationship"
+          ],
+          "record_count": 8,
+          "locations": [
+            "I. Related parties",
+            "RPTs",
+            "III. Summary-RPTs"
+          ],
+          "rationale": "2 content signal(s) over 8 record(s)."
+        },
+        {
+          "role": "FINANCIAL_ANALYSIS",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "net cost plus",
+            "operating margin",
+            "ebit",
+            "ratio",
+            "margin"
+          ],
+          "record_count": 45,
+          "locations": [
+            "FS"
+          ],
+          "rationale": "content profiler credited FINANCIAL_ANALYSIS on this sheet."
+        },
+        {
+          "role": "FINANCIAL_STATEMENTS",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "net sales",
+            "revenue",
+            "cost of goods sold",
+            "gross profit"
+          ],
+          "record_count": 45,
+          "locations": [
+            "FS"
+          ],
+          "rationale": "content profiler credited FINANCIAL_STATEMENTS on this sheet."
+        },
+        {
+          "role": "INTEREST_EXPENSE",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "interest",
+            "loan"
+          ],
+          "record_count": 45,
+          "locations": [
+            "FS"
+          ],
+          "rationale": "content profiler credited INTEREST_EXPENSE on this sheet."
+        },
+        {
+          "role": "APPENDIX_DISCLOSURE",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "appendix",
+            "disclosure"
+          ],
+          "record_count": 37,
+          "locations": [
+            "III. Summary-RPTs"
+          ],
+          "rationale": "2 content signal(s) over 37 record(s)."
+        }
+      ],
+      "created_at": "2026-08-23T07:01:04.718157+00:00",
+      "status": "PROFILED",
+      "can_supply_current_year_roles": true,
+      "profile_summary": {
+        "kind": "workbook",
+        "sheets": 5,
+        "sheet_names": [
+          "I. Related parties",
+          "FS",
+          "RPTs",
+          "Financial Analysis",
+          "III. Summary-RPTs"
+        ],
+        "total_records": 153,
+        "formula_cells": 168
+      },
+      "notes": ""
+    },
+    {
+      "artifact_id": "src-80e0b0deb594",
+      "filename": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "file_hash": "80e0b0deb594aef403e58bd3db836cd9e6172167bb8ed8ef8153951dccbde3e3",
+      "file_size": 3004377,
+      "format": "XLSX",
+      "source_scope": "CURRENT_TAX",
+      "dataset_roles": [
+        "RPT",
+        "APPENDIX_DISCLOSURE",
+        "SEGMENTED_DATA",
+        "INTEREST_EXPENSE",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "FIXED_ASSETS"
+      ],
+      "role_evidence": [
+        {
+          "role": "RPT",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "related party",
+            "transaction",
+            "rpt"
+          ],
+          "record_count": 68,
+          "locations": [
+            "Checklist",
+            "I. Related parties",
+            "III. Summary-RPTs"
+          ],
+          "rationale": "content profiler credited RPT_DATA on this sheet."
+        },
+        {
+          "role": "APPENDIX_DISCLOSURE",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "code",
+            "description"
+          ],
+          "record_count": 68,
+          "locations": [
+            "Checklist",
+            "III. Summary-RPTs",
+            "Types of relationship"
+          ],
+          "rationale": "content profiler credited REFERENCE_LIST on this sheet."
+        },
+        {
+          "role": "SEGMENTED_DATA",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "segment",
+            "segmented"
+          ],
+          "record_count": 68,
+          "locations": [
+            "Checklist",
+            "Interest expenses",
+            "IV. Segmented data_banking",
+            "IV. Segmented data_securities"
+          ],
+          "rationale": "content profiler credited SEGMENTED_DATA on this sheet."
+        },
+        {
+          "role": "INTEREST_EXPENSE",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "interest",
+            "loan"
+          ],
+          "record_count": 37,
+          "locations": [
+            "III. Summary-RPTs"
+          ],
+          "rationale": "content profiler credited INTEREST_EXPENSE on this sheet."
+        },
+        {
+          "role": "FINANCIAL_STATEMENTS",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "revenue",
+            "cost of goods sold"
+          ],
+          "record_count": 28,
+          "locations": [
+            "IV. Segmented data"
+          ],
+          "rationale": "content profiler credited FINANCIAL_STATEMENTS on this sheet."
+        },
+        {
+          "role": "FINANCIAL_ANALYSIS",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "net cost plus",
+            "operating margin",
+            "ebit",
+            "ratio",
+            "margin"
+          ],
+          "record_count": 45,
+          "locations": [
+            "FS"
+          ],
+          "rationale": "content profiler credited FINANCIAL_ANALYSIS on this sheet."
+        },
+        {
+          "role": "FIXED_ASSETS",
+          "quality": "STRONGLY_SUPPORTED",
+          "matched_tokens": [
+            "fixed asset",
+            "depreciation"
+          ],
+          "record_count": 46,
+          "locations": [
+            "CF"
+          ],
+          "rationale": "content profiler credited FIXED_ASSETS on this sheet."
+        }
+      ],
+      "created_at": "2026-08-23T07:01:05.444303+00:00",
+      "status": "PROFILED",
+      "can_supply_current_year_roles": true,
+      "profile_summary": {
+        "kind": "workbook",
+        "sheets": 18,
+        "sheet_names": [
+          "Checklist",
+          "Full Appendix I",
+          "I. Related parties",
+          "Country list",
+          "III. Summary-RPTs",
+          "IV. Segmented data",
+          "FS",
+          "Interest expenses",
+          "Types of relationship",
+          "Transfer pricing method",
+          "Note FS",
+          "P&L",
+          "CF",
+          "Exchange rate calculation",
+          "TỶ giá ngày TCB",
+          "Lãi vay vốn hóa - PBC",
+          "IV. Segmented data_banking",
+          "IV. Segmented data_securities"
+        ],
+        "total_records": 1697,
+        "formula_cells": 3334
+      },
+      "notes": ""
+    }
+  ],
+  "history": [
+    {
+      "version": 2,
+      "action": "ADD_ARTIFACT",
+      "artifact_id": "src-8b51f941e106",
+      "filename": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+      "file_hash": "8b51f941e1068c97385fecbd49808e1dc356601e4e3eb8f9c2d0d7c39fb290c5",
+      "dataset_roles": [
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS",
+        "INDEPENDENCE_CODES",
+        "BENCHMARKING_DATA",
+        "FAR",
+        "GROUP_NARRATIVE",
+        "BUSINESS_NARRATIVE",
+        "CONTRACTUAL_DATA",
+        "ORGANIZATIONAL_DATA",
+        "OWNERSHIP_STRUCTURE",
+        "TAX_SCHEDULE",
+        "RPT",
+        "INTEREST_EXPENSE",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "APPENDIX_DISCLOSURE",
+        "FIGURE_SOURCE"
+      ],
+      "at": "2026-08-23T07:01:04.587806+00:00"
+    },
+    {
+      "version": 3,
+      "action": "ADD_ARTIFACT",
+      "artifact_id": "src-5fdf55e4e600",
+      "filename": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+      "file_hash": "5fdf55e4e6007a164908af84bf8c001c767bf46f66c5be6e6cfd7afe1222f47c",
+      "dataset_roles": [
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS",
+        "BENCHMARKING_DATA",
+        "FAR",
+        "GROUP_NARRATIVE",
+        "BUSINESS_NARRATIVE",
+        "CONTRACTUAL_DATA",
+        "OWNERSHIP_STRUCTURE",
+        "TAXPAYER_PROFILE",
+        "RPT",
+        "INTEREST_EXPENSE",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "SEGMENTED_DATA",
+        "APPENDIX_DISCLOSURE"
+      ],
+      "at": "2026-08-23T07:01:04.712484+00:00"
+    },
+    {
+      "version": 4,
+      "action": "ADD_ARTIFACT",
+      "artifact_id": "src-9574dcc037af",
+      "filename": "HMV-FA&RPT FY2024.xlsx",
+      "file_hash": "9574dcc037af9ff708ae31e7c67586d6baa37a584e8fa602e1409c36fb6358f2",
+      "dataset_roles": [
+        "RPT",
+        "FINANCIAL_ANALYSIS",
+        "FINANCIAL_STATEMENTS",
+        "INTEREST_EXPENSE",
+        "APPENDIX_DISCLOSURE"
+      ],
+      "at": "2026-08-23T07:01:05.435072+00:00"
+    },
+    {
+      "version": 5,
+      "action": "ADD_ARTIFACT",
+      "artifact_id": "src-80e0b0deb594",
+      "filename": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "file_hash": "80e0b0deb594aef403e58bd3db836cd9e6172167bb8ed8ef8153951dccbde3e3",
+      "dataset_roles": [
+        "RPT",
+        "APPENDIX_DISCLOSURE",
+        "SEGMENTED_DATA",
+        "INTEREST_EXPENSE",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "FIXED_ASSETS"
+      ],
+      "at": "2026-08-23T07:01:06.740745+00:00"
+    }
+  ],
+  "canonical_region_model": {
+    "counts": {
+      "DOCUMENT": 1,
+      "SECTION": 78,
+      "REGION": 94,
+      "SUBREGION": 54,
+      "ELEMENT": 848
+    },
+    "is_exact_partition": true,
+    "reconciliation": {
+      "question": "Is 61 the count of semantic Sections and 81 the count of executable Regions?",
+      "answer": "NO. Neither figure is correct, and they are not two layers of one hierarchy.",
+      "canonical_counts": {
+        "DOCUMENT": 1,
+        "SECTION": 78,
+        "REGION": 94,
+        "SUBREGION": 54,
+        "ELEMENT": 848
+      },
+      "canonical_rule": {
+        "section_opens_on": "Heading 1-4, Title, Subtitle, Appendix Heading 1-3",
+        "never_opens_on": "toc 1 / toc 2 (table-of-contents lines)",
+        "region_rule": "one narrative-body region per section, plus one region per contained table",
+        "subregion_rule": "tables and figures",
+        "element_rule": "Foundation perception blocks"
+      },
+      "heading_style_histogram": {
+        "Heading 1": 11,
+        "Heading 2": 20,
+        "Heading 3": 24,
+        "Heading 4": 5,
+        "Appendix Heading": 6,
+        "Appendix Heading 2": 8,
+        "Appendix Heading 3": 3
+      },
+      "main_outline_headings": 60,
+      "appendix_headings": 17,
+      "toc_paragraphs_excluded": 38,
+      "claims": [
+        {
+          "value": 61,
+          "claimed_by": "Phase E source-completeness audit",
+          "produced_by": "heading-delimited segmentation over Heading 1-4 / Title / Subtitle",
+          "verdict": "UNDERCOUNT — correct method, incomplete style set",
+          "explanation": "It matched the 60 main-outline headings but not the 17 `Appendix Heading` / `Appendix Heading 2` / `Appendix Heading 3` paragraphs, which are real headings in this template. 60 + 1 preamble = 61."
+        },
+        {
+          "value": 81,
+          "claimed_by": "Phase B template profile report (markdown prose)",
+          "produced_by": "nothing — no code path produces 81",
+          "verdict": "UNSUPPORTED — contradicted by its own run's JSON",
+          "explanation": "The same profiling run wrote 104 into `LocalFile_RollForward_Template_Profile_2026-08-21.json` (`statistics.total_regions`). The figure 81 appears only in the report prose, in a document already marked INVALIDATED_FOR_PLANNING_CONTAMINATION."
+        },
+        {
+          "value": 104,
+          "claimed_by": "Phase B/C manifest and template profile JSON",
+          "produced_by": "TemplateRegionSegmenter element-block segmentation",
+          "verdict": "OVERCOUNT — table-of-contents lines counted as sections",
+          "explanation": "Its heading test accepted `toc 1` / `toc 2` paragraphs such as 'PART A. TAXPAYER INFORMATION<tab>4', which are contents entries carrying a page number. This template holds 38 such paragraphs. It also emitted several regions per section."
+        }
+      ],
+      "is_exact_partition": true,
+      "note": "No region was renamed or merged. The historical counts are recorded above with the code that produced them; the canonical model is stated separately."
+    }
+  }
+}

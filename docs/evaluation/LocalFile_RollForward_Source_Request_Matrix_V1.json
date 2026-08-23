@@ -1,0 +1,595 @@
+{
+  "total_requests": 7,
+  "status_counts": {
+    "OUTSTANDING": 7
+  },
+  "blocking_outstanding": 7,
+  "requests": [
+    {
+      "artifact_request_id": "REQ-001",
+      "artifact_type": "MANAGEMENT_INFORMATION",
+      "title": "Management information / client questionnaire — FUNCTIONAL_ANALYSIS",
+      "affected_regions": [
+        "rgn-028",
+        "rgn-029",
+        "rgn-030",
+        "rgn-031",
+        "rgn-032",
+        "rgn-033",
+        "rgn-034",
+        "rgn-035",
+        "rgn-036",
+        "rgn-037",
+        "rgn-038",
+        "rgn-039",
+        "rgn-040",
+        "rgn-041",
+        "rgn-042"
+      ],
+      "required_dataset_roles": [
+        "FAR",
+        "BUSINESS_NARRATIVE"
+      ],
+      "required_fields": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "priority": "BLOCKING",
+      "blocking": true,
+      "current_status": "OUTSTANDING",
+      "satisfied_by": [],
+      "missing_dataset_roles": [
+        "FAR",
+        "BUSINESS_NARRATIVE"
+      ],
+      "minimum_evidence_quality": "STRONGLY_SUPPORTED"
+    },
+    {
+      "artifact_request_id": "REQ-002",
+      "artifact_type": "BENCHMARKING_REPORT",
+      "title": "Benchmarking / comparable-company dataset — BENCHMARKING",
+      "affected_regions": [
+        "rgn-046",
+        "rgn-051",
+        "rgn-052",
+        "rgn-055",
+        "rgn-061"
+      ],
+      "required_dataset_roles": [
+        "COMPARABLE_COMPANIES",
+        "SCREENING_RESULTS",
+        "IQR_RESULTS",
+        "INDEPENDENCE_CODES"
+      ],
+      "required_fields": [
+        "comparable company set",
+        "screening criteria",
+        "independence codes",
+        "accepted/rejected comparables",
+        "PLI values",
+        "quartile / IQR results"
+      ],
+      "priority": "BLOCKING",
+      "blocking": true,
+      "current_status": "OUTSTANDING",
+      "satisfied_by": [],
+      "missing_dataset_roles": [
+        "COMPARABLE_COMPANIES",
+        "SCREENING_RESULTS",
+        "IQR_RESULTS",
+        "INDEPENDENCE_CODES"
+      ],
+      "minimum_evidence_quality": "STRONGLY_SUPPORTED"
+    },
+    {
+      "artifact_request_id": "REQ-003",
+      "artifact_type": "MANAGEMENT_INFORMATION",
+      "title": "Management information / client questionnaire — BUSINESS_NARRATIVE",
+      "affected_regions": [
+        "rgn-008",
+        "rgn-009",
+        "rgn-011",
+        "rgn-043"
+      ],
+      "required_dataset_roles": [
+        "FAR",
+        "BUSINESS_NARRATIVE"
+      ],
+      "required_fields": [
+        "current-year business facts",
+        "strategy statement",
+        "restructuring events"
+      ],
+      "priority": "BLOCKING",
+      "blocking": true,
+      "current_status": "OUTSTANDING",
+      "satisfied_by": [],
+      "missing_dataset_roles": [
+        "FAR",
+        "BUSINESS_NARRATIVE"
+      ],
+      "minimum_evidence_quality": "STRONGLY_SUPPORTED"
+    },
+    {
+      "artifact_request_id": "REQ-004",
+      "artifact_type": "NARRATIVE_DOCUMENT",
+      "title": "Current-year group narrative document — GROUP_PROFILE",
+      "affected_regions": [
+        "rgn-007",
+        "rgn-012"
+      ],
+      "required_dataset_roles": [
+        "GROUP_NARRATIVE"
+      ],
+      "required_fields": [
+        "group structure",
+        "ultimate parent",
+        "group activities"
+      ],
+      "priority": "BLOCKING",
+      "blocking": true,
+      "current_status": "OUTSTANDING",
+      "satisfied_by": [],
+      "missing_dataset_roles": [
+        "GROUP_NARRATIVE"
+      ],
+      "minimum_evidence_quality": "STRONGLY_SUPPORTED"
+    },
+    {
+      "artifact_request_id": "REQ-005",
+      "artifact_type": "CONTRACTUAL_DOCUMENT",
+      "title": "Executed intercompany agreements — INTERCOMPANY_AGREEMENTS",
+      "affected_regions": [
+        "rgn-027"
+      ],
+      "required_dataset_roles": [
+        "CONTRACTUAL_DATA"
+      ],
+      "required_fields": [
+        "agreement inventory",
+        "counterparties",
+        "effective dates",
+        "pricing terms"
+      ],
+      "priority": "BLOCKING",
+      "blocking": true,
+      "current_status": "OUTSTANDING",
+      "satisfied_by": [],
+      "missing_dataset_roles": [
+        "CONTRACTUAL_DATA"
+      ],
+      "minimum_evidence_quality": "STRONGLY_SUPPORTED"
+    },
+    {
+      "artifact_request_id": "REQ-006",
+      "artifact_type": "MANAGEMENT_INFORMATION",
+      "title": "Management information / client questionnaire — COMPETITOR_ANALYSIS",
+      "affected_regions": [
+        "rgn-013"
+      ],
+      "required_dataset_roles": [
+        "FAR",
+        "BUSINESS_NARRATIVE"
+      ],
+      "required_fields": [
+        "competitor identities",
+        "market position",
+        "product overlap"
+      ],
+      "priority": "BLOCKING",
+      "blocking": true,
+      "current_status": "OUTSTANDING",
+      "satisfied_by": [],
+      "missing_dataset_roles": [
+        "FAR",
+        "BUSINESS_NARRATIVE"
+      ],
+      "minimum_evidence_quality": "STRONGLY_SUPPORTED"
+    },
+    {
+      "artifact_request_id": "REQ-007",
+      "artifact_type": "ORGANIZATION_CHART",
+      "title": "Current-year organisation / ownership chart — ORGANIZATION",
+      "affected_regions": [
+        "rgn-010"
+      ],
+      "required_dataset_roles": [
+        "ORGANIZATIONAL_DATA"
+      ],
+      "required_fields": [
+        "current organisation chart",
+        "reporting lines",
+        "headcount"
+      ],
+      "priority": "BLOCKING",
+      "blocking": true,
+      "current_status": "OUTSTANDING",
+      "satisfied_by": [],
+      "missing_dataset_roles": [
+        "ORGANIZATIONAL_DATA"
+      ],
+      "minimum_evidence_quality": "STRONGLY_SUPPORTED"
+    }
+  ],
+  "role_alias_phase_e_to_phase_f": {
+    "RELATED_PARTY_TRANSACTIONS": [
+      "RPT"
+    ],
+    "NARRATIVE_DATA": [
+      "FAR",
+      "BUSINESS_NARRATIVE"
+    ],
+    "ORGANIZATIONAL_DATA": [
+      "ORGANIZATIONAL_DATA"
+    ],
+    "CONTRACTUAL_DATA": [
+      "CONTRACTUAL_DATA"
+    ],
+    "OWNERSHIP_STRUCTURE": [
+      "OWNERSHIP_STRUCTURE",
+      "GROUP_NARRATIVE"
+    ],
+    "STATUTORY_TEXT": [],
+    "BENCHMARKING_DATA": [
+      "BENCHMARKING_DATA"
+    ],
+    "COMPARABLE_COMPANIES": [
+      "COMPARABLE_COMPANIES"
+    ],
+    "IQR_RESULTS": [
+      "IQR_RESULTS"
+    ],
+    "SCREENING_RESULTS": [
+      "SCREENING_RESULTS"
+    ],
+    "FINANCIAL_STATEMENTS": [
+      "FINANCIAL_STATEMENTS"
+    ],
+    "FINANCIAL_ANALYSIS": [
+      "FINANCIAL_ANALYSIS"
+    ],
+    "TAXPAYER_PROFILE": [
+      "TAXPAYER_PROFILE"
+    ],
+    "APPENDIX_DISCLOSURE": [
+      "APPENDIX_DISCLOSURE"
+    ],
+    "INTEREST_EXPENSE": [
+      "INTEREST_EXPENSE"
+    ]
+  },
+  "rebinding_dry_runs": [
+    {
+      "scenario": "benchmarking dataset arrives",
+      "hypothetical_roles": [
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "INDEPENDENCE_CODES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS"
+      ],
+      "is_dry_run": true,
+      "artifact_created": false,
+      "regions_that_would_unblock": 5,
+      "transitions": [
+        {
+          "region_id": "rgn-046",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "BENCHMARKING_DATA",
+            "COMPARABLE_COMPANIES",
+            "IQR_RESULTS",
+            "SCREENING_RESULTS"
+          ]
+        },
+        {
+          "region_id": "rgn-051",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "BENCHMARKING_DATA",
+            "COMPARABLE_COMPANIES",
+            "IQR_RESULTS",
+            "SCREENING_RESULTS"
+          ]
+        },
+        {
+          "region_id": "rgn-052",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "BENCHMARKING_DATA",
+            "COMPARABLE_COMPANIES",
+            "IQR_RESULTS",
+            "SCREENING_RESULTS"
+          ]
+        },
+        {
+          "region_id": "rgn-055",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "BENCHMARKING_DATA",
+            "COMPARABLE_COMPANIES",
+            "IQR_RESULTS",
+            "SCREENING_RESULTS"
+          ]
+        },
+        {
+          "region_id": "rgn-061",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "BENCHMARKING_DATA",
+            "COMPARABLE_COMPANIES",
+            "IQR_RESULTS",
+            "SCREENING_RESULTS"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "management information (FAR + business narrative) arrives",
+      "hypothetical_roles": [
+        "BUSINESS_NARRATIVE",
+        "FAR"
+      ],
+      "is_dry_run": true,
+      "artifact_created": false,
+      "regions_that_would_unblock": 20,
+      "transitions": [
+        {
+          "region_id": "rgn-008",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-009",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-011",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-013",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-028",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-029",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-030",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-031",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-032",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-033",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-034",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-035",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-036",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-037",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-038",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-039",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-040",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-041",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-042",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        },
+        {
+          "region_id": "rgn-043",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['NARRATIVE_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "NARRATIVE_DATA"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "organisation chart arrives",
+      "hypothetical_roles": [
+        "ORGANIZATIONAL_DATA"
+      ],
+      "is_dry_run": true,
+      "artifact_created": false,
+      "regions_that_would_unblock": 1,
+      "transitions": [
+        {
+          "region_id": "rgn-010",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['ORGANIZATIONAL_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "ORGANIZATIONAL_DATA"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "intercompany agreements arrive",
+      "hypothetical_roles": [
+        "CONTRACTUAL_DATA"
+      ],
+      "is_dry_run": true,
+      "artifact_created": false,
+      "regions_that_would_unblock": 1,
+      "transitions": [
+        {
+          "region_id": "rgn-027",
+          "previous": "BLOCKED_MISSING_SOURCE",
+          "recalculated": "HUMAN_REVIEW_READY",
+          "reason": "Evidence supplies every required role ['CONTRACTUAL_DATA']. The region becomes eligible for human review; it is NOT approved and NOT executable.",
+          "newly_available_roles": [
+            "CONTRACTUAL_DATA"
+          ]
+        }
+      ]
+    },
+    {
+      "scenario": "group narrative arrives",
+      "hypothetical_roles": [
+        "GROUP_NARRATIVE",
+        "OWNERSHIP_STRUCTURE"
+      ],
+      "is_dry_run": true,
+      "artifact_created": false,
+      "regions_that_would_unblock": 0,
+      "transitions": []
+    }
+  ],
+  "governance": {
+    "execution_authorized": false,
+    "requires_human_approval": true,
+    "statement": "Recalculated readiness changes what a human MAY review. It does not approve anything, does not transition any manifest to APPROVED or EXECUTING, and triggers no mutation. Human approval remains the only execution authorization.",
+    "forbidden_outputs": [
+      "APPROVED",
+      "EXECUTING",
+      "AUTO_MUTATION_READY",
+      "COMPLETED",
+      "FINAL_VALIDATED"
+    ]
+  }
+}
