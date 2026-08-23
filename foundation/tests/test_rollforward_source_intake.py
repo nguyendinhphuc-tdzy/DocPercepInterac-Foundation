@@ -278,9 +278,13 @@ def test_narrative_source_detection(tmp_path):
     a = SourceIntakeProfiler.ingest(p, SourceScope.ADDITIONAL)
     assert a.format == ArtifactFormat.DOCX
     assert a.supplies(DatasetRole.FAR)
-    # Prose is not a structured dataset, so a structured role cannot be VERIFIED here.
-    assert a.quality_for(DatasetRole.FAR) in (
-        EvidenceQuality.STRONGLY_SUPPORTED, EvidenceQuality.INFERRED)
+    # Phase F.1: FAR is declared NARRATIVE/ANY-shaped by the canonical policy,
+    # because functional-analysis evidence legitimately arrives as prose. This
+    # fixture is a purpose-written management-information document carrying all
+    # three mandatory fields plus the FAR discriminator, so VERIFIED is correct.
+    # Structured roles still cannot be verified from prose -- see
+    # test_unstructured_prose_cannot_verify_a_structured_role.
+    assert a.quality_for(DatasetRole.FAR) == EvidenceQuality.VERIFIED
 
 
 def test_unstructured_prose_cannot_verify_a_structured_role(tmp_path):
@@ -335,7 +339,7 @@ def test_package_capability_excludes_non_supplying_scopes(real_package):
             f"{role.value} became available; the only artifacts mentioning it are the prior-year "
             f"Local File and the template, which are not current-year sources")
     # What the real current sources genuinely do supply.
-    assert DatasetRole.RPT.value in available
+    assert DatasetRole.RELATED_PARTY_TRANSACTIONS.value in available
     assert DatasetRole.FINANCIAL_STATEMENTS.value in available
 
 
@@ -441,7 +445,8 @@ REGIONS = [
      "required_source_roles": ["COMPARABLE_COMPANIES", "IQR_RESULTS"]},
     {"region_id": "r2", "readiness": "BLOCKED_MISSING_SOURCE",
      "required_source_roles": ["COMPARABLE_COMPANIES", "CONTRACTUAL_DATA"]},
-    {"region_id": "r3", "readiness": "HUMAN_REVIEW_READY", "required_source_roles": ["RPT"]},
+    {"region_id": "r3", "readiness": "HUMAN_REVIEW_READY",
+     "required_source_roles": ["RELATED_PARTY_TRANSACTIONS"]},
     {"region_id": "r4", "readiness": "NOT_APPLICABLE", "required_source_roles": []},
 ]
 
@@ -489,7 +494,8 @@ def test_any_of_role_alias_is_honoured():
     alias = {"NARRATIVE_DATA": ("FAR", "BUSINESS_NARRATIVE")}
     t_far, _ = ReadinessRecalculator.simulate(regions, {"FAR"}, role_alias=alias)
     t_bus, _ = ReadinessRecalculator.simulate(regions, {"BUSINESS_NARRATIVE"}, role_alias=alias)
-    t_none, _ = ReadinessRecalculator.simulate(regions, {"RPT"}, role_alias=alias)
+    t_none, _ = ReadinessRecalculator.simulate(
+        regions, {"RELATED_PARTY_TRANSACTIONS"}, role_alias=alias)
     assert len(t_far) == 1 and len(t_bus) == 1 and len(t_none) == 0
 
 

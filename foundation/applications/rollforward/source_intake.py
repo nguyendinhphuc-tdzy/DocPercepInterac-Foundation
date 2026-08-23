@@ -41,12 +41,25 @@ from pathlib import Path
 import re
 from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
 
-from applications.rollforward.source_capability import (
-    DatasetRole as C2DatasetRole,
-    SheetDatasetProfile,
-    SourceCapabilityProfiler,
-    WorkbookCapabilityProfile,
+from applications.rollforward.evidence_policy import (
+    CURRENT_YEAR_SCOPES,
+    BASELINE_SCOPES,
+    FORBIDDEN_SCOPES,
+    CorpusBuilder,
+    DatasetRole,
+    EvidenceCorpus,
+    EvidencePolicyEngine,
+    EvidenceStatus,
+    RoleSupport,
+    RoleVerdict,
+    SupplyScope,
 )
+
+# Phase F.1: these are ALIASES of the canonical policy vocabulary, not separate
+# definitions. Role determination happens in exactly one place --
+# `EvidencePolicyEngine` -- and this module consumes its verdicts.
+SourceScope = SupplyScope
+EvidenceQuality = EvidenceStatus
 
 
 # ============================================================================
@@ -59,50 +72,6 @@ class ArtifactFormat(str, Enum):
     PDF = "PDF"
     CSV = "CSV"
     UNSUPPORTED = "UNSUPPORTED"
-
-
-class SourceScope(str, Enum):
-    """What period / role in the workflow an artifact plays."""
-    HISTORICAL = "HISTORICAL"                # prior-year Local File
-    TEMPLATE = "TEMPLATE"                    # master template
-    CURRENT_FINANCIAL = "CURRENT_FINANCIAL"  # FA&RPT-type workbook
-    CURRENT_TAX = "CURRENT_TAX"              # Appendix / statutory workbook
-    ADDITIONAL = "ADDITIONAL"                # newly uploaded supporting artifact
-    EVALUATION_ONLY = "EVALUATION_ONLY"      # Ground Truth — never a source
-
-
-class DatasetRole(str, Enum):
-    """Dataset roles an artifact may supply. Always content-derived."""
-    FINANCIAL_STATEMENTS = "FINANCIAL_STATEMENTS"
-    FINANCIAL_ANALYSIS = "FINANCIAL_ANALYSIS"
-    RPT = "RPT"
-    TAX_SCHEDULE = "TAX_SCHEDULE"
-    FIXED_ASSETS = "FIXED_ASSETS"
-    INTEREST_EXPENSE = "INTEREST_EXPENSE"
-    SEGMENTED_DATA = "SEGMENTED_DATA"
-    APPENDIX_DISCLOSURE = "APPENDIX_DISCLOSURE"
-    BENCHMARKING_DATA = "BENCHMARKING_DATA"
-    COMPARABLE_COMPANIES = "COMPARABLE_COMPANIES"
-    IQR_RESULTS = "IQR_RESULTS"
-    SCREENING_RESULTS = "SCREENING_RESULTS"
-    INDEPENDENCE_CODES = "INDEPENDENCE_CODES"
-    FAR = "FAR"
-    BUSINESS_NARRATIVE = "BUSINESS_NARRATIVE"
-    GROUP_NARRATIVE = "GROUP_NARRATIVE"
-    CONTRACTUAL_DATA = "CONTRACTUAL_DATA"
-    ORGANIZATIONAL_DATA = "ORGANIZATIONAL_DATA"
-    TAXPAYER_PROFILE = "TAXPAYER_PROFILE"
-    OWNERSHIP_STRUCTURE = "OWNERSHIP_STRUCTURE"
-    FIGURE_SOURCE = "FIGURE_SOURCE"
-    UNKNOWN = "UNKNOWN"
-
-
-class EvidenceQuality(str, Enum):
-    """How strongly the artifact's content supports a claimed role."""
-    VERIFIED = "VERIFIED"                    # structured records with the expected schema
-    STRONGLY_SUPPORTED = "STRONGLY_SUPPORTED"
-    INFERRED = "INFERRED"
-    UNKNOWN = "UNKNOWN"
 
 
 class ArtifactStatus(str, Enum):
@@ -137,32 +106,13 @@ EXTENSION_FORMAT = {
     ".docx": ArtifactFormat.DOCX, ".pdf": ArtifactFormat.PDF, ".csv": ArtifactFormat.CSV,
 }
 
-# Only these scopes may SUPPLY a current-year dataset role.
-#
-# A prior-year Local File and the master template are Local File *documents*:
-# they discuss comparables, quartiles, functions and risks at length, so naive
-# content matching credits them with every role in the taxonomy. They are the
-# workflow's structural and baseline inputs, never its current-year data
-# sources. Treating a prior-year output as a current-year source is exactly the
-# contamination Phase D3.1 found; this makes it structurally impossible.
-SUPPLYING_SCOPES = {
-    SourceScope.CURRENT_FINANCIAL,
-    SourceScope.CURRENT_TAX,
-    SourceScope.ADDITIONAL,
-}
+# Scope authority is defined once, in evidence_policy.SupplyScope. These names
+# are re-exported so existing callers keep working.
+SUPPLYING_SCOPES = set(CURRENT_YEAR_SCOPES)
+NON_SUPPLYING_SCOPES = set(BASELINE_SCOPES | FORBIDDEN_SCOPES)
 
-NON_SUPPLYING_SCOPES = {
-    SourceScope.HISTORICAL,
-    SourceScope.TEMPLATE,
-    SourceScope.EVALUATION_ONLY,
-}
-
-# Roles that only a genuine structured dataset can satisfy.
-STRUCTURED_ROLES = {
-    DatasetRole.COMPARABLE_COMPANIES, DatasetRole.IQR_RESULTS,
-    DatasetRole.SCREENING_RESULTS, DatasetRole.INDEPENDENCE_CODES,
-    DatasetRole.FINANCIAL_STATEMENTS, DatasetRole.RPT, DatasetRole.FIXED_ASSETS,
-}
+# STRUCTURED_ROLES has been removed: the required shape of each role's evidence
+# is declared by `DatasetRolePolicy.required_schema` in evidence_policy.py.
 
 
 class SourceIntakeError(RuntimeError):
@@ -173,82 +123,10 @@ class SourceIntakeError(RuntimeError):
 # 2. CONTENT-DERIVED ROLE DETECTION
 # ============================================================================
 
-# Signals matched against CONTENT ONLY (headers, label columns, body text).
-# The filename is never part of the haystack.
-_ROLE_SIGNALS: Tuple[Tuple[DatasetRole, int, Tuple[str, ...]], ...] = (
-    (DatasetRole.COMPARABLE_COMPANIES, 3,
-     ("company name", "ticker", "tax code", "sic code", "naics", "business description",
-      "province", "stock code", "comparable", "country of incorporation")),
-    (DatasetRole.IQR_RESULTS, 2,
-     ("quartile", "25th percentile", "35th percentile", "75th percentile", "median",
-      "interquartile", "lower quartile", "upper quartile", "arm's length range")),
-    (DatasetRole.SCREENING_RESULTS, 2,
-     ("screening criteria", "eliminated", "retained", "reason for rejection", "rejected",
-      "search criteria", "passed", "search strategy", "step")),
-    (DatasetRole.INDEPENDENCE_CODES, 2,
-     ("independence indicator", "bvd independence", "shareholder with more than",
-      "independence code", "no shareholder")),
-    (DatasetRole.BENCHMARKING_DATA, 2,
-     ("tp catalyst", "orbis", "bureau van dijk", "benchmark", "comparable set", "peer set")),
-    (DatasetRole.FAR, 2,
-     ("functions performed", "assets used", "risks assumed", "functional analysis",
-      "functions/assets/risks", "characterisation", "characterization")),
-    (DatasetRole.GROUP_NARRATIVE, 2,
-     ("group structure", "ultimate parent", "the group", "group overview", "master file")),
-    (DatasetRole.BUSINESS_NARRATIVE, 2,
-     ("business strategy", "business overview", "principal activity", "operations overview",
-      "business restructuring", "market conditions")),
-    (DatasetRole.CONTRACTUAL_DATA, 2,
-     ("agreement", "this agreement", "effective date", "the parties", "term of the agreement",
-      "signed", "clause")),
-    (DatasetRole.ORGANIZATIONAL_DATA, 2,
-     ("organisation chart", "organization chart", "reporting line", "headcount",
-      "department", "general director", "reports to")),
-    (DatasetRole.OWNERSHIP_STRUCTURE, 2,
-     ("shareholder", "ownership", "% of ownership", "holding company", "parent company")),
-    (DatasetRole.TAXPAYER_PROFILE, 2,
-     ("tax code", "enterprise code", "registered address", "fiscal year", "principal activity")),
-    (DatasetRole.TAX_SCHEDULE, 2,
-     ("corporate income tax", "cit", "taxable income", "tax payable", "deductible expense")),
-    (DatasetRole.FIXED_ASSETS, 2,
-     ("fixed asset", "depreciation", "accumulated depreciation", "net book value",
-      "historical cost")),
-    (DatasetRole.RPT, 2,
-     ("related party", "related-party", "intercompany", "intra-group", "amount (vnd)",
-      "type of relationship", "transaction value")),
-    (DatasetRole.INTEREST_EXPENSE, 2,
-     ("interest rate", "credit institution", "principal", "maturity date", "loan")),
-    (DatasetRole.FINANCIAL_STATEMENTS, 2,
-     ("net sales", "revenue", "cost of goods sold", "gross profit", "total assets",
-      "profit before tax", "balance sheet")),
-    (DatasetRole.FINANCIAL_ANALYSIS, 2,
-     ("net cost plus", "operating margin", "return on assets", "profit level indicator",
-      "ebit", "margin")),
-    (DatasetRole.SEGMENTED_DATA, 2, ("segment", "segmented", "allocation basis", "allocated")),
-    (DatasetRole.APPENDIX_DISCLOSURE, 2,
-     ("appendix", "form 01", "declaration", "point of reference", "disclosure")),
-    (DatasetRole.FIGURE_SOURCE, 2,
-     ("chart data", "figure data", "diagram source", "node", "edge", "series")),
-)
-
-# Map the C2 workbook profiler's roles onto the Phase F taxonomy so existing
-# evidence is reused rather than re-derived.
-_C2_TO_F: Dict[C2DatasetRole, DatasetRole] = {
-    C2DatasetRole.RELATED_PARTY_TRANSACTIONS: DatasetRole.RPT,
-    C2DatasetRole.FINANCIAL_STATEMENTS: DatasetRole.FINANCIAL_STATEMENTS,
-    C2DatasetRole.FINANCIAL_ANALYSIS: DatasetRole.FINANCIAL_ANALYSIS,
-    C2DatasetRole.FIXED_ASSETS: DatasetRole.FIXED_ASSETS,
-    C2DatasetRole.BENCHMARKING_DATA: DatasetRole.BENCHMARKING_DATA,
-    C2DatasetRole.COMPARABLE_COMPANIES: DatasetRole.COMPARABLE_COMPANIES,
-    C2DatasetRole.IQR_RESULTS: DatasetRole.IQR_RESULTS,
-    C2DatasetRole.SCREENING_RESULTS: DatasetRole.SCREENING_RESULTS,
-    C2DatasetRole.INTEREST_EXPENSE: DatasetRole.INTEREST_EXPENSE,
-    C2DatasetRole.SEGMENTED_DATA: DatasetRole.SEGMENTED_DATA,
-    C2DatasetRole.REFERENCE_LIST: DatasetRole.APPENDIX_DISCLOSURE,
-    C2DatasetRole.CHECKLIST: DatasetRole.APPENDIX_DISCLOSURE,
-    C2DatasetRole.RELATED_PARTIES_REGISTER: DatasetRole.OWNERSHIP_STRUCTURE,
-    C2DatasetRole.NARRATIVE_DISCLOSURE: DatasetRole.BUSINESS_NARRATIVE,
-}
+# Role signals, thresholds and the C2 role mapping that used to live here have
+# been REMOVED. They were a second, divergent definition of every role -- the
+# direct cause of the Phase E / Phase F TAXPAYER_PROFILE dispute. Role
+# determination is now delegated wholly to `EvidencePolicyEngine`.
 
 
 @dataclass
@@ -289,10 +167,12 @@ class SourceArtifact:
     format: ArtifactFormat
     source_scope: SourceScope
     dataset_roles: List[DatasetRole] = field(default_factory=list)
+    satisfying_roles: List[DatasetRole] = field(default_factory=list)
     role_evidence: List[RoleEvidence] = field(default_factory=list)
     created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
     status: ArtifactStatus = ArtifactStatus.REGISTERED
     profile_summary: Dict[str, Any] = field(default_factory=dict)
+    role_verdicts: List[Dict[str, Any]] = field(default_factory=list)
     notes: str = ""
 
     @property
@@ -301,8 +181,13 @@ class SourceArtifact:
         return self.source_scope in SUPPLYING_SCOPES
 
     def supplies(self, role: DatasetRole) -> bool:
-        """True only if this artifact may supply a CURRENT-YEAR role."""
-        return self.can_supply_current_year and role in self.dataset_roles
+        """True only if the canonical policy says this artifact SATISFIES the role.
+
+        Observing content about a role is not the same as satisfying it: the
+        policy requires every mandatory field, in the required shape, from an
+        authorized scope.
+        """
+        return self.can_supply_current_year and role in self.satisfying_roles
 
     def observed_roles(self) -> List[DatasetRole]:
         """Every role the content matched, regardless of whether it may supply."""
@@ -324,11 +209,14 @@ class SourceArtifact:
             "artifact_id": self.artifact_id, "filename": self.filename,
             "file_hash": self.file_hash, "file_size": self.file_size,
             "format": self.format.value, "source_scope": self.source_scope.value,
-            "dataset_roles": [r.value for r in self.dataset_roles],
+            "dataset_roles_observed": [r.value for r in self.dataset_roles],
+            "dataset_roles": [r.value for r in self.satisfying_roles],
+            "satisfying_roles": [r.value for r in self.satisfying_roles],
             "role_evidence": [e.to_dict() for e in self.role_evidence],
             "created_at": self.created_at, "status": self.status.value,
             "can_supply_current_year_roles": self.can_supply_current_year,
-            "profile_summary": self.profile_summary, "notes": self.notes,
+            "profile_summary": self.profile_summary,
+            "role_verdicts": self.role_verdicts, "notes": self.notes,
         }
 
 
@@ -397,19 +285,16 @@ class SourceIntakeProfiler:
             source_scope=source_scope,
         )
 
-        if fmt == ArtifactFormat.XLSX:
-            roles, evidence, summary = cls._profile_xlsx(path)
-        elif fmt == ArtifactFormat.DOCX:
-            roles, evidence, summary = cls._profile_docx(path)
-        elif fmt == ArtifactFormat.CSV:
-            roles, evidence, summary = cls._profile_csv(path)
-        else:
+        if fmt == ArtifactFormat.UNSUPPORTED:
             artifact.status = ArtifactStatus.REJECTED
             artifact.notes = (
                 f"Unsupported format '{path.suffix}'. Nothing was inferred from the filename.")
             artifact.dataset_roles = [DatasetRole.UNKNOWN]
             return artifact
 
+        roles, evidence, summary, verdicts = cls._profile(path, fmt, source_scope)
+        artifact.role_verdicts = [v.to_dict() for v in verdicts]
+        artifact.satisfying_roles = [v.role for v in verdicts if v.can_satisfy_current_year]
         artifact.dataset_roles = roles or [DatasetRole.UNKNOWN]
         artifact.role_evidence = evidence
         artifact.profile_summary = summary
@@ -419,123 +304,61 @@ class SourceIntakeProfiler:
     # ------------------------------------------------------------------
 
     @classmethod
-    def _grade(cls, role: DatasetRole, hits: Sequence[str], records: int,
-               structured: bool) -> Tuple[EvidenceQuality, str]:
-        """Grades evidence. A structured role needs structured records to be VERIFIED."""
-        if role in STRUCTURED_ROLES and not structured:
-            return (EvidenceQuality.INFERRED,
-                    f"{len(hits)} content signal(s) found, but in unstructured text. "
-                    f"{role.value} requires tabular records to be verified.")
-        if structured and len(hits) >= 3 and records >= 2:
-            return (EvidenceQuality.VERIFIED,
-                    f"{len(hits)} schema signals over {records} structured records.")
-        if len(hits) >= 3 or (structured and records >= 2):
-            return (EvidenceQuality.STRONGLY_SUPPORTED,
-                    f"{len(hits)} content signal(s) over {records} record(s).")
-        return (EvidenceQuality.INFERRED,
-                f"only {len(hits)} content signal(s); insufficient for a verified claim.")
+    def _corpus(cls, path: Path, fmt: ArtifactFormat, scope: SupplyScope) -> EvidenceCorpus:
+        if fmt == ArtifactFormat.XLSX:
+            return CorpusBuilder.from_workbook(path, scope)
+        if fmt == ArtifactFormat.DOCX:
+            return CorpusBuilder.from_document(path, scope)
+        if fmt == ArtifactFormat.CSV:
+            import csv
+
+            rows = []
+            with open(path, newline="", encoding="utf-8", errors="replace") as f:
+                for i, row in enumerate(csv.reader(f)):
+                    if i >= 500:
+                        break
+                    rows.append(row)
+            return CorpusBuilder.from_rows(path.name, scope, rows, location=path.name)
+        raise SourceIntakeError(f"No corpus builder for format {fmt.value}")
 
     @classmethod
-    def _detect(cls, haystack: str, records: int, structured: bool,
-                locations: Sequence[str]) -> Tuple[List[DatasetRole], List[RoleEvidence]]:
+    def _profile(cls, path: Path, fmt: ArtifactFormat, scope: SupplyScope
+                 ) -> Tuple[List[DatasetRole], List[RoleEvidence], Dict[str, Any], List[RoleVerdict]]:
+        """Delegates every role decision to the canonical policy engine."""
+        corpus = cls._corpus(path, fmt, scope)
+        verdicts = EvidencePolicyEngine.evaluate_all(corpus)
+
         roles: List[DatasetRole] = []
         evidence: List[RoleEvidence] = []
-        for role, threshold, tokens in _ROLE_SIGNALS:
-            hits = [t for t in tokens if t in haystack]
-            if len(hits) < threshold:
+        kept: List[RoleVerdict] = []
+        for role, verdict in verdicts.items():
+            if role == DatasetRole.UNKNOWN:
                 continue
-            quality, rationale = cls._grade(role, hits, records, structured)
+            if verdict.support in (RoleSupport.UNKNOWN, RoleSupport.NOT_APPLICABLE,
+                                   RoleSupport.INSUFFICIENT_FIELDS):
+                continue
             roles.append(role)
+            kept.append(verdict)
             evidence.append(RoleEvidence(
-                role=role, quality=quality, matched_tokens=hits[:8],
-                record_count=records, locations=list(locations)[:6], rationale=rationale))
-        return roles, evidence
-
-    @classmethod
-    def _profile_xlsx(cls, path: Path) -> Tuple[List[DatasetRole], List[RoleEvidence], Dict[str, Any]]:
-        wb: WorkbookCapabilityProfile = SourceCapabilityProfiler.profile_workbook(path)
-        roles: List[DatasetRole] = []
-        evidence: List[RoleEvidence] = []
-
-        for sheet in wb.sheets:
-            hay = " | ".join(h.lower() for h in sheet.headers)
-            hay += " || " + " || ".join((c.header or "").lower() for c in sheet.record_schema)
-            hay += " || " + " || ".join((c.sample or "").lower() for c in sheet.record_schema)
-            structured = sheet.record_count >= 2 and bool(sheet.headers)
-            found, ev = cls._detect(hay, sheet.record_count, structured, [sheet.sheet_name])
-            for r, e in zip(found, ev):
-                if r not in roles:
-                    roles.append(r)
-                    evidence.append(e)
-                else:
-                    existing = next(x for x in evidence if x.role == r)
-                    if sheet.sheet_name not in existing.locations:
-                        existing.locations.append(sheet.sheet_name)
-
-            # Carry across whatever the C2 profiler already proved.
-            for c2 in sheet.roles:
-                mapped = _C2_TO_F.get(c2)
-                if mapped and mapped not in roles:
-                    roles.append(mapped)
-                    evidence.append(RoleEvidence(
-                        role=mapped, quality=EvidenceQuality.STRONGLY_SUPPORTED,
-                        matched_tokens=sheet.role_evidence.get(c2.value, [])[:8],
-                        record_count=sheet.record_count, locations=[sheet.sheet_name],
-                        rationale=f"content profiler credited {c2.value} on this sheet."))
+                role=role,
+                quality=verdict.evidence_status,
+                matched_tokens=list(verdict.satisfied_fields),
+                record_count=corpus.record_count,
+                locations=[f.location for f in verdict.fields if f.location][:6],
+                rationale=verdict.rationale,
+            ))
 
         summary = {
-            "kind": "workbook", "sheets": wb.sheet_count,
-            "sheet_names": [s.sheet_name for s in wb.sheets],
-            "total_records": sum(s.record_count for s in wb.sheets),
-            "formula_cells": sum(s.formula_cell_count for s in wb.sheets),
+            "kind": {ArtifactFormat.XLSX: "workbook", ArtifactFormat.DOCX: "document",
+                     ArtifactFormat.CSV: "csv"}.get(fmt, "unknown"),
+            "corpus_rows": len(corpus.rows),
+            "record_count": corpus.record_count,
+            "observed_shape": corpus.shape().value,
+            "has_tabular_records": corpus.has_tabular_records,
+            "has_narrative_text": corpus.has_narrative_text,
+            "policy_engine": "EvidencePolicyEngine (canonical)",
         }
-        return roles, evidence, summary
-
-    @classmethod
-    def _profile_docx(cls, path: Path) -> Tuple[List[DatasetRole], List[RoleEvidence], Dict[str, Any]]:
-        from docx import Document
-
-        doc = Document(str(path))
-        paragraphs = [re.sub(r"\s+", " ", p.text).strip()
-                      for p in doc.paragraphs[:cls.MAX_DOCX_PARAGRAPHS]]
-        paragraphs = [p for p in paragraphs if p]
-        hay = " || ".join(p.lower() for p in paragraphs)
-
-        table_headers: List[str] = []
-        for t in doc.tables:
-            if t.rows:
-                table_headers.extend(c.text.strip().lower() for c in t.rows[0].cells)
-        hay += " || " + " | ".join(table_headers)
-
-        structured = bool(doc.tables) and any(len(t.rows) >= 3 for t in doc.tables)
-        records = sum(max(len(t.rows) - 1, 0) for t in doc.tables)
-        locations = [f"{len(doc.tables)} table(s)", f"{len(paragraphs)} paragraph(s)"]
-        roles, evidence = cls._detect(hay, records, structured, locations)
-
-        summary = {
-            "kind": "document", "paragraphs": len(paragraphs), "tables": len(doc.tables),
-            "table_rows": records,
-            "has_structured_tables": structured,
-        }
-        return roles, evidence, summary
-
-    @classmethod
-    def _profile_csv(cls, path: Path) -> Tuple[List[DatasetRole], List[RoleEvidence], Dict[str, Any]]:
-        import csv
-
-        rows: List[List[str]] = []
-        with open(path, newline="", encoding="utf-8", errors="replace") as f:
-            for i, row in enumerate(csv.reader(f)):
-                if i >= 500:
-                    break
-                rows.append(row)
-        headers = [c.strip().lower() for c in rows[0]] if rows else []
-        hay = " | ".join(headers)
-        for r in rows[1:60]:
-            hay += " || " + " || ".join(c.strip().lower() for c in r[:4])
-        records = max(len(rows) - 1, 0)
-        roles, evidence = cls._detect(hay, records, records >= 2 and bool(headers), ["csv"])
-        return roles, evidence, {"kind": "csv", "rows": len(rows), "headers": headers[:16]}
+        return roles, evidence, summary, kept
 
 
 # ============================================================================
@@ -595,9 +418,9 @@ class RollForwardSourcePackage:
         for a in self.artifacts:
             if a.status != ArtifactStatus.PROFILED or not a.can_supply_current_year:
                 continue
-            for e in a.role_evidence:
-                if order[e.quality] >= floor:
-                    out.add(e.role)
+            for role in a.satisfying_roles:
+                if order[a.quality_for(role)] >= floor:
+                    out.add(role)
         out.discard(DatasetRole.UNKNOWN)
         return out
 

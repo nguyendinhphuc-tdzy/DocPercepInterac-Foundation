@@ -181,6 +181,20 @@ __all__ = [
     "ReadinessRecalculator",
     "SourceIntakeError",
     "compute_file_hash",
+    "SupplyScope",
+    "EvidenceStatus",
+    "EvidenceAuthority",
+    "RoleSupport",
+    "SchemaShape",
+    "FieldSpec",
+    "FieldEvidence",
+    "DatasetRolePolicy",
+    "ROLE_POLICIES",
+    "EvidenceCorpus",
+    "CorpusBuilder",
+    "RoleVerdict",
+    "EvidencePolicyEngine",
+    "policy_compatibility_matrix",
 ]
 
 from applications.rollforward.structural_writeback import (
@@ -322,4 +336,20 @@ from applications.rollforward.source_intake import (
     ReadinessRecalculator,
     SourceIntakeError,
     compute_file_hash,
+)
+from applications.rollforward.evidence_policy import (
+    SupplyScope,
+    EvidenceStatus,
+    EvidenceAuthority,
+    RoleSupport,
+    SchemaShape,
+    FieldSpec,
+    FieldEvidence,
+    DatasetRolePolicy,
+    ROLE_POLICIES,
+    EvidenceCorpus,
+    CorpusBuilder,
+    RoleVerdict,
+    EvidencePolicyEngine,
+    policy_compatibility_matrix,
 )
