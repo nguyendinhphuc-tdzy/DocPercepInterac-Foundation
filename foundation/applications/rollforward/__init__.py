@@ -195,6 +195,12 @@ __all__ = [
     "RoleVerdict",
     "EvidencePolicyEngine",
     "policy_compatibility_matrix",
+    "RegistrationEventType",
+    "RegistrationEvent",
+    "ReadinessSnapshot",
+    "ReadinessGuard",
+    "RegistryError",
+    "SourceRegistry",
 ]
 
 from applications.rollforward.structural_writeback import (
@@ -352,4 +358,12 @@ from applications.rollforward.evidence_policy import (
     RoleVerdict,
     EvidencePolicyEngine,
     policy_compatibility_matrix,
+)
+from applications.rollforward.source_registry import (
+    RegistrationEventType,
+    RegistrationEvent,
+    ReadinessSnapshot,
+    ReadinessGuard,
+    RegistryError,
+    SourceRegistry,
 )

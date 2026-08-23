@@ -1,0 +1,4032 @@
+{
+  "phase": "PHASE_G_REAL_SOURCE_INTAKE_READINESS_RECALCULATION",
+  "evaluation_date": "2026-08-23",
+  "package": {
+    "package_id": "PKG-ROLLFORWARD-G-FY2024",
+    "version": 5,
+    "parent_version": 4,
+    "created_at": "2026-08-23T10:17:27.724996+00:00",
+    "status": "DRAFT",
+    "package_hash": "6f000a1fec049a028ed56b494f9446a54df1e76a7ab2c7786b39f21ea10547a9",
+    "artifact_count": 4,
+    "supplying_artifacts": [
+      "src-9574dcc037af",
+      "src-80e0b0deb594"
+    ],
+    "non_supplying_artifacts": [
+      "src-8b51f941e106",
+      "src-5fdf55e4e600"
+    ],
+    "observed_roles_all_scopes": {
+      "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx": [
+        "TAXPAYER_PROFILE",
+        "OWNERSHIP_STRUCTURE",
+        "RELATED_PARTY_TRANSACTIONS",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "FIXED_ASSETS",
+        "INTEREST_EXPENSE",
+        "TAX_SCHEDULE",
+        "SEGMENTED_DATA",
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS",
+        "FAR",
+        "BUSINESS_NARRATIVE",
+        "GROUP_NARRATIVE",
+        "ORGANIZATIONAL_DATA",
+        "FIGURE_SOURCE",
+        "APPENDIX_DISCLOSURE",
+        "INDEPENDENCE_CODES"
+      ],
+      "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx": [
+        "TAXPAYER_PROFILE",
+        "OWNERSHIP_STRUCTURE",
+        "RELATED_PARTY_TRANSACTIONS",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "FIXED_ASSETS",
+        "INTEREST_EXPENSE",
+        "SEGMENTED_DATA",
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS",
+        "FAR",
+        "BUSINESS_NARRATIVE",
+        "GROUP_NARRATIVE",
+        "ORGANIZATIONAL_DATA",
+        "APPENDIX_DISCLOSURE",
+        "INDEPENDENCE_CODES"
+      ],
+      "HMV-FA&RPT FY2024.xlsx": [
+        "TAXPAYER_PROFILE",
+        "RELATED_PARTY_TRANSACTIONS",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "FIXED_ASSETS",
+        "INTEREST_EXPENSE",
+        "SEGMENTED_DATA",
+        "ORGANIZATIONAL_DATA",
+        "APPENDIX_DISCLOSURE",
+        "INDEPENDENCE_CODES"
+      ],
+      "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx": [
+        "TAXPAYER_PROFILE",
+        "OWNERSHIP_STRUCTURE",
+        "RELATED_PARTY_TRANSACTIONS",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "FIXED_ASSETS",
+        "INTEREST_EXPENSE",
+        "TAX_SCHEDULE",
+        "SEGMENTED_DATA",
+        "BENCHMARKING_DATA",
+        "GROUP_NARRATIVE",
+        "ORGANIZATIONAL_DATA",
+        "APPENDIX_DISCLOSURE",
+        "INDEPENDENCE_CODES"
+      ]
+    },
+    "available_roles": [
+      "APPENDIX_DISCLOSURE",
+      "FINANCIAL_ANALYSIS",
+      "FINANCIAL_STATEMENTS",
+      "FIXED_ASSETS",
+      "INTEREST_EXPENSE",
+      "RELATED_PARTY_TRANSACTIONS",
+      "SEGMENTED_DATA",
+      "TAX_SCHEDULE"
+    ],
+    "available_roles_verified_only": [
+      "APPENDIX_DISCLOSURE",
+      "FINANCIAL_ANALYSIS",
+      "FINANCIAL_STATEMENTS",
+      "FIXED_ASSETS",
+      "INTEREST_EXPENSE",
+      "RELATED_PARTY_TRANSACTIONS",
+      "SEGMENTED_DATA",
+      "TAX_SCHEDULE"
+    ],
+    "artifacts": [
+      {
+        "artifact_id": "src-8b51f941e106",
+        "filename": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+        "file_hash": "8b51f941e1068c97385fecbd49808e1dc356601e4e3eb8f9c2d0d7c39fb290c5",
+        "file_size": 2764267,
+        "format": "DOCX",
+        "source_scope": "HISTORICAL",
+        "dataset_roles_observed": [
+          "TAXPAYER_PROFILE",
+          "OWNERSHIP_STRUCTURE",
+          "RELATED_PARTY_TRANSACTIONS",
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS",
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE",
+          "TAX_SCHEDULE",
+          "SEGMENTED_DATA",
+          "BENCHMARKING_DATA",
+          "COMPARABLE_COMPANIES",
+          "IQR_RESULTS",
+          "SCREENING_RESULTS",
+          "FAR",
+          "BUSINESS_NARRATIVE",
+          "GROUP_NARRATIVE",
+          "ORGANIZATIONAL_DATA",
+          "FIGURE_SOURCE",
+          "APPENDIX_DISCLOSURE",
+          "INDEPENDENCE_CODES"
+        ],
+        "dataset_roles": [],
+        "satisfying_roles": [],
+        "role_evidence": [
+          {
+            "role": "TAXPAYER_PROFILE",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "legal_name",
+              "fiscal_year"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!t20r0",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!t2r21",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p225"
+            ],
+            "rationale": "Content supports TAXPAYER_PROFILE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: 2 of 5 mandatory field(s) satisfied (legal_name, fiscal_year); missing principal_activity, registered_address, tax_code."
+          },
+          {
+            "role": "OWNERSHIP_STRUCTURE",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "shareholder_name",
+              "ownership_percentage"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p107",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p144",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p61"
+            ],
+            "rationale": "Content supports OWNERSHIP_STRUCTURE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "RELATED_PARTY_TRANSACTIONS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "counterparty",
+              "transaction_type",
+              "amount"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p9",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p9",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p320"
+            ],
+            "rationale": "Content supports RELATED_PARTY_TRANSACTIONS, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "FINANCIAL_STATEMENTS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "revenue",
+              "cost_of_sales",
+              "result"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p172",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p388",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p258"
+            ],
+            "rationale": "Content supports FINANCIAL_STATEMENTS, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "FINANCIAL_ANALYSIS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "pli_name",
+              "pli_value"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p81",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p56"
+            ],
+            "rationale": "Content supports FINANCIAL_ANALYSIS, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "FIXED_ASSETS",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "asset_class"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p321"
+            ],
+            "rationale": "Content supports FIXED_ASSETS, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: 1 of 2 mandatory field(s) satisfied (asset_class); missing cost_or_nbv."
+          },
+          {
+            "role": "INTEREST_EXPENSE",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "lender",
+              "interest_rate"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p215",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p32"
+            ],
+            "rationale": "Content supports INTEREST_EXPENSE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "TAX_SCHEDULE",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "taxable_income"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p75"
+            ],
+            "rationale": "Content supports TAX_SCHEDULE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: 1 of 2 mandatory field(s) satisfied (taxable_income); missing tax_amount."
+          },
+          {
+            "role": "SEGMENTED_DATA",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "segment_name",
+              "allocation_basis"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p509",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p54"
+            ],
+            "rationale": "Content supports SEGMENTED_DATA, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "BENCHMARKING_DATA",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "database_name",
+              "search_date_or_version"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p423",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p165"
+            ],
+            "rationale": "Content supports BENCHMARKING_DATA, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "COMPARABLE_COMPANIES",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "company_name",
+              "identifier",
+              "jurisdiction"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p8",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p440",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p321",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p225"
+            ],
+            "rationale": "Content supports COMPARABLE_COMPANIES, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "IQR_RESULTS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "quartile_label"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p283",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p26"
+            ],
+            "rationale": "Content supports IQR_RESULTS, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "SCREENING_RESULTS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "criterion",
+              "count"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p457",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p70"
+            ],
+            "rationale": "Content supports SCREENING_RESULTS, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "FAR",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "functions",
+              "assets",
+              "risks"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p33",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p33",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p33"
+            ],
+            "rationale": "Content supports FAR, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "BUSINESS_NARRATIVE",
+            "quality": "STRONGLY_SUPPORTED",
+            "matched_tokens": [
+              "business_activity"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p18",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p20"
+            ],
+            "rationale": "Content supports BUSINESS_NARRATIVE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All mandatory fields present, but the corpus contains ['KEY_VALUE_BLOCK', 'TABULAR_RECORDS'] but the role requires NARRATIVE_TEXT. The role cannot be VERIFIED on this shape."
+          },
+          {
+            "role": "GROUP_NARRATIVE",
+            "quality": "STRONGLY_SUPPORTED",
+            "matched_tokens": [
+              "group_identity"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p20",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p482"
+            ],
+            "rationale": "Content supports GROUP_NARRATIVE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All mandatory fields present, but the corpus contains ['KEY_VALUE_BLOCK', 'TABULAR_RECORDS'] but the role requires NARRATIVE_TEXT. The role cannot be VERIFIED on this shape."
+          },
+          {
+            "role": "ORGANIZATIONAL_DATA",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "org_unit",
+              "reporting_or_headcount"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p168",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p165"
+            ],
+            "rationale": "Content supports ORGANIZATIONAL_DATA, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "FIGURE_SOURCE",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "series_or_node"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p515",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p107"
+            ],
+            "rationale": "Content supports FIGURE_SOURCE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "APPENDIX_DISCLOSURE",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "declaration_identity"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p102",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p321"
+            ],
+            "rationale": "Content supports APPENDIX_DISCLOSURE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "INDEPENDENCE_CODES",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "code",
+              "code_meaning"
+            ],
+            "record_count": 556,
+            "locations": [
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p440",
+              "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p18"
+            ],
+            "rationale": "Content supports INDEPENDENCE_CODES, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          }
+        ],
+        "created_at": "2026-08-23T10:17:27.735414+00:00",
+        "status": "PROFILED",
+        "can_supply_current_year_roles": false,
+        "profile_summary": {
+          "kind": "document",
+          "corpus_rows": 1065,
+          "record_count": 556,
+          "observed_shape": "TABULAR_RECORDS",
+          "has_tabular_records": true,
+          "has_narrative_text": false,
+          "policy_engine": "EvidencePolicyEngine (canonical)"
+        },
+        "role_verdicts": [
+          {
+            "role": "TAXPAYER_PROFILE",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "INFERRED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "legal_name",
+              "fiscal_year"
+            ],
+            "missing_fields": [
+              "principal_activity",
+              "registered_address",
+              "tax_code"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "legal_name",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!t20r0",
+                "value_required": true,
+                "satisfied": true,
+                "sample": "Stock Code"
+              },
+              {
+                "field_name": "tax_code",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": true,
+                "satisfied": false,
+                "sample": ""
+              },
+              {
+                "field_name": "fiscal_year",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!t2r21",
+                "value_required": true,
+                "satisfied": true,
+                "sample": "Section 7.1"
+              },
+              {
+                "field_name": "registered_address",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": true,
+                "satisfied": false,
+                "sample": ""
+              },
+              {
+                "field_name": "principal_activity",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p225",
+                "value_required": true,
+                "satisfied": false,
+                "sample": "Since HMV’s main business activity is to provide processing service to MMAB, the"
+              }
+            ],
+            "rationale": "Content supports TAXPAYER_PROFILE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: 2 of 5 mandatory field(s) satisfied (legal_name, fiscal_year); missing principal_activity, registered_address, tax_code."
+          },
+          {
+            "role": "OWNERSHIP_STRUCTURE",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "shareholder_name",
+              "ownership_percentage"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "shareholder_name",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p107",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Hestra Matsuoka Vietnam Co., Ltd. (“HMV” or “the Company”) was established under"
+              },
+              {
+                "field_name": "ownership_percentage",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p144",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Ownership structure"
+              },
+              {
+                "field_name": "relationship_type",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p61",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "B Types of related party relationship under Decree 132 35"
+              }
+            ],
+            "rationale": "Content supports OWNERSHIP_STRUCTURE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "RELATED_PARTY_TRANSACTIONS",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "counterparty",
+              "transaction_type",
+              "amount"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "counterparty",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p9",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "2.2 Related party transactions 8"
+              },
+              {
+                "field_name": "transaction_type",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p9",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "2.2 Related party transactions 8"
+              },
+              {
+                "field_name": "amount",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p320",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "a Local File referring specifically to related party transactions of the local e"
+              }
+            ],
+            "rationale": "Content supports RELATED_PARTY_TRANSACTIONS, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "FINANCIAL_STATEMENTS",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "revenue",
+              "cost_of_sales",
+              "result"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "revenue",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p172",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "HMV operates as a toll manufacturer which generate all of its revenue from provi"
+              },
+              {
+                "field_name": "cost_of_sales",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p388",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Accounting methods applied to determine the cost of goods sold of the taxpayer a"
+              },
+              {
+                "field_name": "result",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p258",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "The CPLM method evaluates arm’s length profitability at the gross profit level. "
+              }
+            ],
+            "rationale": "Content supports FINANCIAL_STATEMENTS, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "FINANCIAL_ANALYSIS",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "pli_name",
+              "pli_value"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "pli_name",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p81",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "NCP Net Cost Plus"
+              },
+              {
+                "field_name": "pli_value",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p56",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "7.4 Summary of reasons and explanation for the causes, business operations, inve"
+              }
+            ],
+            "rationale": "Content supports FINANCIAL_ANALYSIS, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "FIXED_ASSETS",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "INFERRED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "asset_class"
+            ],
+            "missing_fields": [
+              "cost_or_nbv"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "asset_class",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p321",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "where applicable a Country-by-Country (“CbC”) Report related to the MNE’s annual"
+              },
+              {
+                "field_name": "cost_or_nbv",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": false,
+                "satisfied": false,
+                "sample": ""
+              }
+            ],
+            "rationale": "Content supports FIXED_ASSETS, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: 1 of 2 mandatory field(s) satisfied (asset_class); missing cost_or_nbv."
+          },
+          {
+            "role": "INTEREST_EXPENSE",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "lender",
+              "interest_rate"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "lender",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p215",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "HMV and MMAB entered into several long-term loan agreements with interest rates "
+              },
+              {
+                "field_name": "interest_rate",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p32",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "4.2.3 Payment of interest expense 19"
+              }
+            ],
+            "rationale": "Content supports INTEREST_EXPENSE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "TAX_SCHEDULE",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "INFERRED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "taxable_income"
+            ],
+            "missing_fields": [
+              "tax_amount"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "taxable_income",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p75",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "CIT Corporate Income Tax"
+              },
+              {
+                "field_name": "tax_amount",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": false,
+                "satisfied": false,
+                "sample": ""
+              }
+            ],
+            "rationale": "Content supports TAX_SCHEDULE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: 1 of 2 mandatory field(s) satisfied (taxable_income); missing tax_amount."
+          },
+          {
+            "role": "SEGMENTED_DATA",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "segment_name",
+              "allocation_basis"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "segment_name",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p509",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "This company is an investment holding firm whose subsidiaries are engaged in the"
+              },
+              {
+                "field_name": "allocation_basis",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p54",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "7.2 Allocation method used in the calculation of HMV’s operating results 31"
+              }
+            ],
+            "rationale": "Content supports SEGMENTED_DATA, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "BENCHMARKING_DATA",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "database_name",
+              "search_date_or_version"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "database_name",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p423",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "To identify Vietnamese comparable companies, we performed a search using the Bur"
+              },
+              {
+                "field_name": "search_date_or_version",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p165",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "As at 31 December 2023, the Company had a total workforce of 404 employees."
+              }
+            ],
+            "rationale": "Content supports BENCHMARKING_DATA, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "COMPARABLE_COMPANIES",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "company_name",
+              "identifier",
+              "jurisdiction"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "company_name",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p8",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "2.1 Company overview 8"
+              },
+              {
+                "field_name": "identifier",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p440",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "We used the BvD Independence Indicator in the TP Cat to eliminate companies that"
+              },
+              {
+                "field_name": "jurisdiction",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p321",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "where applicable a Country-by-Country (“CbC”) Report related to the MNE’s annual"
+              },
+              {
+                "field_name": "business_description",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p225",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Since HMV’s main business activity is to provide processing service to MMAB, the"
+              }
+            ],
+            "rationale": "Content supports COMPARABLE_COMPANIES, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "IQR_RESULTS",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "quartile_label"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "quartile_label",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p283",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "“Standard arm’s length range” is a set of values from the 35th percentile to the"
+              },
+              {
+                "field_name": "quartile_value",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p26",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "4.1.2 Values of intra-group payments and receipts with supporting invoices for e"
+              }
+            ],
+            "rationale": "Content supports IQR_RESULTS, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "SCREENING_RESULTS",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "criterion",
+              "count"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "criterion",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p457",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "This criterion rejected companies which are subsidiaries since the operating res"
+              },
+              {
+                "field_name": "count",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p70",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "D.4 The rejected companies 56"
+              }
+            ],
+            "rationale": "Content supports SCREENING_RESULTS, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "FAR",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "functions",
+              "assets",
+              "risks"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "functions",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p33",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "5 Functions, Assets and Risks analysis 21"
+              },
+              {
+                "field_name": "assets",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p33",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "5 Functions, Assets and Risks analysis 21"
+              },
+              {
+                "field_name": "risks",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p33",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "5 Functions, Assets and Risks analysis 21"
+              }
+            ],
+            "rationale": "Content supports FAR, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "BUSINESS_NARRATIVE",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "STRONGLY_SUPPORTED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "business_activity"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "business_activity",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p18",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "3.4 Description of the business strategy pursued by HMV 15"
+              },
+              {
+                "field_name": "current_year_context",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p20",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "3.4.2 Business restructurings, capital transfers, or asset transfers of the Grou"
+              }
+            ],
+            "rationale": "Content supports BUSINESS_NARRATIVE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All mandatory fields present, but the corpus contains ['KEY_VALUE_BLOCK', 'TABULAR_RECORDS'] but the role requires NARRATIVE_TEXT. The role cannot be VERIFIED on this shape."
+          },
+          {
+            "role": "GROUP_NARRATIVE",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "STRONGLY_SUPPORTED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "group_identity"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "group_identity",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p20",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "3.4.2 Business restructurings, capital transfers, or asset transfers of the Grou"
+              },
+              {
+                "field_name": "group_activity",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p482",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Gloves Division, Leather Division and Industrial Garment. The Gloves Division ma"
+              }
+            ],
+            "rationale": "Content supports GROUP_NARRATIVE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All mandatory fields present, but the corpus contains ['KEY_VALUE_BLOCK', 'TABULAR_RECORDS'] but the role requires NARRATIVE_TEXT. The role cannot be VERIFIED on this shape."
+          },
+          {
+            "role": "ORGANIZATIONAL_DATA",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "org_unit",
+              "reporting_or_headcount"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "org_unit",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p168",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "HMV’s business strategy is to stabilize production and operation, and to improve"
+              },
+              {
+                "field_name": "reporting_or_headcount",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p165",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "As at 31 December 2023, the Company had a total workforce of 404 employees."
+              }
+            ],
+            "rationale": "Content supports ORGANIZATIONAL_DATA, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "FIGURE_SOURCE",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "series_or_node"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "series_or_node",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p515",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "The company, with registered office located in Jinjiang, China, is primarily eng"
+              },
+              {
+                "field_name": "relationship_or_value",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p107",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Hestra Matsuoka Vietnam Co., Ltd. (“HMV” or “the Company”) was established under"
+              }
+            ],
+            "rationale": "Content supports FIGURE_SOURCE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "APPENDIX_DISCLOSURE",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "declaration_identity"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "declaration_identity",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p102",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "This Local File is prepared in accordance with Decree 132. It contains informati"
+              },
+              {
+                "field_name": "reference",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p321",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "where applicable a Country-by-Country (“CbC”) Report related to the MNE’s annual"
+              }
+            ],
+            "rationale": "Content supports APPENDIX_DISCLOSURE, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          },
+          {
+            "role": "INDEPENDENCE_CODES",
+            "artifact": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+            "scope": "HISTORICAL",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "HISTORICAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "code",
+              "code_meaning"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "code",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p440",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "We used the BvD Independence Indicator in the TP Cat to eliminate companies that"
+              },
+              {
+                "field_name": "code_meaning",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx!p18",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "3.4 Description of the business strategy pursued by HMV 15"
+              }
+            ],
+            "rationale": "Content supports INDEPENDENCE_CODES, but HISTORICAL carries historical evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 556 record(s)."
+          }
+        ],
+        "notes": ""
+      },
+      {
+        "artifact_id": "src-5fdf55e4e600",
+        "filename": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+        "file_hash": "5fdf55e4e6007a164908af84bf8c001c767bf46f66c5be6e6cfd7afe1222f47c",
+        "file_size": 2819648,
+        "format": "DOCX",
+        "source_scope": "TEMPLATE",
+        "dataset_roles_observed": [
+          "TAXPAYER_PROFILE",
+          "OWNERSHIP_STRUCTURE",
+          "RELATED_PARTY_TRANSACTIONS",
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS",
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE",
+          "SEGMENTED_DATA",
+          "BENCHMARKING_DATA",
+          "COMPARABLE_COMPANIES",
+          "IQR_RESULTS",
+          "SCREENING_RESULTS",
+          "FAR",
+          "BUSINESS_NARRATIVE",
+          "GROUP_NARRATIVE",
+          "ORGANIZATIONAL_DATA",
+          "APPENDIX_DISCLOSURE",
+          "INDEPENDENCE_CODES"
+        ],
+        "dataset_roles": [],
+        "satisfying_roles": [],
+        "role_evidence": [
+          {
+            "role": "TAXPAYER_PROFILE",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "legal_name",
+              "tax_code",
+              "fiscal_year"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t9r0",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t14r0",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t12r21",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p85"
+            ],
+            "rationale": "Content supports TAXPAYER_PROFILE, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: 3 of 5 mandatory field(s) satisfied (legal_name, tax_code, fiscal_year); missing principal_activity, registered_address."
+          },
+          {
+            "role": "OWNERSHIP_STRUCTURE",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "shareholder_name",
+              "ownership_percentage"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p70",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t13r6",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t3r0"
+            ],
+            "rationale": "Content supports OWNERSHIP_STRUCTURE, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "RELATED_PARTY_TRANSACTIONS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "counterparty",
+              "transaction_type",
+              "amount"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p13",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p13",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p151"
+            ],
+            "rationale": "Content supports RELATED_PARTY_TRANSACTIONS, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "FINANCIAL_STATEMENTS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "revenue",
+              "cost_of_sales",
+              "result"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p147",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p286",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p231"
+            ],
+            "rationale": "Content supports FINANCIAL_STATEMENTS, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "FINANCIAL_ANALYSIS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "pli_name",
+              "pli_value"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p55",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p56"
+            ],
+            "rationale": "Content supports FINANCIAL_ANALYSIS, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "FIXED_ASSETS",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "asset_class"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p155"
+            ],
+            "rationale": "Content supports FIXED_ASSETS, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: 1 of 2 mandatory field(s) satisfied (asset_class); missing cost_or_nbv."
+          },
+          {
+            "role": "INTEREST_EXPENSE",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "lender",
+              "interest_rate"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p148",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p40"
+            ],
+            "rationale": "Content supports INTEREST_EXPENSE, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "SEGMENTED_DATA",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "segment_name",
+              "allocation_basis"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p33",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p33"
+            ],
+            "rationale": "Content supports SEGMENTED_DATA, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "BENCHMARKING_DATA",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "database_name",
+              "search_date_or_version"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t13r0",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p88"
+            ],
+            "rationale": "Content supports BENCHMARKING_DATA, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "COMPARABLE_COMPANIES",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "company_name",
+              "identifier",
+              "jurisdiction"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p67",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t13r6",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p109",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t13r4"
+            ],
+            "rationale": "Content supports COMPARABLE_COMPANIES, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "IQR_RESULTS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "quartile_label"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p246",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p17"
+            ],
+            "rationale": "Content supports IQR_RESULTS, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "SCREENING_RESULTS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "criterion",
+              "count"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p299",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p229"
+            ],
+            "rationale": "Content supports SCREENING_RESULTS, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "FAR",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "functions",
+              "assets",
+              "risks"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p19",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p19",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p19"
+            ],
+            "rationale": "Content supports FAR, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "BUSINESS_NARRATIVE",
+            "quality": "STRONGLY_SUPPORTED",
+            "matched_tokens": [
+              "business_activity"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p110",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p24"
+            ],
+            "rationale": "Content supports BUSINESS_NARRATIVE, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All mandatory fields present, but the corpus contains ['KEY_VALUE_BLOCK', 'TABULAR_RECORDS'] but the role requires NARRATIVE_TEXT. The role cannot be VERIFIED on this shape."
+          },
+          {
+            "role": "GROUP_NARRATIVE",
+            "quality": "STRONGLY_SUPPORTED",
+            "matched_tokens": [
+              "group_identity"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p70"
+            ],
+            "rationale": "Content supports GROUP_NARRATIVE, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All mandatory fields present, but the corpus contains ['KEY_VALUE_BLOCK', 'TABULAR_RECORDS'] but the role requires NARRATIVE_TEXT. The role cannot be VERIFIED on this shape."
+          },
+          {
+            "role": "ORGANIZATIONAL_DATA",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "org_unit",
+              "reporting_or_headcount"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p109",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p88"
+            ],
+            "rationale": "Content supports ORGANIZATIONAL_DATA, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "APPENDIX_DISCLOSURE",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "declaration_identity"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p68",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t12r0"
+            ],
+            "rationale": "Content supports APPENDIX_DISCLOSURE, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "INDEPENDENCE_CODES",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "code",
+              "code_meaning"
+            ],
+            "record_count": 129,
+            "locations": [
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t13r6",
+              "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p81"
+            ],
+            "rationale": "Content supports INDEPENDENCE_CODES, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          }
+        ],
+        "created_at": "2026-08-23T10:17:28.150846+00:00",
+        "status": "PROFILED",
+        "can_supply_current_year_roles": false,
+        "profile_summary": {
+          "kind": "document",
+          "corpus_rows": 409,
+          "record_count": 129,
+          "observed_shape": "TABULAR_RECORDS",
+          "has_tabular_records": true,
+          "has_narrative_text": false,
+          "policy_engine": "EvidencePolicyEngine (canonical)"
+        },
+        "role_verdicts": [
+          {
+            "role": "TAXPAYER_PROFILE",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "INFERRED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "legal_name",
+              "tax_code",
+              "fiscal_year"
+            ],
+            "missing_fields": [
+              "principal_activity",
+              "registered_address"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "legal_name",
+                "located": true,
+                "has_value": true,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t9r0",
+                "value_required": true,
+                "satisfied": true,
+                "sample": "FY20ww"
+              },
+              {
+                "field_name": "tax_code",
+                "located": true,
+                "has_value": true,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t14r0",
+                "value_required": true,
+                "satisfied": true,
+                "sample": "VN SIC Code"
+              },
+              {
+                "field_name": "fiscal_year",
+                "located": true,
+                "has_value": true,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t12r21",
+                "value_required": true,
+                "satisfied": true,
+                "sample": "External to Local File"
+              },
+              {
+                "field_name": "registered_address",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p85",
+                "value_required": true,
+                "satisfied": false,
+                "sample": "ABC was incorporated in year and located at ADDRESS."
+              },
+              {
+                "field_name": "principal_activity",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": true,
+                "satisfied": false,
+                "sample": ""
+              }
+            ],
+            "rationale": "Content supports TAXPAYER_PROFILE, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: 3 of 5 mandatory field(s) satisfied (legal_name, tax_code, fiscal_year); missing principal_activity, registered_address."
+          },
+          {
+            "role": "OWNERSHIP_STRUCTURE",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "shareholder_name",
+              "ownership_percentage"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "shareholder_name",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p70",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "ABC functions as a manufacturing entity of the ENTITY Group (comprising of THE U"
+              },
+              {
+                "field_name": "ownership_percentage",
+                "located": true,
+                "has_value": true,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t13r6",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "A (No shareholder with more than 25% of direct or total ownership). B (No shareh"
+              },
+              {
+                "field_name": "relationship_type",
+                "located": true,
+                "has_value": true,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t3r0",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Amount (VND)"
+              }
+            ],
+            "rationale": "Content supports OWNERSHIP_STRUCTURE, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "RELATED_PARTY_TRANSACTIONS",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "counterparty",
+              "transaction_type",
+              "amount"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "counterparty",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p13",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "PART B. INFORMATION ON TAXPAYER’S RELATED PARTY TRANSACTIONS 7"
+              },
+              {
+                "field_name": "transaction_type",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p13",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "PART B. INFORMATION ON TAXPAYER’S RELATED PARTY TRANSACTIONS 7"
+              },
+              {
+                "field_name": "amount",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p151",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "The interest rate of the loan was xx% per annum on the principal amount of the l"
+              }
+            ],
+            "rationale": "Content supports RELATED_PARTY_TRANSACTIONS, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "FINANCIAL_STATEMENTS",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "revenue",
+              "cost_of_sales",
+              "result"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "revenue",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p147",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "The royalty / licensing fee / trademark fee was calculated based on XX% of ABC’s"
+              },
+              {
+                "field_name": "cost_of_sales",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p286",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "The method which makes comparison of the gross profit to cost of goods sold rati"
+              },
+              {
+                "field_name": "result",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p231",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "The CPLM and RPM were rejected because these methods evaluated arm’s length prof"
+              }
+            ],
+            "rationale": "Content supports FINANCIAL_STATEMENTS, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "FINANCIAL_ANALYSIS",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "pli_name",
+              "pli_value"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "pli_name",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p55",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "NCP Net Cost Plus"
+              },
+              {
+                "field_name": "pli_value",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p56",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "OM Operating Margin"
+              }
+            ],
+            "rationale": "Content supports FINANCIAL_ANALYSIS, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "FIXED_ASSETS",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "INFERRED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "asset_class"
+            ],
+            "missing_fields": [
+              "cost_or_nbv"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "asset_class",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p155",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Purchases / sales of fixed assets"
+              },
+              {
+                "field_name": "cost_or_nbv",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": false,
+                "satisfied": false,
+                "sample": ""
+              }
+            ],
+            "rationale": "Content supports FIXED_ASSETS, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: 1 of 2 mandatory field(s) satisfied (asset_class); missing cost_or_nbv."
+          },
+          {
+            "role": "INTEREST_EXPENSE",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "lender",
+              "interest_rate"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "lender",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p148",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Payment of interest on intercompany loan(s)"
+              },
+              {
+                "field_name": "interest_rate",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p40",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "D Information on interest rates on short-term/ medium- to long-term loans in USD"
+              }
+            ],
+            "rationale": "Content supports INTEREST_EXPENSE, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "SEGMENTED_DATA",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "segment_name",
+              "allocation_basis"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "segment_name",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p33",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "7.2 Allocation method used in the calculation of ABC’s operating result for each"
+              },
+              {
+                "field_name": "allocation_basis",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p33",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "7.2 Allocation method used in the calculation of ABC’s operating result for each"
+              }
+            ],
+            "rationale": "Content supports SEGMENTED_DATA, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "BENCHMARKING_DATA",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "database_name",
+              "search_date_or_version"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "database_name",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t13r0",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Bureau van Dijk’s TP Catalyst (“TP Cat”) database"
+              },
+              {
+                "field_name": "search_date_or_version",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p88",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "As at the end of FY20xx, ABC had a total workforce of XXX employees. The followi"
+              }
+            ],
+            "rationale": "Content supports BENCHMARKING_DATA, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "COMPARABLE_COMPANIES",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "company_name",
+              "identifier",
+              "jurisdiction"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "company_name",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p67",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "The Vietnamese TP regulations are prescribed in Decree 132. In accordance with t"
+              },
+              {
+                "field_name": "identifier",
+                "located": true,
+                "has_value": true,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t13r6",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "A (No shareholder with more than 25% of direct or total ownership). B (No shareh"
+              },
+              {
+                "field_name": "jurisdiction",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p109",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "The management of ABC reported to [Finance Director/CEO/ the board of management"
+              },
+              {
+                "field_name": "business_description",
+                "located": true,
+                "has_value": true,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t13r4",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Selected companies classified under the following SIC codes: 3841 – Surgical and"
+              }
+            ],
+            "rationale": "Content supports COMPARABLE_COMPANIES, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "IQR_RESULTS",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "quartile_label"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "quartile_label",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p246",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Pursuant to Clause 2, Article 8 and Appendix V of Decree 132, the standard arm’s"
+              },
+              {
+                "field_name": "quartile_value",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p17",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "4.3 Values of intra-group payments and receipts with supporting invoices for eac"
+              }
+            ],
+            "rationale": "Content supports IQR_RESULTS, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "SCREENING_RESULTS",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "criterion",
+              "count"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "criterion",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p299",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Specifically, we selected listed companies operating in Asia (other than Vietnam"
+              },
+              {
+                "field_name": "count",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p229",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "The other transfer pricing methods were rejected for the following reasons:"
+              }
+            ],
+            "rationale": "Content supports SCREENING_RESULTS, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "FAR",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "functions",
+              "assets",
+              "risks"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "functions",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p19",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "5 Analysis of functions, assets and risks 11"
+              },
+              {
+                "field_name": "assets",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p19",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "5 Analysis of functions, assets and risks 11"
+              },
+              {
+                "field_name": "risks",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p19",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "5 Analysis of functions, assets and risks 11"
+              }
+            ],
+            "rationale": "Content supports FAR, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "BUSINESS_NARRATIVE",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "STRONGLY_SUPPORTED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "business_activity"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "business_activity",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p110",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Business strategy"
+              },
+              {
+                "field_name": "current_year_context",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p24",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "5.5 Changes from Previous Fiscal Year 15"
+              }
+            ],
+            "rationale": "Content supports BUSINESS_NARRATIVE, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All mandatory fields present, but the corpus contains ['KEY_VALUE_BLOCK', 'TABULAR_RECORDS'] but the role requires NARRATIVE_TEXT. The role cannot be VERIFIED on this shape."
+          },
+          {
+            "role": "GROUP_NARRATIVE",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "STRONGLY_SUPPORTED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "group_identity"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "group_identity",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p70",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "ABC functions as a manufacturing entity of the ENTITY Group (comprising of THE U"
+              },
+              {
+                "field_name": "group_activity",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": false,
+                "satisfied": false,
+                "sample": ""
+              }
+            ],
+            "rationale": "Content supports GROUP_NARRATIVE, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All mandatory fields present, but the corpus contains ['KEY_VALUE_BLOCK', 'TABULAR_RECORDS'] but the role requires NARRATIVE_TEXT. The role cannot be VERIFIED on this shape."
+          },
+          {
+            "role": "ORGANIZATIONAL_DATA",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "org_unit",
+              "reporting_or_headcount"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "org_unit",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p109",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "The management of ABC reported to [Finance Director/CEO/ the board of management"
+              },
+              {
+                "field_name": "reporting_or_headcount",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p88",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "As at the end of FY20xx, ABC had a total workforce of XXX employees. The followi"
+              }
+            ],
+            "rationale": "Content supports ORGANIZATIONAL_DATA, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "APPENDIX_DISCLOSURE",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "declaration_identity"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "declaration_identity",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p68",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "This Local File contains information required in Appendix II of Decree 132. Plea"
+              },
+              {
+                "field_name": "reference",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t12r0",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Point of reference in this Local File"
+              }
+            ],
+            "rationale": "Content supports APPENDIX_DISCLOSURE, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          },
+          {
+            "role": "INDEPENDENCE_CODES",
+            "artifact": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+            "scope": "TEMPLATE",
+            "support": "HISTORICAL_EVIDENCE",
+            "evidence_status": "VERIFIED",
+            "authority": "STRUCTURAL_EVIDENCE_ONLY",
+            "satisfied_fields": [
+              "code",
+              "code_meaning"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "code",
+                "located": true,
+                "has_value": true,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!t13r6",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "A (No shareholder with more than 25% of direct or total ownership). B (No shareh"
+              },
+              {
+                "field_name": "code_meaning",
+                "located": true,
+                "has_value": false,
+                "location": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx!p81",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "ABC is a subsidiary of the XYZ Group, which is engaged in BRIEF DESCRIPTION OF A"
+              }
+            ],
+            "rationale": "Content supports INDEPENDENCE_CODES, but TEMPLATE carries structural evidence only and may not satisfy a current-year requirement. Observation: All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 129 record(s)."
+          }
+        ],
+        "notes": ""
+      },
+      {
+        "artifact_id": "src-9574dcc037af",
+        "filename": "HMV-FA&RPT FY2024.xlsx",
+        "file_hash": "9574dcc037af9ff708ae31e7c67586d6baa37a584e8fa602e1409c36fb6358f2",
+        "file_size": 404891,
+        "format": "XLSX",
+        "source_scope": "CURRENT_FINANCIAL",
+        "dataset_roles_observed": [
+          "TAXPAYER_PROFILE",
+          "RELATED_PARTY_TRANSACTIONS",
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS",
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE",
+          "SEGMENTED_DATA",
+          "ORGANIZATIONAL_DATA",
+          "APPENDIX_DISCLOSURE",
+          "INDEPENDENCE_CODES"
+        ],
+        "dataset_roles": [
+          "RELATED_PARTY_TRANSACTIONS",
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS",
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE",
+          "SEGMENTED_DATA",
+          "APPENDIX_DISCLOSURE"
+        ],
+        "satisfying_roles": [
+          "RELATED_PARTY_TRANSACTIONS",
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS",
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE",
+          "SEGMENTED_DATA",
+          "APPENDIX_DISCLOSURE"
+        ],
+        "role_evidence": [
+          {
+            "role": "TAXPAYER_PROFILE",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "legal_name",
+              "tax_code",
+              "fiscal_year"
+            ],
+            "record_count": 146,
+            "locations": [
+              "HMV-FA&RPT FY2024.xlsx!I. Related parties!r3",
+              "HMV-FA&RPT FY2024.xlsx!I. Related parties!r10",
+              "HMV-FA&RPT FY2024.xlsx!I. Related parties!r5"
+            ],
+            "rationale": "3 of 5 mandatory field(s) satisfied (legal_name, tax_code, fiscal_year); missing principal_activity, registered_address."
+          },
+          {
+            "role": "RELATED_PARTY_TRANSACTIONS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "counterparty",
+              "transaction_type",
+              "amount"
+            ],
+            "record_count": 146,
+            "locations": [
+              "HMV-FA&RPT FY2024.xlsx!I. Related parties!r7",
+              "HMV-FA&RPT FY2024.xlsx!I. Related parties!r10",
+              "HMV-FA&RPT FY2024.xlsx!FS!r9"
+            ],
+            "rationale": "All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "FINANCIAL_STATEMENTS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "revenue",
+              "cost_of_sales",
+              "result"
+            ],
+            "record_count": 146,
+            "locations": [
+              "HMV-FA&RPT FY2024.xlsx!FS!r12",
+              "HMV-FA&RPT FY2024.xlsx!FS!r20",
+              "HMV-FA&RPT FY2024.xlsx!FS!r41"
+            ],
+            "rationale": "All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "FINANCIAL_ANALYSIS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "pli_name",
+              "pli_value"
+            ],
+            "record_count": 146,
+            "locations": [
+              "HMV-FA&RPT FY2024.xlsx!FS!r41",
+              "HMV-FA&RPT FY2024.xlsx!I. Related parties!r4"
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "FIXED_ASSETS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "asset_class",
+              "cost_or_nbv"
+            ],
+            "record_count": 146,
+            "locations": [
+              "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs!r15",
+              "HMV-FA&RPT FY2024.xlsx!FS!r36"
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "INTEREST_EXPENSE",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "lender",
+              "interest_rate"
+            ],
+            "record_count": 146,
+            "locations": [
+              "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs!r34",
+              "HMV-FA&RPT FY2024.xlsx!FS!r16"
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "SEGMENTED_DATA",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "segment_name",
+              "allocation_basis"
+            ],
+            "record_count": 146,
+            "locations": [
+              "HMV-FA&RPT FY2024.xlsx!FS!r1",
+              "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs!r12"
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "ORGANIZATIONAL_DATA",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "reporting_or_headcount"
+            ],
+            "record_count": 146,
+            "locations": [
+              "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs!r39"
+            ],
+            "rationale": "1 of 2 mandatory field(s) satisfied (reporting_or_headcount); missing org_unit."
+          },
+          {
+            "role": "APPENDIX_DISCLOSURE",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "declaration_identity"
+            ],
+            "record_count": 146,
+            "locations": [
+              "HMV-FA&RPT FY2024.xlsx!I. Related parties!r1",
+              "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs!r8"
+            ],
+            "rationale": "All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "INDEPENDENCE_CODES",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "code_meaning"
+            ],
+            "record_count": 146,
+            "locations": [
+              "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs!r11"
+            ],
+            "rationale": "1 of 2 mandatory field(s) satisfied (code_meaning); missing code."
+          }
+        ],
+        "created_at": "2026-08-23T10:17:28.350366+00:00",
+        "status": "PROFILED",
+        "can_supply_current_year_roles": true,
+        "profile_summary": {
+          "kind": "workbook",
+          "corpus_rows": 179,
+          "record_count": 146,
+          "observed_shape": "TABULAR_RECORDS",
+          "has_tabular_records": true,
+          "has_narrative_text": false,
+          "policy_engine": "EvidencePolicyEngine (canonical)"
+        },
+        "role_verdicts": [
+          {
+            "role": "TAXPAYER_PROFILE",
+            "artifact": "HMV-FA&RPT FY2024.xlsx",
+            "scope": "CURRENT_FINANCIAL",
+            "support": "PARTIALLY_SUPPORTED",
+            "evidence_status": "INFERRED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "legal_name",
+              "tax_code",
+              "fiscal_year"
+            ],
+            "missing_fields": [
+              "principal_activity",
+              "registered_address"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "legal_name",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-FA&RPT FY2024.xlsx!I. Related parties!r3",
+                "value_required": true,
+                "satisfied": true,
+                "sample": "Hestra Matsuoka Vietnam Limited Liability Company"
+              },
+              {
+                "field_name": "tax_code",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-FA&RPT FY2024.xlsx!I. Related parties!r10",
+                "value_required": true,
+                "satisfied": true,
+                "sample": "Hình thức liên kết"
+              },
+              {
+                "field_name": "fiscal_year",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-FA&RPT FY2024.xlsx!I. Related parties!r5",
+                "value_required": true,
+                "satisfied": true,
+                "sample": "31 December 2024"
+              },
+              {
+                "field_name": "registered_address",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": true,
+                "satisfied": false,
+                "sample": ""
+              },
+              {
+                "field_name": "principal_activity",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": true,
+                "satisfied": false,
+                "sample": ""
+              }
+            ],
+            "rationale": "3 of 5 mandatory field(s) satisfied (legal_name, tax_code, fiscal_year); missing principal_activity, registered_address."
+          },
+          {
+            "role": "RELATED_PARTY_TRANSACTIONS",
+            "artifact": "HMV-FA&RPT FY2024.xlsx",
+            "scope": "CURRENT_FINANCIAL",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "counterparty",
+              "transaction_type",
+              "amount"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "counterparty",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-FA&RPT FY2024.xlsx!I. Related parties!r7",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "THÔNG TIN VỀ CÁC BÊN LIÊN KẾT/ INFORMATION ON RELATED PARTIES"
+              },
+              {
+                "field_name": "transaction_type",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-FA&RPT FY2024.xlsx!I. Related parties!r10",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Ghi chú"
+              },
+              {
+                "field_name": "amount",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-FA&RPT FY2024.xlsx!FS!r9",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "1. Tổng giá trị giao dịch phát sinh từ hoạt động kinh doanh (Dòng I - Mục III củ"
+              }
+            ],
+            "rationale": "All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "FINANCIAL_STATEMENTS",
+            "artifact": "HMV-FA&RPT FY2024.xlsx",
+            "scope": "CURRENT_FINANCIAL",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "revenue",
+              "cost_of_sales",
+              "result"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "revenue",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-FA&RPT FY2024.xlsx!FS!r12",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "194469728040"
+              },
+              {
+                "field_name": "cost_of_sales",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-FA&RPT FY2024.xlsx!FS!r20",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Decree 20 requires the Company to disclose the purchasing value of goods and ser"
+              },
+              {
+                "field_name": "result",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-FA&RPT FY2024.xlsx!FS!r41",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "3/ Tỷ suất lợi nhuận sử dụng xác định giá giao dịch liên kết/ Profit level indic"
+              }
+            ],
+            "rationale": "All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "FINANCIAL_ANALYSIS",
+            "artifact": "HMV-FA&RPT FY2024.xlsx",
+            "scope": "CURRENT_FINANCIAL",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "pli_name",
+              "pli_value"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "pli_name",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-FA&RPT FY2024.xlsx!FS!r41",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "3/ Tỷ suất lợi nhuận sử dụng xác định giá giao dịch liên kết/ Profit level indic"
+              },
+              {
+                "field_name": "pli_value",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-FA&RPT FY2024.xlsx!I. Related parties!r4",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Preparation of Appendix I"
+              }
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "FIXED_ASSETS",
+            "artifact": "HMV-FA&RPT FY2024.xlsx",
+            "scope": "CURRENT_FINANCIAL",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "asset_class",
+              "cost_or_nbv"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "asset_class",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs!r15",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Hàng hoá hình thành TSCĐ/ Goods forming fixed assets"
+              },
+              {
+                "field_name": "cost_or_nbv",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-FA&RPT FY2024.xlsx!FS!r36",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "4345780488"
+              }
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "INTEREST_EXPENSE",
+            "artifact": "HMV-FA&RPT FY2024.xlsx",
+            "scope": "CURRENT_FINANCIAL",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "lender",
+              "interest_rate"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "lender",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs!r34",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Interest expense"
+              },
+              {
+                "field_name": "interest_rate",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-FA&RPT FY2024.xlsx!FS!r16",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "5951107.680000001"
+              }
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "SEGMENTED_DATA",
+            "artifact": "HMV-FA&RPT FY2024.xlsx",
+            "scope": "CURRENT_FINANCIAL",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "segment_name",
+              "allocation_basis"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "segment_name",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-FA&RPT FY2024.xlsx!FS!r1",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "BACK TO SEGMENTED DATA"
+              },
+              {
+                "field_name": "allocation_basis",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs!r12",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Tổng thu hộ, chi hộ, phân bổ cơ sở thường trú/ Payment on behalf, receipt on beh"
+              }
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "ORGANIZATIONAL_DATA",
+            "artifact": "HMV-FA&RPT FY2024.xlsx",
+            "scope": "CURRENT_FINANCIAL",
+            "support": "PARTIALLY_SUPPORTED",
+            "evidence_status": "INFERRED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "reporting_or_headcount"
+            ],
+            "missing_fields": [
+              "org_unit"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "org_unit",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": false,
+                "satisfied": false,
+                "sample": ""
+              },
+              {
+                "field_name": "reporting_or_headcount",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs!r39",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "PP2-3 - Comparable Profit Method"
+              }
+            ],
+            "rationale": "1 of 2 mandatory field(s) satisfied (reporting_or_headcount); missing org_unit."
+          },
+          {
+            "role": "APPENDIX_DISCLOSURE",
+            "artifact": "HMV-FA&RPT FY2024.xlsx",
+            "scope": "CURRENT_FINANCIAL",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "declaration_identity"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "declaration_identity",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-FA&RPT FY2024.xlsx!I. Related parties!r1",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "BACK TO FULL APPENDIX I"
+              },
+              {
+                "field_name": "reference",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs!r8",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Non-disclosure"
+              }
+            ],
+            "rationale": "All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 146 record(s)."
+          },
+          {
+            "role": "INDEPENDENCE_CODES",
+            "artifact": "HMV-FA&RPT FY2024.xlsx",
+            "scope": "CURRENT_FINANCIAL",
+            "support": "PARTIALLY_SUPPORTED",
+            "evidence_status": "INFERRED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "code_meaning"
+            ],
+            "missing_fields": [
+              "code"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "code",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": false,
+                "satisfied": false,
+                "sample": ""
+              },
+              {
+                "field_name": "code_meaning",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs!r11",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Kê khai phương pháp xác định giá trên Phụ lục I/ Disclosure of transfer pricing "
+              }
+            ],
+            "rationale": "1 of 2 mandatory field(s) satisfied (code_meaning); missing code."
+          }
+        ],
+        "notes": ""
+      },
+      {
+        "artifact_id": "src-80e0b0deb594",
+        "filename": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "file_hash": "80e0b0deb594aef403e58bd3db836cd9e6172167bb8ed8ef8153951dccbde3e3",
+        "file_size": 3004377,
+        "format": "XLSX",
+        "source_scope": "CURRENT_TAX",
+        "dataset_roles_observed": [
+          "TAXPAYER_PROFILE",
+          "OWNERSHIP_STRUCTURE",
+          "RELATED_PARTY_TRANSACTIONS",
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS",
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE",
+          "TAX_SCHEDULE",
+          "SEGMENTED_DATA",
+          "BENCHMARKING_DATA",
+          "GROUP_NARRATIVE",
+          "ORGANIZATIONAL_DATA",
+          "APPENDIX_DISCLOSURE",
+          "INDEPENDENCE_CODES"
+        ],
+        "dataset_roles": [
+          "RELATED_PARTY_TRANSACTIONS",
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS",
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE",
+          "TAX_SCHEDULE",
+          "SEGMENTED_DATA",
+          "APPENDIX_DISCLOSURE"
+        ],
+        "satisfying_roles": [
+          "RELATED_PARTY_TRANSACTIONS",
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS",
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE",
+          "TAX_SCHEDULE",
+          "SEGMENTED_DATA",
+          "APPENDIX_DISCLOSURE"
+        ],
+        "role_evidence": [
+          {
+            "role": "TAXPAYER_PROFILE",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "legal_name",
+              "tax_code",
+              "fiscal_year",
+              "registered_address"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r2",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r3",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r4",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I!r20"
+            ],
+            "rationale": "4 of 5 mandatory field(s) satisfied (legal_name, tax_code, fiscal_year, registered_address); missing principal_activity."
+          },
+          {
+            "role": "OWNERSHIP_STRUCTURE",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "shareholder_name"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Types of relationship!r6",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r60"
+            ],
+            "rationale": "1 of 2 mandatory field(s) satisfied (shareholder_name); missing ownership_percentage."
+          },
+          {
+            "role": "RELATED_PARTY_TRANSACTIONS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "counterparty",
+              "transaction_type",
+              "amount"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r8",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r8",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r39"
+            ],
+            "rationale": "All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "FINANCIAL_STATEMENTS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "revenue",
+              "cost_of_sales",
+              "result"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r21",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r33",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r13"
+            ],
+            "rationale": "All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "FINANCIAL_ANALYSIS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "pli_name",
+              "pli_value"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I!r167",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r48"
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "FIXED_ASSETS",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "asset_class",
+              "cost_or_nbv"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I!r60",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r34"
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "INTEREST_EXPENSE",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "lender",
+              "interest_rate"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I!r104",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r34"
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "TAX_SCHEDULE",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "taxable_income",
+              "tax_amount"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r14",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Note FS!r331"
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "SEGMENTED_DATA",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "segment_name",
+              "allocation_basis"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r32",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r34"
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "BENCHMARKING_DATA",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "search_date_or_version"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Note FS!r77"
+            ],
+            "rationale": "1 of 2 mandatory field(s) satisfied (search_date_or_version); missing database_name."
+          },
+          {
+            "role": "GROUP_NARRATIVE",
+            "quality": "STRONGLY_SUPPORTED",
+            "matched_tokens": [
+              "group_identity"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Transfer pricing method!r17"
+            ],
+            "rationale": "All mandatory fields present, but the corpus contains ['KEY_VALUE_BLOCK', 'TABULAR_RECORDS'] but the role requires NARRATIVE_TEXT. The role cannot be VERIFIED on this shape."
+          },
+          {
+            "role": "ORGANIZATIONAL_DATA",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "reporting_or_headcount"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs!r39"
+            ],
+            "rationale": "1 of 2 mandatory field(s) satisfied (reporting_or_headcount); missing org_unit."
+          },
+          {
+            "role": "APPENDIX_DISCLOSURE",
+            "quality": "VERIFIED",
+            "matched_tokens": [
+              "declaration_identity"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r1",
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r10"
+            ],
+            "rationale": "All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "INDEPENDENCE_CODES",
+            "quality": "INFERRED",
+            "matched_tokens": [
+              "code_meaning"
+            ],
+            "record_count": 1580,
+            "locations": [
+              "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r71"
+            ],
+            "rationale": "1 of 2 mandatory field(s) satisfied (code_meaning); missing code."
+          }
+        ],
+        "created_at": "2026-08-23T10:17:28.738957+00:00",
+        "status": "PROFILED",
+        "can_supply_current_year_roles": true,
+        "profile_summary": {
+          "kind": "workbook",
+          "corpus_rows": 1762,
+          "record_count": 1580,
+          "observed_shape": "TABULAR_RECORDS",
+          "has_tabular_records": true,
+          "has_narrative_text": false,
+          "policy_engine": "EvidencePolicyEngine (canonical)"
+        },
+        "role_verdicts": [
+          {
+            "role": "TAXPAYER_PROFILE",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "PARTIALLY_SUPPORTED",
+            "evidence_status": "INFERRED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "legal_name",
+              "tax_code",
+              "fiscal_year",
+              "registered_address"
+            ],
+            "missing_fields": [
+              "principal_activity"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "legal_name",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r2",
+                "value_required": true,
+                "satisfied": true,
+                "sample": "Hestra Matsuoka Vietnam Limited Liability Company"
+              },
+              {
+                "field_name": "tax_code",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r3",
+                "value_required": true,
+                "satisfied": true,
+                "sample": "0201824857"
+              },
+              {
+                "field_name": "fiscal_year",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r4",
+                "value_required": true,
+                "satisfied": true,
+                "sample": "2024-01-01 00:00:00"
+              },
+              {
+                "field_name": "registered_address",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I!r20",
+                "value_required": true,
+                "satisfied": true,
+                "sample": "Lô đất D7, Khu công nghiệp Nhật Bản - Hải Phòng, Phường An Hưng"
+              },
+              {
+                "field_name": "principal_activity",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": true,
+                "satisfied": false,
+                "sample": ""
+              }
+            ],
+            "rationale": "4 of 5 mandatory field(s) satisfied (legal_name, tax_code, fiscal_year, registered_address); missing principal_activity."
+          },
+          {
+            "role": "OWNERSHIP_STRUCTURE",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "PARTIALLY_SUPPORTED",
+            "evidence_status": "INFERRED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "shareholder_name"
+            ],
+            "missing_fields": [
+              "ownership_percentage"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "shareholder_name",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Types of relationship!r6",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "A"
+              },
+              {
+                "field_name": "ownership_percentage",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": false,
+                "satisfied": false,
+                "sample": ""
+              },
+              {
+                "field_name": "relationship_type",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r60",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Please select"
+              }
+            ],
+            "rationale": "1 of 2 mandatory field(s) satisfied (shareholder_name); missing ownership_percentage."
+          },
+          {
+            "role": "RELATED_PARTY_TRANSACTIONS",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "counterparty",
+              "transaction_type",
+              "amount"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "counterparty",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r8",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "MẪU 01 - Kê khai Thông tin về Quan hệ liên kết và Giao dịch liên kết"
+              },
+              {
+                "field_name": "transaction_type",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r8",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "MẪU 01 - Kê khai Thông tin về Quan hệ liên kết và Giao dịch liên kết"
+              },
+              {
+                "field_name": "amount",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r39",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "+) Tổng giá trị hàng hoá dịch vụ mua vào trong năm"
+              }
+            ],
+            "rationale": "All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "FINANCIAL_STATEMENTS",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "revenue",
+              "cost_of_sales",
+              "result"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "revenue",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r21",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "-"
+              },
+              {
+                "field_name": "cost_of_sales",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r33",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Doanh thu thuần, Giá vốn, Thu nhập tài chính, Chi phí tài chính, Chi phí bán hàn"
+              },
+              {
+                "field_name": "result",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r13",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "có thông tin để đánh giá tổng quát về các rủi ro về chuyển giá, bao gồm có cần t"
+              }
+            ],
+            "rationale": "All 3 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "FINANCIAL_ANALYSIS",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "pli_name",
+              "pli_value"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "pli_name",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I!r167",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "No input"
+              },
+              {
+                "field_name": "pli_value",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r48",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Please select"
+              }
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "FIXED_ASSETS",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "asset_class",
+              "cost_or_nbv"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "asset_class",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I!r60",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Taxpayers perform routine functions, do not generate revenues or incur expenses "
+              },
+              {
+                "field_name": "cost_or_nbv",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r34",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Please select"
+              }
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "INTEREST_EXPENSE",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "lender",
+              "interest_rate"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "lender",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I!r104",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "0"
+              },
+              {
+                "field_name": "interest_rate",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r34",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Please select"
+              }
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "TAX_SCHEDULE",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "taxable_income",
+              "tax_amount"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "taxable_income",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r14",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "-"
+              },
+              {
+                "field_name": "tax_amount",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Note FS!r331",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "31577"
+              }
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "SEGMENTED_DATA",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "segment_name",
+              "allocation_basis"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "segment_name",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r32",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "1.2"
+              },
+              {
+                "field_name": "allocation_basis",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r34",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Thu nhập từ lãi vay, Chi phí lãi vay, Chi phí khấu hao phân bổ"
+              }
+            ],
+            "rationale": "All 2 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "BENCHMARKING_DATA",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "PARTIALLY_SUPPORTED",
+            "evidence_status": "INFERRED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "search_date_or_version"
+            ],
+            "missing_fields": [
+              "database_name"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "database_name",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": false,
+                "satisfied": false,
+                "sample": ""
+              },
+              {
+                "field_name": "search_date_or_version",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Note FS!r77",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "20990"
+              }
+            ],
+            "rationale": "1 of 2 mandatory field(s) satisfied (search_date_or_version); missing database_name."
+          },
+          {
+            "role": "GROUP_NARRATIVE",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "PARTIALLY_SUPPORTED",
+            "evidence_status": "STRONGLY_SUPPORTED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "group_identity"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "group_identity",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Transfer pricing method!r17",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "PP3"
+              },
+              {
+                "field_name": "group_activity",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": false,
+                "satisfied": false,
+                "sample": ""
+              }
+            ],
+            "rationale": "All mandatory fields present, but the corpus contains ['KEY_VALUE_BLOCK', 'TABULAR_RECORDS'] but the role requires NARRATIVE_TEXT. The role cannot be VERIFIED on this shape."
+          },
+          {
+            "role": "ORGANIZATIONAL_DATA",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "PARTIALLY_SUPPORTED",
+            "evidence_status": "INFERRED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "reporting_or_headcount"
+            ],
+            "missing_fields": [
+              "org_unit"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "org_unit",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": false,
+                "satisfied": false,
+                "sample": ""
+              },
+              {
+                "field_name": "reporting_or_headcount",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs!r39",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "PP2-3 - Comparable Profit Method"
+              }
+            ],
+            "rationale": "1 of 2 mandatory field(s) satisfied (reporting_or_headcount); missing org_unit."
+          },
+          {
+            "role": "APPENDIX_DISCLOSURE",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "VERIFIED",
+            "evidence_status": "VERIFIED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "declaration_identity"
+            ],
+            "missing_fields": [],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": true,
+            "fields": [
+              {
+                "field_name": "declaration_identity",
+                "located": true,
+                "has_value": false,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r1",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Appendix I"
+              },
+              {
+                "field_name": "reference",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r10",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Mục đích"
+              }
+            ],
+            "rationale": "All 1 mandatory field(s) located with values in TABULAR_RECORDS shape over 1580 record(s)."
+          },
+          {
+            "role": "INDEPENDENCE_CODES",
+            "artifact": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+            "scope": "CURRENT_TAX",
+            "support": "PARTIALLY_SUPPORTED",
+            "evidence_status": "INFERRED",
+            "authority": "CURRENT_YEAR_AUTHORITY",
+            "satisfied_fields": [
+              "code_meaning"
+            ],
+            "missing_fields": [
+              "code"
+            ],
+            "observed_shape": "TABULAR_RECORDS",
+            "can_satisfy_current_year": false,
+            "fields": [
+              {
+                "field_name": "code",
+                "located": false,
+                "has_value": false,
+                "location": "",
+                "value_required": false,
+                "satisfied": false,
+                "sample": ""
+              },
+              {
+                "field_name": "code_meaning",
+                "located": true,
+                "has_value": true,
+                "location": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist!r71",
+                "value_required": false,
+                "satisfied": true,
+                "sample": "Please select"
+              }
+            ],
+            "rationale": "1 of 2 mandatory field(s) satisfied (code_meaning); missing code."
+          }
+        ],
+        "notes": ""
+      }
+    ],
+    "history": [
+      {
+        "version": 2,
+        "action": "ADD_ARTIFACT",
+        "artifact_id": "src-8b51f941e106",
+        "filename": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+        "file_hash": "8b51f941e1068c97385fecbd49808e1dc356601e4e3eb8f9c2d0d7c39fb290c5",
+        "dataset_roles": [
+          "TAXPAYER_PROFILE",
+          "OWNERSHIP_STRUCTURE",
+          "RELATED_PARTY_TRANSACTIONS",
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS",
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE",
+          "TAX_SCHEDULE",
+          "SEGMENTED_DATA",
+          "BENCHMARKING_DATA",
+          "COMPARABLE_COMPANIES",
+          "IQR_RESULTS",
+          "SCREENING_RESULTS",
+          "FAR",
+          "BUSINESS_NARRATIVE",
+          "GROUP_NARRATIVE",
+          "ORGANIZATIONAL_DATA",
+          "FIGURE_SOURCE",
+          "APPENDIX_DISCLOSURE",
+          "INDEPENDENCE_CODES"
+        ],
+        "at": "2026-08-23T10:17:28.137074+00:00"
+      },
+      {
+        "version": 3,
+        "action": "ADD_ARTIFACT",
+        "artifact_id": "src-5fdf55e4e600",
+        "filename": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+        "file_hash": "5fdf55e4e6007a164908af84bf8c001c767bf46f66c5be6e6cfd7afe1222f47c",
+        "dataset_roles": [
+          "TAXPAYER_PROFILE",
+          "OWNERSHIP_STRUCTURE",
+          "RELATED_PARTY_TRANSACTIONS",
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS",
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE",
+          "SEGMENTED_DATA",
+          "BENCHMARKING_DATA",
+          "COMPARABLE_COMPANIES",
+          "IQR_RESULTS",
+          "SCREENING_RESULTS",
+          "FAR",
+          "BUSINESS_NARRATIVE",
+          "GROUP_NARRATIVE",
+          "ORGANIZATIONAL_DATA",
+          "APPENDIX_DISCLOSURE",
+          "INDEPENDENCE_CODES"
+        ],
+        "at": "2026-08-23T10:17:28.343062+00:00"
+      },
+      {
+        "version": 4,
+        "action": "ADD_ARTIFACT",
+        "artifact_id": "src-9574dcc037af",
+        "filename": "HMV-FA&RPT FY2024.xlsx",
+        "file_hash": "9574dcc037af9ff708ae31e7c67586d6baa37a584e8fa602e1409c36fb6358f2",
+        "dataset_roles": [
+          "TAXPAYER_PROFILE",
+          "RELATED_PARTY_TRANSACTIONS",
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS",
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE",
+          "SEGMENTED_DATA",
+          "ORGANIZATIONAL_DATA",
+          "APPENDIX_DISCLOSURE",
+          "INDEPENDENCE_CODES"
+        ],
+        "at": "2026-08-23T10:17:28.726663+00:00"
+      },
+      {
+        "version": 5,
+        "action": "ADD_ARTIFACT",
+        "artifact_id": "src-80e0b0deb594",
+        "filename": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "file_hash": "80e0b0deb594aef403e58bd3db836cd9e6172167bb8ed8ef8153951dccbde3e3",
+        "dataset_roles": [
+          "TAXPAYER_PROFILE",
+          "OWNERSHIP_STRUCTURE",
+          "RELATED_PARTY_TRANSACTIONS",
+          "FINANCIAL_STATEMENTS",
+          "FINANCIAL_ANALYSIS",
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE",
+          "TAX_SCHEDULE",
+          "SEGMENTED_DATA",
+          "BENCHMARKING_DATA",
+          "GROUP_NARRATIVE",
+          "ORGANIZATIONAL_DATA",
+          "APPENDIX_DISCLOSURE",
+          "INDEPENDENCE_CODES"
+        ],
+        "at": "2026-08-23T10:17:29.724692+00:00"
+      }
+    ]
+  },
+  "audit_log": [
+    {
+      "event_id": "evt-36e88000a11e",
+      "event_type": "REGISTER",
+      "timestamp": "2026-08-23T10:17:28.137074+00:00",
+      "actor": "system-setup",
+      "success": true,
+      "artifact_id": "src-8b51f941e106",
+      "filename": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+      "source_scope": "HISTORICAL",
+      "new_hash": "8b51f941e1068c97385fecbd49808e1dc356601e4e3eb8f9c2d0d7c39fb290c5",
+      "changed_roles": [
+        "TAXPAYER_PROFILE",
+        "OWNERSHIP_STRUCTURE",
+        "RELATED_PARTY_TRANSACTIONS",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "FIXED_ASSETS",
+        "INTEREST_EXPENSE",
+        "TAX_SCHEDULE",
+        "SEGMENTED_DATA",
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS",
+        "FAR",
+        "BUSINESS_NARRATIVE",
+        "GROUP_NARRATIVE",
+        "ORGANIZATIONAL_DATA",
+        "FIGURE_SOURCE",
+        "APPENDIX_DISCLOSURE",
+        "INDEPENDENCE_CODES"
+      ],
+      "package_version": 2,
+      "reason": "Artifact ingested, profiled and registered. Readiness NOT recalculated; call recalculate_readiness() explicitly."
+    },
+    {
+      "event_id": "evt-913c050d44d1",
+      "event_type": "REGISTER",
+      "timestamp": "2026-08-23T10:17:28.343062+00:00",
+      "actor": "system-setup",
+      "success": true,
+      "artifact_id": "src-5fdf55e4e600",
+      "filename": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+      "source_scope": "TEMPLATE",
+      "new_hash": "5fdf55e4e6007a164908af84bf8c001c767bf46f66c5be6e6cfd7afe1222f47c",
+      "changed_roles": [
+        "TAXPAYER_PROFILE",
+        "OWNERSHIP_STRUCTURE",
+        "RELATED_PARTY_TRANSACTIONS",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "FIXED_ASSETS",
+        "INTEREST_EXPENSE",
+        "SEGMENTED_DATA",
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS",
+        "FAR",
+        "BUSINESS_NARRATIVE",
+        "GROUP_NARRATIVE",
+        "ORGANIZATIONAL_DATA",
+        "APPENDIX_DISCLOSURE",
+        "INDEPENDENCE_CODES"
+      ],
+      "package_version": 3,
+      "reason": "Artifact ingested, profiled and registered. Readiness NOT recalculated; call recalculate_readiness() explicitly."
+    },
+    {
+      "event_id": "evt-383da8f1c58d",
+      "event_type": "REGISTER",
+      "timestamp": "2026-08-23T10:17:28.726663+00:00",
+      "actor": "system-setup",
+      "success": true,
+      "artifact_id": "src-9574dcc037af",
+      "filename": "HMV-FA&RPT FY2024.xlsx",
+      "source_scope": "CURRENT_FINANCIAL",
+      "new_hash": "9574dcc037af9ff708ae31e7c67586d6baa37a584e8fa602e1409c36fb6358f2",
+      "changed_roles": [
+        "TAXPAYER_PROFILE",
+        "RELATED_PARTY_TRANSACTIONS",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "FIXED_ASSETS",
+        "INTEREST_EXPENSE",
+        "SEGMENTED_DATA",
+        "ORGANIZATIONAL_DATA",
+        "APPENDIX_DISCLOSURE",
+        "INDEPENDENCE_CODES"
+      ],
+      "package_version": 4,
+      "reason": "Artifact ingested, profiled and registered. Readiness NOT recalculated; call recalculate_readiness() explicitly."
+    },
+    {
+      "event_id": "evt-18b5b76d4b45",
+      "event_type": "REGISTER",
+      "timestamp": "2026-08-23T10:17:29.724692+00:00",
+      "actor": "system-setup",
+      "success": true,
+      "artifact_id": "src-80e0b0deb594",
+      "filename": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "source_scope": "CURRENT_TAX",
+      "new_hash": "80e0b0deb594aef403e58bd3db836cd9e6172167bb8ed8ef8153951dccbde3e3",
+      "changed_roles": [
+        "TAXPAYER_PROFILE",
+        "OWNERSHIP_STRUCTURE",
+        "RELATED_PARTY_TRANSACTIONS",
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS",
+        "FIXED_ASSETS",
+        "INTEREST_EXPENSE",
+        "TAX_SCHEDULE",
+        "SEGMENTED_DATA",
+        "BENCHMARKING_DATA",
+        "GROUP_NARRATIVE",
+        "ORGANIZATIONAL_DATA",
+        "APPENDIX_DISCLOSURE",
+        "INDEPENDENCE_CODES"
+      ],
+      "package_version": 5,
+      "reason": "Artifact ingested, profiled and registered. Readiness NOT recalculated; call recalculate_readiness() explicitly."
+    },
+    {
+      "event_id": "evt-d6b1ab077005",
+      "event_type": "READINESS_RECALCULATED",
+      "timestamp": "2026-08-23T10:17:29.724692+00:00",
+      "actor": "planner",
+      "success": true,
+      "readiness_before": {
+        "rgn-001": "HUMAN_REVIEW_READY",
+        "rgn-010": "HUMAN_REVIEW_READY",
+        "rgn-013": "HUMAN_REVIEW_READY",
+        "rgn-014": "HUMAN_REVIEW_READY",
+        "rgn-015": "HUMAN_REVIEW_READY",
+        "rgn-046": "BLOCKED_MISSING_SOURCE",
+        "rgn-051": "BLOCKED_MISSING_SOURCE",
+        "rgn-070": "NOT_APPLICABLE"
+      },
+      "readiness_after": {
+        "rgn-001": "HUMAN_REVIEW_READY",
+        "rgn-010": "HUMAN_REVIEW_READY",
+        "rgn-013": "HUMAN_REVIEW_READY",
+        "rgn-014": "HUMAN_REVIEW_READY",
+        "rgn-015": "HUMAN_REVIEW_READY",
+        "rgn-046": "BLOCKED_MISSING_SOURCE",
+        "rgn-051": "BLOCKED_MISSING_SOURCE",
+        "rgn-070": "NOT_APPLICABLE"
+      },
+      "package_version": 5,
+      "reason": "0 readiness transition(s). Counts: {'HUMAN_REVIEW_READY': 5, 'BLOCKED_MISSING_SOURCE': 2, 'NOT_APPLICABLE': 1}. Execution authorized: False. Human approval remains the sole authority to execute."
+    }
+  ],
+  "sample_regions_recalculation": {
+    "event": {
+      "event_id": "evt-d6b1ab077005",
+      "event_type": "READINESS_RECALCULATED",
+      "timestamp": "2026-08-23T10:17:29.724692+00:00",
+      "actor": "planner",
+      "success": true,
+      "readiness_before": {
+        "rgn-001": "HUMAN_REVIEW_READY",
+        "rgn-010": "HUMAN_REVIEW_READY",
+        "rgn-013": "HUMAN_REVIEW_READY",
+        "rgn-014": "HUMAN_REVIEW_READY",
+        "rgn-015": "HUMAN_REVIEW_READY",
+        "rgn-046": "BLOCKED_MISSING_SOURCE",
+        "rgn-051": "BLOCKED_MISSING_SOURCE",
+        "rgn-070": "NOT_APPLICABLE"
+      },
+      "readiness_after": {
+        "rgn-001": "HUMAN_REVIEW_READY",
+        "rgn-010": "HUMAN_REVIEW_READY",
+        "rgn-013": "HUMAN_REVIEW_READY",
+        "rgn-014": "HUMAN_REVIEW_READY",
+        "rgn-015": "HUMAN_REVIEW_READY",
+        "rgn-046": "BLOCKED_MISSING_SOURCE",
+        "rgn-051": "BLOCKED_MISSING_SOURCE",
+        "rgn-070": "NOT_APPLICABLE"
+      },
+      "package_version": 5,
+      "reason": "0 readiness transition(s). Counts: {'HUMAN_REVIEW_READY': 5, 'BLOCKED_MISSING_SOURCE': 2, 'NOT_APPLICABLE': 1}. Execution authorized: False. Human approval remains the sole authority to execute."
+    },
+    "transitions": [],
+    "counts": {
+      "HUMAN_REVIEW_READY": 5,
+      "BLOCKED_MISSING_SOURCE": 2,
+      "NOT_APPLICABLE": 1
+    }
+  },
+  "governance": {
+    "execution_authorized": false,
+    "requires_human_approval": true,
+    "mutation_occurred": false,
+    "forbidden_states_absent": true,
+    "ground_truth_quarantined": true
+  },
+  "contract_invariants_verified": [
+    "REGISTER_DOES_NOT_CHANGE_READINESS",
+    "RECALCULATE_IS_EXPLICIT",
+    "DUPLICATE_SHA256_IS_NOOP",
+    "ATOMIC_REPLACEMENT_TRANSACTIONAL",
+    "AUDIT_PRIVACY_ENFORCED",
+    "FINAL_READINESS_GUARD_ACTIVE",
+    "IDEMPOTENCE_PRESERVED",
+    "PACKAGE_VERSIONING_BUMPED_ON_MUTATION",
+    "NO_MUTATION_PERFORMED"
+  ]
+}
