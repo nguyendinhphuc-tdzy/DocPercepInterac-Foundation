@@ -1,0 +1,4747 @@
+{
+  "artifact_id": "LOCALFILE_ROLLFORWARD_REQUIRED_SOURCE_MATRIX",
+  "phase": "E — Source Completeness & Readiness Audit",
+  "generated_at": "2026-08-23",
+  "ground_truth_used": false,
+  "separation_principle": "CURRENTLY AVAILABLE SOURCE and REQUIRED BUT MISSING SOURCE are recorded in separate fields. No binding was created to satisfy a missing requirement.",
+  "currently_available_sources": {
+    "workbooks": [
+      {
+        "document": "HMV-FA&RPT FY2024.xlsx",
+        "sha256": "9574dcc037af9ff708ae31e7c67586d6baa37a584e8fa602e1409c36fb6358f2",
+        "sheets": 5
+      },
+      {
+        "document": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sha256": "80e0b0deb594aef403e58bd3db836cd9e6172167bb8ed8ef8153951dccbde3e3",
+        "sheets": 18
+      }
+    ],
+    "dataset_roles_present": [
+      "APPENDIX_DISCLOSURE",
+      "FINANCIAL_ANALYSIS",
+      "FINANCIAL_STATEMENTS",
+      "FIXED_ASSETS",
+      "INTEREST_EXPENSE",
+      "RELATED_PARTY_TRANSACTIONS",
+      "SEGMENTED_DATA",
+      "TAXPAYER_PROFILE"
+    ],
+    "sheet_profiles": [
+      {
+        "workbook": "HMV-FA&RPT FY2024.xlsx",
+        "sheet_name": "I. Related parties",
+        "row_count": 18,
+        "column_count": 19,
+        "record_count": 8,
+        "headers": [
+          "STT",
+          "Tên bên liên kết",
+          "Quốc gia",
+          "Mã số thuế",
+          "Hình thức liên kết",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "header_row_index": 9,
+        "c2_roles": [
+          "UNKNOWN"
+        ],
+        "dataset_roles": [
+          "UNKNOWN"
+        ],
+        "role_evidence": {},
+        "semantic_field_types": [
+          "numeric",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text"
+        ],
+        "units": [
+          "%",
+          "eur"
+        ],
+        "formula_presence": false,
+        "formula_cell_count": 0,
+        "data_domain": "ENTITY",
+        "record_pattern": "TABULAR_TEXT",
+        "section_labels": [
+          "STT",
+          "Tên bên liên kết",
+          "Quốc gia",
+          "Mã số thuế",
+          "Hình thức liên kết"
+        ]
+      },
+      {
+        "workbook": "HMV-FA&RPT FY2024.xlsx",
+        "sheet_name": "FS",
+        "row_count": 66,
+        "column_count": 9,
+        "record_count": 45,
+        "headers": [
+          "No./ STT",
+          "Item/ Mục",
+          "Value (USD)/ Giá trị (USD) (*)",
+          "Value (VND)/ Giá trị (VNĐ) (*)",
+          "KPMG's notes/ Lưu ý của KPMG",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "header_row_index": 10,
+        "c2_roles": [
+          "FINANCIAL_ANALYSIS",
+          "FINANCIAL_STATEMENTS",
+          "INTEREST_EXPENSE"
+        ],
+        "dataset_roles": [
+          "FINANCIAL_ANALYSIS",
+          "FINANCIAL_STATEMENTS",
+          "INTEREST_EXPENSE"
+        ],
+        "role_evidence": {
+          "INTEREST_EXPENSE": [
+            "interest",
+            "loan"
+          ],
+          "FINANCIAL_STATEMENTS": [
+            "net sales",
+            "revenue",
+            "cost of goods sold",
+            "gross profit"
+          ],
+          "FINANCIAL_ANALYSIS": [
+            "net cost plus",
+            "operating margin",
+            "ebit",
+            "ratio",
+            "margin"
+          ]
+        },
+        "semantic_field_types": [
+          "text",
+          "text",
+          "text",
+          "numeric",
+          "narrative",
+          "empty",
+          "numeric",
+          "text",
+          "empty"
+        ],
+        "units": [
+          "vnd",
+          "usd"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 30,
+        "data_domain": "MIXED",
+        "record_pattern": "TABULAR_WITH_NARRATIVE",
+        "section_labels": [
+          "No./ STT",
+          "Item/ Mục",
+          "Value (USD)/ Giá trị (USD) (*)",
+          "Value (VND)/ Giá trị (VNĐ) (*)",
+          "KPMG's notes/ Lưu ý của KPMG"
+        ]
+      },
+      {
+        "workbook": "HMV-FA&RPT FY2024.xlsx",
+        "sheet_name": "RPTs",
+        "row_count": 17,
+        "column_count": 7,
+        "record_count": 12,
+        "headers": [
+          "Transaction",
+          "Related party",
+          "Country",
+          "Relationship",
+          "Transaction Amount (VND)",
+          "% of total net sales/total operating costs",
+          "Pricing method (If information is available)"
+        ],
+        "header_row_index": 3,
+        "c2_roles": [
+          "RPT_DATA"
+        ],
+        "dataset_roles": [
+          "RELATED_PARTY_TRANSACTIONS"
+        ],
+        "role_evidence": {
+          "RPT_DATA": [
+            "related party",
+            "transaction",
+            "amount (vnd)"
+          ],
+          "RELATED_PARTY_TRANSACTIONS": [
+            "related party",
+            "transaction",
+            "amount (vnd)"
+          ]
+        },
+        "semantic_field_types": [
+          "text",
+          "text",
+          "text",
+          "text",
+          "numeric",
+          "numeric",
+          "empty"
+        ],
+        "units": [
+          "vnd",
+          "%"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 27,
+        "data_domain": "MIXED",
+        "record_pattern": "TABULAR_TEXT",
+        "section_labels": [
+          "Transaction",
+          "Related party",
+          "Country",
+          "Relationship",
+          "Transaction Amount (VND)",
+          "% of total net sales/total operating costs",
+          "Pricing method (If information is available)"
+        ]
+      },
+      {
+        "workbook": "HMV-FA&RPT FY2024.xlsx",
+        "sheet_name": "Financial Analysis",
+        "row_count": 71,
+        "column_count": 7,
+        "record_count": 51,
+        "headers": [
+          "Unit: VND",
+          "Index",
+          "2023",
+          "2024",
+          "",
+          "",
+          ""
+        ],
+        "header_row_index": 3,
+        "c2_roles": [
+          "FINANCIAL_ANALYSIS",
+          "FINANCIAL_STATEMENTS"
+        ],
+        "dataset_roles": [
+          "FINANCIAL_ANALYSIS",
+          "FINANCIAL_STATEMENTS"
+        ],
+        "role_evidence": {
+          "FINANCIAL_STATEMENTS": [
+            "net sales",
+            "cost of goods sold",
+            "gross profit"
+          ],
+          "FINANCIAL_ANALYSIS": [
+            "ncp",
+            "net cost plus",
+            "operating margin",
+            "profit level indicator",
+            "ratio",
+            "margin"
+          ]
+        },
+        "semantic_field_types": [
+          "text",
+          "text",
+          "numeric",
+          "numeric",
+          "text",
+          "numeric",
+          "numeric"
+        ],
+        "units": [
+          "vnd"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 47,
+        "data_domain": "MIXED",
+        "record_pattern": "TABULAR_NUMERIC",
+        "section_labels": [
+          "Unit: VND",
+          "Index",
+          "2023",
+          "2024"
+        ]
+      },
+      {
+        "workbook": "HMV-FA&RPT FY2024.xlsx",
+        "sheet_name": "III. Summary-RPTs",
+        "row_count": 64,
+        "column_count": 27,
+        "record_count": 37,
+        "headers": [
+          "Chỉ tiêu theo Phụ lục I/ Item per Appendix I",
+          "Loại giao dịch/ Transactions category",
+          "Tên giao dịch (tiếng Anh)/ Name of transactions (English)",
+          "Tên giao dịch (tiếng Việt)/ Name of transactions (Vietnamese)",
+          "Tên của Bên liên kết (Tiếng Anh)/ Name of related party (English)",
+          "Tên của Bên liên kết (Tiếng Việt)/ Name of related party (Vietnamese)",
+          "Giá trị theo đồng nước ngoài/ Value in foreign currency",
+          "Giá trị giao dịch (VND)/ (*) Transaction value (VND)",
+          "",
+          "",
+          "",
+          "",
+          "Mô tả giao dịch và phương pháp xác định giá/ Description of transactions and transfer pricing methods",
+          "Kê khai phương pháp xác định giá trên Phụ lục I/ Disclosure of transfer pricing method in Appendix I",
+          "Lưu ý của KPMG/ KPMG's notes",
+          ""
+        ],
+        "header_row_index": 10,
+        "c2_roles": [
+          "INTEREST_EXPENSE",
+          "RPT_DATA"
+        ],
+        "dataset_roles": [
+          "INTEREST_EXPENSE",
+          "RELATED_PARTY_TRANSACTIONS",
+          "APPENDIX_DISCLOSURE"
+        ],
+        "role_evidence": {
+          "RPT_DATA": [
+            "related party",
+            "transaction"
+          ],
+          "INTEREST_EXPENSE": [
+            "interest",
+            "loan"
+          ],
+          "RELATED_PARTY_TRANSACTIONS": [
+            "related party",
+            "transaction"
+          ],
+          "APPENDIX_DISCLOSURE": [
+            "appendix",
+            "disclosure"
+          ]
+        },
+        "semantic_field_types": [
+          "text",
+          "narrative",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "narrative",
+          "text",
+          "narrative",
+          "empty"
+        ],
+        "units": [
+          "vnd",
+          "%"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 64,
+        "data_domain": "MIXED",
+        "record_pattern": "TABULAR_WITH_NARRATIVE",
+        "section_labels": [
+          "Chỉ tiêu theo Phụ lục I/ Item per Appendix I",
+          "Loại giao dịch/ Transactions category",
+          "Tên giao dịch (tiếng Anh)/ Name of transactions (English)",
+          "Tên giao dịch (tiếng Việt)/ Name of transactions (Vietnamese)",
+          "Tên của Bên liên kết (Tiếng Anh)/ Name of related party (English)",
+          "Tên của Bên liên kết (Tiếng Việt)/ Name of related party (Vietnamese)",
+          "Giá trị theo đồng nước ngoài/ Value in foreign currency",
+          "Giá trị giao dịch (VND)/ (*) Transaction value (VND)"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "Checklist",
+        "row_count": 123,
+        "column_count": 14,
+        "record_count": 68,
+        "headers": [
+          "Company name:",
+          "Hestra Matsuoka Vietnam Limited Liability Company",
+          "",
+          "",
+          "",
+          "",
+          "Name",
+          "Date",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "header_row_index": 1,
+        "c2_roles": [
+          "RPT_DATA",
+          "REFERENCE_LIST",
+          "SEGMENTED_DATA"
+        ],
+        "dataset_roles": [
+          "RELATED_PARTY_TRANSACTIONS",
+          "APPENDIX_DISCLOSURE",
+          "SEGMENTED_DATA",
+          "TAXPAYER_PROFILE"
+        ],
+        "role_evidence": {
+          "RPT_DATA": [
+            "related party",
+            "transaction",
+            "rpt"
+          ],
+          "SEGMENTED_DATA": [
+            "segment",
+            "segmented"
+          ],
+          "REFERENCE_LIST": [
+            "code",
+            "description"
+          ],
+          "RELATED_PARTY_TRANSACTIONS": [
+            "related party",
+            "transaction",
+            "rpt"
+          ],
+          "APPENDIX_DISCLOSURE": [
+            "code",
+            "description"
+          ],
+          "TAXPAYER_PROFILE": [
+            "tax code",
+            "company name"
+          ]
+        },
+        "semantic_field_types": [
+          "text",
+          "narrative",
+          "empty",
+          "empty",
+          "empty",
+          "text",
+          "text",
+          "text",
+          "text",
+          "narrative",
+          "empty",
+          "empty",
+          "empty",
+          "empty"
+        ],
+        "units": [],
+        "formula_presence": false,
+        "formula_cell_count": 0,
+        "data_domain": "ENTITY",
+        "record_pattern": "TABULAR_WITH_NARRATIVE",
+        "section_labels": [
+          "Company name:",
+          "Hestra Matsuoka Vietnam Limited Liability Company",
+          "Name",
+          "Date"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "Full Appendix I",
+        "row_count": 184,
+        "column_count": 35,
+        "record_count": 152,
+        "headers": [],
+        "header_row_index": null,
+        "c2_roles": [
+          "RPT_DATA"
+        ],
+        "dataset_roles": [
+          "RELATED_PARTY_TRANSACTIONS"
+        ],
+        "role_evidence": {
+          "RPT_DATA": [
+            "related party",
+            "transaction",
+            "rpt"
+          ],
+          "RELATED_PARTY_TRANSACTIONS": [
+            "related party",
+            "transaction",
+            "rpt"
+          ]
+        },
+        "semantic_field_types": [
+          "text",
+          "text",
+          "text",
+          "numeric",
+          "numeric",
+          "numeric",
+          "text",
+          "text",
+          "text",
+          "narrative",
+          "text",
+          "numeric",
+          "text",
+          "text",
+          "text",
+          "numeric"
+        ],
+        "units": [],
+        "formula_presence": true,
+        "formula_cell_count": 314,
+        "data_domain": "MIXED",
+        "record_pattern": "TABULAR_WITH_NARRATIVE",
+        "section_labels": []
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "I. Related parties",
+        "row_count": 18,
+        "column_count": 19,
+        "record_count": 8,
+        "headers": [
+          "STT",
+          "Tên bên liên kết",
+          "Quốc gia",
+          "Mã số thuế",
+          "Hình thức liên kết",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "header_row_index": 9,
+        "c2_roles": [
+          "UNKNOWN"
+        ],
+        "dataset_roles": [
+          "UNKNOWN"
+        ],
+        "role_evidence": {},
+        "semantic_field_types": [
+          "numeric",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text"
+        ],
+        "units": [
+          "%",
+          "eur"
+        ],
+        "formula_presence": false,
+        "formula_cell_count": 0,
+        "data_domain": "ENTITY",
+        "record_pattern": "TABULAR_TEXT",
+        "section_labels": [
+          "STT",
+          "Tên bên liên kết",
+          "Quốc gia",
+          "Mã số thuế",
+          "Hình thức liên kết"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "Country list",
+        "row_count": 275,
+        "column_count": 2,
+        "record_count": 274,
+        "headers": [
+          "<ten_quocGia>",
+          "<ma_quocGia>"
+        ],
+        "header_row_index": 0,
+        "c2_roles": [
+          "UNKNOWN"
+        ],
+        "dataset_roles": [
+          "UNKNOWN"
+        ],
+        "role_evidence": {},
+        "semantic_field_types": [
+          "text",
+          "text"
+        ],
+        "units": [],
+        "formula_presence": false,
+        "formula_cell_count": 0,
+        "data_domain": "ENTITY",
+        "record_pattern": "TABULAR_TEXT",
+        "section_labels": [
+          "<ten_quocGia>",
+          "<ma_quocGia>"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "III. Summary-RPTs",
+        "row_count": 64,
+        "column_count": 27,
+        "record_count": 37,
+        "headers": [
+          "Chỉ tiêu theo Phụ lục I/ Item per Appendix I",
+          "Loại giao dịch/ Transactions category",
+          "Tên giao dịch (tiếng Anh)/ Name of transactions (English)",
+          "Tên giao dịch (tiếng Việt)/ Name of transactions (Vietnamese)",
+          "Tên của Bên liên kết (Tiếng Anh)/ Name of related party (English)",
+          "Tên của Bên liên kết (Tiếng Việt)/ Name of related party (Vietnamese)",
+          "Giá trị theo đồng nước ngoài/ Value in foreign currency",
+          "Giá trị giao dịch (VND)/ (*) Transaction value (VND)",
+          "",
+          "",
+          "",
+          "",
+          "Mô tả giao dịch và phương pháp xác định giá/ Description of transactions and transfer pricing methods",
+          "Kê khai phương pháp xác định giá trên Phụ lục I/ Disclosure of transfer pricing method in Appendix I",
+          "Lưu ý của KPMG/ KPMG's notes",
+          ""
+        ],
+        "header_row_index": 10,
+        "c2_roles": [
+          "INTEREST_EXPENSE",
+          "RPT_DATA"
+        ],
+        "dataset_roles": [
+          "INTEREST_EXPENSE",
+          "RELATED_PARTY_TRANSACTIONS",
+          "APPENDIX_DISCLOSURE"
+        ],
+        "role_evidence": {
+          "RPT_DATA": [
+            "related party",
+            "transaction"
+          ],
+          "INTEREST_EXPENSE": [
+            "interest",
+            "loan"
+          ],
+          "RELATED_PARTY_TRANSACTIONS": [
+            "related party",
+            "transaction"
+          ],
+          "APPENDIX_DISCLOSURE": [
+            "appendix",
+            "disclosure"
+          ]
+        },
+        "semantic_field_types": [
+          "text",
+          "narrative",
+          "text",
+          "text",
+          "text",
+          "text",
+          "text",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "narrative",
+          "text",
+          "narrative",
+          "empty"
+        ],
+        "units": [
+          "vnd",
+          "%"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 77,
+        "data_domain": "MIXED",
+        "record_pattern": "TABULAR_WITH_NARRATIVE",
+        "section_labels": [
+          "Chỉ tiêu theo Phụ lục I/ Item per Appendix I",
+          "Loại giao dịch/ Transactions category",
+          "Tên giao dịch (tiếng Anh)/ Name of transactions (English)",
+          "Tên giao dịch (tiếng Việt)/ Name of transactions (Vietnamese)",
+          "Tên của Bên liên kết (Tiếng Anh)/ Name of related party (English)",
+          "Tên của Bên liên kết (Tiếng Việt)/ Name of related party (Vietnamese)",
+          "Giá trị theo đồng nước ngoài/ Value in foreign currency",
+          "Giá trị giao dịch (VND)/ (*) Transaction value (VND)"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "IV. Segmented data",
+        "row_count": 40,
+        "column_count": 20,
+        "record_count": 28,
+        "headers": [
+          "(1)",
+          "(2)",
+          "(3)",
+          "(4)",
+          "(5)",
+          "(6)=(3)+(4)+(5)",
+          "(7)",
+          "(8)",
+          "(9)",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "header_row_index": 11,
+        "c2_roles": [
+          "FINANCIAL_STATEMENTS",
+          "INTEREST_EXPENSE"
+        ],
+        "dataset_roles": [
+          "FINANCIAL_STATEMENTS",
+          "INTEREST_EXPENSE"
+        ],
+        "role_evidence": {
+          "INTEREST_EXPENSE": [
+            "interest",
+            "loan"
+          ],
+          "FINANCIAL_STATEMENTS": [
+            "revenue",
+            "cost of goods sold"
+          ]
+        },
+        "semantic_field_types": [
+          "numeric",
+          "narrative",
+          "numeric",
+          "empty",
+          "numeric",
+          "numeric",
+          "text",
+          "numeric",
+          "numeric",
+          "numeric",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty",
+          "empty"
+        ],
+        "units": [
+          "%"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 75,
+        "data_domain": "MONETARY",
+        "record_pattern": "TABULAR_NUMERIC",
+        "section_labels": [
+          "(1)",
+          "(2)",
+          "(3)",
+          "(4)",
+          "(5)",
+          "(6)=(3)+(4)+(5)",
+          "(7)",
+          "(8)",
+          "(9)"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "FS",
+        "row_count": 66,
+        "column_count": 9,
+        "record_count": 45,
+        "headers": [
+          "No./ STT",
+          "Item/ Mục",
+          "Value (USD)/ Giá trị (USD) (*)",
+          "Value (VND)/ Giá trị (VNĐ) (*)",
+          "KPMG's notes/ Lưu ý của KPMG",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "header_row_index": 10,
+        "c2_roles": [
+          "FINANCIAL_ANALYSIS",
+          "FINANCIAL_STATEMENTS",
+          "INTEREST_EXPENSE"
+        ],
+        "dataset_roles": [
+          "FINANCIAL_ANALYSIS",
+          "FINANCIAL_STATEMENTS",
+          "INTEREST_EXPENSE"
+        ],
+        "role_evidence": {
+          "INTEREST_EXPENSE": [
+            "interest",
+            "loan"
+          ],
+          "FINANCIAL_STATEMENTS": [
+            "net sales",
+            "revenue",
+            "cost of goods sold",
+            "gross profit"
+          ],
+          "FINANCIAL_ANALYSIS": [
+            "net cost plus",
+            "operating margin",
+            "ebit",
+            "ratio",
+            "margin"
+          ]
+        },
+        "semantic_field_types": [
+          "text",
+          "text",
+          "text",
+          "numeric",
+          "narrative",
+          "empty",
+          "numeric",
+          "text",
+          "empty"
+        ],
+        "units": [
+          "vnd",
+          "usd"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 47,
+        "data_domain": "MIXED",
+        "record_pattern": "TABULAR_WITH_NARRATIVE",
+        "section_labels": [
+          "No./ STT",
+          "Item/ Mục",
+          "Value (USD)/ Giá trị (USD) (*)",
+          "Value (VND)/ Giá trị (VNĐ) (*)",
+          "KPMG's notes/ Lưu ý của KPMG"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "Interest expenses",
+        "row_count": 63,
+        "column_count": 14,
+        "record_count": 37,
+        "headers": [
+          "Working papers (For internal reference only, not for submission to the tax authority)",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "BACK TO SEGMENTED DATA",
+          "",
+          "",
+          ""
+        ],
+        "header_row_index": 0,
+        "c2_roles": [
+          "SEGMENTED_DATA"
+        ],
+        "dataset_roles": [
+          "SEGMENTED_DATA"
+        ],
+        "role_evidence": {
+          "SEGMENTED_DATA": [
+            "segment",
+            "segmented"
+          ]
+        },
+        "semantic_field_types": [
+          "narrative",
+          "text",
+          "text",
+          "numeric",
+          "text",
+          "numeric",
+          "text",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "empty",
+          "text",
+          "empty"
+        ],
+        "units": [
+          "vnd",
+          "%"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 69,
+        "data_domain": "MIXED",
+        "record_pattern": "TABULAR_NUMERIC",
+        "section_labels": [
+          "Working papers (For internal reference only, not for submission to the tax authority)"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "Types of relationship",
+        "row_count": 18,
+        "column_count": 5,
+        "record_count": 13,
+        "headers": [
+          "STT/ No.",
+          "Hình thức liên kết/ Type of relationship",
+          "Kê khai trên Phụ lục I/ Disclosure in Appendix I",
+          "Lưu ý của KPMG/ KPMG's note",
+          ""
+        ],
+        "header_row_index": 4,
+        "c2_roles": [
+          "UNKNOWN"
+        ],
+        "dataset_roles": [
+          "APPENDIX_DISCLOSURE"
+        ],
+        "role_evidence": {
+          "APPENDIX_DISCLOSURE": [
+            "appendix",
+            "disclosure"
+          ]
+        },
+        "semantic_field_types": [
+          "numeric",
+          "narrative",
+          "text",
+          "text",
+          "empty"
+        ],
+        "units": [
+          "%"
+        ],
+        "formula_presence": false,
+        "formula_cell_count": 0,
+        "data_domain": "NARRATIVE",
+        "record_pattern": "TABULAR_WITH_NARRATIVE",
+        "section_labels": [
+          "STT/ No.",
+          "Hình thức liên kết/ Type of relationship",
+          "Kê khai trên Phụ lục I/ Disclosure in Appendix I",
+          "Lưu ý của KPMG/ KPMG's note"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "Transfer pricing method",
+        "row_count": 24,
+        "column_count": 6,
+        "record_count": 11,
+        "headers": [
+          "STT",
+          "Phương pháp xác định giá",
+          "Mô tả",
+          "Chi tiết",
+          "Kê khai trên Phụ lục I",
+          ""
+        ],
+        "header_row_index": 4,
+        "c2_roles": [
+          "UNKNOWN"
+        ],
+        "dataset_roles": [
+          "UNKNOWN"
+        ],
+        "role_evidence": {},
+        "semantic_field_types": [
+          "numeric",
+          "text",
+          "narrative",
+          "narrative",
+          "text",
+          "empty"
+        ],
+        "units": [],
+        "formula_presence": false,
+        "formula_cell_count": 0,
+        "data_domain": "NARRATIVE",
+        "record_pattern": "TABULAR_WITH_NARRATIVE",
+        "section_labels": [
+          "STT",
+          "Phương pháp xác định giá",
+          "Mô tả",
+          "Chi tiết",
+          "Kê khai trên Phụ lục I"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "Note FS",
+        "row_count": 427,
+        "column_count": 19,
+        "record_count": 344,
+        "headers": [
+          "",
+          "2024-12-31 00:00:00",
+          "2023-12-31 00:00:00",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "2024-12-31 00:00:00",
+          "2023-12-31 00:00:00",
+          "",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "header_row_index": 6,
+        "c2_roles": [
+          "UNKNOWN"
+        ],
+        "dataset_roles": [
+          "UNKNOWN"
+        ],
+        "role_evidence": {},
+        "semantic_field_types": [
+          "text",
+          "text",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "text",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "text",
+          "text"
+        ],
+        "units": [
+          "vnd",
+          "usd"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 889,
+        "data_domain": "MONETARY",
+        "record_pattern": "TABULAR_NUMERIC",
+        "section_labels": [
+          "2024-12-31 00:00:00",
+          "2023-12-31 00:00:00",
+          "2024-12-31 00:00:00"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "P&L",
+        "row_count": 35,
+        "column_count": 11,
+        "record_count": 14,
+        "headers": [
+          "Including: interest expense",
+          "Trong đó: chi phí lãi vay",
+          "PL23",
+          "150082",
+          "31579",
+          "25032",
+          "23842",
+          "3756852624",
+          "752906518",
+          "leave",
+          "Manual input is needed for this row"
+        ],
+        "header_row_index": 10,
+        "c2_roles": [
+          "UNKNOWN"
+        ],
+        "dataset_roles": [
+          "UNKNOWN"
+        ],
+        "role_evidence": {},
+        "semantic_field_types": [
+          "text",
+          "text",
+          "text",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "text",
+          "empty"
+        ],
+        "units": [],
+        "formula_presence": true,
+        "formula_cell_count": 104,
+        "data_domain": "MIXED",
+        "record_pattern": "TABULAR_NUMERIC",
+        "section_labels": [
+          "Including: interest expense",
+          "Trong đó: chi phí lãi vay",
+          "PL23",
+          "150082",
+          "31579",
+          "25032",
+          "23842",
+          "3756852624",
+          "752906518",
+          "leave"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "CF",
+        "row_count": 65536,
+        "column_count": 11,
+        "record_count": 46,
+        "headers": [
+          "",
+          "",
+          "Code",
+          "Year 2024",
+          "Year 2023",
+          "Exchange rate",
+          "Exchange rate",
+          "Year 2024",
+          "Year 2023",
+          "",
+          ""
+        ],
+        "header_row_index": 1,
+        "c2_roles": [
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE"
+        ],
+        "dataset_roles": [
+          "FIXED_ASSETS",
+          "INTEREST_EXPENSE"
+        ],
+        "role_evidence": {
+          "FIXED_ASSETS": [
+            "fixed asset",
+            "depreciation"
+          ],
+          "INTEREST_EXPENSE": [
+            "interest",
+            "loan"
+          ]
+        },
+        "semantic_field_types": [
+          "text",
+          "text",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "text",
+          "numeric"
+        ],
+        "units": [
+          "vnd",
+          "usd"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 166,
+        "data_domain": "MONETARY",
+        "record_pattern": "TABULAR_NUMERIC",
+        "section_labels": [
+          "Code",
+          "Year 2024",
+          "Year 2023",
+          "Exchange rate",
+          "Exchange rate",
+          "Year 2024",
+          "Year 2023"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "Exchange rate calculation",
+        "row_count": 29,
+        "column_count": 8,
+        "record_count": 21,
+        "headers": [
+          "",
+          "",
+          "2024-12-31 00:00:00",
+          "2023-12-31 00:00:00",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "header_row_index": 3,
+        "c2_roles": [
+          "UNKNOWN"
+        ],
+        "dataset_roles": [
+          "UNKNOWN"
+        ],
+        "role_evidence": {},
+        "semantic_field_types": [
+          "text",
+          "text",
+          "numeric",
+          "numeric",
+          "numeric",
+          "text",
+          "numeric",
+          "numeric"
+        ],
+        "units": [
+          "vnd",
+          "usd"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 14,
+        "data_domain": "MONETARY",
+        "record_pattern": "TABULAR_NUMERIC",
+        "section_labels": [
+          "2024-12-31 00:00:00",
+          "2023-12-31 00:00:00"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "TỶ giá ngày TCB",
+        "row_count": 440,
+        "column_count": 12,
+        "record_count": 371,
+        "headers": [
+          "",
+          "",
+          "Tiền mặt/séc",
+          "Chuyển khoản",
+          "CK",
+          "TM",
+          "Tỷ giá BQ ngày",
+          "Variance",
+          "Absolute value",
+          "",
+          "BQ theo ngày cả năm",
+          "25031.657103825135"
+        ],
+        "header_row_index": 3,
+        "c2_roles": [
+          "UNKNOWN"
+        ],
+        "dataset_roles": [
+          "UNKNOWN"
+        ],
+        "role_evidence": {},
+        "semantic_field_types": [
+          "text",
+          "text",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "numeric",
+          "text",
+          "text",
+          "numeric"
+        ],
+        "units": [],
+        "formula_presence": true,
+        "formula_cell_count": 1480,
+        "data_domain": "MONETARY",
+        "record_pattern": "TABULAR_NUMERIC",
+        "section_labels": [
+          "Tiền mặt/séc",
+          "Chuyển khoản",
+          "CK",
+          "TM",
+          "Tỷ giá BQ ngày",
+          "Variance",
+          "Absolute value"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "Lãi vay vốn hóa - PBC",
+        "row_count": 125,
+        "column_count": 14,
+        "record_count": 118,
+        "headers": [
+          "Detail Trial Balance",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "Saturday, March 29, 2025",
+          "",
+          "",
+          "",
+          ""
+        ],
+        "header_row_index": 0,
+        "c2_roles": [
+          "UNKNOWN"
+        ],
+        "dataset_roles": [
+          "UNKNOWN"
+        ],
+        "role_evidence": {},
+        "semantic_field_types": [
+          "text",
+          "text",
+          "text",
+          "narrative",
+          "empty",
+          "empty",
+          "numeric",
+          "empty",
+          "numeric",
+          "text",
+          "empty",
+          "numeric",
+          "empty",
+          "numeric"
+        ],
+        "units": [
+          "usd"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 2,
+        "data_domain": "MIXED",
+        "record_pattern": "TABULAR_NUMERIC",
+        "section_labels": [
+          "Detail Trial Balance",
+          "Saturday, March 29, 2025"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "IV. Segmented data_banking",
+        "row_count": 39,
+        "column_count": 9,
+        "record_count": 34,
+        "headers": [
+          "Working papers (For internal reference only, not for submission to the tax authority)",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "BACK TO FULL APPENDIX I",
+          ""
+        ],
+        "header_row_index": 0,
+        "c2_roles": [
+          "UNKNOWN"
+        ],
+        "dataset_roles": [
+          "UNKNOWN"
+        ],
+        "role_evidence": {},
+        "semantic_field_types": [
+          "text",
+          "narrative",
+          "text",
+          "text",
+          "numeric",
+          "numeric",
+          "narrative",
+          "empty",
+          "empty"
+        ],
+        "units": [
+          "vnd"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 30,
+        "data_domain": "MIXED",
+        "record_pattern": "TABULAR_WITH_NARRATIVE",
+        "section_labels": [
+          "Working papers (For internal reference only, not for submission to the tax authority)",
+          "BACK TO FULL APPENDIX I"
+        ]
+      },
+      {
+        "workbook": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+        "sheet_name": "IV. Segmented data_securities",
+        "row_count": 82,
+        "column_count": 9,
+        "record_count": 76,
+        "headers": [
+          "Working papers (For internal reference only, not for submission to the tax authority)",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "",
+          "BACK TO FULL APPENDIX I",
+          ""
+        ],
+        "header_row_index": 0,
+        "c2_roles": [
+          "INTEREST_EXPENSE"
+        ],
+        "dataset_roles": [
+          "INTEREST_EXPENSE"
+        ],
+        "role_evidence": {
+          "INTEREST_EXPENSE": [
+            "interest",
+            "loan"
+          ]
+        },
+        "semantic_field_types": [
+          "text",
+          "narrative",
+          "numeric",
+          "text",
+          "numeric",
+          "numeric",
+          "narrative",
+          "empty",
+          "empty"
+        ],
+        "units": [
+          "vnd"
+        ],
+        "formula_presence": true,
+        "formula_cell_count": 67,
+        "data_domain": "MIXED",
+        "record_pattern": "TABULAR_NUMERIC",
+        "section_labels": [
+          "Working papers (For internal reference only, not for submission to the tax authority)",
+          "BACK TO FULL APPENDIX I"
+        ]
+      }
+    ]
+  },
+  "requirement_matrix": [
+    {
+      "region_id": "rgn-001",
+      "heading": "PREAMBLE (before first heading)",
+      "section_path": [],
+      "domain": "TAXPAYER_PROFILE",
+      "domain_evidence": "classified from contained table 0 (semantic label COVER_BLOCK)",
+      "classification": "MIXED",
+      "required_information": [
+        "legal name",
+        "tax code",
+        "address",
+        "fiscal year",
+        "principal activity"
+      ],
+      "required_source_roles": [
+        "TAXPAYER_PROFILE"
+      ],
+      "required_granularity": "one record per taxpayer attribute",
+      "current_source_artifacts": [
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist"
+      ],
+      "source_roles_found": [
+        "TAXPAYER_PROFILE"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "classified from contained table 0 (semantic label COVER_BLOCK)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['TAXPAYER_PROFILE'] (68 records)",
+        "table 0 (COVER_BLOCK, 3x1, row_semantics=UNKNOWN) binding=INSUFFICIENT_EVIDENCE",
+        "table 1 (COVER_BLOCK, 3x1, row_semantics=UNKNOWN) binding=INSUFFICIENT_EVIDENCE"
+      ],
+      "table_ordinals": [
+        0,
+        1
+      ],
+      "figure_ids": [
+        "fig-p0003"
+      ]
+    },
+    {
+      "region_id": "rgn-002",
+      "heading": "Glossary",
+      "section_path": [],
+      "domain": "STATUTORY_METHODOLOGY",
+      "domain_evidence": "heading contains 'glossary'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "statutory method definitions",
+        "Decree 20/132 methodology text"
+      ],
+      "required_source_roles": [
+        "STATUTORY_TEXT"
+      ],
+      "required_granularity": "document-level narrative; no per-record data",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "HUMAN_REVIEW",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REUSABLE_BASELINE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "Region contains 2 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue."
+      ],
+      "evidence": [
+        "heading contains 'glossary'",
+        "Statutory methodology text is year-independent; carried forward unchanged."
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0044"
+      ]
+    },
+    {
+      "region_id": "rgn-003",
+      "heading": "Objective and scope",
+      "section_path": [],
+      "domain": "STATUTORY_METHODOLOGY",
+      "domain_evidence": "heading contains 'objective and scope'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "statutory method definitions",
+        "Decree 20/132 methodology text"
+      ],
+      "required_source_roles": [
+        "STATUTORY_TEXT"
+      ],
+      "required_granularity": "document-level narrative; no per-record data",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "HUMAN_REVIEW",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REUSABLE_BASELINE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "Region contains 4 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue."
+      ],
+      "evidence": [
+        "heading contains 'objective and scope'",
+        "Statutory methodology text is year-independent; carried forward unchanged."
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-004",
+      "heading": "Executive Summary",
+      "section_path": [],
+      "domain": "EXECUTIVE_SUMMARY",
+      "domain_evidence": "heading contains 'executive summary'",
+      "classification": "MIXED",
+      "required_information": [
+        "transaction summary",
+        "method selected",
+        "arm's-length conclusion"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS",
+        "IQR_RESULTS"
+      ],
+      "required_granularity": "one row per tested transaction",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "PARTIALLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "BENCHMARKING_REPORT",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "Partially supported: ['RELATED_PARTY_TRANSACTIONS'] available, ['IQR_RESULTS'] absent. A reviewer must supply or waive the missing part."
+      ],
+      "evidence": [
+        "heading contains 'executive summary'",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "table 2 (UNKNOWN, 4x3, row_semantics=UNKNOWN) binding=INSUFFICIENT_EVIDENCE"
+      ],
+      "table_ordinals": [
+        2
+      ],
+      "figure_ids": [
+        "fig-p0071"
+      ]
+    },
+    {
+      "region_id": "rgn-005",
+      "heading": "PART A. TAXPAYER INFORMATION",
+      "section_path": [],
+      "domain": "STRUCTURAL_CONTAINER",
+      "domain_evidence": "heading 'PART A. TAXPAYER INFORMATION' is a structural part container",
+      "classification": "CONTAINER",
+      "required_information": [],
+      "required_source_roles": [],
+      "required_granularity": "none",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "NOT_APPLICABLE",
+      "readiness": "NOT_APPLICABLE",
+      "historical_reuse": "NOT_APPLICABLE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [],
+      "evidence": [
+        "heading 'PART A. TAXPAYER INFORMATION' is a structural part container"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-006",
+      "heading": "Information on ABC",
+      "section_path": [],
+      "domain": "TAXPAYER_PROFILE",
+      "domain_evidence": "heading contains 'information on'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "legal name",
+        "tax code",
+        "address",
+        "fiscal year",
+        "principal activity"
+      ],
+      "required_source_roles": [
+        "TAXPAYER_PROFILE"
+      ],
+      "required_granularity": "one record per taxpayer attribute",
+      "current_source_artifacts": [
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist"
+      ],
+      "source_roles_found": [
+        "TAXPAYER_PROFILE"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'information on'",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['TAXPAYER_PROFILE'] (68 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-007",
+      "heading": "Overview of the XYZ Group",
+      "section_path": [
+        "Information on ABC"
+      ],
+      "domain": "GROUP_PROFILE",
+      "domain_evidence": "heading contains 'overview of the'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "group structure",
+        "ultimate parent",
+        "group activities"
+      ],
+      "required_source_roles": [
+        "OWNERSHIP_STRUCTURE",
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "document-level narrative",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "NARRATIVE_DOCUMENT",
+      "blocking_reasons": [
+        "None of the required dataset roles ['OWNERSHIP_STRUCTURE', 'NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'overview of the'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0081"
+      ]
+    },
+    {
+      "region_id": "rgn-008",
+      "heading": "Overview of ABC",
+      "section_path": [
+        "Information on ABC"
+      ],
+      "domain": "BUSINESS_NARRATIVE",
+      "domain_evidence": "heading contains 'overview of abc'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year business facts",
+        "strategy statement",
+        "restructuring events"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "document-level narrative",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'overview of abc'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-009",
+      "heading": "Background",
+      "section_path": [
+        "Information on ABC",
+        "Overview of ABC"
+      ],
+      "domain": "BUSINESS_NARRATIVE",
+      "domain_evidence": "heading contains 'background'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year business facts",
+        "strategy statement",
+        "restructuring events"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "document-level narrative",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'background'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-010",
+      "heading": "ABC’s organisation and management structure",
+      "section_path": [
+        "Information on ABC",
+        "Overview of ABC"
+      ],
+      "domain": "ORGANIZATION",
+      "domain_evidence": "heading contains 'organisation and management'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current organisation chart",
+        "reporting lines",
+        "headcount"
+      ],
+      "required_source_roles": [
+        "ORGANIZATIONAL_DATA"
+      ],
+      "required_granularity": "one node per organisational unit",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "ORGANIZATION_CHART",
+      "blocking_reasons": [
+        "None of the required dataset roles ['ORGANIZATIONAL_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'organisation and management'",
+        "fig-p0091: ORGANIZATION_CHART -> HUMAN_REVIEW",
+        "FY2023 text may NOT be promoted to current-year verified: this domain carries year-specific facts and no current source is available."
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0088",
+        "fig-p0091",
+        "fig-p0101",
+        "fig-p0108",
+        "fig-p0109"
+      ]
+    },
+    {
+      "region_id": "rgn-011",
+      "heading": "Business strategy",
+      "section_path": [
+        "Information on ABC",
+        "Overview of ABC"
+      ],
+      "domain": "BUSINESS_NARRATIVE",
+      "domain_evidence": "heading contains 'business strategy'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year business facts",
+        "strategy statement",
+        "restructuring events"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "document-level narrative",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'business strategy'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-012",
+      "heading": "Business restructurings, capital transfers, or asset transfers of the Group",
+      "section_path": [
+        "Information on ABC",
+        "Overview of ABC"
+      ],
+      "domain": "GROUP_PROFILE",
+      "domain_evidence": "heading contains 'group'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "group structure",
+        "ultimate parent",
+        "group activities"
+      ],
+      "required_source_roles": [
+        "OWNERSHIP_STRUCTURE",
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "document-level narrative",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "NARRATIVE_DOCUMENT",
+      "blocking_reasons": [
+        "None of the required dataset roles ['OWNERSHIP_STRUCTURE', 'NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'group'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-013",
+      "heading": "Companies having similar products / Key competitors",
+      "section_path": [
+        "Information on ABC"
+      ],
+      "domain": "COMPETITOR_ANALYSIS",
+      "domain_evidence": "heading contains 'key competitors'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "competitor identities",
+        "market position",
+        "product overlap"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per competitor",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'key competitors'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0116",
+        "fig-p0120"
+      ]
+    },
+    {
+      "region_id": "rgn-014",
+      "heading": "PART B. INFORMATION ON TAXPAYER’S RELATED PARTY TRANSACTIONS",
+      "section_path": [],
+      "domain": "STRUCTURAL_CONTAINER",
+      "domain_evidence": "heading 'PART B. INFORMATION ON TAXPAYER’S RELATED PARTY TRANSACTIONS' is a structural part container",
+      "classification": "CONTAINER",
+      "required_information": [],
+      "required_source_roles": [],
+      "required_granularity": "none",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "NOT_APPLICABLE",
+      "readiness": "NOT_APPLICABLE",
+      "historical_reuse": "NOT_APPLICABLE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [],
+      "evidence": [
+        "heading 'PART B. INFORMATION ON TAXPAYER’S RELATED PARTY TRANSACTIONS' is a structural part container"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-015",
+      "heading": "Related party transactions",
+      "section_path": [],
+      "domain": "RELATED_PARTY_TRANSACTIONS",
+      "domain_evidence": "heading contains 'related party transaction'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "counterparty",
+        "transaction type",
+        "amount",
+        "currency",
+        "fiscal year",
+        "% of net sales or total cost"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "required_granularity": "one record per related-party transaction line",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'related party transaction'",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-016",
+      "heading": "Overview",
+      "section_path": [
+        "Related party transactions"
+      ],
+      "domain": "RELATED_PARTY_TRANSACTIONS",
+      "domain_evidence": "inherited from parent section 'Related party transactions' (heading contains 'related party transaction')",
+      "classification": "MIXED",
+      "required_information": [
+        "counterparty",
+        "transaction type",
+        "amount",
+        "currency",
+        "fiscal year",
+        "% of net sales or total cost"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "required_granularity": "one record per related-party transaction line",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "inherited from parent section 'Related party transactions' (heading contains 'related party transaction')",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "table 3 (RELATED_PARTY_TRANSACTIONS, 8x4, row_semantics=ENTITY_RECORD) binding=VERIFIED",
+        "fig-p0127: TRANSACTION_FLOW -> HUMAN_REVIEW"
+      ],
+      "table_ordinals": [
+        3
+      ],
+      "figure_ids": [
+        "fig-p0127"
+      ]
+    },
+    {
+      "region_id": "rgn-017",
+      "heading": "Details of related party transactions",
+      "section_path": [
+        "Related party transactions"
+      ],
+      "domain": "RELATED_PARTY_TRANSACTIONS",
+      "domain_evidence": "heading contains 'related party transaction'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "counterparty",
+        "transaction type",
+        "amount",
+        "currency",
+        "fiscal year",
+        "% of net sales or total cost"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "required_granularity": "one record per related-party transaction line",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'related party transaction'",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0129"
+      ]
+    },
+    {
+      "region_id": "rgn-018",
+      "heading": "Sales of goods / merchandises / goods",
+      "section_path": [
+        "Related party transactions",
+        "Details of related party transactions"
+      ],
+      "domain": "RELATED_PARTY_TRANSACTIONS",
+      "domain_evidence": "heading contains 'sales of goods'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "counterparty",
+        "transaction type",
+        "amount",
+        "currency",
+        "fiscal year",
+        "% of net sales or total cost"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "required_granularity": "one record per related-party transaction line",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'sales of goods'",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-019",
+      "heading": "Purchases of materials / merchandises / goods",
+      "section_path": [
+        "Related party transactions",
+        "Details of related party transactions"
+      ],
+      "domain": "RELATED_PARTY_TRANSACTIONS",
+      "domain_evidence": "heading contains 'purchases of materials'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "counterparty",
+        "transaction type",
+        "amount",
+        "currency",
+        "fiscal year",
+        "% of net sales or total cost"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "required_granularity": "one record per related-party transaction line",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'purchases of materials'",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-020",
+      "heading": "Provision of services",
+      "section_path": [
+        "Related party transactions",
+        "Details of related party transactions"
+      ],
+      "domain": "RELATED_PARTY_TRANSACTIONS",
+      "domain_evidence": "heading contains 'provision of services'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "counterparty",
+        "transaction type",
+        "amount",
+        "currency",
+        "fiscal year",
+        "% of net sales or total cost"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "required_granularity": "one record per related-party transaction line",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'provision of services'",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0135"
+      ]
+    },
+    {
+      "region_id": "rgn-021",
+      "heading": "Receipt of technical support services",
+      "section_path": [
+        "Related party transactions",
+        "Details of related party transactions"
+      ],
+      "domain": "RELATED_PARTY_TRANSACTIONS",
+      "domain_evidence": "heading contains 'technical support'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "counterparty",
+        "transaction type",
+        "amount",
+        "currency",
+        "fiscal year",
+        "% of net sales or total cost"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "required_granularity": "one record per related-party transaction line",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'technical support'",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-022",
+      "heading": "Payment of royalties / licensing fee / trademark fee",
+      "section_path": [
+        "Related party transactions",
+        "Details of related party transactions"
+      ],
+      "domain": "RELATED_PARTY_TRANSACTIONS",
+      "domain_evidence": "heading contains 'royalt'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "counterparty",
+        "transaction type",
+        "amount",
+        "currency",
+        "fiscal year",
+        "% of net sales or total cost"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "required_granularity": "one record per related-party transaction line",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'royalt'",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-023",
+      "heading": "Payment of interest on intercompany loan(s)",
+      "section_path": [
+        "Related party transactions",
+        "Details of related party transactions"
+      ],
+      "domain": "RELATED_PARTY_TRANSACTIONS",
+      "domain_evidence": "heading contains 'interest on intercompany'",
+      "classification": "MIXED",
+      "required_information": [
+        "counterparty",
+        "transaction type",
+        "amount",
+        "currency",
+        "fiscal year",
+        "% of net sales or total cost"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "required_granularity": "one record per related-party transaction line",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'interest on intercompany'",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "table 4 (INTEREST_SCHEDULE, 4x5, row_semantics=ENTITY_RECORD) binding=VERIFIED"
+      ],
+      "table_ordinals": [
+        4
+      ],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-024",
+      "heading": "Purchases / sales of fixed assets",
+      "section_path": [
+        "Related party transactions",
+        "Details of related party transactions",
+        "Payment of interest on intercompany loan(s)"
+      ],
+      "domain": "RELATED_PARTY_TRANSACTIONS",
+      "domain_evidence": "heading contains 'fixed assets'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "counterparty",
+        "transaction type",
+        "amount",
+        "currency",
+        "fiscal year",
+        "% of net sales or total cost"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "required_granularity": "one record per related-party transaction line",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'fixed assets'",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-025",
+      "heading": "Other transactions",
+      "section_path": [
+        "Related party transactions",
+        "Details of related party transactions"
+      ],
+      "domain": "RELATED_PARTY_TRANSACTIONS",
+      "domain_evidence": "heading contains 'other transactions'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "counterparty",
+        "transaction type",
+        "amount",
+        "currency",
+        "fiscal year",
+        "% of net sales or total cost"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "required_granularity": "one record per related-party transaction line",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'other transactions'",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0157"
+      ]
+    },
+    {
+      "region_id": "rgn-026",
+      "heading": "Values of intra-group payments and receipts with supporting invoices for each category of related party transactions involving the local entity being adjusted by the foreign tax authorities",
+      "section_path": [
+        "Related party transactions"
+      ],
+      "domain": "RELATED_PARTY_TRANSACTIONS",
+      "domain_evidence": "heading contains 'related party transaction'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "counterparty",
+        "transaction type",
+        "amount",
+        "currency",
+        "fiscal year",
+        "% of net sales or total cost"
+      ],
+      "required_source_roles": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "required_granularity": "one record per related-party transaction line",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ],
+      "source_roles_found": [
+        "RELATED_PARTY_TRANSACTIONS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'related party transaction'",
+        "HMV-FA&RPT FY2024.xlsx!RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (12 records)",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist supplies ['RELATED_PARTY_TRANSACTIONS'] (68 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I supplies ['RELATED_PARTY_TRANSACTIONS'] (152 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs supplies ['RELATED_PARTY_TRANSACTIONS'] (37 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-027",
+      "heading": "Copies of intercompany agreements",
+      "section_path": [
+        "Related party transactions"
+      ],
+      "domain": "INTERCOMPANY_AGREEMENTS",
+      "domain_evidence": "heading contains 'copies of intercompany agreements'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "agreement inventory",
+        "counterparties",
+        "effective dates",
+        "pricing terms"
+      ],
+      "required_source_roles": [
+        "CONTRACTUAL_DATA"
+      ],
+      "required_granularity": "one record per executed intercompany agreement",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "CONTRACTUAL_DOCUMENT",
+      "blocking_reasons": [
+        "None of the required dataset roles ['CONTRACTUAL_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'copies of intercompany agreements'",
+        "FY2023 text may NOT be promoted to current-year verified: this domain carries year-specific facts and no current source is available."
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-028",
+      "heading": "Analysis of functions, assets and risks",
+      "section_path": [],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'analysis of functions'",
+      "classification": "TABULAR",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'analysis of functions'",
+        "table 5 (FUNCTIONAL_ANALYSIS, 28x3, row_semantics=UNKNOWN) binding=INSUFFICIENT_EVIDENCE"
+      ],
+      "table_ordinals": [
+        5
+      ],
+      "figure_ids": [
+        "fig-p0163"
+      ]
+    },
+    {
+      "region_id": "rgn-029",
+      "heading": "Functions performed",
+      "section_path": [
+        "Analysis of functions, assets and risks"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'functions performed'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'functions performed'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-030",
+      "heading": "Research and development (“R&D”)",
+      "section_path": [
+        "Analysis of functions, assets and risks",
+        "Functions performed"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'research and development'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'research and development'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-031",
+      "heading": "Procurement",
+      "section_path": [
+        "Analysis of functions, assets and risks",
+        "Functions performed"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'procurement'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'procurement'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-032",
+      "heading": "Production/ Operation",
+      "section_path": [
+        "Analysis of functions, assets and risks",
+        "Functions performed"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'production/ operation'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'production/ operation'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-033",
+      "heading": "Production/ Operation scheduling",
+      "section_path": [
+        "Analysis of functions, assets and risks",
+        "Functions performed",
+        "Production/ Operation"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'production/ operation'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'production/ operation'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-034",
+      "heading": "Production/ Operation process",
+      "section_path": [
+        "Analysis of functions, assets and risks",
+        "Functions performed",
+        "Production/ Operation"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'production/ operation'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'production/ operation'",
+        "fig-p0179: PROCESS_FLOW -> HUMAN_REVIEW"
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0179"
+      ]
+    },
+    {
+      "region_id": "rgn-035",
+      "heading": "Quality control and inspection",
+      "section_path": [
+        "Analysis of functions, assets and risks",
+        "Functions performed",
+        "Production/ Operation"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'quality control'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'quality control'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-036",
+      "heading": "Warehousing and Logistics",
+      "section_path": [
+        "Analysis of functions, assets and risks",
+        "Functions performed",
+        "Production/ Operation"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'warehousing'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'warehousing'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-037",
+      "heading": "Marketing and Sales",
+      "section_path": [
+        "Analysis of functions, assets and risks",
+        "Functions performed"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'marketing and sales'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'marketing and sales'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-038",
+      "heading": "After-sales services",
+      "section_path": [
+        "Analysis of functions, assets and risks",
+        "Functions performed"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'after-sales'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'after-sales'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-039",
+      "heading": "General Administration",
+      "section_path": [
+        "Analysis of functions, assets and risks",
+        "Functions performed"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'general administration'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'general administration'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-040",
+      "heading": "Assets used",
+      "section_path": [
+        "Analysis of functions, assets and risks"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'assets used'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'assets used'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0192"
+      ]
+    },
+    {
+      "region_id": "rgn-041",
+      "heading": "Risks assumed",
+      "section_path": [
+        "Analysis of functions, assets and risks"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'risks assumed'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'risks assumed'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0196",
+        "fig-p0205"
+      ]
+    },
+    {
+      "region_id": "rgn-042",
+      "heading": "Characterization of ABC",
+      "section_path": [
+        "Analysis of functions, assets and risks"
+      ],
+      "domain": "FUNCTIONAL_ANALYSIS",
+      "domain_evidence": "heading contains 'characterization of'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "narrative per function / asset / risk",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'characterization of'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-043",
+      "heading": "Changes from Previous Fiscal Year",
+      "section_path": [
+        "Analysis of functions, assets and risks"
+      ],
+      "domain": "BUSINESS_NARRATIVE",
+      "domain_evidence": "heading contains 'changes from previous fiscal year'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "current-year business facts",
+        "strategy statement",
+        "restructuring events"
+      ],
+      "required_source_roles": [
+        "NARRATIVE_DATA"
+      ],
+      "required_granularity": "document-level narrative",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REUSABLE_WITH_VERIFICATION",
+      "required_artifact_type": "MANAGEMENT_INFORMATION",
+      "blocking_reasons": [
+        "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'changes from previous fiscal year'"
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0209"
+      ]
+    },
+    {
+      "region_id": "rgn-044",
+      "heading": "Economic analysis",
+      "section_path": [],
+      "domain": "UNKNOWN",
+      "domain_evidence": "no domain keyword matched and the region carries no table, figure or substantive text",
+      "classification": "EMPTY",
+      "required_information": [],
+      "required_source_roles": [],
+      "required_granularity": "none",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "NOT_APPLICABLE",
+      "readiness": "NOT_APPLICABLE",
+      "historical_reuse": "NOT_APPLICABLE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [],
+      "evidence": [],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-045",
+      "heading": "Transfer pricing methods",
+      "section_path": [
+        "Economic analysis"
+      ],
+      "domain": "STATUTORY_METHODOLOGY",
+      "domain_evidence": "heading contains 'transfer pricing methods'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "statutory method definitions",
+        "Decree 20/132 methodology text"
+      ],
+      "required_source_roles": [
+        "STATUTORY_TEXT"
+      ],
+      "required_granularity": "document-level narrative; no per-record data",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "HUMAN_REVIEW",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REUSABLE_BASELINE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "Region contains 1 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue."
+      ],
+      "evidence": [
+        "heading contains 'transfer pricing methods'",
+        "Statutory methodology text is year-independent; carried forward unchanged."
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-046",
+      "heading": "Internal and external comparable data",
+      "section_path": [
+        "Economic analysis"
+      ],
+      "domain": "BENCHMARKING",
+      "domain_evidence": "heading contains 'internal and external comparable'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "comparable company set",
+        "screening criteria",
+        "independence codes",
+        "accepted/rejected comparables",
+        "PLI values",
+        "quartile / IQR results"
+      ],
+      "required_source_roles": [
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS"
+      ],
+      "required_granularity": "one record per comparable company; one row per screening step",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "BENCHMARKING_REPORT",
+      "blocking_reasons": [
+        "None of the required dataset roles ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'internal and external comparable'",
+        "FY2023 text may NOT be promoted to current-year verified: this domain carries year-specific facts and no current source is available."
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-047",
+      "heading": "Selection of the most appropriate transfer pricing method(s)",
+      "section_path": [
+        "Economic analysis"
+      ],
+      "domain": "STATUTORY_METHODOLOGY",
+      "domain_evidence": "heading contains 'selection of the most appropriate'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "statutory method definitions",
+        "Decree 20/132 methodology text"
+      ],
+      "required_source_roles": [
+        "STATUTORY_TEXT"
+      ],
+      "required_granularity": "document-level narrative; no per-record data",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "HUMAN_REVIEW",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REUSABLE_BASELINE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "Region contains 4 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue."
+      ],
+      "evidence": [
+        "heading contains 'selection of the most appropriate'",
+        "Statutory methodology text is year-independent; carried forward unchanged."
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0227"
+      ]
+    },
+    {
+      "region_id": "rgn-048",
+      "heading": "Application of CPM",
+      "section_path": [
+        "Economic analysis"
+      ],
+      "domain": "STATUTORY_METHODOLOGY",
+      "domain_evidence": "heading contains 'application of cpm'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "statutory method definitions",
+        "Decree 20/132 methodology text"
+      ],
+      "required_source_roles": [
+        "STATUTORY_TEXT"
+      ],
+      "required_granularity": "document-level narrative; no per-record data",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "NOT_APPLICABLE",
+      "readiness": "AUTO_NOOP_READY",
+      "historical_reuse": "REUSABLE_BASELINE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'application of cpm'",
+        "Statutory methodology text is year-independent; carried forward unchanged."
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-049",
+      "heading": "Selection of tested party",
+      "section_path": [
+        "Economic analysis",
+        "Application of CPM"
+      ],
+      "domain": "STATUTORY_METHODOLOGY",
+      "domain_evidence": "heading contains 'selection of tested party'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "statutory method definitions",
+        "Decree 20/132 methodology text"
+      ],
+      "required_source_roles": [
+        "STATUTORY_TEXT"
+      ],
+      "required_granularity": "document-level narrative; no per-record data",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "HUMAN_REVIEW",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REUSABLE_BASELINE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "Region contains 1 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue."
+      ],
+      "evidence": [
+        "heading contains 'selection of tested party'",
+        "Statutory methodology text is year-independent; carried forward unchanged."
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0235"
+      ]
+    },
+    {
+      "region_id": "rgn-050",
+      "heading": "Selection of profit level indicator (“PLI”)",
+      "section_path": [
+        "Economic analysis",
+        "Application of CPM"
+      ],
+      "domain": "STATUTORY_METHODOLOGY",
+      "domain_evidence": "heading contains 'selection of profit level indicator'",
+      "classification": "MIXED",
+      "required_information": [
+        "statutory method definitions",
+        "Decree 20/132 methodology text"
+      ],
+      "required_source_roles": [
+        "STATUTORY_TEXT"
+      ],
+      "required_granularity": "document-level narrative; no per-record data",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "HUMAN_REVIEW",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REUSABLE_BASELINE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "Region contains 4 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue."
+      ],
+      "evidence": [
+        "heading contains 'selection of profit level indicator'",
+        "Statutory methodology text is year-independent; carried forward unchanged.",
+        "table 6 (PLI_FORMULA, 2x3, row_semantics=UNKNOWN) binding=INSUFFICIENT_EVIDENCE",
+        "table 7 (PLI_FORMULA, 2x3, row_semantics=UNKNOWN) binding=INSUFFICIENT_EVIDENCE",
+        "table 8 (PLI_FORMULA, 2x3, row_semantics=UNKNOWN) binding=INSUFFICIENT_EVIDENCE"
+      ],
+      "table_ordinals": [
+        6,
+        7,
+        8
+      ],
+      "figure_ids": [
+        "fig-p0237"
+      ]
+    },
+    {
+      "region_id": "rgn-051",
+      "heading": "Search for comparable companies",
+      "section_path": [
+        "Economic analysis",
+        "Application of CPM"
+      ],
+      "domain": "BENCHMARKING",
+      "domain_evidence": "heading contains 'search for comparable companies'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "comparable company set",
+        "screening criteria",
+        "independence codes",
+        "accepted/rejected comparables",
+        "PLI values",
+        "quartile / IQR results"
+      ],
+      "required_source_roles": [
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS"
+      ],
+      "required_granularity": "one record per comparable company; one row per screening step",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "BENCHMARKING_REPORT",
+      "blocking_reasons": [
+        "None of the required dataset roles ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'search for comparable companies'",
+        "FY2023 text may NOT be promoted to current-year verified: this domain carries year-specific facts and no current source is available."
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0244"
+      ]
+    },
+    {
+      "region_id": "rgn-052",
+      "heading": "Use of standard arm’s length range",
+      "section_path": [
+        "Economic analysis",
+        "Application of CPM"
+      ],
+      "domain": "BENCHMARKING",
+      "domain_evidence": "heading contains 'standard arm'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "comparable company set",
+        "screening criteria",
+        "independence codes",
+        "accepted/rejected comparables",
+        "PLI values",
+        "quartile / IQR results"
+      ],
+      "required_source_roles": [
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS"
+      ],
+      "required_granularity": "one record per comparable company; one row per screening step",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "BENCHMARKING_REPORT",
+      "blocking_reasons": [
+        "None of the required dataset roles ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE']."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'standard arm'",
+        "FY2023 text may NOT be promoted to current-year verified: this domain carries year-specific facts and no current source is available."
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-053",
+      "heading": "Use of previous year and multiple year data",
+      "section_path": [
+        "Economic analysis",
+        "Application of CPM"
+      ],
+      "domain": "STATUTORY_METHODOLOGY",
+      "domain_evidence": "heading contains 'use of previous year'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "statutory method definitions",
+        "Decree 20/132 methodology text"
+      ],
+      "required_source_roles": [
+        "STATUTORY_TEXT"
+      ],
+      "required_granularity": "document-level narrative; no per-record data",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "HUMAN_REVIEW",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REUSABLE_BASELINE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "Region contains 6 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue."
+      ],
+      "evidence": [
+        "heading contains 'use of previous year'",
+        "Statutory methodology text is year-independent; carried forward unchanged."
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0247",
+        "fig-p0248"
+      ]
+    },
+    {
+      "region_id": "rgn-054",
+      "heading": "Adjustments",
+      "section_path": [
+        "Economic analysis",
+        "Application of CPM"
+      ],
+      "domain": "STATUTORY_METHODOLOGY",
+      "domain_evidence": "heading contains 'adjustments'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "statutory method definitions",
+        "Decree 20/132 methodology text"
+      ],
+      "required_source_roles": [
+        "STATUTORY_TEXT"
+      ],
+      "required_granularity": "document-level narrative; no per-record data",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "NOT_APPLICABLE",
+      "readiness": "AUTO_NOOP_READY",
+      "historical_reuse": "REUSABLE_BASELINE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'adjustments'",
+        "Statutory methodology text is year-independent; carried forward unchanged."
+      ],
+      "table_ordinals": [],
+      "figure_ids": [
+        "fig-p0252"
+      ]
+    },
+    {
+      "region_id": "rgn-055",
+      "heading": "The standard arm’s length range",
+      "section_path": [
+        "Economic analysis",
+        "Application of CPM"
+      ],
+      "domain": "BENCHMARKING",
+      "domain_evidence": "heading contains 'standard arm'",
+      "classification": "MIXED",
+      "required_information": [
+        "comparable company set",
+        "screening criteria",
+        "independence codes",
+        "accepted/rejected comparables",
+        "PLI values",
+        "quartile / IQR results"
+      ],
+      "required_source_roles": [
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS"
+      ],
+      "required_granularity": "one record per comparable company; one row per screening step",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "BENCHMARKING_REPORT",
+      "blocking_reasons": [
+        "None of the required dataset roles ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+        "Table 10 (ARMS_LENGTH_RANGE) requires ['IQR_RESULTS', 'BENCHMARKING_DATA'], which no current source supplies."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'standard arm'",
+        "table 9 (UNKNOWN, 14x6, row_semantics=UNKNOWN) binding=INSUFFICIENT_EVIDENCE",
+        "table 10 (ARMS_LENGTH_RANGE, 6x3, row_semantics=STATISTIC) binding=MISSING_CURRENT_SOURCE",
+        "FY2023 text may NOT be promoted to current-year verified: this domain carries year-specific facts and no current source is available."
+      ],
+      "table_ordinals": [
+        9,
+        10
+      ],
+      "figure_ids": [
+        "fig-p0254"
+      ]
+    },
+    {
+      "region_id": "rgn-056",
+      "heading": "PART C. FINANCIAL INFORMATION",
+      "section_path": [],
+      "domain": "STRUCTURAL_CONTAINER",
+      "domain_evidence": "heading 'PART C. FINANCIAL INFORMATION' is a structural part container",
+      "classification": "CONTAINER",
+      "required_information": [],
+      "required_source_roles": [],
+      "required_granularity": "none",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "NOT_APPLICABLE",
+      "readiness": "NOT_APPLICABLE",
+      "historical_reuse": "NOT_APPLICABLE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [],
+      "evidence": [
+        "heading 'PART C. FINANCIAL INFORMATION' is a structural part container"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-057",
+      "heading": "Financial information",
+      "section_path": [],
+      "domain": "FINANCIAL_INFORMATION",
+      "domain_evidence": "heading contains 'financial information'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "net sales",
+        "cost of goods sold",
+        "gross profit",
+        "operating profit",
+        "PLI numerator and denominator",
+        "segmented allocation basis"
+      ],
+      "required_source_roles": [
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS"
+      ],
+      "required_granularity": "one record per financial line item",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!FS",
+        "HMV-FA&RPT FY2024.xlsx!Financial Analysis",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS"
+      ],
+      "source_roles_found": [
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'financial information'",
+        "HMV-FA&RPT FY2024.xlsx!FS supplies ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS'] (45 records)",
+        "HMV-FA&RPT FY2024.xlsx!Financial Analysis supplies ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS'] (51 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data supplies ['FINANCIAL_STATEMENTS'] (28 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS supplies ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS'] (45 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-058",
+      "heading": "ABC’s audited financial statements in FY20xx",
+      "section_path": [
+        "Financial information"
+      ],
+      "domain": "FINANCIAL_INFORMATION",
+      "domain_evidence": "heading contains 'audited financial statements'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "net sales",
+        "cost of goods sold",
+        "gross profit",
+        "operating profit",
+        "PLI numerator and denominator",
+        "segmented allocation basis"
+      ],
+      "required_source_roles": [
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS"
+      ],
+      "required_granularity": "one record per financial line item",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!FS",
+        "HMV-FA&RPT FY2024.xlsx!Financial Analysis",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS"
+      ],
+      "source_roles_found": [
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'audited financial statements'",
+        "HMV-FA&RPT FY2024.xlsx!FS supplies ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS'] (45 records)",
+        "HMV-FA&RPT FY2024.xlsx!Financial Analysis supplies ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS'] (51 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data supplies ['FINANCIAL_STATEMENTS'] (28 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS supplies ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS'] (45 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-059",
+      "heading": "Allocation method used in the calculation of ABC’s operating result for each business segment",
+      "section_path": [
+        "Financial information"
+      ],
+      "domain": "FINANCIAL_INFORMATION",
+      "domain_evidence": "heading contains 'allocation method'",
+      "classification": "MIXED",
+      "required_information": [
+        "net sales",
+        "cost of goods sold",
+        "gross profit",
+        "operating profit",
+        "PLI numerator and denominator",
+        "segmented allocation basis"
+      ],
+      "required_source_roles": [
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS"
+      ],
+      "required_granularity": "one record per financial line item",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!FS",
+        "HMV-FA&RPT FY2024.xlsx!Financial Analysis",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS"
+      ],
+      "source_roles_found": [
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'allocation method'",
+        "HMV-FA&RPT FY2024.xlsx!FS supplies ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS'] (45 records)",
+        "HMV-FA&RPT FY2024.xlsx!Financial Analysis supplies ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS'] (51 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data supplies ['FINANCIAL_STATEMENTS'] (28 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS supplies ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS'] (45 records)",
+        "table 11 (FINANCIAL_INDICATORS, 9x3, row_semantics=LINE_ITEM) binding=VERIFIED"
+      ],
+      "table_ordinals": [
+        11
+      ],
+      "figure_ids": [
+        "fig-p0266",
+        "fig-p0267"
+      ]
+    },
+    {
+      "region_id": "rgn-060",
+      "heading": "Summary of financial data in relation to the comparability analysis and sources of data",
+      "section_path": [
+        "Financial information"
+      ],
+      "domain": "FINANCIAL_INFORMATION",
+      "domain_evidence": "heading contains 'summary of financial data'",
+      "classification": "NARRATIVE",
+      "required_information": [
+        "net sales",
+        "cost of goods sold",
+        "gross profit",
+        "operating profit",
+        "PLI numerator and denominator",
+        "segmented allocation basis"
+      ],
+      "required_source_roles": [
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS"
+      ],
+      "required_granularity": "one record per financial line item",
+      "current_source_artifacts": [
+        "HMV-FA&RPT FY2024.xlsx!FS",
+        "HMV-FA&RPT FY2024.xlsx!Financial Analysis",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS"
+      ],
+      "source_roles_found": [
+        "FINANCIAL_STATEMENTS",
+        "FINANCIAL_ANALYSIS"
+      ],
+      "source_coverage": "FULLY_SUPPORTED",
+      "readiness": "HUMAN_REVIEW_READY",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "NONE_REQUIRED",
+      "blocking_reasons": [],
+      "review_reasons": [
+        "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update."
+      ],
+      "evidence": [
+        "heading contains 'summary of financial data'",
+        "HMV-FA&RPT FY2024.xlsx!FS supplies ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS'] (45 records)",
+        "HMV-FA&RPT FY2024.xlsx!Financial Analysis supplies ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS'] (51 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data supplies ['FINANCIAL_STATEMENTS'] (28 records)",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS supplies ['FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS'] (45 records)"
+      ],
+      "table_ordinals": [],
+      "figure_ids": []
+    },
+    {
+      "region_id": "rgn-061",
+      "heading": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "section_path": [
+        "Financial information"
+      ],
+      "domain": "BENCHMARKING",
+      "domain_evidence": "heading contains 'summary of reasons and explanation'",
+      "classification": "MIXED",
+      "required_information": [
+        "comparable company set",
+        "screening criteria",
+        "independence codes",
+        "accepted/rejected comparables",
+        "PLI values",
+        "quartile / IQR results"
+      ],
+      "required_source_roles": [
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS"
+      ],
+      "required_granularity": "one record per comparable company; one row per screening step",
+      "current_source_artifacts": [],
+      "source_roles_found": [],
+      "source_coverage": "MISSING_SOURCE",
+      "readiness": "BLOCKED_MISSING_SOURCE",
+      "historical_reuse": "REQUIRES_CURRENT_YEAR_SOURCE",
+      "required_artifact_type": "BENCHMARKING_REPORT",
+      "blocking_reasons": [
+        "None of the required dataset roles ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+        "Table 13 (SCREENING_STRATEGY) requires ['SCREENING_RESULTS', 'BENCHMARKING_DATA'], which no current source supplies.",
+        "Table 14 (COMPARABLE_COMPANIES) requires ['COMPARABLE_COMPANIES', 'BENCHMARKING_DATA'], which no current source supplies.",
+        "Table 15 (COMPARABLE_COMPANIES) requires ['COMPARABLE_COMPANIES', 'BENCHMARKING_DATA'], which no current source supplies."
+      ],
+      "review_reasons": [],
+      "evidence": [
+        "heading contains 'summary of reasons and explanation'",
+        "table 12 (DOCUMENT_CHECKLIST, 25x3, row_semantics=UNKNOWN) binding=INSUFFICIENT_EVIDENCE",
+        "table 13 (SCREENING_STRATEGY, 23x2, row_semantics=KEY_VALUE) binding=MISSING_CURRENT_SOURCE",
+        "table 14 (COMPARABLE_COMPANIES, 8x6, row_semantics=ENTITY_RECORD) binding=MISSING_CURRENT_SOURCE",
+        "table 15 (COMPARABLE_COMPANIES, 7x5, row_semantics=ENTITY_RECORD) binding=MISSING_CURRENT_SOURCE",
+        "FY2023 text may NOT be promoted to current-year verified: this domain carries year-specific facts and no current source is available."
+      ],
+      "table_ordinals": [
+        12,
+        13,
+        14,
+        15
+      ],
+      "figure_ids": [
+        "fig-p0272",
+        "fig-p0296",
+        "fig-p0298",
+        "fig-p0303",
+        "fig-p0305",
+        "fig-p0307",
+        "fig-p0311"
+      ]
+    }
+  ],
+  "benchmarking_domain_audit": {
+    "priority": "PRIORITY DOMAIN",
+    "method": "content-derived role detection over every sheet; sheet names not consulted",
+    "sheets_scanned": 23,
+    "findings": {
+      "comparable-company data": {
+        "role": "COMPARABLE_COMPANIES",
+        "present": false,
+        "sheets": []
+      },
+      "search database / benchmarking output": {
+        "role": "BENCHMARKING_DATA",
+        "present": false,
+        "sheets": []
+      },
+      "screening criteria & results": {
+        "role": "SCREENING_RESULTS",
+        "present": false,
+        "sheets": []
+      },
+      "IQR / percentile results": {
+        "role": "IQR_RESULTS",
+        "present": false,
+        "sheets": []
+      }
+    },
+    "independence_codes_present": false,
+    "accepted_rejected_comparables_present": false,
+    "any_benchmarking_source_present": false,
+    "dependent_regions": [
+      "rgn-046",
+      "rgn-051",
+      "rgn-052",
+      "rgn-055",
+      "rgn-061"
+    ],
+    "dependent_region_count": 5,
+    "verdict": "NO benchmarking source of any kind exists in the current set; every dependent region is BLOCKED_MISSING_SOURCE.",
+    "minimum_required_artifact": {
+      "type": "BENCHMARKING_REPORT",
+      "content": [
+        "accepted comparable-company set with identifiers",
+        "rejected companies with rejection reason",
+        "search strategy and screening steps with pass counts",
+        "BvD independence codes",
+        "per-company PLI values for the tested period",
+        "quartile / interquartile range statistics"
+      ]
+    }
+  },
+  "required_but_missing_sources": [
+    {
+      "artifact_id": "ART-001",
+      "artifact_type": "MANAGEMENT_INFORMATION",
+      "title": "Management information / client questionnaire — FUNCTIONAL_ANALYSIS",
+      "reason_required": "15 region(s) in domain FUNCTIONAL_ANALYSIS cannot be completed from the current source set; their required dataset roles are absent or only partially present.",
+      "affected_regions": [
+        "rgn-028",
+        "rgn-029",
+        "rgn-030",
+        "rgn-031",
+        "rgn-032",
+        "rgn-033",
+        "rgn-034",
+        "rgn-035",
+        "rgn-036",
+        "rgn-037",
+        "rgn-038",
+        "rgn-039",
+        "rgn-040",
+        "rgn-041",
+        "rgn-042"
+      ],
+      "required_content": [
+        "current-year functional profile",
+        "assets deployed",
+        "risks borne",
+        "entity characterisation"
+      ],
+      "priority": "BLOCKING",
+      "blocking_status": true
+    },
+    {
+      "artifact_id": "ART-002",
+      "artifact_type": "BENCHMARKING_REPORT",
+      "title": "Benchmarking / comparable-company dataset — BENCHMARKING",
+      "reason_required": "5 region(s) in domain BENCHMARKING cannot be completed from the current source set; their required dataset roles are absent or only partially present.",
+      "affected_regions": [
+        "rgn-046",
+        "rgn-051",
+        "rgn-052",
+        "rgn-055",
+        "rgn-061"
+      ],
+      "required_content": [
+        "comparable company set",
+        "screening criteria",
+        "independence codes",
+        "accepted/rejected comparables",
+        "PLI values",
+        "quartile / IQR results"
+      ],
+      "priority": "BLOCKING",
+      "blocking_status": true
+    },
+    {
+      "artifact_id": "ART-003",
+      "artifact_type": "MANAGEMENT_INFORMATION",
+      "title": "Management information / client questionnaire — BUSINESS_NARRATIVE",
+      "reason_required": "4 region(s) in domain BUSINESS_NARRATIVE cannot be completed from the current source set; their required dataset roles are absent or only partially present.",
+      "affected_regions": [
+        "rgn-008",
+        "rgn-009",
+        "rgn-011",
+        "rgn-043"
+      ],
+      "required_content": [
+        "current-year business facts",
+        "strategy statement",
+        "restructuring events"
+      ],
+      "priority": "BLOCKING",
+      "blocking_status": true
+    },
+    {
+      "artifact_id": "ART-004",
+      "artifact_type": "NARRATIVE_DOCUMENT",
+      "title": "Current-year narrative source document — GROUP_PROFILE",
+      "reason_required": "2 region(s) in domain GROUP_PROFILE cannot be completed from the current source set; their required dataset roles are absent or only partially present.",
+      "affected_regions": [
+        "rgn-007",
+        "rgn-012"
+      ],
+      "required_content": [
+        "group structure",
+        "ultimate parent",
+        "group activities"
+      ],
+      "priority": "BLOCKING",
+      "blocking_status": true
+    },
+    {
+      "artifact_id": "ART-005",
+      "artifact_type": "BENCHMARKING_REPORT",
+      "title": "Benchmarking / comparable-company dataset — EXECUTIVE_SUMMARY",
+      "reason_required": "1 region(s) in domain EXECUTIVE_SUMMARY cannot be completed from the current source set; their required dataset roles are absent or only partially present.",
+      "affected_regions": [
+        "rgn-004"
+      ],
+      "required_content": [
+        "transaction summary",
+        "method selected",
+        "arm's-length conclusion"
+      ],
+      "priority": "LOW",
+      "blocking_status": false
+    },
+    {
+      "artifact_id": "ART-006",
+      "artifact_type": "CONTRACTUAL_DOCUMENT",
+      "title": "Executed intercompany agreements — INTERCOMPANY_AGREEMENTS",
+      "reason_required": "1 region(s) in domain INTERCOMPANY_AGREEMENTS cannot be completed from the current source set; their required dataset roles are absent or only partially present.",
+      "affected_regions": [
+        "rgn-027"
+      ],
+      "required_content": [
+        "agreement inventory",
+        "counterparties",
+        "effective dates",
+        "pricing terms"
+      ],
+      "priority": "BLOCKING",
+      "blocking_status": true
+    },
+    {
+      "artifact_id": "ART-007",
+      "artifact_type": "MANAGEMENT_INFORMATION",
+      "title": "Management information / client questionnaire — COMPETITOR_ANALYSIS",
+      "reason_required": "1 region(s) in domain COMPETITOR_ANALYSIS cannot be completed from the current source set; their required dataset roles are absent or only partially present.",
+      "affected_regions": [
+        "rgn-013"
+      ],
+      "required_content": [
+        "competitor identities",
+        "market position",
+        "product overlap"
+      ],
+      "priority": "BLOCKING",
+      "blocking_status": true
+    },
+    {
+      "artifact_id": "ART-008",
+      "artifact_type": "ORGANIZATION_CHART",
+      "title": "Current-year organisation / ownership chart — ORGANIZATION",
+      "reason_required": "1 region(s) in domain ORGANIZATION cannot be completed from the current source set; their required dataset roles are absent or only partially present.",
+      "affected_regions": [
+        "rgn-010"
+      ],
+      "required_content": [
+        "current organisation chart",
+        "reporting lines",
+        "headcount"
+      ],
+      "priority": "BLOCKING",
+      "blocking_status": true
+    }
+  ],
+  "human_review_queue": [
+    {
+      "region_id": "rgn-001",
+      "heading": "PREAMBLE (before first heading)",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-002",
+      "heading": "Glossary",
+      "issue": "Region contains 2 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue.",
+      "missing_evidence": [
+        "STATUTORY_TEXT"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-003",
+      "heading": "Objective and scope",
+      "issue": "Region contains 4 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue.",
+      "missing_evidence": [
+        "STATUTORY_TEXT"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-004",
+      "heading": "Executive Summary",
+      "issue": "Partially supported: ['RELATED_PARTY_TRANSACTIONS'] available, ['IQR_RESULTS'] absent. A reviewer must supply or waive the missing part.",
+      "missing_evidence": [
+        "IQR_RESULTS"
+      ],
+      "suggested_human_evidence_request": "Obtain a BENCHMARKING_REPORT covering transaction summary, method selected, arm's-length conclusion at granularity: one row per tested transaction.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-006",
+      "heading": "Information on ABC",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-007",
+      "heading": "Overview of the XYZ Group",
+      "issue": "None of the required dataset roles ['OWNERSHIP_STRUCTURE', 'NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "OWNERSHIP_STRUCTURE",
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a NARRATIVE_DOCUMENT covering group structure, ultimate parent, group activities at granularity: document-level narrative.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-008",
+      "heading": "Overview of ABC",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year business facts, strategy statement, restructuring events at granularity: document-level narrative.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-009",
+      "heading": "Background",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year business facts, strategy statement, restructuring events at granularity: document-level narrative.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-010",
+      "heading": "ABC’s organisation and management structure",
+      "issue": "None of the required dataset roles ['ORGANIZATIONAL_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "ORGANIZATIONAL_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a ORGANIZATION_CHART covering current organisation chart, reporting lines, headcount at granularity: one node per organisational unit.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-011",
+      "heading": "Business strategy",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year business facts, strategy statement, restructuring events at granularity: document-level narrative.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-012",
+      "heading": "Business restructurings, capital transfers, or asset transfers of the Group",
+      "issue": "None of the required dataset roles ['OWNERSHIP_STRUCTURE', 'NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "OWNERSHIP_STRUCTURE",
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a NARRATIVE_DOCUMENT covering group structure, ultimate parent, group activities at granularity: document-level narrative.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-013",
+      "heading": "Companies having similar products / Key competitors",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering competitor identities, market position, product overlap at granularity: narrative per competitor.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-015",
+      "heading": "Related party transactions",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-016",
+      "heading": "Overview",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-017",
+      "heading": "Details of related party transactions",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-018",
+      "heading": "Sales of goods / merchandises / goods",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-019",
+      "heading": "Purchases of materials / merchandises / goods",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-020",
+      "heading": "Provision of services",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-021",
+      "heading": "Receipt of technical support services",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-022",
+      "heading": "Payment of royalties / licensing fee / trademark fee",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-023",
+      "heading": "Payment of interest on intercompany loan(s)",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-024",
+      "heading": "Purchases / sales of fixed assets",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-025",
+      "heading": "Other transactions",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-026",
+      "heading": "Values of intra-group payments and receipts with supporting invoices for each category of related party transactions involving the local entity being adjusted by the foreign tax authorities",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-027",
+      "heading": "Copies of intercompany agreements",
+      "issue": "None of the required dataset roles ['CONTRACTUAL_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "CONTRACTUAL_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a CONTRACTUAL_DOCUMENT covering agreement inventory, counterparties, effective dates, pricing terms at granularity: one record per executed intercompany agreement.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-028",
+      "heading": "Analysis of functions, assets and risks",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-029",
+      "heading": "Functions performed",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-030",
+      "heading": "Research and development (“R&D”)",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-031",
+      "heading": "Procurement",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-032",
+      "heading": "Production/ Operation",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-033",
+      "heading": "Production/ Operation scheduling",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-034",
+      "heading": "Production/ Operation process",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-035",
+      "heading": "Quality control and inspection",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-036",
+      "heading": "Warehousing and Logistics",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-037",
+      "heading": "Marketing and Sales",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-038",
+      "heading": "After-sales services",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-039",
+      "heading": "General Administration",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-040",
+      "heading": "Assets used",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-041",
+      "heading": "Risks assumed",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-042",
+      "heading": "Characterization of ABC",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year functional profile, assets deployed, risks borne, entity characterisation at granularity: narrative per function / asset / risk.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-043",
+      "heading": "Changes from Previous Fiscal Year",
+      "issue": "None of the required dataset roles ['NARRATIVE_DATA'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "NARRATIVE_DATA"
+      ],
+      "suggested_human_evidence_request": "Obtain a MANAGEMENT_INFORMATION covering current-year business facts, strategy statement, restructuring events at granularity: document-level narrative.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-045",
+      "heading": "Transfer pricing methods",
+      "issue": "Region contains 1 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue.",
+      "missing_evidence": [
+        "STATUTORY_TEXT"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-046",
+      "heading": "Internal and external comparable data",
+      "issue": "None of the required dataset roles ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS"
+      ],
+      "suggested_human_evidence_request": "Obtain a BENCHMARKING_REPORT covering comparable company set, screening criteria, independence codes, accepted/rejected comparables at granularity: one record per comparable company; one row per screening step.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-047",
+      "heading": "Selection of the most appropriate transfer pricing method(s)",
+      "issue": "Region contains 4 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue.",
+      "missing_evidence": [
+        "STATUTORY_TEXT"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-049",
+      "heading": "Selection of tested party",
+      "issue": "Region contains 1 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue.",
+      "missing_evidence": [
+        "STATUTORY_TEXT"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-050",
+      "heading": "Selection of profit level indicator (“PLI”)",
+      "issue": "Region contains 4 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue.",
+      "missing_evidence": [
+        "STATUTORY_TEXT"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-051",
+      "heading": "Search for comparable companies",
+      "issue": "None of the required dataset roles ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS"
+      ],
+      "suggested_human_evidence_request": "Obtain a BENCHMARKING_REPORT covering comparable company set, screening criteria, independence codes, accepted/rejected comparables at granularity: one record per comparable company; one row per screening step.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-052",
+      "heading": "Use of standard arm’s length range",
+      "issue": "None of the required dataset roles ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS"
+      ],
+      "suggested_human_evidence_request": "Obtain a BENCHMARKING_REPORT covering comparable company set, screening criteria, independence codes, accepted/rejected comparables at granularity: one record per comparable company; one row per screening step.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-053",
+      "heading": "Use of previous year and multiple year data",
+      "issue": "Region contains 6 template placeholder token(s) (ABC / XYZ / FY20xx); these must be personalised before issue.",
+      "missing_evidence": [
+        "STATUTORY_TEXT"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-055",
+      "heading": "The standard arm’s length range",
+      "issue": "None of the required dataset roles ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS"
+      ],
+      "suggested_human_evidence_request": "Obtain a BENCHMARKING_REPORT covering comparable company set, screening criteria, independence codes, accepted/rejected comparables at granularity: one record per comparable company; one row per screening step.",
+      "blocking": true
+    },
+    {
+      "region_id": "rgn-057",
+      "heading": "Financial information",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-058",
+      "heading": "ABC’s audited financial statements in FY20xx",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-059",
+      "heading": "Allocation method used in the calculation of ABC’s operating result for each business segment",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-060",
+      "heading": "Summary of financial data in relation to the comparability analysis and sources of data",
+      "issue": "All required dataset roles are present, but no implemented mutation strategy covers this region; a reviewer applies the update.",
+      "missing_evidence": [
+        "implemented mutation strategy"
+      ],
+      "suggested_human_evidence_request": "Confirm the carried-forward content still applies to the current fiscal year and personalise remaining template placeholders.",
+      "blocking": false
+    },
+    {
+      "region_id": "rgn-061",
+      "heading": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "issue": "None of the required dataset roles ['BENCHMARKING_DATA', 'COMPARABLE_COMPANIES', 'IQR_RESULTS', 'SCREENING_RESULTS'] is present in the current source set. Content profiling of 23 sheets found: ['APPENDIX_DISCLOSURE', 'FINANCIAL_ANALYSIS', 'FINANCIAL_STATEMENTS', 'FIXED_ASSETS', 'INTEREST_EXPENSE', 'RELATED_PARTY_TRANSACTIONS', 'SEGMENTED_DATA', 'TAXPAYER_PROFILE'].",
+      "missing_evidence": [
+        "BENCHMARKING_DATA",
+        "COMPARABLE_COMPANIES",
+        "IQR_RESULTS",
+        "SCREENING_RESULTS"
+      ],
+      "suggested_human_evidence_request": "Obtain a BENCHMARKING_REPORT covering comparable company set, screening criteria, independence codes, accepted/rejected comparables at granularity: one record per comparable company; one row per screening step.",
+      "blocking": true
+    }
+  ]
+}
