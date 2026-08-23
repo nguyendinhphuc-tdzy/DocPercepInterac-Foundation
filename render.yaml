@@ -12,7 +12,10 @@ services:
     plan: standard
     rootDir: .
     buildCommand: "pip install -r foundation/requirements.txt"
-    startCommand: "gunicorn --chdir foundation --config gunicorn.conf.py \"api.app:create_app()\""
+    # NOTE: gunicorn applies --chdir BEFORE it resolves --config, so a path like
+    # "foundation/gunicorn.conf.py" combined with "--chdir foundation" fails.
+    # `cd` first: unambiguous, and matches the CWD used in local dev.
+    startCommand: "cd foundation && gunicorn --config gunicorn.conf.py \"api.app:create_app()\""
     healthCheckPath: /api/health
     autoDeploy: true
     envVars:
