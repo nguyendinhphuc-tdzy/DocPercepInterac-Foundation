@@ -11,11 +11,12 @@ services:
     region: singapore # Close to APAC/VN user latency
     plan: standard
     rootDir: .
-    buildCommand: "pip install -r foundation/requirements.txt"
-    # NOTE: gunicorn applies --chdir BEFORE it resolves --config, so a path like
-    # "foundation/gunicorn.conf.py" combined with "--chdir foundation" fails.
-    # `cd` first: unambiguous, and matches the CWD used in local dev.
-    startCommand: "cd foundation && gunicorn --config gunicorn.conf.py \"api.app:create_app()\""
+    # Both commands normalize the working directory to foundation/ first, so they
+    # work whether the service's Root Directory is the repo root or foundation/.
+    # (A bare relative path breaks the moment those two disagree — the cause of
+    # the "gunicorn.conf.py doesn't exist" boot failures.)
+    buildCommand: "[ -d foundation ] && cd foundation; pip install -r requirements.txt"
+    startCommand: "[ -d foundation ] && cd foundation; gunicorn --config gunicorn.conf.py \"api.app:create_app()\""
     healthCheckPath: /api/health
     autoDeploy: true
     envVars:
