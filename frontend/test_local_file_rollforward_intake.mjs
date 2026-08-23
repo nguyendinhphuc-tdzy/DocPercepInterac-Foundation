@@ -13,6 +13,7 @@
  *     -> domains with no source stay blocked
  *     -> execution gate opens only when all three inputs are present
  *     -> the Agent receives structured workflow context (ids per role)
+ *     -> refresh the browser: every slot, verdict and readiness row is still there
  *
  * Then, with an intentionally wrong fixture:
  *     -> a current-year final Local File in the historical slot is a ROLE MISMATCH
@@ -244,7 +245,35 @@ async function run() {
     }
 
     // ------------------------------------------------------------------
-    section('8. ROLE MISMATCH WITH AN INTENTIONALLY WRONG FIXTURE');
+    section('8. STATE SURVIVES A BROWSER REFRESH');
+    // ------------------------------------------------------------------
+    const beforeReload = await Promise.all(
+      ['HISTORICAL_LOCAL_FILE', 'CURRENT_YEAR_SOURCES', 'MASTER_TEMPLATE']
+        .map((slot) => assignmentIds(page, slot)));
+
+    await page.reload();
+    await page.waitForLoadState('networkidle');
+    await page.locator('[data-testid="workflow-intake-panel"]').waitFor({ state: 'visible', timeout: 20000 });
+
+    check('The workflow reopens itself after a reload — not the Home page',
+      await page.locator('[data-testid="workflow-intake-panel"]').isVisible());
+
+    const afterReload = await Promise.all(
+      ['HISTORICAL_LOCAL_FILE', 'CURRENT_YEAR_SOURCES', 'MASTER_TEMPLATE']
+        .map((slot) => assignmentIds(page, slot)));
+    check('Every slot still holds the same documents',
+      JSON.stringify(afterReload) === JSON.stringify(beforeReload),
+      `${JSON.stringify(beforeReload)} -> ${JSON.stringify(afterReload)}`);
+    check('The gate is still open after the reload',
+      (await page.locator('[data-testid="workflow-gate-message"]').getAttribute('data-execution-allowed')) === 'true');
+
+    const readinessAfterReload = await readinessStatuses(page);
+    check('Readiness is unchanged after the reload',
+      readinessAfterReload.RELATED_PARTY_TRANSACTIONS === 'SUPPORTED'
+      && readinessAfterReload.FAR === 'BLOCKED');
+
+    // ------------------------------------------------------------------
+    section('9. ROLE MISMATCH WITH AN INTENTIONALLY WRONG FIXTURE');
     // ------------------------------------------------------------------
     await uploadToSlot(page, 'HISTORICAL_LOCAL_FILE', FIXTURES.wrongHistorical);
     // The single-file slot replaces its occupant, so the new card is the only one.
@@ -271,7 +300,7 @@ async function run() {
       (await slotValidation(page, 'CURRENT_YEAR_SOURCES')) === 'ROLE_CONFIRMED');
 
     // ------------------------------------------------------------------
-    section('9. KEEPING A FLAGGED FILE IS RECORDED, NOT SILENT');
+    section('10. KEEPING A FLAGGED FILE IS RECORDED, NOT SILENT');
     // ------------------------------------------------------------------
     await page.locator(`[data-testid="keep-for-review-${docId}"]`).click();
     await page.waitForFunction(

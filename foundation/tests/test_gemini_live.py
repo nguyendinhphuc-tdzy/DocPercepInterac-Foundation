@@ -25,10 +25,12 @@ sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 from applications.agent.providers import ProviderMessage  # noqa: E402
 from applications.agent.providers.gemini_provider import GeminiProvider  # noqa: E402
 
-pytestmark = pytest.mark.skipif(
+# Marked `live_gemini` so a normal `pytest foundation -q` never reaches the
+# network: foundation/conftest.py skips this marker unless FOUNDATION_LIVE_TESTS=1.
+pytestmark = [pytest.mark.live_gemini, pytest.mark.skipif(
     not os.environ.get("GEMINI_API_KEY"),
     reason="GEMINI_API_KEY not set — live Gemini verification not performed",
-)
+)]
 
 PROMPT = [
     ProviderMessage(

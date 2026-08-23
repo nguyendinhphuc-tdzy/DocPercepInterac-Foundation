@@ -42,6 +42,21 @@ export async function uploadDocument(file: File, sessionId: string | null): Prom
   return parseJsonOrThrow<DocumentSummary>(response, 'Upload failed: empty response.');
 }
 
+// GET /api/documents/<session_id> — the session's documents as the SERVER knows
+// them. Used to rebuild the workspace after a page reload: the browser forgets
+// its in-memory document list, the backend does not.
+export async function fetchSessionDocuments(
+  sessionId: string
+): Promise<{ session_id: string; documents: Omit<DocumentSummary, 'session_id'>[] }> {
+  let response: Response;
+  try {
+    response = await fetch(`${API_BASE_URL}/api/documents/${sessionId}`);
+  } catch {
+    throw new ApiError(`Could not reach the Foundation API at ${API_BASE_URL}.`);
+  }
+  return parseJsonOrThrow(response, 'Loading the session failed: empty response.');
+}
+
 export async function fetchDocumentElements(
   sessionId: string,
   docId: string

@@ -24,9 +24,13 @@ Boundary notes
     * No mutation, no plan approval, no execution. The gate this endpoint reports
       is the reason execution stays blocked, not permission to run it.
 
-State is persisted next to the session's uploads as `workflow.json`, alongside
-the `manifest.json` the document layer already keeps, so intake survives a page
-reload without introducing a new database table this phase.
+Persistence
+-----------
+Workflow state is production state, so it lives in the workflow repository
+(Supabase Postgres in production, a JSON-backed local repository in development
+and tests) — never only on the container's disk, which Render discards on every
+restart and redeploy. Document bytes stay in object storage; these rows only
+reference documents by id.
 """
 from __future__ import annotations
 
@@ -41,7 +45,7 @@ from werkzeug.utils import secure_filename
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
-from adapters.repository import get_repositories  # noqa: E402
+from adapters.repository import RepositoryError, get_repositories  # noqa: E402
 from adapters.storage import get_storage  # noqa: E402
 from applications.rollforward.workflow_intake import (  # noqa: E402
     SlotId,
@@ -53,11 +57,10 @@ from applications.rollforward.workflow_intake import (  # noqa: E402
 workflow_bp = Blueprint("workflow", __name__)
 
 UPLOAD_ROOT = Path(__file__).resolve().parents[2] / ".uploads"
-STATE_FILENAME = "workflow.json"
 
 
 # ============================================================================
-# SESSION STATE PERSISTENCE
+# SESSION STATE PERSISTENCE — repository-backed, never the container's disk
 # ============================================================================
 
 def _get_user_id() -> str:
@@ -68,26 +71,23 @@ def _session_dir(session_id: str) -> Path:
     return UPLOAD_ROOT / secure_filename(session_id)
 
 
-def _state_path(session_id: str) -> Path:
-    return _session_dir(session_id) / STATE_FILENAME
-
-
-def _load_session(session_id: str) -> Optional[WorkflowIntakeSession]:
-    path = _state_path(session_id)
-    if not path.exists():
+def _load_session(session_id: str, user_id: str) -> Optional[WorkflowIntakeSession]:
+    """Rehydrate the workflow from its canonical rows, or None if it has none."""
+    repos = get_repositories()
+    workflow = repos.workflows.get_workflow(session_id, user_id=user_id)
+    if workflow is None:
         return None
-    try:
-        return WorkflowIntakeSession.from_state_dict(
-            json.loads(path.read_text(encoding="utf-8")))
-    except Exception:
-        return None
+    assignments = repos.workflows.list_assignments(workflow.workflow_id, user_id=user_id)
+    return WorkflowIntakeSession.from_records(workflow, assignments)
 
 
 def _save_session(session: WorkflowIntakeSession) -> None:
-    directory = _session_dir(session.session_id)
-    directory.mkdir(parents=True, exist_ok=True)
-    _state_path(session.session_id).write_text(
-        json.dumps(session.state_to_dict(), indent=2), encoding="utf-8")
+    """Persist the whole intake: the workflow row plus its slot assignments."""
+    repos = get_repositories()
+    workflow, assignments = session.to_records()
+    repos.workflows.save_workflow(workflow)
+    repos.workflows.replace_assignments(
+        workflow.workflow_id, assignments, user_id=session.user_id)
 
 
 # ============================================================================
@@ -143,6 +143,15 @@ def _resolve_document(session_id: str, doc_id: str,
 # ROUTES
 # ============================================================================
 
+@workflow_bp.errorhandler(RepositoryError)
+def _repository_error(exc: RepositoryError):
+    """A user-isolation violation is a refusal, not a server fault."""
+    message = str(exc)
+    if "isolation" in message.lower():
+        return jsonify({"error": "This workflow belongs to another user."}), 403
+    return jsonify({"error": f"Workflow state could not be read or written: {message}"}), 503
+
+
 def _parse_slot(raw: str) -> SlotId:
     try:
         return SlotId(raw.upper())
@@ -169,14 +178,23 @@ def create_workflow_session():
                      "POST /api/documents."
         }), 400
 
-    existing = _load_session(session_id)
+    user_id = _get_user_id()
+
+    # Attaching to an existing intake must not silently start a second one: the
+    # repository is the authority on whether this session already has a workflow.
+    existing = _load_session(session_id, user_id)
     if existing is not None and existing.workflow_type == workflow:
         return jsonify(existing.to_dict())
+
+    # The workflow row references the session row, so make sure the session
+    # exists before writing it (a workflow can be started before any upload).
+    get_repositories().sessions.get_or_create(session_id, user_id=user_id)
 
     session = WorkflowIntakeSession(
         session_id=session_id,
         workflow_type=workflow,
         target_fiscal_year=body.get("target_fiscal_year"),
+        user_id=user_id,
     )
     _save_session(session)
     return jsonify(session.to_dict())
@@ -184,7 +202,7 @@ def create_workflow_session():
 
 @workflow_bp.get("/api/workflow/<session_id>")
 def get_workflow_session(session_id: str):
-    session = _load_session(session_id)
+    session = _load_session(session_id, _get_user_id())
     if session is None:
         return jsonify({"error": "No workflow intake has been started for this session."}), 404
     return jsonify(session.to_dict())
@@ -202,11 +220,11 @@ def assign_document_to_slot(session_id: str, slot_id: str):
     if not doc_id:
         return jsonify({"error": "doc_id is required."}), 400
 
-    session = _load_session(session_id)
+    user_id = _get_user_id()
+    session = _load_session(session_id, user_id)
     if session is None:
         return jsonify({"error": "No workflow intake has been started for this session."}), 404
 
-    user_id = _get_user_id()
     try:
         slot = _parse_slot(slot_id)
         with _resolve_document(session_id, doc_id, user_id) as (path, meta):
@@ -221,6 +239,8 @@ def assign_document_to_slot(session_id: str, slot_id: str):
             )
     except WorkflowIntakeError as exc:
         return jsonify({"error": str(exc)}), 400
+    except RepositoryError:
+        raise  # answered by the blueprint's RepositoryError handler
     except Exception as exc:  # profiling failure must not lose the session
         return jsonify({"error": f"Could not profile this document: {exc}"}), 422
 
@@ -231,7 +251,8 @@ def assign_document_to_slot(session_id: str, slot_id: str):
 @workflow_bp.delete("/api/workflow/<session_id>/slots/<slot_id>/documents/<doc_id>")
 def remove_document_from_slot(session_id: str, slot_id: str, doc_id: str):
     """Removes a document's role. The document itself stays in the session."""
-    session = _load_session(session_id)
+    user_id = _get_user_id()
+    session = _load_session(session_id, user_id)
     if session is None:
         return jsonify({"error": "No workflow intake has been started for this session."}), 404
 
@@ -263,13 +284,14 @@ def review_flagged_document(session_id: str, slot_id: str, doc_id: str):
                      f"manual review — there is no silent override."
         }), 400
 
-    session = _load_session(session_id)
+    user_id = _get_user_id()
+    session = _load_session(session_id, user_id)
     if session is None:
         return jsonify({"error": "No workflow intake has been started for this session."}), 404
 
     try:
         slot = _parse_slot(slot_id)
-        assignment = session.acknowledge_for_review(slot, doc_id, actor=_get_user_id())
+        assignment = session.acknowledge_for_review(slot, doc_id, actor=user_id)
     except WorkflowIntakeError as exc:
         return jsonify({"error": str(exc)}), 400
 
@@ -284,7 +306,7 @@ def get_agent_context(session_id: str):
     Document ids carry the roles, so the Agent never infers the workflow — or
     which file is the template — from a filename.
     """
-    session = _load_session(session_id)
+    session = _load_session(session_id, _get_user_id())
     if session is None:
         return jsonify({"error": "No workflow intake has been started for this session."}), 404
     return jsonify(session.agent_workflow_context())

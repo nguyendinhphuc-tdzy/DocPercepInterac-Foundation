@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import {
-  uploadDocument, fetchDocumentElements, patchElement, runGptsMapping, ApiError,
+  uploadDocument, fetchDocumentElements, fetchSessionDocuments, patchElement, runGptsMapping,
+  ApiError,
 } from '../api/client';
 import { useSyncStore } from './syncStore';
 import type {
@@ -120,6 +121,10 @@ interface WorkspaceState {
   activeWorkflow: WorkflowId | null;
   startWorkflow: (workflow: WorkflowId) => void;
   exitWorkflow: () => void;
+  // Rebuilds the workspace from the server after a page reload. The browser's
+  // document list is in-memory only; the session, its documents and its workflow
+  // are server state, so a refresh restores rather than restarts.
+  restoreSession: () => Promise<void>;
   addDocument: (file: File) => void;
   // Same upload path as addDocument, but resolves with the server identity so a
   // caller can act on the document (e.g. give it a workflow role) once it is
@@ -149,6 +154,36 @@ interface WorkspaceState {
   setHoveredElement: (elementId: string | null) => void;
 }
 
+// What a reload needs to find its way back: the session the workspace was in,
+// and whether that session was running a structured workflow. Everything else
+// (documents, slots, readiness) is re-fetched from the server, never trusted
+// from the browser.
+const SESSION_KEY = 'foundation_active_session';
+
+interface PersistedSession {
+  sessionId: string;
+  activeWorkflow: WorkflowId | null;
+  currentView: AppView;
+}
+
+function saveSession(snapshot: PersistedSession | null) {
+  try {
+    if (snapshot) localStorage.setItem(SESSION_KEY, JSON.stringify(snapshot));
+    else localStorage.removeItem(SESSION_KEY);
+  } catch {
+    // A browser with storage disabled simply loses the reload convenience.
+  }
+}
+
+function loadSession(): PersistedSession | null {
+  try {
+    const raw = localStorage.getItem(SESSION_KEY);
+    return raw ? (JSON.parse(raw) as PersistedSession) : null;
+  } catch {
+    return null;
+  }
+}
+
 function loadTaskHistory(): TaskHistoryEntry[] {
   try {
     const raw = localStorage.getItem('foundation_task_history');
@@ -172,6 +207,13 @@ function saveTaskHistory(history: TaskHistoryEntry[]) {
 // upload-sequencing plumbing, not UI state that any component reads.
 let pendingSessionPromise: Promise<DocumentSummary> | null = null;
 
+// A document that exists on the server but whose bytes are not in this browser
+// tab (after a reload). Panes fetch content by docId from the download endpoint,
+// so the placeholder File only ever supplies the name.
+function placeholderFile(filename: string): File {
+  return new File([], filename);
+}
+
 function applyUploadSummary(
   set: (fn: (state: WorkspaceState) => Partial<WorkspaceState>) => void,
   get: () => WorkspaceState,
@@ -187,7 +229,13 @@ function applyUploadSummary(
     // so panes have something to show without an extra click.
     activeDocClientId: state.activeDocClientId ?? (summary.status === 'ready' ? clientId : null),
   }));
-  if (summary.status === 'ready' && get().activeDocClientId === clientId) {
+  const state = get();
+  saveSession({
+    sessionId: summary.session_id,
+    activeWorkflow: state.activeWorkflow,
+    currentView: state.currentView,
+  });
+  if (summary.status === 'ready' && state.activeDocClientId === clientId) {
     get().ensureElementsLoaded(clientId);
   }
 }
@@ -234,15 +282,56 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   // Entering a workflow starts a clean workspace: its intake asks for specific
   // ROLES, and documents carried over from a previous, role-less session would
   // sit in the panel with no slot and no meaning.
-  startWorkflow: (workflow) => set({
-    ...initialWorkspaceState,
-    taskHistory: get().taskHistory,
-    activeWorkflow: workflow,
-    currentView: 'workspace',
-    workspacePreset: 'agent',
-  }),
+  startWorkflow: (workflow) => {
+    // A new workflow is a new session: forget the previous one rather than
+    // reattaching this workflow's slots to unrelated documents.
+    saveSession(null);
+    set({
+      ...initialWorkspaceState,
+      taskHistory: get().taskHistory,
+      activeWorkflow: workflow,
+      currentView: 'workspace',
+      workspacePreset: 'agent',
+    });
+  },
 
-  exitWorkflow: () => set({ activeWorkflow: null }),
+  exitWorkflow: () => {
+    set({ activeWorkflow: null });
+    const { sessionId, currentView } = get();
+    if (sessionId) saveSession({ sessionId, activeWorkflow: null, currentView });
+  },
+
+  // Called once on app start. The server is the authority for everything here:
+  // the browser only remembers WHICH session to ask about.
+  restoreSession: async () => {
+    const snapshot = loadSession();
+    if (!snapshot?.sessionId || get().sessionId) return;
+
+    try {
+      const result = await fetchSessionDocuments(snapshot.sessionId);
+      set({
+        sessionId: snapshot.sessionId,
+        activeWorkflow: snapshot.activeWorkflow,
+        currentView: snapshot.currentView === 'home' ? 'home' : snapshot.currentView,
+        documents: result.documents.map((doc) => ({
+          clientId: newClientId(),
+          file: placeholderFile(doc.filename),
+          format: doc.format,
+          status: doc.status === 'error' ? 'error' : 'ready',
+          docId: doc.doc_id,
+          elementCount: doc.element_count,
+          elements: null,
+          media: [],
+          error: doc.error,
+          hasPatch: false,
+        })),
+      });
+    } catch {
+      // The session no longer exists on the server (or it is unreachable) —
+      // start clean rather than showing a workspace that cannot load.
+      saveSession(null);
+    }
+  },
 
   // ── Task history ──
   addTaskToHistory: (entry) => {
@@ -355,11 +444,14 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     }
   },
 
-  resetWorkspace: () => set({
-    ...initialWorkspaceState,
-    currentView: get().currentView,
-    taskHistory: get().taskHistory,
-  }),
+  resetWorkspace: () => {
+    saveSession(null);
+    set({
+      ...initialWorkspaceState,
+      currentView: get().currentView,
+      taskHistory: get().taskHistory,
+    });
+  },
 
   // ── GTPS application: the only place that ever assigns source/target
   // roles, and only ever in response to an explicit call (see

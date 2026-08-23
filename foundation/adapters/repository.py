@@ -121,6 +121,54 @@ class PilotEventRecord:
     timestamp: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
 
 
+@dataclass
+class WorkflowRecord:
+    """One workflow intake — the canonical state of a structured workflow session.
+
+    Holds no document bytes: those stay in object storage. This row records which
+    workflow a session is running and the period it is rolling forward into.
+    """
+    workflow_id: str
+    session_id: str
+    workflow_type: str
+    user_id: str = "anonymous"
+    target_fiscal_year: Optional[int] = None
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+
+@dataclass
+class WorkflowSlotAssignmentRecord:
+    """One document occupying one workflow input slot, with its role verdict.
+
+    `signals` carries the deterministic content profile the verdict was derived
+    from, so a reloaded workflow never has to re-open the file to answer a
+    readiness question. Still no document bytes — only facts about them.
+    """
+    workflow_id: str
+    session_id: str
+    slot_id: str
+    document_id: str
+    user_id: str = "anonymous"
+    filename: str = ""
+    file_format: str = ""
+    file_hash: str = ""
+    file_size: int = 0
+    perception_status: str = "ready"
+    element_count: Optional[int] = None
+    artifact_id: Optional[str] = None
+    validation_status: str = "PENDING"
+    readiness_status: str = "EMPTY"
+    detected_label: str = ""
+    expected_label: str = ""
+    reasons: List[str] = field(default_factory=list)
+    signals: Dict[str, Any] = field(default_factory=dict)
+    human_review_acknowledged: bool = False
+    acknowledged_by: Optional[str] = None
+    created_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+    updated_at: str = field(default_factory=lambda: datetime.now(timezone.utc).isoformat())
+
+
 # ============================================================================
 # REPOSITORY INTERFACES
 # ============================================================================
@@ -217,6 +265,50 @@ class IPilotEventRepository(abc.ABC):
         """Retrieves pilot events."""
 
 
+class IWorkflowRepository(abc.ABC):
+    """Canonical persistence for structured workflow intake state.
+
+    The workflow a session is running, and which document holds which role in
+    it, are production state: they must survive a browser refresh, a container
+    restart and a redeploy. Document BYTES are not part of this contract — they
+    stay in object storage and are referenced by document_id only.
+    """
+
+    @abc.abstractmethod
+    def get_workflow(self, session_id: str, user_id: str = "anonymous") -> Optional[WorkflowRecord]:
+        ...
+
+    @abc.abstractmethod
+    def save_workflow(self, workflow: WorkflowRecord) -> WorkflowRecord:
+        ...
+
+    @abc.abstractmethod
+    def list_assignments(self, workflow_id: str,
+                         user_id: str = "anonymous") -> List[WorkflowSlotAssignmentRecord]:
+        ...
+
+    @abc.abstractmethod
+    def upsert_assignment(
+        self, assignment: WorkflowSlotAssignmentRecord) -> WorkflowSlotAssignmentRecord:
+        ...
+
+    @abc.abstractmethod
+    def delete_assignment(self, workflow_id: str, slot_id: str, document_id: str,
+                          user_id: str = "anonymous") -> bool:
+        ...
+
+    @abc.abstractmethod
+    def replace_assignments(self, workflow_id: str,
+                            assignments: List[WorkflowSlotAssignmentRecord],
+                            user_id: str = "anonymous") -> List[WorkflowSlotAssignmentRecord]:
+        """Make the stored rows match `assignments` exactly: upsert, then prune."""
+        ...
+
+    @abc.abstractmethod
+    def delete_workflow(self, session_id: str, user_id: str = "anonymous") -> bool:
+        ...
+
+
 @dataclass
 class RepositoryBundle:
     sessions: ISessionRepository
@@ -224,6 +316,7 @@ class RepositoryBundle:
     proposals: IProposalRepository
     lineage: ILineageRepository
     pilot: IPilotEventRepository
+    workflows: IWorkflowRepository
     check_health: Any
 
 
@@ -460,6 +553,187 @@ class LocalPilotEventRepository(IPilotEventRepository):
             if (session_id is None or e.session_id == session_id)
             and (user_id == "anonymous" or e.user_id == "anonymous" or e.user_id == user_id)
         ]
+
+
+class LocalWorkflowRepository(IWorkflowRepository):
+    """Development/test representation of workflow state, backed by a JSON file.
+
+    Unlike the other Local repositories (which are in-memory and therefore reset
+    with the process), this one persists to disk so local development matches the
+    production guarantee a developer is testing: refresh the browser, restart the
+    server, the workflow is still there.
+
+    This is NOT the production authority — that is SupabaseWorkflowRepository.
+    """
+
+    FILENAME = "workflow_state.json"
+
+    def __init__(self, upload_root: Path):
+        self.upload_root = upload_root
+
+    # -- file plumbing --------------------------------------------------
+
+    def _dir(self, session_id: str) -> Path:
+        return self.upload_root / session_id
+
+    def _path(self, session_id: str) -> Path:
+        return self._dir(session_id) / self.FILENAME
+
+    def _lock(self, session_id: str) -> FileLock:
+        directory = self._dir(session_id)
+        directory.mkdir(parents=True, exist_ok=True)
+        return FileLock(str(directory / "workflow_state.lock"), timeout=10)
+
+    def _read(self, session_id: str) -> Dict[str, Any]:
+        path = self._path(session_id)
+        if not path.exists():
+            return {}
+        try:
+            return json.loads(path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError):
+            return {}
+
+    def _write(self, session_id: str, data: Dict[str, Any]) -> None:
+        self._dir(session_id).mkdir(parents=True, exist_ok=True)
+        self._path(session_id).write_text(json.dumps(data, indent=2), encoding="utf-8")
+
+    def _session_for_workflow(self, workflow_id: str) -> Optional[str]:
+        """Workflow ids are session-scoped; find the session that owns one."""
+        if not self.upload_root.is_dir():
+            return None
+        for directory in self.upload_root.iterdir():
+            if not directory.is_dir():
+                continue
+            data = self._read(directory.name)
+            if data.get("workflow", {}).get("workflow_id") == workflow_id:
+                return directory.name
+        return None
+
+    @staticmethod
+    def _authorized(row_user: str, user_id: str) -> bool:
+        return user_id == "anonymous" or row_user == "anonymous" or row_user == user_id
+
+    # -- interface ------------------------------------------------------
+
+    def get_workflow(self, session_id: str, user_id: str = "anonymous") -> Optional[WorkflowRecord]:
+        row = self._read(session_id).get("workflow")
+        if not row:
+            return None
+        if not self._authorized(row.get("user_id", "anonymous"), user_id):
+            raise RepositoryError("User isolation violation: unauthorized workflow access.")
+        return WorkflowRecord(**row)
+
+    def save_workflow(self, workflow: WorkflowRecord) -> WorkflowRecord:
+        with self._lock(workflow.session_id):
+            data = self._read(workflow.session_id)
+            existing = data.get("workflow")
+            if existing and not self._authorized(existing.get("user_id", "anonymous"),
+                                                 workflow.user_id):
+                raise RepositoryError("User isolation violation: unauthorized workflow write.")
+            workflow.updated_at = datetime.now(timezone.utc).isoformat()
+            if existing:
+                workflow.created_at = existing.get("created_at", workflow.created_at)
+            data["workflow"] = asdict(workflow)
+            data.setdefault("assignments", [])
+            self._write(workflow.session_id, data)
+        return workflow
+
+    def list_assignments(self, workflow_id: str,
+                         user_id: str = "anonymous") -> List[WorkflowSlotAssignmentRecord]:
+        session_id = self._session_for_workflow(workflow_id)
+        if session_id is None:
+            return []
+        rows = self._read(session_id).get("assignments", [])
+        return [WorkflowSlotAssignmentRecord(**row) for row in rows
+                if row.get("workflow_id") == workflow_id
+                and self._authorized(row.get("user_id", "anonymous"), user_id)]
+
+    def upsert_assignment(
+        self, assignment: WorkflowSlotAssignmentRecord) -> WorkflowSlotAssignmentRecord:
+        with self._lock(assignment.session_id):
+            data = self._read(assignment.session_id)
+            rows = data.get("assignments", [])
+            assignment.updated_at = datetime.now(timezone.utc).isoformat()
+            kept = []
+            for row in rows:
+                same = (row.get("workflow_id") == assignment.workflow_id
+                        and row.get("slot_id") == assignment.slot_id
+                        and row.get("document_id") == assignment.document_id)
+                if same:
+                    if not self._authorized(row.get("user_id", "anonymous"), assignment.user_id):
+                        raise RepositoryError(
+                            "User isolation violation: unauthorized assignment write.")
+                    assignment.created_at = row.get("created_at", assignment.created_at)
+                    continue
+                kept.append(row)
+            kept.append(asdict(assignment))
+            data["assignments"] = kept
+            self._write(assignment.session_id, data)
+        return assignment
+
+    def delete_assignment(self, workflow_id: str, slot_id: str, document_id: str,
+                          user_id: str = "anonymous") -> bool:
+        session_id = self._session_for_workflow(workflow_id)
+        if session_id is None:
+            return False
+        with self._lock(session_id):
+            data = self._read(session_id)
+            rows = data.get("assignments", [])
+            kept = [
+                row for row in rows
+                if not (row.get("workflow_id") == workflow_id
+                        and row.get("slot_id") == slot_id
+                        and row.get("document_id") == document_id
+                        and self._authorized(row.get("user_id", "anonymous"), user_id))
+            ]
+            removed = len(kept) != len(rows)
+            data["assignments"] = kept
+            self._write(session_id, data)
+        return removed
+
+    def replace_assignments(self, workflow_id: str,
+                            assignments: List[WorkflowSlotAssignmentRecord],
+                            user_id: str = "anonymous") -> List[WorkflowSlotAssignmentRecord]:
+        session_id = (assignments[0].session_id if assignments
+                      else self._session_for_workflow(workflow_id))
+        if session_id is None:
+            return []
+        with self._lock(session_id):
+            data = self._read(session_id)
+            previous = {
+                (row.get("slot_id"), row.get("document_id")): row
+                for row in data.get("assignments", [])
+                if row.get("workflow_id") == workflow_id
+            }
+            now = datetime.now(timezone.utc).isoformat()
+            rows = []
+            for assignment in assignments:
+                prior = previous.get((assignment.slot_id, assignment.document_id))
+                if prior and not self._authorized(prior.get("user_id", "anonymous"), user_id):
+                    raise RepositoryError(
+                        "User isolation violation: unauthorized assignment write.")
+                if prior:
+                    assignment.created_at = prior.get("created_at", assignment.created_at)
+                assignment.updated_at = now
+                rows.append(asdict(assignment))
+
+            # Rows belonging to other workflows in the same session are untouched.
+            other = [row for row in data.get("assignments", [])
+                     if row.get("workflow_id") != workflow_id]
+            data["assignments"] = other + rows
+            self._write(session_id, data)
+        return assignments
+
+    def delete_workflow(self, session_id: str, user_id: str = "anonymous") -> bool:
+        with self._lock(session_id):
+            data = self._read(session_id)
+            row = data.get("workflow")
+            if not row:
+                return False
+            if not self._authorized(row.get("user_id", "anonymous"), user_id):
+                raise RepositoryError("User isolation violation: unauthorized workflow delete.")
+            self._write(session_id, {"workflow": None, "assignments": []})
+        return True
 
 
 # ============================================================================
@@ -753,9 +1027,159 @@ class SupabaseRepository(ISessionRepository, IDocumentRepository, IProposalRepos
             return False, f"Supabase Postgres health check failed: {exc}"
 
 
+class SupabaseWorkflowRepository(IWorkflowRepository):
+    """Production workflow-state adapter — Supabase Postgres.
+
+    Tables: `workflow_sessions`, `workflow_slot_assignments`
+    (see migrations/002_workflow_intake.sql).
+
+    Nothing here stores document bytes; `document_id` references a row in
+    `documents`, whose bytes live in Supabase Storage. Every read and write is
+    scoped by user_id so one user's workflow is never visible to another.
+    """
+
+    WORKFLOWS = "workflow_sessions"
+    ASSIGNMENTS = "workflow_slot_assignments"
+
+    def __init__(self, config: Optional[AppConfig] = None, client: Any = None):
+        self.config = config or get_config()
+        if client is not None:
+            self._client = client
+            return
+        if not self.config.supabase_url or not self.config.supabase_service_role_key:
+            raise RepositoryError(
+                "SupabaseWorkflowRepository requires SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY.")
+        try:
+            from supabase import create_client
+            self._client = create_client(
+                self.config.supabase_url, self.config.supabase_service_role_key)
+        except ImportError:
+            raise RepositoryError(
+                "supabase-py library is not installed. Install with `pip install supabase`.")
+        except Exception as exc:
+            raise RepositoryError(f"Failed to initialize Supabase client: {exc}") from exc
+
+    # -- helpers --------------------------------------------------------
+
+    @staticmethod
+    def _assignment_from_row(row: Dict[str, Any]) -> WorkflowSlotAssignmentRecord:
+        known = {f for f in WorkflowSlotAssignmentRecord.__dataclass_fields__}
+        payload = {k: v for k, v in row.items() if k in known}
+        payload["reasons"] = payload.get("reasons") or []
+        payload["signals"] = payload.get("signals") or {}
+        return WorkflowSlotAssignmentRecord(**payload)
+
+    @staticmethod
+    def _workflow_from_row(row: Dict[str, Any]) -> WorkflowRecord:
+        known = {f for f in WorkflowRecord.__dataclass_fields__}
+        return WorkflowRecord(**{k: v for k, v in row.items() if k in known})
+
+    # -- interface ------------------------------------------------------
+
+    def get_workflow(self, session_id: str, user_id: str = "anonymous") -> Optional[WorkflowRecord]:
+        try:
+            query = self._client.table(self.WORKFLOWS).select("*").eq("session_id", session_id)
+            if user_id != "anonymous":
+                query = query.eq("user_id", user_id)
+            res = query.execute()
+            return self._workflow_from_row(res.data[0]) if res.data else None
+        except Exception as exc:
+            raise RepositoryError(f"Supabase get_workflow failed: {exc}") from exc
+
+    def save_workflow(self, workflow: WorkflowRecord) -> WorkflowRecord:
+        try:
+            workflow.updated_at = datetime.now(timezone.utc).isoformat()
+            self._client.table(self.WORKFLOWS).upsert(
+                asdict(workflow), on_conflict="workflow_id").execute()
+            return workflow
+        except Exception as exc:
+            raise RepositoryError(f"Supabase save_workflow failed: {exc}") from exc
+
+    def list_assignments(self, workflow_id: str,
+                         user_id: str = "anonymous") -> List[WorkflowSlotAssignmentRecord]:
+        try:
+            query = self._client.table(self.ASSIGNMENTS).select("*").eq("workflow_id", workflow_id)
+            if user_id != "anonymous":
+                query = query.eq("user_id", user_id)
+            res = query.order("created_at", desc=False).execute()
+            return [self._assignment_from_row(row) for row in res.data]
+        except Exception as exc:
+            raise RepositoryError(f"Supabase list_assignments failed: {exc}") from exc
+
+    def upsert_assignment(
+        self, assignment: WorkflowSlotAssignmentRecord) -> WorkflowSlotAssignmentRecord:
+        try:
+            assignment.updated_at = datetime.now(timezone.utc).isoformat()
+            self._client.table(self.ASSIGNMENTS).upsert(
+                asdict(assignment), on_conflict="workflow_id,slot_id,document_id").execute()
+            return assignment
+        except Exception as exc:
+            raise RepositoryError(f"Supabase upsert_assignment failed: {exc}") from exc
+
+    def delete_assignment(self, workflow_id: str, slot_id: str, document_id: str,
+                          user_id: str = "anonymous") -> bool:
+        try:
+            query = (self._client.table(self.ASSIGNMENTS).delete()
+                     .eq("workflow_id", workflow_id)
+                     .eq("slot_id", slot_id)
+                     .eq("document_id", document_id))
+            if user_id != "anonymous":
+                query = query.eq("user_id", user_id)
+            res = query.execute()
+            return bool(res.data)
+        except Exception as exc:
+            raise RepositoryError(f"Supabase delete_assignment failed: {exc}") from exc
+
+    def replace_assignments(self, workflow_id: str,
+                            assignments: List[WorkflowSlotAssignmentRecord],
+                            user_id: str = "anonymous") -> List[WorkflowSlotAssignmentRecord]:
+        try:
+            now = datetime.now(timezone.utc).isoformat()
+            for assignment in assignments:
+                assignment.updated_at = now
+            if assignments:
+                self._client.table(self.ASSIGNMENTS).upsert(
+                    [asdict(a) for a in assignments],
+                    on_conflict="workflow_id,slot_id,document_id").execute()
+
+            # Prune rows that are no longer part of the workflow. Done after the
+            # upsert so a failure mid-way leaves the previous state readable
+            # rather than a half-empty slot set.
+            keep = {(a.slot_id, a.document_id) for a in assignments}
+            for existing in self.list_assignments(workflow_id, user_id=user_id):
+                if (existing.slot_id, existing.document_id) not in keep:
+                    self.delete_assignment(workflow_id, existing.slot_id,
+                                           existing.document_id, user_id=user_id)
+            return assignments
+        except RepositoryError:
+            raise
+        except Exception as exc:
+            raise RepositoryError(f"Supabase replace_assignments failed: {exc}") from exc
+
+    def delete_workflow(self, session_id: str, user_id: str = "anonymous") -> bool:
+        try:
+            workflow = self.get_workflow(session_id, user_id=user_id)
+            if workflow is None:
+                return False
+            assignments = self._client.table(self.ASSIGNMENTS).delete().eq(
+                "workflow_id", workflow.workflow_id)
+            if user_id != "anonymous":
+                assignments = assignments.eq("user_id", user_id)
+            assignments.execute()
+            self._client.table(self.WORKFLOWS).delete().eq(
+                "workflow_id", workflow.workflow_id).execute()
+            return True
+        except Exception as exc:
+            raise RepositoryError(f"Supabase delete_workflow failed: {exc}") from exc
+
+
 # ============================================================================
 # FACTORY
 # ============================================================================
+
+# Where the local (development/test) repositories keep their state. Module-level
+# so a test can point it at a temp directory before building the bundle.
+UPLOAD_ROOT = Path(__file__).resolve().parents[1] / ".uploads"
 
 _REPOSITORIES_BUNDLE: Optional[RepositoryBundle] = None
 
@@ -773,16 +1197,18 @@ def get_repositories(config: Optional[AppConfig] = None) -> RepositoryBundle:
                 proposals=supa,
                 lineage=supa,
                 pilot=supa,
+                workflows=SupabaseWorkflowRepository(cfg),
                 check_health=supa.check_health,
             )
         else:
-            upload_root = Path(__file__).resolve().parents[1] / ".uploads"
+            upload_root = UPLOAD_ROOT
             upload_root.mkdir(parents=True, exist_ok=True)
             sess = LocalSessionRepository(upload_root)
             docs = LocalDocumentRepository(upload_root)
             props = LocalProposalRepository(upload_root)
             line = LocalLineageRepository(upload_root)
             pilot = LocalPilotEventRepository(upload_root)
+            flows = LocalWorkflowRepository(upload_root)
 
             def local_health() -> Tuple[bool, str]:
                 return True, "Local in-memory/file repository is operational."
@@ -793,6 +1219,7 @@ def get_repositories(config: Optional[AppConfig] = None) -> RepositoryBundle:
                 proposals=props,
                 lineage=line,
                 pilot=pilot,
+                workflows=flows,
                 check_health=local_health,
             )
     return _REPOSITORIES_BUNDLE

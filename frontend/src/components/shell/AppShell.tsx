@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Sidebar, type NavRoute } from './Sidebar';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 
@@ -7,8 +7,15 @@ import { HomePage } from '../../pages/HomePage';
 import { WorkspaceView } from '../workspace/WorkspaceView';
 
 export const AppShell: React.FC = () => {
-  const { currentView, setCurrentView } = useWorkspaceStore();
+  const { currentView, setCurrentView, restoreSession } = useWorkspaceStore();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+
+  // A page reload must not lose the user's work. The browser remembers only
+  // which session it was in; the documents and the workflow's input slots are
+  // re-read from the server, which is where they actually live.
+  useEffect(() => {
+    void restoreSession();
+  }, [restoreSession]);
 
   // Map workspace store's currentView to sidebar's NavRoute
   const activeRoute: NavRoute = (() => {

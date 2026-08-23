@@ -79,6 +79,20 @@ export interface WorkflowGate {
   statement: string;
 }
 
+// The roll-forward relationship, stated explicitly by the server. No year is
+// special-cased anywhere: both periods are read from document content.
+export interface RollForwardPeriods {
+  historical_period: string | null;
+  current_period: string | null;
+  historical_fiscal_year: number | null;
+  target_fiscal_year: number | null;
+  expected_gap_years: number;
+  gap_years: number | null;
+  relationship: 'UNKNOWN' | 'CONSECUTIVE' | 'WIDE_GAP' | 'SAME_PERIOD' | 'INVERTED';
+  satisfies_invariant: boolean;
+  statement: string;
+}
+
 export interface WorkflowAgentContext {
   workflow: WorkflowId;
   historical_document_id: string | null;
@@ -86,6 +100,7 @@ export interface WorkflowAgentContext {
   template_document_id: string | null;
   target_fiscal_year: number | null;
   historical_fiscal_year: number | null;
+  periods: RollForwardPeriods;
   inputs_complete: boolean;
   execution_allowed: boolean;
   readiness: DomainReadiness[];
@@ -93,8 +108,13 @@ export interface WorkflowAgentContext {
 
 export interface WorkflowState {
   session_id: string;
+  // Server-assigned identity of this intake. Stable across a refresh and a
+  // backend restart — the state lives in the workflow repository, not on the
+  // container's disk.
+  workflow_id: string;
   workflow: WorkflowId;
   workflow_display_name: string;
+  periods: RollForwardPeriods;
   step: number;
   total_steps: number;
   step_label: string;

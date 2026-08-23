@@ -29,24 +29,61 @@ def _load_manifest(session_dir: Path) -> dict:
         return {"documents": {}}
 
 
-def _load_workflow_context(session_dir: Path) -> Optional[dict[str, Any]]:
+def _load_workflow_context(session_id: str, user_id: str = "anonymous") -> Optional[dict[str, Any]]:
     """Structured workflow context for this session, or None.
 
-    Read from the session's own intake state (`workflow.json`, written by
-    api/routes/workflow.py), never from the browser and never from filenames.
-    A malformed or absent file simply means "generic document workspace".
+    Read from the canonical workflow repository — never from the browser, never
+    from a filename, and never from container-local disk (Render discards that
+    on restart, which would silently strip the Agent's workflow context after a
+    redeploy). No intake for this session simply means "generic workspace".
     """
-    state_path = session_dir / "workflow.json"
-    if not state_path.exists():
-        return None
     try:
+        from adapters.repository import get_repositories
         from applications.rollforward.workflow_intake import WorkflowIntakeSession
 
-        session = WorkflowIntakeSession.from_state_dict(
-            json.loads(state_path.read_text(encoding="utf-8")))
-        return session.agent_workflow_context()
+        repos = get_repositories()
+        workflow = repos.workflows.get_workflow(session_id, user_id=user_id)
+        if workflow is None:
+            return None
+        assignments = repos.workflows.list_assignments(workflow.workflow_id, user_id=user_id)
+        return WorkflowIntakeSession.from_records(workflow, assignments).agent_workflow_context()
     except Exception:
         return None
+
+
+def _available_documents(session_id: str, session_dir: Path,
+                         user_id: str = "anonymous") -> list[dict[str, Any]]:
+    """The session's documents, from the canonical repository.
+
+    `manifest.json` is a local development/test mirror of the same data, not the
+    production authority: it lives on the container's ephemeral disk. It is still
+    consulted as a fallback so a locally-seeded session (and the existing test
+    suite, which seeds exactly that way) keeps working.
+    """
+    try:
+        from adapters.repository import get_repositories
+
+        records = get_repositories().documents.list_documents(session_id, user_id=user_id)
+    except Exception:
+        records = []
+
+    if records:
+        return [{
+            "doc_id": doc.doc_id,
+            "filename": doc.original_filename,
+            "format": doc.format,
+            "status": doc.status,
+            "element_count": doc.element_count,
+        } for doc in records]
+
+    manifest = _load_manifest(session_dir)
+    return [{
+        "doc_id": doc_id,
+        "filename": entry.get("original_filename", ""),
+        "format": entry.get("format", ""),
+        "status": entry.get("status", "unknown"),
+        "element_count": entry.get("element_count", 0),
+    } for doc_id, entry in manifest.get("documents", {}).items()]
 
 
 def _current_path_for(session_dir: Path, entry: dict) -> Path:
@@ -93,22 +130,15 @@ class ContextBuilder:
             return context
 
         session_dir = UPLOAD_ROOT / session_id
-        if not session_dir.is_dir():
+
+        # Both of these read canonical state first (repository), then fall back
+        # to the local mirror — so a session survives a container restart, and a
+        # locally-seeded session still resolves.
+        context.workflow = _load_workflow_context(session_id)
+        context.available_documents = _available_documents(session_id, session_dir)
+
+        if not context.available_documents and not session_dir.is_dir():
             return context
-
-        context.workflow = _load_workflow_context(session_dir)
-
-        manifest = _load_manifest(session_dir)
-        docs_dict = manifest.get("documents", {})
-
-        for doc_id, entry in docs_dict.items():
-            context.available_documents.append({
-                "doc_id": doc_id,
-                "filename": entry.get("original_filename", ""),
-                "format": entry.get("format", ""),
-                "status": entry.get("status", "unknown"),
-                "element_count": entry.get("element_count", 0),
-            })
 
         # If active doc is not explicitly specified, default to first document ONLY if exactly 1 document is loaded
         effective_doc_id = active_doc_id

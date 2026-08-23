@@ -34,7 +34,7 @@ Role detection is content-derived
 Every signal used to accept or reject a file comes from the artifact's own
 EvidenceCorpus (paragraph/table/cell text), never from its filename:
 
-    fiscal period   `FY2024`, `year ended ... 2024` occurrences in the text
+    fiscal period   `FY<year>`, `year ended ... <year>` occurrences in the text
     template shape  unfilled placeholder markers (`FY20XX`, `XX`, `[insert]`)
     document shape  which dataset roles the canonical policy engine observes
     data shape      whether the policy engine says the artifact SATISFIES a
@@ -48,12 +48,13 @@ the current-year sources rather than pattern-matching a filename.
 from __future__ import annotations
 
 import re
+import uuid
 from collections import Counter
 from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Sequence, Set, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Sequence, Set, Tuple
 
 from applications.rollforward.evidence_policy import (
     CorpusBuilder,
@@ -70,6 +71,11 @@ from applications.rollforward.source_intake import (
     SourceIntakeProfiler,
 )
 from applications.rollforward.source_registry import SourceRegistry
+
+if TYPE_CHECKING:  # imported for typing only — the runtime import is local to
+    # to_records()/from_records(), keeping this domain module free of any
+    # dependency on how the state happens to be stored.
+    from adapters.repository import WorkflowRecord, WorkflowSlotAssignmentRecord
 
 
 # ============================================================================
@@ -271,11 +277,15 @@ def _domain_role_alias() -> Dict[str, Sequence[str]]:
 # 4. CONTENT SIGNALS — everything below is derived from the file's own text
 # ============================================================================
 
-# "FY2024", "fiscal year 2024", "for the year ended 31 December 2024".
+# Matches a period anchor followed by the year it refers to, e.g. "FY<year>",
+# "fiscal year <year>", "for the year ended 31 December <year>". The tempered
+# repetition stops at the FIRST year after the anchor, so an intervening day
+# and month ("31 December") cannot break the match or shift it onto a later
+# number. No year is enumerated: any 19xx/20xx is equally acceptable.
 _PERIOD_PATTERN = re.compile(
     r"(?:FY|fiscal\s+year|financial\s+year|year\s+ended|year\s+end|period\s+ended)"
-    r"\D{0,20}((?:19|20)\d{2})",
-    re.IGNORECASE,
+    r"(?:(?!(?:19|20)\d{2}).){0,25}?((?:19|20)\d{2})",
+    re.IGNORECASE | re.DOTALL,
 )
 
 # Unfilled template markers. A finalised Local File has none of these; a blank
@@ -291,6 +301,122 @@ _LOCAL_FILE_SHAPE_ROLES = frozenset({DatasetRole.FAR, DatasetRole.BUSINESS_NARRA
 
 MIN_PERIOD_HITS = 3        # below this the period claim is not strong enough
 MIN_PLACEHOLDER_HITS = 10  # below this the document is not a blank template
+
+
+# ============================================================================
+# 4a. FISCAL PERIODS — the roll-forward relationship, stated explicitly
+# ============================================================================
+#
+# No year is ever special-cased. A period is whatever a document's own content
+# states, and the workflow is defined by the RELATIONSHIP between two of them:
+#
+#     historical_period + expected_gap == current_period
+#
+# The invariant that actually gates the workflow is the weaker, timeless one:
+# the historical period must strictly precede the current period. The expected
+# gap is a separate, explicit expectation: a roll-forward normally moves one
+# period forward, so a wider jump is surfaced for a human rather than accepted
+# silently or rejected outright.
+
+EXPECTED_ROLL_FORWARD_GAP_YEARS = 1
+
+
+class PeriodRelationship(str, Enum):
+    """How the historical period relates to the current one."""
+    UNKNOWN = "UNKNOWN"          # at least one side states no period
+    CONSECUTIVE = "CONSECUTIVE"  # exactly the expected gap apart
+    WIDE_GAP = "WIDE_GAP"        # historical precedes current, but by more than expected
+    SAME_PERIOD = "SAME_PERIOD"  # both sides cover the same period
+    INVERTED = "INVERTED"        # historical is later than current
+
+
+@dataclass(frozen=True, order=True)
+class FiscalPeriod:
+    """One fiscal period, identified by the year the content states."""
+    year: int
+
+    @property
+    def label(self) -> str:
+        return f"FY{self.year}"
+
+    def precedes(self, other: "FiscalPeriod") -> bool:
+        return self.year < other.year
+
+    def gap_to(self, other: "FiscalPeriod") -> int:
+        """Periods from this one to `other`. Negative when `other` is earlier."""
+        return other.year - self.year
+
+    @classmethod
+    def of(cls, year: Optional[int]) -> Optional["FiscalPeriod"]:
+        return cls(year) if year is not None else None
+
+    def __str__(self) -> str:  # pragma: no cover - display only
+        return self.label
+
+
+@dataclass(frozen=True)
+class RollForwardPeriods:
+    """The two periods a roll-forward moves between, and their relationship."""
+    historical: Optional[FiscalPeriod] = None
+    current: Optional[FiscalPeriod] = None
+    expected_gap_years: int = EXPECTED_ROLL_FORWARD_GAP_YEARS
+
+    @property
+    def relationship(self) -> PeriodRelationship:
+        if self.historical is None or self.current is None:
+            return PeriodRelationship.UNKNOWN
+        gap = self.historical.gap_to(self.current)
+        if gap == self.expected_gap_years:
+            return PeriodRelationship.CONSECUTIVE
+        if gap > 0:
+            return PeriodRelationship.WIDE_GAP
+        if gap == 0:
+            return PeriodRelationship.SAME_PERIOD
+        return PeriodRelationship.INVERTED
+
+    @property
+    def satisfies_invariant(self) -> bool:
+        """The gating rule: the historical period strictly precedes the current one."""
+        return self.relationship in (
+            PeriodRelationship.CONSECUTIVE, PeriodRelationship.WIDE_GAP)
+
+    @property
+    def gap_years(self) -> Optional[int]:
+        if self.historical is None or self.current is None:
+            return None
+        return self.historical.gap_to(self.current)
+
+    def describe(self) -> str:
+        """Plain-language statement of the relationship, with no hardcoded years."""
+        relationship = self.relationship
+        if relationship == PeriodRelationship.UNKNOWN:
+            return "The periods being rolled between are not both known yet."
+        gap = self.gap_years or 0
+        if relationship == PeriodRelationship.CONSECUTIVE:
+            return (f"{self.historical.label} rolls forward to {self.current.label}, "
+                    f"the period immediately after it.")
+        if relationship == PeriodRelationship.WIDE_GAP:
+            return (f"{self.historical.label} is {gap} periods before {self.current.label}; "
+                    f"a roll-forward normally advances "
+                    f"{self.expected_gap_years} period(s).")
+        if relationship == PeriodRelationship.SAME_PERIOD:
+            return (f"Both sides cover {self.current.label}; a roll-forward needs two "
+                    f"different periods.")
+        return (f"{self.historical.label} is later than {self.current.label}; a roll-forward "
+                f"moves forward, not back.")
+
+    def to_dict(self) -> Dict[str, Any]:
+        return {
+            "historical_period": self.historical.label if self.historical else None,
+            "current_period": self.current.label if self.current else None,
+            "historical_fiscal_year": self.historical.year if self.historical else None,
+            "target_fiscal_year": self.current.year if self.current else None,
+            "expected_gap_years": self.expected_gap_years,
+            "gap_years": self.gap_years,
+            "relationship": self.relationship.value,
+            "satisfies_invariant": self.satisfies_invariant,
+            "statement": self.describe(),
+        }
 
 
 @dataclass
@@ -534,9 +660,15 @@ class SlotRoleValidator:
         cls,
         spec: InputSlotSpec,
         signals: DocumentSignals,
-        current_year: Optional[int] = None,
-        historical_year: Optional[int] = None,
+        periods: Optional[RollForwardPeriods] = None,
     ) -> SlotVerdict:
+        """Judge one file against one slot.
+
+        `periods` carries the surrounding evidence: which period the current-year
+        sources state, and which period an accepted historical file states. Both
+        come from document content, so no year is ever hardcoded here.
+        """
+        periods = periods or RollForwardPeriods()
         expected = spec.expected_label
         detected = signals.detected_label()
 
@@ -549,16 +681,16 @@ class SlotRoleValidator:
             )
 
         if spec.slot_id == SlotId.HISTORICAL_LOCAL_FILE:
-            return cls._validate_historical(spec, signals, detected, expected, current_year)
+            return cls._validate_historical(spec, signals, detected, expected, periods)
         if spec.slot_id == SlotId.MASTER_TEMPLATE:
             return cls._validate_template(spec, signals, detected, expected)
-        return cls._validate_current_source(spec, signals, detected, expected, historical_year)
+        return cls._validate_current_source(spec, signals, detected, expected, periods)
 
     # -- per-slot rules -------------------------------------------------
 
     @staticmethod
     def _validate_historical(spec, signals, detected, expected,
-                             current_year: Optional[int]) -> SlotVerdict:
+                             periods: RollForwardPeriods) -> SlotVerdict:
         if not signals.is_local_file_shaped:
             return SlotVerdict(
                 SlotValidationStatus.ROLE_MISMATCH, detected, expected,
@@ -570,27 +702,47 @@ class SlotRoleValidator:
                 SlotValidationStatus.ROLE_MISMATCH, detected, expected,
                 (f"This is an unfilled template ({signals.placeholder_hits} unresolved "
                  f"placeholders) with no fiscal period stated. The historical slot needs "
-                 f"last year's completed Local File.",),
+                 f"the completed Local File for the period being rolled forward FROM.",),
             )
-        if signals.fiscal_year is None:
+
+        candidate = FiscalPeriod.of(signals.fiscal_year)
+        if candidate is None:
             return SlotVerdict(
                 SlotValidationStatus.HUMAN_REVIEW, detected, expected,
                 ("The fiscal period this Local File covers could not be determined from "
-                 "its content, so it cannot be confirmed as the prior year.",),
+                 "its content, so it cannot be confirmed as the preceding period.",),
             )
-        if current_year is not None and signals.fiscal_year >= current_year:
+
+        # Judge this candidate as the historical side against whatever period the
+        # current-year sources state. Both sides are read from content.
+        relation = RollForwardPeriods(
+            historical=candidate, current=periods.current,
+            expected_gap_years=periods.expected_gap_years)
+
+        if relation.relationship == PeriodRelationship.UNKNOWN:
+            return SlotVerdict(
+                SlotValidationStatus.ROLE_CONFIRMED, detected, expected,
+                (f"Content states {candidate.label}; the period is re-checked when "
+                 f"current-year sources arrive.",),
+            )
+        if relation.relationship in (PeriodRelationship.SAME_PERIOD,
+                                     PeriodRelationship.INVERTED):
             return SlotVerdict(
                 SlotValidationStatus.ROLE_MISMATCH, detected, expected,
-                (f"This Local File covers FY{signals.fiscal_year}, the same period as the "
-                 f"current-year sources. The historical slot needs the Local File for the "
-                 f"period being rolled forward FROM.",),
+                (relation.describe(),
+                 f"The historical slot needs the Local File for the period being rolled "
+                 f"forward FROM, not {candidate.label}."),
             )
-        reason = f"Content states FY{signals.fiscal_year}"
-        if current_year is not None:
-            reason += f", one period before the FY{current_year} sources"
-        else:
-            reason += "; the period is re-checked when current-year sources arrive"
-        return SlotVerdict(SlotValidationStatus.ROLE_CONFIRMED, detected, expected, (reason + ".",))
+        if relation.relationship == PeriodRelationship.WIDE_GAP:
+            return SlotVerdict(
+                SlotValidationStatus.HUMAN_REVIEW, detected, expected,
+                (relation.describe(),
+                 "Confirm this is the Local File you mean to roll forward."),
+            )
+        return SlotVerdict(
+            SlotValidationStatus.ROLE_CONFIRMED, detected, expected,
+            (f"Content states {candidate.label}. {relation.describe()}",),
+        )
 
     @staticmethod
     def _validate_template(spec, signals, detected, expected) -> SlotVerdict:
@@ -619,7 +771,7 @@ class SlotRoleValidator:
 
     @staticmethod
     def _validate_current_source(spec, signals, detected, expected,
-                                 historical_year: Optional[int]) -> SlotVerdict:
+                                 periods: RollForwardPeriods) -> SlotVerdict:
         if signals.is_local_file_shaped:
             return SlotVerdict(
                 SlotValidationStatus.ROLE_MISMATCH, detected, expected,
@@ -632,15 +784,23 @@ class SlotRoleValidator:
                 ("No complete current-year dataset was recognised in this file, so it "
                  "cannot be confirmed as a source.",),
             )
-        if (historical_year is not None and signals.fiscal_year is not None
-                and signals.fiscal_year <= historical_year):
-            return SlotVerdict(
-                SlotValidationStatus.ROLE_MISMATCH, detected, expected,
-                (f"This source states FY{signals.fiscal_year}, which is not newer than the "
-                 f"FY{historical_year} Local File being rolled forward.",),
-            )
+
+        candidate = FiscalPeriod.of(signals.fiscal_year)
+        if candidate is not None and periods.historical is not None:
+            # This source is the current side; the accepted historical file is the
+            # other. A source that does not post-date it cannot be current-year data.
+            relation = RollForwardPeriods(
+                historical=periods.historical, current=candidate,
+                expected_gap_years=periods.expected_gap_years)
+            if not relation.satisfies_invariant:
+                return SlotVerdict(
+                    SlotValidationStatus.ROLE_MISMATCH, detected, expected,
+                    (f"This source states {candidate.label}, which is not later than the "
+                     f"{periods.historical.label} Local File being rolled forward.",),
+                )
+
         supplied = len(signals.satisfying_roles)
-        period = f"FY{signals.fiscal_year} " if signals.fiscal_year else ""
+        period = f"{candidate.label} " if candidate else ""
         return SlotVerdict(
             SlotValidationStatus.ROLE_CONFIRMED, detected, expected,
             (f"{period}source data with {supplied} complete dataset(s) "
@@ -768,8 +928,12 @@ class WorkflowIntakeSession:
         session_id: str,
         workflow_type: WorkflowType = WorkflowType.LOCAL_FILE_ROLL_FORWARD,
         target_fiscal_year: Optional[int] = None,
+        workflow_id: Optional[str] = None,
+        user_id: str = "anonymous",
     ):
         self.session_id = session_id
+        self.workflow_id = workflow_id or f"wf-{uuid.uuid4().hex[:16]}"
+        self.user_id = user_id
         self.workflow_type = workflow_type
         self.target_fiscal_year = target_fiscal_year
         self.created_at = datetime.now(timezone.utc).isoformat()
@@ -803,6 +967,18 @@ class WorkflowIntakeSession:
             if a.signals and a.signals.fiscal_year is not None
         ]
         return max(years) if years else None
+
+    @property
+    def periods(self) -> RollForwardPeriods:
+        """The two periods this roll-forward moves between, and their relationship.
+
+        Both are read from document content (or, for the current side, from an
+        explicitly supplied target period). No year is special-cased anywhere.
+        """
+        return RollForwardPeriods(
+            historical=FiscalPeriod.of(self.historical_year),
+            current=FiscalPeriod.of(self.current_year),
+        )
 
     @property
     def historical_year(self) -> Optional[int]:
@@ -923,39 +1099,43 @@ class WorkflowIntakeSession:
         the current-year sources say, so an assignment made earlier is re-judged
         whenever the surrounding evidence changes.
         """
-        current_year = self.current_year
+        current_period = FiscalPeriod.of(self.current_year)
 
-        def apply(slot_id: SlotId, historical_year: Optional[int]) -> None:
+        def apply(slot_id: SlotId, periods: RollForwardPeriods) -> None:
             state = self.slots[slot_id]
             for assignment in state.assignments:
                 if assignment.signals is None:
                     continue
                 if assignment.human_review_acknowledged:
                     continue  # an explicit human decision is not overwritten
-                verdict = SlotRoleValidator.validate(
-                    state.spec, assignment.signals,
-                    current_year=current_year, historical_year=historical_year,
-                )
+                verdict = SlotRoleValidator.validate(state.spec, assignment.signals, periods)
                 assignment.validation_status = verdict.status
                 assignment.detected_label = verdict.detected_label
                 assignment.expected_label = verdict.expected_label
                 assignment.reasons = list(verdict.reasons)
 
-        # Pass 1 — the baseline slots. The historical file is judged against the
-        # period the sources state.
-        apply(SlotId.HISTORICAL_LOCAL_FILE, None)
-        apply(SlotId.MASTER_TEMPLATE, None)
+        # Pass 1 — the baseline slots. The historical candidate is judged against
+        # the period the current-year sources state.
+        against_current = RollForwardPeriods(current=current_period)
+        apply(SlotId.HISTORICAL_LOCAL_FILE, against_current)
+        apply(SlotId.MASTER_TEMPLATE, against_current)
 
         # Pass 2 — the sources are only measured against a historical file that
         # was itself accepted. A rejected historical file is one problem; it must
         # not cascade into accusing every valid source of being stale.
+        # Only a file whose role was CONFIRMED sets the period the sources are
+        # measured against. A rejected historical file is one problem, and a file
+        # the user knowingly kept for review is their decision — neither should
+        # cascade into accusing valid current-year sources of being stale.
         confirmed_historical = next(
-            (a.signals.fiscal_year
+            (FiscalPeriod.of(a.signals.fiscal_year)
              for a in self.slots[SlotId.HISTORICAL_LOCAL_FILE].assignments
-             if a.is_usable and a.signals and a.signals.fiscal_year is not None),
+             if a.validation_status == SlotValidationStatus.ROLE_CONFIRMED
+             and a.signals and a.signals.fiscal_year is not None),
             None,
         )
-        apply(SlotId.CURRENT_YEAR_SOURCES, confirmed_historical)
+        apply(SlotId.CURRENT_YEAR_SOURCES,
+              RollForwardPeriods(historical=confirmed_historical, current=current_period))
 
     # -- readiness ------------------------------------------------------
 
@@ -1115,6 +1295,7 @@ class WorkflowIntakeSession:
             "template_document_id": template_ids[0] if template_ids else None,
             "target_fiscal_year": self.current_year,
             "historical_fiscal_year": self.historical_year,
+            "periods": self.periods.to_dict(),
             "inputs_complete": gate["execution_allowed"],
             "execution_allowed": gate["execution_allowed"],
             "readiness": [row.to_dict() for row in self.readiness_summary()],
@@ -1125,10 +1306,12 @@ class WorkflowIntakeSession:
     def to_dict(self) -> Dict[str, Any]:
         return {
             "session_id": self.session_id,
+            "workflow_id": self.workflow_id,
             "workflow": self.workflow_type.value,
             "workflow_display_name": "Local File Roll-Forward",
             "created_at": self.created_at,
             "target_fiscal_year": self.target_fiscal_year,
+            "periods": self.periods.to_dict(),
             "step": 1,
             "total_steps": self.TOTAL_STEPS,
             "step_label": self.STEP_LABELS[1],
@@ -1139,9 +1322,11 @@ class WorkflowIntakeSession:
         }
 
     def state_to_dict(self) -> Dict[str, Any]:
-        """Minimal persisted form — assignments only; verdicts are recomputed."""
+        """Minimal serialised form — assignments only; verdicts are recomputed."""
         return {
             "session_id": self.session_id,
+            "workflow_id": self.workflow_id,
+            "user_id": self.user_id,
             "workflow": self.workflow_type.value,
             "created_at": self.created_at,
             "target_fiscal_year": self.target_fiscal_year,
@@ -1158,11 +1343,100 @@ class WorkflowIntakeSession:
             session_id=data["session_id"],
             workflow_type=WorkflowType(data.get("workflow", WorkflowType.LOCAL_FILE_ROLL_FORWARD.value)),
             target_fiscal_year=data.get("target_fiscal_year"),
+            workflow_id=data.get("workflow_id"),
+            user_id=data.get("user_id", "anonymous"),
         )
         session.created_at = data.get("created_at", session.created_at)
         for raw in data.get("assignments", []):
             assignment = SlotAssignment.from_dict(raw)
             session.slots[assignment.slot_id].assignments.append(assignment)
+        session.revalidate_all()
+        return session
+
+    # -- repository records ---------------------------------------------
+    #
+    # The canonical home of this state is the workflow repository (Postgres in
+    # production). These two methods are the only bridge between the domain
+    # objects and those rows; nothing else knows how the state is stored.
+
+    def to_records(self) -> Tuple["WorkflowRecord", List["WorkflowSlotAssignmentRecord"]]:
+        from adapters.repository import WorkflowRecord, WorkflowSlotAssignmentRecord
+
+        workflow = WorkflowRecord(
+            workflow_id=self.workflow_id,
+            session_id=self.session_id,
+            user_id=self.user_id,
+            workflow_type=self.workflow_type.value,
+            target_fiscal_year=self.target_fiscal_year,
+            created_at=self.created_at,
+        )
+
+        rows: List[WorkflowSlotAssignmentRecord] = []
+        for slot_id in SLOT_ORDER:
+            state = self.slots[slot_id]
+            readiness = state.readiness_status.value
+            for assignment in state.assignments:
+                rows.append(WorkflowSlotAssignmentRecord(
+                    workflow_id=self.workflow_id,
+                    session_id=self.session_id,
+                    user_id=self.user_id,
+                    slot_id=slot_id.value,
+                    document_id=assignment.document_id,
+                    filename=assignment.filename,
+                    file_format=assignment.file_format,
+                    file_hash=assignment.file_hash,
+                    file_size=assignment.file_size,
+                    perception_status=assignment.perception_status,
+                    element_count=assignment.element_count,
+                    artifact_id=assignment.artifact_id,
+                    validation_status=assignment.validation_status.value,
+                    readiness_status=readiness,
+                    detected_label=assignment.detected_label,
+                    expected_label=assignment.expected_label,
+                    reasons=list(assignment.reasons),
+                    signals=assignment.signals.to_dict() if assignment.signals else {},
+                    human_review_acknowledged=assignment.human_review_acknowledged,
+                    acknowledged_by=assignment.acknowledged_by,
+                    created_at=assignment.assigned_at,
+                ))
+        return workflow, rows
+
+    @classmethod
+    def from_records(cls, workflow: "WorkflowRecord",
+                     assignments: Sequence["WorkflowSlotAssignmentRecord"]
+                     ) -> "WorkflowIntakeSession":
+        session = cls(
+            session_id=workflow.session_id,
+            workflow_type=WorkflowType(workflow.workflow_type),
+            target_fiscal_year=workflow.target_fiscal_year,
+            workflow_id=workflow.workflow_id,
+            user_id=workflow.user_id,
+        )
+        session.created_at = workflow.created_at
+        for row in assignments:
+            slot_id = SlotId(row.slot_id)
+            session.slots[slot_id].assignments.append(SlotAssignment(
+                document_id=row.document_id,
+                slot_id=slot_id,
+                filename=row.filename,
+                file_format=row.file_format,
+                file_hash=row.file_hash,
+                file_size=row.file_size,
+                perception_status=row.perception_status,
+                element_count=row.element_count,
+                artifact_id=row.artifact_id,
+                validation_status=SlotValidationStatus(row.validation_status),
+                detected_label=row.detected_label,
+                expected_label=row.expected_label,
+                reasons=list(row.reasons or []),
+                signals=DocumentSignals.from_dict(row.signals) if row.signals else None,
+                human_review_acknowledged=row.human_review_acknowledged,
+                acknowledged_by=row.acknowledged_by,
+                assigned_at=row.created_at,
+            ))
+        # Verdicts are always recomputed from the stored content profile, never
+        # trusted from the row: a stored verdict could otherwise outlive the rule
+        # that produced it.
         session.revalidate_all()
         return session
 
@@ -1189,4 +1463,8 @@ __all__ = [
     "DomainReadiness",
     "InputSlotState",
     "WorkflowIntakeSession",
+    "FiscalPeriod",
+    "RollForwardPeriods",
+    "PeriodRelationship",
+    "EXPECTED_ROLL_FORWARD_GAP_YEARS",
 ]
