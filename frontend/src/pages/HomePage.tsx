@@ -1,9 +1,19 @@
 import React from 'react';
-import { FolderOpen, FileText, Clock } from 'lucide-react';
+import { FolderOpen, FileText, Clock, ArrowRight, RefreshCw } from 'lucide-react';
 import { useWorkspaceStore } from '../state/workspaceStore';
+import { useWorkflowStore } from '../state/workflowStore';
 
 export const HomePage: React.FC = () => {
-  const { setCurrentView, taskHistory } = useWorkspaceStore();
+  const { setCurrentView, startWorkflow, exitWorkflow, taskHistory } = useWorkspaceStore();
+  const resetWorkflow = useWorkflowStore((s) => s.reset);
+
+  // A workflow starter opens the workflow's own structured intake, not the
+  // generic workspace: the user is asked for named inputs instead of being left
+  // to work out what the workflow needs.
+  const beginRollForward = () => {
+    resetWorkflow();
+    startWorkflow('LOCAL_FILE_ROLL_FORWARD');
+  };
 
   return (
     <div style={{ flex: 1, overflow: 'auto', background: 'var(--bg-app)' }}>
@@ -27,11 +37,67 @@ export const HomePage: React.FC = () => {
           </p>
         </div>
 
-        {/* Primary CTA — opens Workspace directly; documents are added there,
+        {/* Workflow starters — a named workflow with a structured intake. */}
+        <div style={{ marginBottom: 'var(--space-6)' }}>
+          <div style={{
+            fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-tertiary)',
+            textTransform: 'uppercase', letterSpacing: '0.04em', marginBottom: 'var(--space-3)',
+          }}>
+            Start a workflow
+          </div>
+
+          <div
+            data-testid="workflow-starter-LOCAL_FILE_ROLL_FORWARD"
+            style={{
+              display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)',
+              padding: 'var(--space-4)', background: 'var(--bg-surface)',
+              border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)',
+            }}
+          >
+            <div style={{
+              width: 34, height: 34, borderRadius: 'var(--radius-lg)', flexShrink: 0,
+              background: 'var(--accent-light)', border: '1px solid var(--accent-border)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <RefreshCw size={16} style={{ color: 'var(--accent)' }} />
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{
+                fontSize: 'var(--text-md)', fontWeight: 600, color: 'var(--text-primary)',
+                marginBottom: 2,
+              }}>
+                Local File Roll-Forward
+              </div>
+              <p style={{
+                fontSize: 'var(--text-sm)', color: 'var(--text-secondary)',
+                lineHeight: 1.6, marginBottom: 'var(--space-3)',
+              }}>
+                Update last year's Local File using current-year financial, tax and
+                supporting source data.
+              </p>
+              <button
+                className="btn btn-primary"
+                data-testid="start-workflow-LOCAL_FILE_ROLL_FORWARD"
+                onClick={beginRollForward}
+              >
+                <span>Start Workflow</span>
+                <ArrowRight size={15} />
+              </button>
+            </div>
+          </div>
+        </div>
+
+        {/* Generic entry — opens Workspace directly; documents are added there,
             not through a separate intake page. */}
         <button
           className="btn btn-primary btn-lg"
-          onClick={() => setCurrentView('workspace')}
+          onClick={() => {
+            // The generic workspace is not a workflow — leaving workflow mode
+            // here keeps the two entry points from bleeding into each other.
+            exitWorkflow();
+            setCurrentView('workspace');
+          }}
           style={{
             width: '100%',
             justifyContent: 'center',

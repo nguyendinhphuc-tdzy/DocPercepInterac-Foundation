@@ -32,6 +32,7 @@ from perception.anchor_builder import assign_anchors  # noqa: E402
 from perception.element_classifier import classify_blocks  # noqa: E402
 from perception.models import Anchor  # noqa: E402
 from perception.parser import extract_geometry, extract_media_manifest, resolve_media_bytes  # noqa: E402
+from perception.xlsx_visual_inventory import audit_workbook  # noqa: E402
 from output.writeback import WritebackEngine  # noqa: E402
 from output.lineage import LineageLogger  # noqa: E402
 from adapters.storage import get_storage  # noqa: E402
@@ -506,3 +507,43 @@ def get_document_media(session_id: str, doc_id: str, media_id: str):
 
     data, mime_type = resolved
     return Response(data, mimetype=mime_type)
+
+
+@documents_bp.get("/api/documents/<session_id>/visual-objects/<doc_id>")
+def get_document_visual_objects(session_id: str, doc_id: str):
+    """Read-only inventory of a workbook's drawing objects (Phase PROD-UX-1).
+
+    Reports what the file contains against what the pipeline actually reads, so
+    the viewer can say a worksheet is incomplete instead of presenting a partial
+    sheet as if it were whole. Perceives nothing and changes nothing.
+    """
+    user_id = _get_user_id()
+    storage = get_storage()
+    repos = get_repositories()
+
+    doc = repos.documents.get_document(session_id, doc_id, user_id=user_id)
+    session_dir = UPLOAD_ROOT / secure_filename(session_id)
+    fmt = doc.format if doc else None
+
+    if session_dir.is_dir():
+        manifest = _load_manifest(session_dir)
+        entry = manifest.get("documents", {}).get(doc_id)
+        if entry:
+            fmt = entry.get("format", fmt)
+            local_path = _current_path_for(session_dir, entry)
+            if local_path.exists():
+                if fmt != "xlsx":
+                    return jsonify({"doc_id": doc_id, "format": fmt, "applicable": False})
+                return jsonify({"doc_id": doc_id, "format": fmt, "applicable": True,
+                                **audit_workbook(str(local_path))})
+
+    if doc is None:
+        return jsonify({"error": "Unknown doc_id"}), 404
+    if fmt != "xlsx":
+        return jsonify({"doc_id": doc_id, "format": fmt, "applicable": False})
+
+    is_patched = storage.document_exists(session_id, doc_id, is_patched=True, user_id=user_id)
+    with storage.get_document_path(session_id, doc_id, is_patched=is_patched, user_id=user_id) as doc_path:
+        report = audit_workbook(str(doc_path))
+
+    return jsonify({"doc_id": doc_id, "format": fmt, "applicable": True, **report})

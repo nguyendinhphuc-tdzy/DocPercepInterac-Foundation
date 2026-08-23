@@ -130,6 +130,19 @@ export interface AgentChatRequest {
   };
 }
 
+// What a completed roll-forward run reports into the conversation. The Agent is
+// a first-class place to see the outcome — Review is not the only route to the
+// output. Absent on every response that did not run a roll-forward.
+export interface RollForwardResult {
+  output_document: { doc_id: string; filename: string; download_url?: string } | null;
+  regions_changed: number;
+  cells_updated: number;
+  rows_inserted: number;
+  reconciliation_status: 'RECONCILED' | 'PARTIALLY_RECONCILED' | 'NOT_RECONCILED' | 'NOT_RUN';
+  reconciliation_detail?: string | null;
+  review_available: boolean;
+}
+
 export interface AgentChatResponse {
   response: string;
   status: 'success' | 'error';
@@ -140,6 +153,7 @@ export interface AgentChatResponse {
   steps: AgentStep[];
   citations?: Citation[];
   proposed_actions?: ProposedAction[];
+  roll_forward_result?: RollForwardResult | null;
   error?: string;
 }
 

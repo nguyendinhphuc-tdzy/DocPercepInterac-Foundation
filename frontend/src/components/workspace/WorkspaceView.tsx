@@ -6,19 +6,23 @@ import { AgentPane } from '../agent/AgentPane';
 import { ElementsPane } from '../elements/ElementsPane';
 import { ResultsPane } from '../results/ResultsPane';
 import { DocumentPane } from '../document/DocumentPane';
+import { WorkflowIntakePanel } from '../workflow/WorkflowIntakePanel';
 import { useWorkspaceStore } from '../../state/workspaceStore';
 
 // Workspace is the primary entry surface regardless of document count — it
 // decides for itself whether to show an empty state or document context.
 // It must never bounce the user to a separate upload page.
 export const WorkspaceView: React.FC = () => {
-  const { workspacePreset } = useWorkspaceStore();
+  const { workspacePreset, activeWorkflow } = useWorkspaceStore();
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%', overflow: 'hidden' }}>
       <WorkspaceHeader />
       <div style={{ flex: 1, display: 'flex', overflow: 'hidden' }}>
-        <FileRail />
+        {/* In a workflow with a structured intake, the generic document list is
+            replaced by that workflow's own input slots — a user in this mode
+            never sees a blank, role-less document workspace. */}
+        {activeWorkflow ? <WorkflowIntakePanel /> : <FileRail />}
         <div style={{ flex: 1, overflow: 'hidden' }}>
           {workspacePreset === 'agent' && <AgentPresetLayout />}
           {workspacePreset === 'inspect' && <InspectPresetLayout />}

@@ -64,6 +64,12 @@ class AgentContext(BaseModel):
     selected_element: Optional[dict[str, Any]] = None
     available_documents: list[dict[str, Any]] = Field(default_factory=list)
     relevant_elements: list[dict[str, Any]] = Field(default_factory=list)
+    # Structured workflow context (Phase PROD-UX-1). Populated by the server from
+    # the session's own intake state when a workflow with a structured intake is
+    # active, so the Agent is TOLD which document plays which role and never has
+    # to infer the workflow — or find the template — from a filename. None when
+    # the session is a generic document workspace.
+    workflow: Optional[dict[str, Any]] = None
 
 
 # ============================================================================
@@ -172,6 +178,24 @@ def get_model_label(model_id: Optional[str]) -> str:
         return "The selected model"
 
 
+class RollForwardResult(BaseModel):
+    """What a completed roll-forward run reports back into the conversation.
+
+    Phase PROD-UX-1 establishes the contract and the Agent-native presentation
+    of it. This phase never populates it — it runs no roll-forward and mutates
+    nothing — but the Agent surface is the primary place a result is shown, so
+    Review is not the only way to reach the output.
+    """
+    output_document: Optional[dict[str, Any]] = None   # {doc_id, filename, download_url}
+    regions_changed: int = 0
+    cells_updated: int = 0
+    rows_inserted: int = 0
+    reconciliation_status: Literal[
+        "RECONCILED", "PARTIALLY_RECONCILED", "NOT_RECONCILED", "NOT_RUN"] = "NOT_RUN"
+    reconciliation_detail: Optional[str] = None
+    review_available: bool = False
+
+
 class AgentResponse(BaseModel):
     """Standardized Agent response payload."""
     response: str
@@ -183,4 +207,6 @@ class AgentResponse(BaseModel):
     steps: list[AgentStep] = Field(default_factory=list)
     citations: list[Citation] = Field(default_factory=list)
     proposed_actions: list[ProposedAction] = Field(default_factory=list)
+    # Present only when a governed roll-forward run produced an output document.
+    roll_forward_result: Optional[RollForwardResult] = None
     error: Optional[str] = None

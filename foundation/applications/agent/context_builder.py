@@ -29,6 +29,26 @@ def _load_manifest(session_dir: Path) -> dict:
         return {"documents": {}}
 
 
+def _load_workflow_context(session_dir: Path) -> Optional[dict[str, Any]]:
+    """Structured workflow context for this session, or None.
+
+    Read from the session's own intake state (`workflow.json`, written by
+    api/routes/workflow.py), never from the browser and never from filenames.
+    A malformed or absent file simply means "generic document workspace".
+    """
+    state_path = session_dir / "workflow.json"
+    if not state_path.exists():
+        return None
+    try:
+        from applications.rollforward.workflow_intake import WorkflowIntakeSession
+
+        session = WorkflowIntakeSession.from_state_dict(
+            json.loads(state_path.read_text(encoding="utf-8")))
+        return session.agent_workflow_context()
+    except Exception:
+        return None
+
+
 def _current_path_for(session_dir: Path, entry: dict) -> Path:
     stored_path = session_dir / entry["stored_filename"]
     patched = stored_path.with_name(f"{stored_path.stem}_patched{stored_path.suffix}")
@@ -75,6 +95,8 @@ class ContextBuilder:
         session_dir = UPLOAD_ROOT / session_id
         if not session_dir.is_dir():
             return context
+
+        context.workflow = _load_workflow_context(session_dir)
 
         manifest = _load_manifest(session_dir)
         docs_dict = manifest.get("documents", {})

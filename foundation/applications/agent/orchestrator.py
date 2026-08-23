@@ -460,10 +460,47 @@ class AgentOrchestrator:
         )
 
     @staticmethod
+    def _workflow_prompt_block(context: AgentContext) -> str:
+        """States the active workflow and which document holds which role.
+
+        Supplied by the server from the session's structured intake. The model is
+        told the roles outright, so it never infers the workflow — or which file
+        is the template — from a filename.
+        """
+        workflow = context.workflow
+        if not workflow:
+            return ""
+
+        names = {d["doc_id"]: d.get("filename", "") for d in context.available_documents}
+
+        def describe(doc_id: Optional[str]) -> str:
+            if not doc_id:
+                return "not supplied yet"
+            return f"{names.get(doc_id, 'unknown document')} (doc_id={doc_id})"
+
+        sources = workflow.get("current_source_document_ids") or []
+        source_text = ", ".join(describe(d) for d in sources) if sources else "not supplied yet"
+        unsupported = [r["display_name"] for r in workflow.get("readiness", [])
+                       if r.get("status") != "SUPPORTED"]
+
+        block = (
+            f"Active workflow: {workflow.get('workflow')}.\n"
+            f"  Historical Local File: {describe(workflow.get('historical_document_id'))}\n"
+            f"  Current-year sources: {source_text}\n"
+            f"  Master template: {describe(workflow.get('template_document_id'))}\n"
+            f"  Inputs complete: {workflow.get('inputs_complete')}. "
+            f"Execution authorized: {workflow.get('execution_allowed')}.\n"
+        )
+        if unsupported:
+            block += f"  Source domains not yet supported: {', '.join(unsupported)}.\n"
+        return block + "These roles are authoritative; do not re-derive them from filenames.\n"
+
+    @staticmethod
     def _build_general_prompt(context: AgentContext) -> str:
         doc_names = [d["filename"] for d in context.available_documents]
         return (
             "You are the Foundation Document Intelligence Agent.\n"
-            f"Documents loaded: {', '.join(doc_names) if doc_names else 'None'}.\n"
+            + AgentOrchestrator._workflow_prompt_block(context)
+            + f"Documents loaded: {', '.join(doc_names) if doc_names else 'None'}.\n"
             "Answer the user's questions clearly based on Foundation document primitives."
         )

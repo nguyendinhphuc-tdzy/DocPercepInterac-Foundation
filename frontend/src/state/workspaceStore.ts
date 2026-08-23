@@ -4,8 +4,10 @@ import {
 } from '../api/client';
 import { useSyncStore } from './syncStore';
 import type {
-  DocumentFormat, EditHistoryEntry, ElementRowData, GptsMappingResult, MappedEntry, MediaAsset,
+  DocumentFormat, DocumentSummary, EditHistoryEntry, ElementRowData, GptsMappingResult,
+  MappedEntry, MediaAsset,
 } from '../types/element';
+import type { WorkflowId } from '../api/workflow';
 
 // Three concepts, kept strictly separate (mirrors api/routes/documents.py's
 // own docstring):
@@ -112,7 +114,17 @@ interface WorkspaceState {
   documents: WorkspaceDocument[];
   activeDocClientId: string | null;
   intakeError: string | null;
+  // Which structured-intake workflow this workspace is in, if any. `null` is
+  // the generic document workspace that has always existed — the workflow mode
+  // adds a guided intake in front of it, it does not replace it.
+  activeWorkflow: WorkflowId | null;
+  startWorkflow: (workflow: WorkflowId) => void;
+  exitWorkflow: () => void;
   addDocument: (file: File) => void;
+  // Same upload path as addDocument, but resolves with the server identity so a
+  // caller can act on the document (e.g. give it a workflow role) once it is
+  // perceived. addDocument is this method with the result dropped.
+  addDocumentAndWait: (file: File) => Promise<{ clientId: string; docId: string } | null>;
   removeDocument: (clientId: string) => void;
   setActiveDocClientId: (clientId: string | null) => void;
   ensureElementsLoaded: (clientId: string) => Promise<void>;
@@ -158,7 +170,7 @@ function saveTaskHistory(history: TaskHistoryEntry[]) {
 // selecting multiple files at once) so only ONE of them establishes the
 // shared session — see addDocument(). Module-level by design: it is pure
 // upload-sequencing plumbing, not UI state that any component reads.
-let pendingSessionPromise: Promise<string> | null = null;
+let pendingSessionPromise: Promise<DocumentSummary> | null = null;
 
 function applyUploadSummary(
   set: (fn: (state: WorkspaceState) => Partial<WorkspaceState>) => void,
@@ -203,6 +215,7 @@ const initialWorkspaceState = {
   documents: [] as WorkspaceDocument[],
   activeDocClientId: null as string | null,
   intakeError: null as string | null,
+  activeWorkflow: null as WorkflowId | null,
   gptsMapping: idleGptsMapping,
   editError: null as string | null,
   editHistory: [] as EditHistoryEntry[],
@@ -217,6 +230,20 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   setCurrentView: (view) => set({ currentView: view }),
   setWorkspacePreset: (preset) => set({ workspacePreset: preset }),
 
+  // ── Workflow mode ──
+  // Entering a workflow starts a clean workspace: its intake asks for specific
+  // ROLES, and documents carried over from a previous, role-less session would
+  // sit in the panel with no slot and no meaning.
+  startWorkflow: (workflow) => set({
+    ...initialWorkspaceState,
+    taskHistory: get().taskHistory,
+    activeWorkflow: workflow,
+    currentView: 'workspace',
+    workspacePreset: 'agent',
+  }),
+
+  exitWorkflow: () => set({ activeWorkflow: null }),
+
   // ── Task history ──
   addTaskToHistory: (entry) => {
     const updated = [entry, ...get().taskHistory.filter(t => t.id !== entry.id)].slice(0, 20);
@@ -226,13 +253,15 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
 
   // ── Documents: upload establishes context only, then Perceive runs
   // automatically (extract + anchor + classify — no roles, no task) ──
-  addDocument: (file) => {
+  addDocument: (file) => { void get().addDocumentAndWait(file); },
+
+  addDocumentAndWait: async (file) => {
     const format = formatOf(file);
     if (format === null) {
       set({
         intakeError: `"${file.name}" isn't a supported type — Foundation can perceive .docx, .xlsx, or .pdf.`,
       });
-      return;
+      return null;
     }
 
     // A UX soft limit only — not an architectural constraint (the backend
@@ -242,7 +271,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
       set({
         intakeError: `You've reached the recommended limit of ${MAX_DOCUMENTS_PER_TASK} files. Remove a document to add another.`,
       });
-      return;
+      return null;
     }
 
     const clientId = newClientId();
@@ -252,40 +281,41 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     };
     set((state) => ({ documents: [...state.documents, doc], intakeError: null }));
 
-    (async () => {
-      try {
-        // Several documents can be added in the same synchronous batch
-        // (e.g. selecting multiple files at once) before any of their
-        // uploads has resolved — so `get().sessionId` may still be null
-        // for every one of them. Coordinate through `pendingSessionPromise`
-        // so only the first upload in a batch establishes the session;
-        // every other upload in the same batch waits for that session_id
-        // and then joins it explicitly, instead of each one silently
-        // minting its own separate session.
-        let sessionId = get().sessionId;
-        if (!sessionId) {
-          if (!pendingSessionPromise) {
-            pendingSessionPromise = uploadDocument(file, null).then((summary) => {
-              applyUploadSummary(set, get, clientId, summary);
-              return summary.session_id;
-            });
-            await pendingSessionPromise;
-            pendingSessionPromise = null;
-            return; // this document's own upload already applied above
-          }
-          sessionId = await pendingSessionPromise;
+    try {
+      // Several documents can be added in the same synchronous batch
+      // (e.g. selecting multiple files at once) before any of their
+      // uploads has resolved — so `get().sessionId` may still be null
+      // for every one of them. Coordinate through `pendingSessionPromise`
+      // so only the first upload in a batch establishes the session;
+      // every other upload in the same batch waits for that session_id
+      // and then joins it explicitly, instead of each one silently
+      // minting its own separate session.
+      let sessionId = get().sessionId;
+      if (!sessionId) {
+        if (!pendingSessionPromise) {
+          pendingSessionPromise = uploadDocument(file, null).then((summary) => {
+            applyUploadSummary(set, get, clientId, summary);
+            return summary;
+          });
+          const summary = await pendingSessionPromise;
+          pendingSessionPromise = null;
+          // this document's own upload already applied above
+          return summary.status === 'ready' ? { clientId, docId: summary.doc_id } : null;
         }
-
-        const summary = await uploadDocument(file, sessionId);
-        applyUploadSummary(set, get, clientId, summary);
-      } catch (err) {
-        set((state) => ({
-          documents: state.documents.map((d) => d.clientId === clientId
-            ? { ...d, status: 'error', error: err instanceof ApiError ? err.message : 'Upload failed.' }
-            : d),
-        }));
+        sessionId = (await pendingSessionPromise).session_id;
       }
-    })();
+
+      const summary = await uploadDocument(file, sessionId);
+      applyUploadSummary(set, get, clientId, summary);
+      return summary.status === 'ready' ? { clientId, docId: summary.doc_id } : null;
+    } catch (err) {
+      set((state) => ({
+        documents: state.documents.map((d) => d.clientId === clientId
+          ? { ...d, status: 'error', error: err instanceof ApiError ? err.message : 'Upload failed.' }
+          : d),
+      }));
+      return null;
+    }
   },
 
   removeDocument: (clientId) => set((state) => ({

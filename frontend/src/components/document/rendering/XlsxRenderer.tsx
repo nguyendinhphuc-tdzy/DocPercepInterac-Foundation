@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { LayoutGrid, Image as ImageIcon, BarChart3 } from 'lucide-react';
 import { EmptyState } from '../../shared/EmptyState';
+import { VisualObjectNotice } from './VisualObjectNotice';
 import { EditableText } from '../../shared/EditableText';
 import { downloadUrlFor } from '../../../api/client';
 import type { DocumentRendererProps } from './types';
@@ -223,6 +224,7 @@ export const XlsxRenderer: React.FC<DocumentRendererProps> = ({
 
   return (
     <div style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <VisualObjectNotice sessionId={sessionId} docId={docId} sheetName={currentSheet} />
       {sheetNames.length > 1 && (
         <div className="sheet-tabs">
           {sheetNames.map((name) => (

@@ -6,6 +6,7 @@ import { useSyncStore } from '../../state/syncStore';
 import { usePilotStore } from '../../state/pilotStore';
 import { sendPilotEvent } from '../../api/pilot';
 import { PilotFeedback } from './PilotFeedback';
+import { RollForwardResultCard } from './RollForwardResultCard';
 import { getModelOption, type Citation } from '../../api/agent';
 
 interface AgentMessageProps {
@@ -152,6 +153,12 @@ export const AgentMessage: React.FC<AgentMessageProps> = ({ message }) => {
               </button>
             ))}
           </div>
+        )}
+
+        {/* Roll-forward result — the Agent is a first-class place to see the
+            outcome, so Review is not the only way to reach the output. */}
+        {message.rollForwardResult && (
+          <RollForwardResultCard result={message.rollForwardResult} />
         )}
 
         {/* Proposed Action Cards */}

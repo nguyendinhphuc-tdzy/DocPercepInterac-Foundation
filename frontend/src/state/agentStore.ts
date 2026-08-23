@@ -10,6 +10,7 @@ import {
   type AgentStep,
   type Citation,
   type ProposedAction,
+  type RollForwardResult,
 } from '../api/agent';
 import { sendPilotEvent } from '../api/pilot';
 import { useWorkspaceStore } from './workspaceStore';
@@ -28,6 +29,8 @@ export interface AgentMessage {
   steps?: AgentStep[];
   citations?: Citation[];
   proposedActions?: ProposedAction[];
+  /** Present only when this response carried a completed roll-forward run. */
+  rollForwardResult?: RollForwardResult | null;
   runId?: string | null;
 }
 
@@ -150,6 +153,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         steps: response.steps,
         citations: response.citations,
         proposedActions: response.proposed_actions,
+        rollForwardResult: response.roll_forward_result ?? null,
         runId: response.run_id,
       };
 

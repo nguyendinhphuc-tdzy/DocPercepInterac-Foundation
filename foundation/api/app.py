@@ -25,6 +25,7 @@ from api.routes.documents import documents_bp  # noqa: E402
 from api.routes.gpts import gpts_bp  # noqa: E402
 from api.routes.agent import agent_bp  # noqa: E402
 from api.routes.pilot import pilot_bp  # noqa: E402
+from api.routes.workflow import workflow_bp  # noqa: E402
 
 
 def create_app() -> Flask:
@@ -37,6 +38,7 @@ def create_app() -> Flask:
     app.register_blueprint(gpts_bp)
     app.register_blueprint(agent_bp)
     app.register_blueprint(pilot_bp)
+    app.register_blueprint(workflow_bp)
 
     @app.after_request
     def add_cors_headers(response):
