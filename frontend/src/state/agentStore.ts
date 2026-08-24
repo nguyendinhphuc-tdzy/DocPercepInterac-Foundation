@@ -10,7 +10,9 @@ import {
   type AgentStep,
   type Citation,
   type ProposedAction,
+  type RollForwardAssessment,
   type RollForwardResult,
+  approveRollForward,
 } from '../api/agent';
 import { sendPilotEvent } from '../api/pilot';
 import { useWorkspaceStore } from './workspaceStore';
@@ -31,6 +33,8 @@ export interface AgentMessage {
   proposedActions?: ProposedAction[];
   /** Present only when this response carried a completed roll-forward run. */
   rollForwardResult?: RollForwardResult | null;
+  /** Deterministic workflow state behind a roll_forward answer (never model output). */
+  rollForwardAssessment?: RollForwardAssessment | null;
   runId?: string | null;
 }
 
@@ -58,6 +62,8 @@ interface AgentState {
   switchModelAndRetry: (targetModel: AgentModelId) => Promise<void>;
   dismissProviderError: () => void;
   confirmAction: (messageId: string, actionId: string) => Promise<void>;
+  /** Explicit human approval — the only path from a plan to an execution. */
+  approveRollForwardPlan: (messageId: string, approver: string) => Promise<void>;
   rejectAction: (messageId: string, actionId: string) => Promise<void>;
   clearMessages: () => void;
 }
@@ -154,6 +160,7 @@ export const useAgentStore = create<AgentState>((set, get) => ({
         citations: response.citations,
         proposedActions: response.proposed_actions,
         rollForwardResult: response.roll_forward_result ?? null,
+        rollForwardAssessment: response.roll_forward_assessment ?? null,
         runId: response.run_id,
       };
 
@@ -207,6 +214,38 @@ export const useAgentStore = create<AgentState>((set, get) => ({
       error: null,
       status: 'idle',
     });
+  },
+
+  approveRollForwardPlan: async (messageId: string, approver: string) => {
+    const message = get().messages.find((m) => m.id === messageId);
+    const sessionId = useWorkspaceStore.getState().sessionId;
+    const planId = message?.rollForwardAssessment?.plan?.plan_id;
+    if (!sessionId) return;
+
+    set({ status: 'processing', error: null });
+    try {
+      // The server executes; this only records who authorised it. Whatever comes
+      // back is rendered as-is — a refusal stays a refusal.
+      const response = await approveRollForward({ session_id: sessionId, approver, plan_id: planId });
+      set((state) => ({
+        status: 'completed',
+        messages: [...state.messages, {
+          id: nextId(),
+          role: 'assistant',
+          content: response.response,
+          timestamp: new Date().toISOString(),
+          steps: response.steps,
+          rollForwardResult: response.roll_forward_result ?? null,
+          rollForwardAssessment: response.roll_forward_assessment ?? null,
+          runId: response.run_id,
+        }],
+      }));
+    } catch (err) {
+      set({
+        status: 'error',
+        error: err instanceof AgentApiError ? err.message : 'Roll-forward approval failed.',
+      });
+    }
   },
 
   confirmAction: async (messageId: string, actionId: string) => {

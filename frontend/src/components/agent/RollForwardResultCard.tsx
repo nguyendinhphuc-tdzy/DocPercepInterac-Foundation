@@ -12,12 +12,19 @@ import type { RollForwardResult } from '../../api/agent';
 // its reconciliation state are stated in the conversation, with the output one
 // click away — instead of the user having to know to open the Review pane.
 
-const RECONCILIATION_STYLE = {
+// Keyed by the orchestrator's own reconciliation status. An unrecognised status
+// is shown verbatim rather than mapped to something friendlier — the UI must not
+// upgrade an unknown outcome into a reassuring one.
+const RECONCILIATION_STYLE: Record<string, { label: string; color: string; Icon: typeof ShieldCheck }> = {
   RECONCILED: { label: 'Reconciled', color: 'var(--success)', Icon: ShieldCheck },
   PARTIALLY_RECONCILED: { label: 'Partially reconciled', color: 'var(--warning)', Icon: ShieldAlert },
   NOT_RECONCILED: { label: 'Not reconciled', color: 'var(--error)', Icon: ShieldX },
   NOT_RUN: { label: 'Reconciliation not run', color: 'var(--text-tertiary)', Icon: ShieldAlert },
-} as const;
+};
+
+const UNKNOWN_RECONCILIATION = {
+  label: 'Reconciliation unknown', color: 'var(--text-tertiary)', Icon: ShieldAlert,
+};
 
 const Stat: React.FC<{ label: string; value: number; testId: string }> = ({ label, value, testId }) => (
   <div style={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -32,7 +39,8 @@ const Stat: React.FC<{ label: string; value: number; testId: string }> = ({ labe
 
 export const RollForwardResultCard: React.FC<{ result: RollForwardResult }> = ({ result }) => {
   const { documents, setActiveDocClientId, setWorkspacePreset } = useWorkspaceStore();
-  const reconciliation = RECONCILIATION_STYLE[result.reconciliation_status];
+  const reconciliation =
+    RECONCILIATION_STYLE[result.reconciliation_status] ?? UNKNOWN_RECONCILIATION;
   const output = result.output_document;
 
   const openOutput = () => {

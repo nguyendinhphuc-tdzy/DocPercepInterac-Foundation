@@ -7,6 +7,7 @@ import { usePilotStore } from '../../state/pilotStore';
 import { sendPilotEvent } from '../../api/pilot';
 import { PilotFeedback } from './PilotFeedback';
 import { RollForwardResultCard } from './RollForwardResultCard';
+import { RollForwardStateCard } from './RollForwardStateCard';
 import { getModelOption, type Citation } from '../../api/agent';
 
 interface AgentMessageProps {
@@ -155,8 +156,13 @@ export const AgentMessage: React.FC<AgentMessageProps> = ({ message }) => {
           </div>
         )}
 
-        {/* Roll-forward result — the Agent is a first-class place to see the
-            outcome, so Review is not the only way to reach the output. */}
+        {/* Roll-forward state — readiness blockers or a governed plan awaiting
+            approval. Deterministic server state, not model prose. */}
+        {message.rollForwardAssessment && message.rollForwardAssessment.stage !== 'EXECUTED' && (
+          <RollForwardStateCard assessment={message.rollForwardAssessment} messageId={message.id} />
+        )}
+
+        {/* Roll-forward result — shown only for a run that actually happened. */}
         {message.rollForwardResult && (
           <RollForwardResultCard result={message.rollForwardResult} />
         )}

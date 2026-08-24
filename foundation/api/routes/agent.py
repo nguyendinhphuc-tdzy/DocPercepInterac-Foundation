@@ -24,8 +24,11 @@ MODEL SELECTION CONTRACT
 from __future__ import annotations
 
 import sys
+import time
 import uuid
 from pathlib import Path
+
+from typing import Optional
 
 from flask import Blueprint, jsonify, request
 
@@ -38,7 +41,13 @@ from applications.agent.models import (  # noqa: E402
     AgentModelSpec,
     resolve_agent_model,
 )
+from applications.agent.models import AgentResponse, AgentStep  # noqa: E402
 from applications.agent.orchestrator import AgentOrchestrator  # noqa: E402
+from applications.agent.rollforward_agent import RollForwardAgentHandler  # noqa: E402
+from applications.agent.rollforward_plan_store import (  # noqa: E402
+    RollForwardApprovalError,
+    RollForwardApprovalService,
+)
 from applications.agent.action_executor import ActionExecutor  # noqa: E402
 from applications.agent.providers import ProviderError  # noqa: E402
 from applications.pilot.event_log import PilotEventLogger  # noqa: E402
@@ -46,6 +55,10 @@ from applications.pilot.event_log import PilotEventLogger  # noqa: E402
 agent_bp = Blueprint("agent", __name__)
 
 _CLARIFY_INTENTS = {"clarify_target", "clarify_document", "clarify_comparison"}
+
+# Intents answered entirely from server state. A turn with one of these must not
+# have consulted a model — that is the whole point of routing them deterministically.
+DETERMINISTIC_INTENTS = {"roll_forward", "roll_forward_status"}
 
 
 @agent_bp.get("/api/agent/models")
@@ -164,14 +177,33 @@ def agent_chat():
     telemetry = {"model_id": spec.model_id, "provider": spec.provider}
 
     try:
+        # Wall-clock for the whole turn. A deterministic workflow answer should
+        # be milliseconds; only a turn that actually consults a model should cost
+        # seconds. Both are reported, so the difference is visible instead of
+        # inferred.
+        turn_started = time.perf_counter()
         response_model = AgentOrchestrator.handle_chat(
             message=message,
             session_id=session_id,
             context_input=context,
             model=spec.model_id,
+            user_id=_get_user_id(),
         )
+        total_ms = round((time.perf_counter() - turn_started) * 1000, 2)
         run_id = response_model.run_id
         intent = response_model.intent
+
+        assessment = response_model.roll_forward_assessment or {}
+        PilotEventLogger.emit(
+            "agent.timing",
+            session_id=session_id,
+            run_id=run_id,
+            intent=intent,
+            total_ms=total_ms,
+            llm_used=intent not in DETERMINISTIC_INTENTS,
+            stage_timings_ms=assessment.get("timings_ms", {}),
+            **telemetry,
+        )
 
         PilotEventLogger.emit(
             "agent.intent.resolved",
@@ -334,3 +366,133 @@ def reject_action():
     except Exception as exc:
         return jsonify({"error": f"Failed to reject proposal: {exc}", "status": "error"}), 500
 
+
+# ============================================================================
+# GOVERNED ROLL-FORWARD APPROVAL
+# ============================================================================
+
+@agent_bp.post("/api/agent/rollforward/approve")
+def approve_roll_forward():
+    """Approve the governed plan for a session and execute it. Nothing else can.
+
+    This is the ONLY route that can produce a roll-forward result. It refuses —
+    it never simulates — when there is no governed plan, when the plan no longer
+    describes the workflow's documents, or when readiness has regressed. The
+    mutation itself is performed by RollForwardOrchestrator, which runs the
+    structural writeback, the reconciliation and the full-document validation.
+
+    Payload: {"session_id": "...", "approver": "name@firm", "plan_id": "optional"}
+    """
+    body = request.get_json(silent=True) or {}
+    session_id = body.get("session_id")
+    approver = (body.get("approver") or "").strip()
+    plan_id = body.get("plan_id")
+    user_id = _get_user_id()
+
+    if not session_id:
+        return jsonify({"error": "session_id is required.", "status": "error"}), 400
+    if not approver:
+        return jsonify({
+            "error": "An approver is required: execution is authorised by a person.",
+            "status": "error",
+        }), 400
+
+    started = time.perf_counter()
+    PilotEventLogger.emit("agent.rollforward.approval.requested",
+                          session_id=session_id, approver_supplied=True)
+
+    try:
+        report, plan = RollForwardApprovalService.approve_and_execute(
+            session_id=session_id, approver=approver, user_id=user_id, plan_id=plan_id)
+    except RollForwardApprovalError as exc:
+        PilotEventLogger.emit("agent.rollforward.approval.refused",
+                              session_id=session_id, reason_category="GOVERNANCE")
+        return jsonify({"error": str(exc), "status": "refused"}), 409
+    except Exception as exc:
+        PilotEventLogger.emit("agent.rollforward.execution.failed",
+                              session_id=session_id, error_category="EXECUTION")
+        return jsonify({"error": f"Roll-forward execution failed: {exc}",
+                        "status": "error"}), 500
+
+    execution_ms = round((time.perf_counter() - started) * 1000, 2)
+    output_document = _publish_output_document(session_id, user_id, report)
+    result = RollForwardAgentHandler.result_from_report(report, output_document)
+
+    PilotEventLogger.emit(
+        "agent.rollforward.execution.completed",
+        session_id=session_id,
+        execution_id=result.execution_id,
+        status=result.status,
+        publication_state=result.publication_state,
+        reconciliation_status=result.reconciliation_status,
+        regions_changed=result.regions_changed,
+        execution_ms=execution_ms,
+    )
+
+    # The response says "completed" only if the report says so. A failed or
+    # unpublished run reports itself as such, with the orchestrator's own status.
+    if result.is_complete:
+        text = (f"Roll-forward executed. Output document produced "
+                f"({result.regions_changed} region(s), {result.cells_updated} cell(s), "
+                f"{result.rows_inserted} row(s) inserted). "
+                f"Reconciliation: {result.reconciliation_status}.")
+    else:
+        text = (f"Roll-forward did not complete (status {result.status}, publication "
+                f"{result.publication_state}). No output has been published. "
+                f"{report.failure_detail}".strip())
+
+    response = AgentResponse(
+        response=text,
+        status="success",
+        run_id=result.execution_id,
+        intent="roll_forward",
+        steps=[
+            AgentStep(label="Verified governed plan against workflow documents", status="done"),
+            AgentStep(label=f"Recorded approval by {approver}", status="done"),
+            AgentStep(label="Executed structural writeback", status="done"),
+            AgentStep(label="Reconciled values against sources", status="done"),
+            AgentStep(label="Validated the output document", status="done"),
+        ],
+        roll_forward_result=result,
+        roll_forward_assessment={"stage": "EXECUTED", "plan": plan.preview(),
+                                 "execution_ms": execution_ms},
+    )
+    return jsonify(response.model_dump(mode="json"))
+
+
+def _publish_output_document(session_id: str, user_id: str, report) -> Optional[dict]:
+    """Register the produced document so the user can open and download it.
+
+    Returns None when the run produced no output — which is exactly when the
+    result must not read as complete.
+    """
+    output_path = getattr(report, "output_path", None)
+    if not output_path or not Path(output_path).exists():
+        return None
+
+    from adapters.storage import get_storage
+    from adapters.repository import DocumentRecord, DocumentVersionRecord
+
+    path = Path(output_path)
+    doc_id = str(uuid.uuid4())
+    data = path.read_bytes()
+
+    storage = get_storage()
+    repos = get_repositories()
+    repos.sessions.get_or_create(session_id, user_id=user_id)
+    stored = storage.save_document(session_id=session_id, doc_id=doc_id, filename=path.name,
+                                   data=data, is_patched=False, user_id=user_id)
+    repos.documents.save_document(DocumentRecord(
+        doc_id=doc_id, session_id=session_id, user_id=user_id,
+        original_filename=path.name, format=path.suffix.lstrip("."), status="ready"))
+    repos.documents.create_version(DocumentVersionRecord(
+        version_id=str(uuid.uuid4()), doc_id=doc_id, session_id=session_id, user_id=user_id,
+        version_number=1, sha256=getattr(report, "output_hash", "") or stored.file_hash,
+        storage_path=stored.storage_path, is_patched=False, size_bytes=stored.size_bytes))
+
+    return {
+        "doc_id": doc_id,
+        "filename": path.name,
+        "download_url": f"/api/documents/{session_id}/download/{doc_id}",
+        "sha256": getattr(report, "output_hash", None),
+    }

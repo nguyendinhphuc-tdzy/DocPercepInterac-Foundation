@@ -35,6 +35,8 @@ from applications.agent.models import (
 from applications.agent.context_builder import ContextBuilder, perceive_session_document
 from applications.agent.proposal_store import ProposalStore
 from applications.agent.providers import ProviderMessage, get_provider
+from applications.agent.rollforward_agent import RollForwardAgentHandler
+from applications.agent.workflow_intents import WorkflowIntentClassifier
 
 UPLOAD_ROOT = Path(__file__).resolve().parents[2] / ".uploads"
 
@@ -49,6 +51,7 @@ class AgentOrchestrator:
         session_id: Optional[str] = None,
         context_input: Optional[dict[str, Any]] = None,
         model: Optional[str] = None,
+        user_id: str = "anonymous",
     ) -> AgentResponse:
         context_input = context_input or {}
         active_doc_id = context_input.get("active_doc_id")
@@ -74,6 +77,45 @@ class AgentOrchestrator:
         proposed_actions: list[ProposedAction] = []
 
         msg_lower = message.lower().strip()
+
+        # ====================================================================
+        # WORKFLOW DISPATCH — deterministic, and ahead of every keyword branch
+        # ====================================================================
+        # A request made inside a structured workflow is routed by the workflow,
+        # not by phrasing and not by a model. Before this branch existed, a
+        # roll-forward request matched none of the keyword branches below and
+        # fell through to GENERAL DOCUMENT QUERY, where the model answered with
+        # prose claiming the roll-forward had been done — while nothing had run.
+        #
+        # This runs first precisely so no later branch can capture it, and it
+        # calls no model: the answer is workflow state.
+        decision = WorkflowIntentClassifier.classify(message, context.workflow)
+        if decision.intent is not None and session_id:
+            steps.append(AgentStep(
+                label=f"Workflow intent resolved deterministically: {decision.intent.value}",
+                status="done"))
+            assessment = RollForwardAgentHandler.assess(session_id, user_id=user_id)
+            if assessment is not None:
+                return RollForwardAgentHandler.respond(
+                    assessment, run_id=run_id, model_id=spec.model_id,
+                    provider=spec.provider, steps=steps)
+            # The classifier saw a workflow in the context but the repository has
+            # none: say so rather than falling through to a generated answer.
+            steps.append(AgentStep(label="No workflow intake found for this session",
+                                   status="done"))
+            return AgentResponse(
+                response=("This session has no Local File Roll-Forward workflow, so there is "
+                          "nothing to roll forward. Start the workflow and add its input "
+                          "documents first."),
+                status="success",
+                run_id=run_id,
+                intent="roll_forward",
+                model_id=spec.model_id,
+                provider=spec.provider,
+                steps=steps,
+                citations=[],
+                proposed_actions=[],
+            )
 
         # ====================================================================
         # SLICE 4: PROPOSED EDIT / MUTATION INTENT

@@ -9,7 +9,7 @@ from dataclasses import dataclass
 from datetime import datetime, timezone
 import uuid
 from typing import Any, Literal, Optional
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, model_validator
 
 
 class Citation(BaseModel):
@@ -50,7 +50,8 @@ class ProposedAction(BaseModel):
 
 class AgentIntent(BaseModel):
     """Classified user intent."""
-    intent_type: Literal["summarize", "inspect", "compare", "propose_edit", "query", "navigate"]
+    intent_type: Literal["summarize", "inspect", "compare", "propose_edit", "query", "navigate",
+                         "roll_forward"]
     target_doc_id: Optional[str] = None
     target_element_id: Optional[str] = None
     parameters: dict[str, Any] = Field(default_factory=dict)
@@ -179,21 +180,45 @@ def get_model_label(model_id: Optional[str]) -> str:
 
 
 class RollForwardResult(BaseModel):
-    """What a completed roll-forward run reports back into the conversation.
+    """The record of a roll-forward that ACTUALLY RAN.
 
-    Phase PROD-UX-1 establishes the contract and the Agent-native presentation
-    of it. This phase never populates it — it runs no roll-forward and mutates
-    nothing — but the Agent surface is the primary place a result is shown, so
-    Review is not the only way to reach the output.
+    This model may only be constructed from a RollForwardExecutionReport. Its
+    required fields are the evidence that a governed execution happened:
+    `execution_id` identifies the run, `output_hash` identifies the document it
+    produced, `publication_state` and `status` come from the orchestrator, and
+    `reconciliation_status` / `validation_summary` / `lineage_id` are the
+    governance results.
+
+    There is deliberately no default that makes an empty instance look
+    successful: a response carrying this object without an execution_id is
+    rejected by AgentResponse (see its validator), so "roll-forward completed"
+    cannot be said unless it was.
     """
+    execution_id: str
+    status: str                                        # ExecutionStatus from the orchestrator
+    publication_state: str                             # PublicationState from the orchestrator
     output_document: Optional[dict[str, Any]] = None   # {doc_id, filename, download_url}
+    output_hash: Optional[str] = None
     regions_changed: int = 0
     cells_updated: int = 0
     rows_inserted: int = 0
-    reconciliation_status: Literal[
-        "RECONCILED", "PARTIALLY_RECONCILED", "NOT_RECONCILED", "NOT_RUN"] = "NOT_RUN"
+    reconciliation_status: str = "NOT_RUN"
     reconciliation_detail: Optional[str] = None
+    validation_summary: dict[str, Any] = Field(default_factory=dict)
+    lineage_id: Optional[str] = None
+    template_preserved: bool = True
     review_available: bool = False
+
+    @property
+    def is_complete(self) -> bool:
+        """True only for a published run with an output document behind it."""
+        return bool(
+            self.execution_id
+            and self.output_document
+            and self.output_hash
+            and self.status.upper() in ("SUCCESS", "COMPLETED", "PARTIAL_SUCCESS")
+            and self.publication_state.upper() == "PUBLISHED"
+        )
 
 
 class AgentResponse(BaseModel):
@@ -209,4 +234,29 @@ class AgentResponse(BaseModel):
     proposed_actions: list[ProposedAction] = Field(default_factory=list)
     # Present only when a governed roll-forward run produced an output document.
     roll_forward_result: Optional[RollForwardResult] = None
+    # Deterministic workflow state behind a roll_forward answer: inputs, periods,
+    # blockers, readiness and (when one exists) the governed plan. Built from the
+    # workflow repository, never from a model.
+    roll_forward_assessment: Optional[dict[str, Any]] = None
     error: Optional[str] = None
+
+    @model_validator(mode="after")
+    def _completion_requires_execution(self) -> "AgentResponse":
+        """A completed roll-forward must be backed by a real execution.
+
+        The failure this guards against is the one that shipped: a model writing
+        "roll-forward completed" while nothing ran. Prose is not evidence, so the
+        check is structural — claiming completion without an execution report is
+        a programming error here, not a message the user ever sees.
+        """
+        result = self.roll_forward_result
+        if result is None:
+            return self
+        if not result.execution_id:
+            raise ValueError(
+                "roll_forward_result requires an execution_id: no governed execution, "
+                "no result.")
+        if result.is_complete and not result.output_hash:
+            raise ValueError(
+                "a completed roll-forward requires the hash of the document it produced.")
+        return self

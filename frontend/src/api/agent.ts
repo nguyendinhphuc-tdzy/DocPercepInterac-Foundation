@@ -134,13 +134,86 @@ export interface AgentChatRequest {
 // a first-class place to see the outcome — Review is not the only route to the
 // output. Absent on every response that did not run a roll-forward.
 export interface RollForwardResult {
-  output_document: { doc_id: string; filename: string; download_url?: string } | null;
+  // Present only for a run that actually happened: the server rejects a result
+  // without an execution_id, so the UI can trust these fields as evidence.
+  execution_id: string;
+  status: string;
+  publication_state: string;
+  output_document: { doc_id: string; filename: string; download_url?: string; sha256?: string } | null;
+  output_hash?: string | null;
   regions_changed: number;
   cells_updated: number;
   rows_inserted: number;
-  reconciliation_status: 'RECONCILED' | 'PARTIALLY_RECONCILED' | 'NOT_RECONCILED' | 'NOT_RUN';
+  reconciliation_status: string;
   reconciliation_detail?: string | null;
+  validation_summary?: Record<string, unknown>;
+  lineage_id?: string | null;
+  template_preserved?: boolean;
   review_available: boolean;
+}
+
+export interface ApproveRollForwardRequest {
+  session_id: string;
+  approver: string;
+  plan_id?: string;
+}
+
+// The ONLY path to an execution. The server refuses when there is no governed
+// plan, when the plan no longer matches the workflow's documents, or when
+// readiness has regressed — it never simulates a run.
+export async function approveRollForward(
+  request: ApproveRollForwardRequest
+): Promise<AgentChatResponse> {
+  const response = await fetch(`${API_BASE_URL}/api/agent/rollforward/approve`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(request),
+  });
+  const body = await response.json().catch(() => null);
+  if (!response.ok) {
+    throw new AgentApiError(
+      body?.error ?? `Approval failed (HTTP ${response.status})`, response.status);
+  }
+  return body as AgentChatResponse;
+}
+
+// Deterministic workflow state behind a `roll_forward` answer. Built by the
+// server from the workflow repository — inputs, periods, blockers, readiness and
+// (only when the planning layer has produced one) the governed plan. The model
+// contributes nothing to it, which is why the UI can render it as fact.
+export interface RollForwardBlocker {
+  code: string;
+  subject: string;
+  detail: string;
+}
+
+export interface RollForwardPlanPreview {
+  plan_id: string;
+  manifest_id: string;
+  manifest_status: string;
+  regions_in_plan: number;
+  tables_to_update: number;
+  cells_to_update: number;
+  rows_to_insert: number;
+  requires_approval: boolean;
+  approved: boolean;
+}
+
+export interface RollForwardAssessment {
+  stage: 'BLOCKED' | 'PLAN_UNAVAILABLE' | 'PLAN_READY' | 'EXECUTED';
+  workflow: string;
+  workflow_id: string;
+  session_id: string;
+  historical_document_id: string | null;
+  current_source_document_ids: string[];
+  template_document_id: string | null;
+  periods: { historical_period: string | null; current_period: string | null; statement: string };
+  satisfied_inputs: string[];
+  blockers: RollForwardBlocker[];
+  readiness: Array<{ domain_id: string; display_name: string; status: string; status_label: string }>;
+  plan: RollForwardPlanPreview | null;
+  can_execute: boolean;
+  timings_ms: Record<string, number>;
 }
 
 export interface AgentChatResponse {
@@ -154,6 +227,7 @@ export interface AgentChatResponse {
   citations?: Citation[];
   proposed_actions?: ProposedAction[];
   roll_forward_result?: RollForwardResult | null;
+  roll_forward_assessment?: RollForwardAssessment | null;
   error?: string;
 }
 
