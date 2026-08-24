@@ -197,10 +197,30 @@ export interface RollForwardPlanPreview {
   rows_to_insert: number;
   requires_approval: boolean;
   approved: boolean;
+  /** The planner's own report: dispositions, bindings, blockers, timings. */
+  planning_report?: {
+    dispositions: Record<string, number>;
+    documents_read: string[];
+    readiness_summary: { regions_total: number; by_disposition: Record<string, number> };
+    regions: Array<{ region_id: string; section_name: string; disposition: string;
+                     source_labels: string[] }>;
+    timings_ms: Record<string, number>;
+  };
 }
+
+export type RollForwardUiState =
+  | 'NOT_READY'
+  | 'PLAN_READY'
+  | 'AWAITING_APPROVAL'
+  | 'EXECUTING'
+  | 'COMPLETED'
+  | 'FAILED'
+  | 'REQUIRES_MANUAL_REVIEW';
 
 export interface RollForwardAssessment {
   stage: 'BLOCKED' | 'PLAN_UNAVAILABLE' | 'PLAN_READY' | 'EXECUTED';
+  /** The state the UI renders; derived by the server from the stage. */
+  ui_state: RollForwardUiState;
   workflow: string;
   workflow_id: string;
   session_id: string;

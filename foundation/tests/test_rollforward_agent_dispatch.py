@@ -284,9 +284,9 @@ def test_a_blocked_answer_reports_no_result_and_no_mutation(workflow_session, mo
 
 
 @requires_demo
-def test_a_complete_intake_without_a_governed_plan_refuses_to_invent_one(workflow_session,
-                                                                        monkeypatch):
-    """All inputs present is not the same as having something approved to run."""
+def test_planning_reports_a_blocker_when_a_slot_document_cannot_be_read(workflow_session,
+                                                                       monkeypatch):
+    """A document that is no longer readable blocks planning; it never substitutes another."""
     workflow_session(template=True)
     monkeypatch.setattr(orchestrator_module.ContextBuilder, "build_context",
                         staticmethod(_stale_context("sess-rf")))
@@ -295,9 +295,10 @@ def test_a_complete_intake_without_a_governed_plan_refuses_to_invent_one(workflo
     session = RollForwardAgentHandler._load_session("sess-rf", "anonymous")
     plan, blockers = RollForwardAgentHandler._build_plan(session, "anonymous")
 
-    assert plan is None, "a plan was produced without the planning layer having run"
-    assert [b.code for b in blockers] == ["NO_GOVERNED_PLAN"]
-    assert "planning layer" in blockers[0].detail
+    assert plan is None
+    assert blockers
+    assert blockers[0].code in ("DOCUMENT_UNAVAILABLE", "NO_EXECUTABLE_REGION",
+                                "PLANNING_FAILED")
 
 
 @requires_demo

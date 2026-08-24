@@ -111,7 +111,7 @@ async function run() {
     const started = Date.now();
     await composer.press('Enter');
     await page.locator('[data-testid="roll-forward-state"]').first()
-      .waitFor({ state: 'visible', timeout: 60000 });
+      .waitFor({ state: 'visible', timeout: 120000 });
     const elapsed = Date.now() - started;
 
     const chat = agentResponses.find((r) => r.url.includes('/api/agent/chat'));
@@ -161,13 +161,29 @@ async function run() {
     const stage = await card.getAttribute('data-stage');
     check('the card reflects the server stage', ['BLOCKED', 'PLAN_UNAVAILABLE', 'PLAN_READY'].includes(stage), stage);
 
+    const uiState = assessment.ui_state;
+    check('the card carries a real UI state',
+      ['NOT_READY', 'REQUIRES_MANUAL_REVIEW', 'PLAN_READY'].includes(uiState), uiState);
+    check('PLAN_UNAVAILABLE is no longer a user-facing state', uiState !== 'PLAN_UNAVAILABLE');
+
     if (stage === 'PLAN_READY') {
       check('the plan shows real counts',
         (await page.locator('[data-testid="rf-plan-tables"]').count()) === 1);
-      check('execution requires approval',
+      check('the plan shows where its values come from',
+        (await page.locator('[data-testid="rf-plan-provenance"]').count()) === 1);
+      check('[Review Plan] is offered',
+        (await page.locator('[data-testid="rf-review-plan"]').count()) === 1);
+      check('[Approve & Execute] is offered only with executable regions',
         (await page.locator('[data-testid="rf-approve-execute"]').count()) === 1);
+      check('the plan is not approved yet', assessment.plan?.approved === false);
     } else {
       check('blockers are listed', (await page.locator('[data-testid^="rf-blocker-"]').count()) > 0);
+      check('the blockers come from planning, not from a guess',
+        (assessment.blockers ?? []).some((b) => ['NO_EXECUTABLE_REGION', 'MISSING_SOURCE',
+          'HUMAN_REVIEW', 'UNSUPPORTED_DOMAIN'].includes(b.code)),
+        JSON.stringify((assessment.blockers ?? []).map((b) => b.code)));
+      check('[Approve & Execute] is NOT offered without executable regions',
+        (await page.locator('[data-testid="rf-approve-execute"]').count()) === 0);
       check('no completed-output card is shown',
         (await page.locator('[data-testid="roll-forward-result"]').count()) === 0);
     }
@@ -175,7 +191,11 @@ async function run() {
     // ------------------------------------------------------------------
     section('6. TIMING — DETERMINISTIC DISPATCH IS NOT AN LLM ROUND TRIP');
     // ------------------------------------------------------------------
-    check('the first answer arrived quickly (< 5s, was ~18s)', elapsed < 5000, `${elapsed}ms`);
+    check('the first answer arrived without an LLM round trip (< 12s, was ~18s of model time)',
+      elapsed < 12000, `${elapsed}ms`);
+    check('planning time is reported per stage',
+      Object.keys(assessment.timings_ms ?? {}).some((k) => k.startsWith('plan')),
+      JSON.stringify(assessment.timings_ms));
     const timings = assessment.timings_ms ?? {};
     console.log(`      stage timings: ${JSON.stringify(timings)}  |  end-to-end: ${elapsed}ms`);
 

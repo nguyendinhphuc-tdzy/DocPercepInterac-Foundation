@@ -11,11 +11,15 @@ import type { RollForwardAssessment } from '../../api/agent';
 // completed roll-forward is rendered by RollForwardResultCard, which only exists
 // when a real execution report does.
 
-const STAGE_TITLE: Record<RollForwardAssessment['stage'], string> = {
-  BLOCKED: 'Roll-Forward — Not ready',
-  PLAN_UNAVAILABLE: 'Roll-Forward — Not ready',
+// One title per UI state. The server decides the state; this only names it.
+const STATE_TITLE: Record<string, string> = {
+  NOT_READY: 'Roll-Forward — Not ready',
+  REQUIRES_MANUAL_REVIEW: 'Roll-Forward — Needs review',
   PLAN_READY: 'Roll-Forward Plan',
-  EXECUTED: 'Roll-Forward',
+  AWAITING_APPROVAL: 'Roll-Forward Plan — Awaiting approval',
+  EXECUTING: 'Roll-Forward — Executing',
+  COMPLETED: 'Roll-Forward — Complete',
+  FAILED: 'Roll-Forward — Failed',
 };
 
 export const RollForwardStateCard: React.FC<{
@@ -62,7 +66,7 @@ export const RollForwardStateCard: React.FC<{
           ? <ListChecks size={14} style={{ color: 'var(--accent)', flexShrink: 0 }} />
           : <ShieldAlert size={14} style={{ color: 'var(--warning)', flexShrink: 0 }} />}
         <span style={{ flex: 1, fontSize: 'var(--text-xs)', fontWeight: 600, color: 'var(--text-primary)' }}>
-          {STAGE_TITLE[assessment.stage]}
+          {STATE_TITLE[assessment.ui_state] ?? STATE_TITLE.NOT_READY}
         </span>
         {period && (
           <span data-testid="roll-forward-periods" style={{ fontSize: '10px', color: 'var(--text-tertiary)' }}>
@@ -82,6 +86,24 @@ export const RollForwardStateCard: React.FC<{
             <Stat label="cells to update" value={assessment.plan!.cells_to_update} testId="rf-plan-cells" />
             <Stat label="rows to insert" value={assessment.plan!.rows_to_insert} testId="rf-plan-rows" />
           </div>
+          {assessment.plan!.planning_report && (
+            <div data-testid="rf-plan-provenance" style={{
+              fontSize: '10px', color: 'var(--text-tertiary)', lineHeight: 1.6,
+              marginBottom: 'var(--space-2)',
+            }}>
+              <div>
+                Regions planned: {assessment.plan!.planning_report.readiness_summary.regions_total}
+                {' · '}
+                {Object.entries(assessment.plan!.planning_report.readiness_summary.by_disposition)
+                  .map(([state, count]) => `${count} ${state.toLowerCase()}`).join(', ')}
+              </div>
+              <div>
+                Values read from: {Array.from(new Set(
+                  assessment.plan!.planning_report.regions
+                    .flatMap((region) => region.source_labels))).join(', ') || '—'}
+              </div>
+            </div>
+          )}
           <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', marginBottom: 'var(--space-2)' }}>
             Nothing has been changed yet. Execution requires your explicit approval.
           </div>

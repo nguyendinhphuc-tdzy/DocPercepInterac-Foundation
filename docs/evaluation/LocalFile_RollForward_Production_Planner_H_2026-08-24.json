@@ -1,0 +1,843 @@
+{
+  "schema_version": "1.0.0",
+  "generated_at": "2026-08-24T02:49:06.887413+00:00",
+  "workflow_id": "wf-phase-h",
+  "session_id": "sess-phase-h",
+  "inputs": {
+    "historical_document_id": "doc-hist-fy2023",
+    "historical_document": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+    "template_document_id": "doc-tmpl-decree20",
+    "template_document": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+    "current_source_document_ids": [
+      "doc-farpt-fy2024",
+      "doc-appendix1-fy2024"
+    ],
+    "current_source_documents": [
+      "HMV-FA&RPT FY2024.xlsx",
+      "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx"
+    ],
+    "historical_period": "FY2023",
+    "current_period": "FY2024"
+  },
+  "manifest": {
+    "manifest_id": "rfm-f8cfb3623d98",
+    "manifest_version": 1,
+    "status": "REVIEW_REQUIRED",
+    "region_count": 16,
+    "ready_regions": 0
+  },
+  "mutation_plan": {
+    "plan_id": "plan-b0d7d18b",
+    "tables": 0,
+    "rows": 0,
+    "cells": 0,
+    "digest": "e3b0c44298fc1c14"
+  },
+  "dispositions": {
+    "BLOCKED": 13,
+    "HUMAN_REVIEW": 3
+  },
+  "readiness_summary": {
+    "regions_total": 16,
+    "by_disposition": {
+      "READY": 0,
+      "HUMAN_REVIEW": 3,
+      "BLOCKED": 13
+    },
+    "executable": false,
+    "statement": "A region is READY only when a verified current-year binding and a structurally safe prototype row both exist."
+  },
+  "unresolved_blockers": [
+    {
+      "region_id": "rfr-d46c200d26f19ff0",
+      "section_name": "Untitled region",
+      "disposition": "BLOCKED",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "correspondence": "WEAK",
+      "reasons": [
+        "Historical correspondence is weak (score 0.51, matched on semantic_label(COVER_BLOCK), column_schema_alignment, header_token_overlap, merge_topology).",
+        "No current-year evidence supports this region."
+      ]
+    },
+    {
+      "region_id": "rfr-4d3280f73b63728f",
+      "section_name": "Untitled region",
+      "disposition": "BLOCKED",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "correspondence": "EXACT",
+      "reasons": [
+        "No current-year evidence supports this region."
+      ]
+    },
+    {
+      "region_id": "rfr-4ece458761d2fdec",
+      "section_name": "Executive Summary",
+      "disposition": "BLOCKED",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "correspondence": "UNCORRELATED",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from."
+      ]
+    },
+    {
+      "region_id": "rfr-e6ca100094cac4f3",
+      "section_name": "Overview",
+      "disposition": "HUMAN_REVIEW",
+      "binding_verdict": "VERIFIED",
+      "correspondence": "WEAK",
+      "reasons": [
+        "Historical correspondence is weak (score 0.38, matched on semantic_label(RELATED_PARTY_TRANSACTIONS), column_schema_alignment, header_token_overlap, section_context).",
+        "Source binding is ambiguous.",
+        "Multiple candidate sources (HMV-FA&RPT FY2024.xlsx!RPTs, HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs); a human must choose."
+      ]
+    },
+    {
+      "region_id": "rfr-2b942dc4774b8484",
+      "section_name": "Payment of interest on intercompany loan(s)",
+      "disposition": "HUMAN_REVIEW",
+      "binding_verdict": "VERIFIED",
+      "correspondence": "UNCORRELATED",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from.",
+        "Multiple candidate sources (HMV-FA&RPT FY2024.xlsx!FS, HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!CF, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data_securities); a human must choose."
+      ]
+    },
+    {
+      "region_id": "rfr-886c68a9cbaee49a",
+      "section_name": "Analysis of functions, assets and risks",
+      "disposition": "BLOCKED",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "correspondence": "WEAK",
+      "reasons": [
+        "Historical correspondence is weak (score 0.41, matched on semantic_label(FUNCTIONAL_ANALYSIS), section_context).",
+        "No current-year evidence supports this region."
+      ]
+    },
+    {
+      "region_id": "rfr-d530d5963267f6b2",
+      "section_name": "Selection of profit level indicator (“PLI”)",
+      "disposition": "BLOCKED",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "correspondence": "EXACT",
+      "reasons": [
+        "No current-year evidence supports this region."
+      ]
+    },
+    {
+      "region_id": "rfr-1428592fc8d46ebd",
+      "section_name": "Selection of profit level indicator (“PLI”)",
+      "disposition": "BLOCKED",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "correspondence": "WEAK",
+      "reasons": [
+        "Historical correspondence is weak (score 0.48, matched on semantic_label(PLI_FORMULA), header_token_overlap, section_context, merge_topology).",
+        "No current-year evidence supports this region."
+      ]
+    },
+    {
+      "region_id": "rfr-faf9f50139bee705",
+      "section_name": "Selection of profit level indicator (“PLI”)",
+      "disposition": "BLOCKED",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "correspondence": "WEAK",
+      "reasons": [
+        "Historical correspondence is weak (score 0.41, matched on semantic_label(PLI_FORMULA), merge_topology).",
+        "No current-year evidence supports this region."
+      ]
+    },
+    {
+      "region_id": "rfr-851d9e27f3a0b81b",
+      "section_name": "The standard arm’s length range",
+      "disposition": "BLOCKED",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "correspondence": "UNCORRELATED",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from."
+      ]
+    },
+    {
+      "region_id": "rfr-d64bd1292a678a2c",
+      "section_name": "The standard arm’s length range",
+      "disposition": "BLOCKED",
+      "binding_verdict": "MISSING_CURRENT_SOURCE",
+      "correspondence": "UNCORRELATED",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from."
+      ]
+    },
+    {
+      "region_id": "rfr-8fb821ad2a482245",
+      "section_name": "Allocation method used in the calculation of ABC’s operating result for each business segment",
+      "disposition": "HUMAN_REVIEW",
+      "binding_verdict": "VERIFIED",
+      "correspondence": "UNCORRELATED",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from.",
+        "Multiple candidate sources (HMV-FA&RPT FY2024.xlsx!FS, HMV-FA&RPT FY2024.xlsx!Financial Analysis, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS); a human must choose."
+      ]
+    },
+    {
+      "region_id": "rfr-cbfc855f1ed1946c",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "disposition": "BLOCKED",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "correspondence": "WEAK",
+      "reasons": [
+        "Historical correspondence is weak (score 0.36, matched on semantic_label(DOCUMENT_CHECKLIST)).",
+        "No current-year evidence supports this region."
+      ]
+    },
+    {
+      "region_id": "rfr-268c5ad2bd7fe689",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "disposition": "BLOCKED",
+      "binding_verdict": "MISSING_CURRENT_SOURCE",
+      "correspondence": "UNCORRELATED",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from."
+      ]
+    },
+    {
+      "region_id": "rfr-4b8dca9dd20e953d",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "disposition": "BLOCKED",
+      "binding_verdict": "MISSING_CURRENT_SOURCE",
+      "correspondence": "UNCORRELATED",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from."
+      ]
+    },
+    {
+      "region_id": "rfr-4df4dedcf13b6fd2",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "disposition": "BLOCKED",
+      "binding_verdict": "MISSING_CURRENT_SOURCE",
+      "correspondence": "UNCORRELATED",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from."
+      ]
+    }
+  ],
+  "regions": [
+    {
+      "region_id": "rfr-d46c200d26f19ff0",
+      "section_name": "Untitled region",
+      "disposition": "BLOCKED",
+      "identity_key": "d46c200d26f19ff0",
+      "correspondence": "WEAK",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "reasons": [
+        "Historical correspondence is weak (score 0.51, matched on semantic_label(COVER_BLOCK), column_schema_alignment, header_token_overlap, merge_topology).",
+        "No current-year evidence supports this region."
+      ],
+      "source_labels": []
+    },
+    {
+      "region_id": "rfr-4d3280f73b63728f",
+      "section_name": "Untitled region",
+      "disposition": "BLOCKED",
+      "identity_key": "4d3280f73b63728f",
+      "correspondence": "EXACT",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "reasons": [
+        "No current-year evidence supports this region."
+      ],
+      "source_labels": []
+    },
+    {
+      "region_id": "rfr-4ece458761d2fdec",
+      "section_name": "Executive Summary",
+      "disposition": "BLOCKED",
+      "identity_key": "4ece458761d2fdec",
+      "correspondence": "UNCORRELATED",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from."
+      ],
+      "source_labels": []
+    },
+    {
+      "region_id": "rfr-e6ca100094cac4f3",
+      "section_name": "Overview",
+      "disposition": "HUMAN_REVIEW",
+      "identity_key": "e6ca100094cac4f3",
+      "correspondence": "WEAK",
+      "binding_verdict": "VERIFIED",
+      "reasons": [
+        "Historical correspondence is weak (score 0.38, matched on semantic_label(RELATED_PARTY_TRANSACTIONS), column_schema_alignment, header_token_overlap, section_context).",
+        "Source binding is ambiguous.",
+        "Multiple candidate sources (HMV-FA&RPT FY2024.xlsx!RPTs, HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs); a human must choose."
+      ],
+      "source_labels": [
+        "HMV-FA&RPT FY2024.xlsx!RPTs",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Checklist",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!Full Appendix I",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs"
+      ]
+    },
+    {
+      "region_id": "rfr-2b942dc4774b8484",
+      "section_name": "Payment of interest on intercompany loan(s)",
+      "disposition": "HUMAN_REVIEW",
+      "identity_key": "2b942dc4774b8484",
+      "correspondence": "UNCORRELATED",
+      "binding_verdict": "VERIFIED",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from.",
+        "Multiple candidate sources (HMV-FA&RPT FY2024.xlsx!FS, HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!CF, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data_securities); a human must choose."
+      ],
+      "source_labels": [
+        "HMV-FA&RPT FY2024.xlsx!FS",
+        "HMV-FA&RPT FY2024.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!III. Summary-RPTs",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!CF",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data_securities"
+      ]
+    },
+    {
+      "region_id": "rfr-886c68a9cbaee49a",
+      "section_name": "Analysis of functions, assets and risks",
+      "disposition": "BLOCKED",
+      "identity_key": "886c68a9cbaee49a",
+      "correspondence": "WEAK",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "reasons": [
+        "Historical correspondence is weak (score 0.41, matched on semantic_label(FUNCTIONAL_ANALYSIS), section_context).",
+        "No current-year evidence supports this region."
+      ],
+      "source_labels": []
+    },
+    {
+      "region_id": "rfr-d530d5963267f6b2",
+      "section_name": "Selection of profit level indicator (“PLI”)",
+      "disposition": "BLOCKED",
+      "identity_key": "d530d5963267f6b2",
+      "correspondence": "EXACT",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "reasons": [
+        "No current-year evidence supports this region."
+      ],
+      "source_labels": []
+    },
+    {
+      "region_id": "rfr-1428592fc8d46ebd",
+      "section_name": "Selection of profit level indicator (“PLI”)",
+      "disposition": "BLOCKED",
+      "identity_key": "1428592fc8d46ebd",
+      "correspondence": "WEAK",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "reasons": [
+        "Historical correspondence is weak (score 0.48, matched on semantic_label(PLI_FORMULA), header_token_overlap, section_context, merge_topology).",
+        "No current-year evidence supports this region."
+      ],
+      "source_labels": []
+    },
+    {
+      "region_id": "rfr-faf9f50139bee705",
+      "section_name": "Selection of profit level indicator (“PLI”)",
+      "disposition": "BLOCKED",
+      "identity_key": "faf9f50139bee705",
+      "correspondence": "WEAK",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "reasons": [
+        "Historical correspondence is weak (score 0.41, matched on semantic_label(PLI_FORMULA), merge_topology).",
+        "No current-year evidence supports this region."
+      ],
+      "source_labels": []
+    },
+    {
+      "region_id": "rfr-851d9e27f3a0b81b",
+      "section_name": "The standard arm’s length range",
+      "disposition": "BLOCKED",
+      "identity_key": "851d9e27f3a0b81b",
+      "correspondence": "UNCORRELATED",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from."
+      ],
+      "source_labels": []
+    },
+    {
+      "region_id": "rfr-d64bd1292a678a2c",
+      "section_name": "The standard arm’s length range",
+      "disposition": "BLOCKED",
+      "identity_key": "d64bd1292a678a2c",
+      "correspondence": "UNCORRELATED",
+      "binding_verdict": "MISSING_CURRENT_SOURCE",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from."
+      ],
+      "source_labels": []
+    },
+    {
+      "region_id": "rfr-8fb821ad2a482245",
+      "section_name": "Allocation method used in the calculation of ABC’s operating result for each business segment",
+      "disposition": "HUMAN_REVIEW",
+      "identity_key": "8fb821ad2a482245",
+      "correspondence": "UNCORRELATED",
+      "binding_verdict": "VERIFIED",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from.",
+        "Multiple candidate sources (HMV-FA&RPT FY2024.xlsx!FS, HMV-FA&RPT FY2024.xlsx!Financial Analysis, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data, HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS); a human must choose."
+      ],
+      "source_labels": [
+        "HMV-FA&RPT FY2024.xlsx!FS",
+        "HMV-FA&RPT FY2024.xlsx!Financial Analysis",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!IV. Segmented data",
+        "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx!FS"
+      ]
+    },
+    {
+      "region_id": "rfr-cbfc855f1ed1946c",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "disposition": "BLOCKED",
+      "identity_key": "cbfc855f1ed1946c",
+      "correspondence": "WEAK",
+      "binding_verdict": "INSUFFICIENT_EVIDENCE",
+      "reasons": [
+        "Historical correspondence is weak (score 0.36, matched on semantic_label(DOCUMENT_CHECKLIST)).",
+        "No current-year evidence supports this region."
+      ],
+      "source_labels": []
+    },
+    {
+      "region_id": "rfr-268c5ad2bd7fe689",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "disposition": "BLOCKED",
+      "identity_key": "268c5ad2bd7fe689",
+      "correspondence": "UNCORRELATED",
+      "binding_verdict": "MISSING_CURRENT_SOURCE",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from."
+      ],
+      "source_labels": []
+    },
+    {
+      "region_id": "rfr-4b8dca9dd20e953d",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "disposition": "BLOCKED",
+      "identity_key": "4b8dca9dd20e953d",
+      "correspondence": "UNCORRELATED",
+      "binding_verdict": "MISSING_CURRENT_SOURCE",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from."
+      ],
+      "source_labels": []
+    },
+    {
+      "region_id": "rfr-4df4dedcf13b6fd2",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "disposition": "BLOCKED",
+      "identity_key": "4df4dedcf13b6fd2",
+      "correspondence": "UNCORRELATED",
+      "binding_verdict": "MISSING_CURRENT_SOURCE",
+      "reasons": [
+        "No corresponding table in the historical Local File; the region has no prior-year basis to roll forward from."
+      ],
+      "source_labels": []
+    }
+  ],
+  "rejected_evidence": [],
+  "documents_read": [
+    "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx (template structure)",
+    "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx (historical correlation)",
+    "HMV-FA&RPT FY2024.xlsx (current-year source evidence)",
+    "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx (current-year source evidence)"
+  ],
+  "ground_truth_accessed": false,
+  "timings_ms": {
+    "period_validation_ms": 0.01,
+    "template_profile_ms": 391.89,
+    "historical_correlation_ms": 875.07,
+    "source_profile_ms": 2106.8,
+    "region_planning_ms": 1.95,
+    "plan_assembly_ms": 0.14
+  },
+  "governance": {
+    "approved": false,
+    "executable": false,
+    "statement": "Planning only. The manifest is not approved, nothing was mutated, and execution requires the human approval endpoint."
+  },
+  "proof": {
+    "files_opened_during_planning": [
+      "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+      "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+      "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "HMV-FA&RPT FY2024.xlsx"
+    ],
+    "ground_truth_filename": "HMV-26-Final-Local File for FY2024-EN-R2901KPMG.docx",
+    "ground_truth_open_count": 0,
+    "ground_truth_accessed": false,
+    "hardcoded_fixture_identifiers_in_planner": []
+  },
+  "source_bindings": [
+    {
+      "region_id": "rfr-d46c200d26f19ff0",
+      "section_name": "Untitled region",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires ([])."
+    },
+    {
+      "region_id": "rfr-4d3280f73b63728f",
+      "section_name": "Untitled region",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires ([])."
+    },
+    {
+      "region_id": "rfr-4ece458761d2fdec",
+      "section_name": "Executive Summary",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires ([])."
+    },
+    {
+      "region_id": "rfr-e6ca100094cac4f3",
+      "section_name": "Overview",
+      "source_document": "HMV-FA&RPT FY2024.xlsx",
+      "sheet_name": "RPTs",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-e6ca100094cac4f3",
+      "section_name": "Overview",
+      "source_document": "HMV-FA&RPT FY2024.xlsx",
+      "sheet_name": "III. Summary-RPTs",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-e6ca100094cac4f3",
+      "section_name": "Overview",
+      "source_document": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "sheet_name": "Checklist",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-e6ca100094cac4f3",
+      "section_name": "Overview",
+      "source_document": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "sheet_name": "Full Appendix I",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-e6ca100094cac4f3",
+      "section_name": "Overview",
+      "source_document": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "sheet_name": "III. Summary-RPTs",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-2b942dc4774b8484",
+      "section_name": "Payment of interest on intercompany loan(s)",
+      "source_document": "HMV-FA&RPT FY2024.xlsx",
+      "sheet_name": "FS",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-2b942dc4774b8484",
+      "section_name": "Payment of interest on intercompany loan(s)",
+      "source_document": "HMV-FA&RPT FY2024.xlsx",
+      "sheet_name": "III. Summary-RPTs",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-2b942dc4774b8484",
+      "section_name": "Payment of interest on intercompany loan(s)",
+      "source_document": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "sheet_name": "III. Summary-RPTs",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-2b942dc4774b8484",
+      "section_name": "Payment of interest on intercompany loan(s)",
+      "source_document": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "sheet_name": "IV. Segmented data",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-2b942dc4774b8484",
+      "section_name": "Payment of interest on intercompany loan(s)",
+      "source_document": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "sheet_name": "FS",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-2b942dc4774b8484",
+      "section_name": "Payment of interest on intercompany loan(s)",
+      "source_document": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "sheet_name": "CF",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-2b942dc4774b8484",
+      "section_name": "Payment of interest on intercompany loan(s)",
+      "source_document": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "sheet_name": "IV. Segmented data_securities",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-886c68a9cbaee49a",
+      "section_name": "Analysis of functions, assets and risks",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires ([])."
+    },
+    {
+      "region_id": "rfr-d530d5963267f6b2",
+      "section_name": "Selection of profit level indicator (“PLI”)",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires ([])."
+    },
+    {
+      "region_id": "rfr-1428592fc8d46ebd",
+      "section_name": "Selection of profit level indicator (“PLI”)",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires ([])."
+    },
+    {
+      "region_id": "rfr-faf9f50139bee705",
+      "section_name": "Selection of profit level indicator (“PLI”)",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires ([])."
+    },
+    {
+      "region_id": "rfr-851d9e27f3a0b81b",
+      "section_name": "The standard arm’s length range",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires ([])."
+    },
+    {
+      "region_id": "rfr-d64bd1292a678a2c",
+      "section_name": "The standard arm’s length range",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires (['IQR_RESULTS', 'BENCHMARKING_DATA'])."
+    },
+    {
+      "region_id": "rfr-8fb821ad2a482245",
+      "section_name": "Allocation method used in the calculation of ABC’s operating result for each business segment",
+      "source_document": "HMV-FA&RPT FY2024.xlsx",
+      "sheet_name": "FS",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-8fb821ad2a482245",
+      "section_name": "Allocation method used in the calculation of ABC’s operating result for each business segment",
+      "source_document": "HMV-FA&RPT FY2024.xlsx",
+      "sheet_name": "Financial Analysis",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-8fb821ad2a482245",
+      "section_name": "Allocation method used in the calculation of ABC’s operating result for each business segment",
+      "source_document": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "sheet_name": "IV. Segmented data",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-8fb821ad2a482245",
+      "section_name": "Allocation method used in the calculation of ABC’s operating result for each business segment",
+      "source_document": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "sheet_name": "FS",
+      "cell_range": null,
+      "status": "AMBIGUOUS",
+      "match_basis": [
+        "role_match",
+        "multiple_candidates"
+      ],
+      "reason": "More than one current-year sheet can supply this region; the planner will not choose between them."
+    },
+    {
+      "region_id": "rfr-cbfc855f1ed1946c",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires ([])."
+    },
+    {
+      "region_id": "rfr-268c5ad2bd7fe689",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires (['SCREENING_RESULTS', 'BENCHMARKING_DATA'])."
+    },
+    {
+      "region_id": "rfr-4b8dca9dd20e953d",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires (['COMPARABLE_COMPANIES', 'BENCHMARKING_DATA'])."
+    },
+    {
+      "region_id": "rfr-4df4dedcf13b6fd2",
+      "section_name": "Summary of reasons and explanation for the causes, business plans, investment and development strategy of taxpayers which have been in loss position for three years or more",
+      "source_document": "(none)",
+      "sheet_name": null,
+      "cell_range": null,
+      "status": "MISSING",
+      "match_basis": [
+        "required_role_absent"
+      ],
+      "reason": "No current-year source carries the dataset role this region requires (['COMPARABLE_COMPANIES', 'BENCHMARKING_DATA'])."
+    }
+  ],
+  "structural_deltas": []
+}

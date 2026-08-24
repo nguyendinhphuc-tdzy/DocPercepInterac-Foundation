@@ -30,6 +30,7 @@ summary and lineage. Anything else says, plainly, that it did not run — and wh
 from __future__ import annotations
 
 import time
+from contextlib import contextmanager
 from dataclasses import dataclass, field
 from enum import Enum
 from pathlib import Path
@@ -46,8 +47,14 @@ from applications.rollforward.workflow_intake import (
     SlotId,
     SlotReadinessStatus,
     SlotValidationStatus,
+    WorkflowIntakeError,
     WorkflowIntakeSession,
 )
+
+# Where the document layer keeps a session's uploaded files. Planning reads the
+# workflow's own documents from here (or from object storage when the container
+# no longer holds them) — never from the generic workspace list.
+UPLOAD_ROOT = Path(__file__).resolve().parents[2] / ".uploads"
 
 
 class RollForwardStage(str, Enum):
@@ -93,9 +100,23 @@ class RollForwardAssessment:
     def can_execute(self) -> bool:
         return self.stage == RollForwardStage.PLAN_READY
 
+    @property
+    def ui_state(self) -> str:
+        """The state the UI renders. Derived from the stage, never asserted."""
+        if self.stage == RollForwardStage.PLAN_READY:
+            return "PLAN_READY"
+        if self.stage == RollForwardStage.EXECUTED:
+            return "COMPLETED"
+        needs_person = any(b.code in ("HUMAN_REVIEW", "ROLE_NOT_CONFIRMED")
+                           for b in self.blockers)
+        if self.stage == RollForwardStage.PLAN_UNAVAILABLE and needs_person:
+            return "REQUIRES_MANUAL_REVIEW"
+        return "NOT_READY"
+
     def to_dict(self) -> Dict[str, Any]:
         return {
             "stage": self.stage.value,
+            "ui_state": self.ui_state,
             "workflow": "LOCAL_FILE_ROLL_FORWARD",
             "workflow_id": self.workflow_id,
             "session_id": self.session_id,
@@ -159,8 +180,15 @@ class RollForwardAgentHandler:
             readiness=readiness,
         )
 
+        # Input and period problems stop planning outright: without all three
+        # slots, or without two known periods, there is nothing to plan against.
         cls._collect_input_blockers(session, assessment)
         cls._collect_period_blockers(session, assessment)
+        hard_stop = bool(assessment.blockers)
+
+        # Domain gaps (no benchmarking source, no FAR evidence) do NOT stop
+        # planning — they are region-level outcomes the planner reports per
+        # region. Recording them here would hide the regions that CAN proceed.
         cls._collect_evidence_blockers(readiness, assessment)
 
         # Slot documents are the ONLY documents a roll-forward may touch. The
@@ -171,7 +199,7 @@ class RollForwardAgentHandler:
         assessment.current_source_document_ids = list(context["current_source_document_ids"])
         assessment.template_document_id = context["template_document_id"]
 
-        if assessment.blockers:
+        if hard_stop:
             assessment.timings_ms = timer.marks
             return assessment
 
@@ -258,32 +286,153 @@ class RollForwardAgentHandler:
 
         A roll-forward plan is a RollForwardManifest plus a MutationPlan: which
         regions change, which cells they take their values from, how many rows
-        are inserted. Both are produced by the planning layer (region profiling
-        and source binding) and are bound to the specific documents they were
-        built from.
+        are inserted. Both come from the production planner, which reads only the
+        workflow's own slot documents and derives every address from their
+        content.
 
-        There is no plan for a session until that planning has run for THESE
-        documents. Returning a plausible-looking plan without one would be the
-        same defect this module exists to prevent, one layer down: numbers with
-        nothing behind them. So this refuses, and names what is missing.
+        A plan already built for exactly these documents is reused; otherwise the
+        planner runs now. If planning finds no executable region, the reasons it
+        found are the blockers — the planner's own words, not a stand-in.
         """
         from applications.agent.rollforward_plan_store import RollForwardPlanStore
 
         stored = RollForwardPlanStore.get(session.session_id, user_id=user_id)
-        if stored is None:
+        if stored is not None and not stored.binding_mismatches(session):
+            return stored.preview(), []
+
+        return cls._run_planner(session, user_id)
+
+    @classmethod
+    def _run_planner(cls, session: WorkflowIntakeSession,
+                     user_id: str) -> Tuple[Optional[Dict[str, Any]], List[Blocker]]:
+        """Run the production planner over the workflow's slot documents."""
+        from contextlib import ExitStack
+
+        from applications.agent.rollforward_plan_store import GovernedPlan, RollForwardPlanStore
+        from applications.rollforward.full_validation import compute_file_sha256
+        from applications.rollforward.planner import (
+            DocumentRef,
+            PlannerError,
+            PlannerInputs,
+            RollForwardPlanner,
+        )
+
+        context = session.agent_workflow_context()
+        historical_id = context["historical_document_id"]
+        template_id = context["template_document_id"]
+        source_ids = list(context["current_source_document_ids"])
+        if not (historical_id and template_id and source_ids):
             return None, [Blocker(
-                "NO_GOVERNED_PLAN", "Roll-forward plan",
-                "No governed roll-forward plan exists for these documents yet. A plan is "
-                "produced by the planning layer (region profiling and source binding) and "
-                "is bound to the exact files it was built from; none has been produced for "
-                "this workflow, so there is nothing approved to execute.")]
+                "INPUTS_INCOMPLETE", "Roll-forward plan",
+                "Planning needs the historical Local File, the master template and at "
+                "least one current-year source.")]
 
-        mismatches = stored.binding_mismatches(session)
-        if mismatches:
-            return None, [Blocker("PLAN_NOT_BOUND", "Roll-forward plan", detail)
-                          for detail in mismatches]
+        try:
+            with ExitStack() as stack:
+                refs = {}
+                for document_id in [historical_id, template_id, *source_ids]:
+                    path, filename = stack.enter_context(
+                        cls._document_path(session.session_id, document_id, user_id))
+                    refs[document_id] = DocumentRef(document_id, path, filename)
 
-        return stored.preview(), []
+                inputs = PlannerInputs(
+                    workflow_id=session.workflow_id,
+                    session_id=session.session_id,
+                    historical=refs[historical_id],
+                    template=refs[template_id],
+                    current_sources=tuple(refs[i] for i in source_ids),
+                    historical_period=session.periods.historical,
+                    current_period=session.periods.current,
+                )
+                result = RollForwardPlanner.plan(inputs)
+
+                if not result.has_executable_work:
+                    # Planning ran and found nothing safe to execute. The reasons
+                    # are the planner's, region by region.
+                    return None, cls._blockers_from_planning(result)
+
+                plan = RollForwardPlanStore.register(GovernedPlan(
+                    plan_id=result.mutation_plan.plan_id,
+                    session_id=session.session_id,
+                    user_id=user_id,
+                    manifest=result.manifest,
+                    mutation_plan=result.mutation_plan,
+                    template_path=inputs.template.path,
+                    output_path=cls._output_path(session.session_id, inputs.template.path),
+                    source_paths=[s.path for s in inputs.current_sources],
+                    expected_template_hash=compute_file_sha256(inputs.template.path),
+                    expected_source_hashes={
+                        s.filename: compute_file_sha256(s.path) for s in inputs.current_sources},
+                    historical_document_id=historical_id,
+                    template_document_id=template_id,
+                    current_source_document_ids=source_ids,
+                ))
+                preview = plan.preview()
+                preview["planning_report"] = result.report()
+                return preview, []
+        except PlannerError as exc:
+            return None, [Blocker("PLANNING_FAILED", "Roll-forward plan", str(exc))]
+        except WorkflowIntakeError as exc:
+            # A slot document that can no longer be read is a blocker, not a
+            # crash — and never a reason to plan against something else.
+            return None, [Blocker("DOCUMENT_UNAVAILABLE", "Roll-forward plan", str(exc))]
+
+    @staticmethod
+    def _blockers_from_planning(result) -> List[Blocker]:
+        """Turn the planner's own findings into the blockers the user sees."""
+        blockers: List[Blocker] = []
+        summary = result.readiness_summary()
+        counts = summary["by_disposition"]
+        blockers.append(Blocker(
+            "NO_EXECUTABLE_REGION", "Roll-forward plan",
+            f"Planning found no region that can be executed safely: "
+            f"{counts.get('BLOCKED', 0)} region(s) have no current-year evidence and "
+            f"{counts.get('HUMAN_REVIEW', 0)} need a human decision."))
+        for entry in result.unresolved_blockers()[:8]:
+            code = "MISSING_SOURCE" if entry["disposition"] == "BLOCKED" else "HUMAN_REVIEW"
+            blockers.append(Blocker(
+                code, entry["section_name"],
+                entry["reasons"][0] if entry["reasons"] else entry["binding_verdict"]))
+        return blockers
+
+    @staticmethod
+    @contextmanager
+    def _document_path(session_id: str, document_id: str, user_id: str):
+        """Yield (path, filename) for one workflow document, from its own storage."""
+        import json
+
+        from adapters.repository import get_repositories
+        from adapters.storage import get_storage
+
+        session_dir = UPLOAD_ROOT / session_id
+        manifest_path = session_dir / "manifest.json"
+        if manifest_path.exists():
+            try:
+                manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+                entry = manifest.get("documents", {}).get(document_id)
+            except Exception:
+                entry = None
+            if entry:
+                stored = session_dir / entry["stored_filename"]
+                if stored.exists():
+                    yield stored, entry.get("original_filename", stored.name)
+                    return
+
+        repos = get_repositories()
+        document = repos.documents.get_document(session_id, document_id, user_id=user_id)
+        if document is None:
+            raise WorkflowIntakeError(
+                f"Document '{document_id}' is no longer available for planning.")
+        with get_storage().get_document_path(session_id, document_id, is_patched=False,
+                                             user_id=user_id) as path:
+            yield path, document.original_filename
+
+    @staticmethod
+    def _output_path(session_id: str, template_path: Path) -> Path:
+        """Where an approved execution would write. Nothing is written by planning."""
+        directory = UPLOAD_ROOT / session_id / "rollforward"
+        directory.mkdir(parents=True, exist_ok=True)
+        return directory / f"RolledForward_{template_path.stem}.docx"
 
     # ------------------------------------------------------------------
     # 8-12. THE AGENT-FACING ANSWER
