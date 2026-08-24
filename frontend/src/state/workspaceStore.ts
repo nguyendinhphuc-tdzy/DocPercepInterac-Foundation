@@ -3,7 +3,7 @@ import {
   uploadDocument, fetchDocumentElements, fetchSessionDocuments, patchElement, runGptsMapping,
   ApiError,
 } from '../api/client';
-import { useSyncStore } from './syncStore';
+import { registerDocumentProvider, useSyncStore } from './syncStore';
 import type {
   DocumentFormat, DocumentSummary, EditHistoryEntry, ElementRowData, GptsMappingResult,
   MappedEntry, MediaAsset,
@@ -415,12 +415,10 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
   setActiveDocClientId: (clientId) => {
     set({ activeDocClientId: clientId });
     if (clientId) get().ensureElementsLoaded(clientId);
-    // element_id is globally unique (derived from full anchor content —
-    // see perception/element_classifier.py), so this isn't strictly needed
-    // for correctness anymore the way it was when selection was keyed by
-    // per-document array index; kept anyway so switching documents doesn't
-    // leave an unrelated element from the previous document highlighted.
-    useSyncStore.getState().setSelectedElementId(null);
+    // CHANGE_ACTIVE_DOCUMENT is an explicit context transition: the selection
+    // store decides what survives it (selections belonging to the new document).
+    const nextDocId = get().documents.find((d) => d.clientId === clientId)?.docId ?? null;
+    useSyncStore.getState().setActiveDocumentId(nextDocId);
   },
 
   ensureElementsLoaded: async (clientId) => {
@@ -600,3 +598,7 @@ export const useWorkspaceStore = create<WorkspaceState>((set, get) => ({
     set({ hoveredElementId: elementId });
   },
 }));
+
+// One identity resolution shared by both stores: the selection store asks the
+// workspace for the element behind an id rather than keeping its own copy.
+registerDocumentProvider(() => useWorkspaceStore.getState().documents);

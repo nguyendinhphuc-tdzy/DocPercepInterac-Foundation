@@ -41,6 +41,10 @@ from applications.agent.models import (  # noqa: E402
     AgentModelSpec,
     resolve_agent_model,
 )
+from applications.agent.interaction_context import (  # noqa: E402
+    InteractionContextError,
+    InteractionContextVerifier,
+)
 from applications.agent.models import AgentResponse, AgentStep  # noqa: E402
 from applications.agent.orchestrator import AgentOrchestrator  # noqa: E402
 from applications.agent.rollforward_agent import RollForwardAgentHandler  # noqa: E402
@@ -162,6 +166,28 @@ def agent_chat():
     except ValueError as exc:
         return jsonify({"error": str(exc), "status": "error"}), 400
 
+    # Verify the selection BEFORE anything else runs: an unverifiable selection
+    # is an explicit 4xx, never a silently ignored one.
+    try:
+        interaction = InteractionContextVerifier.verify(
+            body.get("interaction_context"), session_id=session_id, user_id=_get_user_id())
+    except InteractionContextError as exc:
+        PilotEventLogger.emit(
+            "agent.request.context",
+            session_id=session_id,
+            selection_valid=False,
+            error_type=exc.code,
+            request_status="error",
+        )
+        return jsonify(exc.to_payload()), 400
+
+    PilotEventLogger.emit(
+        "agent.request.context",
+        session_id=session_id,
+        selection_valid=True,
+        **interaction.telemetry(),
+    )
+
     PilotEventLogger.emit(
         "agent.request.started",
         session_id=session_id,
@@ -188,6 +214,7 @@ def agent_chat():
             context_input=context,
             model=spec.model_id,
             user_id=_get_user_id(),
+            interaction=interaction,
         )
         total_ms = round((time.perf_counter() - turn_started) * 1000, 2)
         run_id = response_model.run_id

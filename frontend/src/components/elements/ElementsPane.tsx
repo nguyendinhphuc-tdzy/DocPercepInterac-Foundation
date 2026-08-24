@@ -267,6 +267,11 @@ export const ElementsPane: React.FC = () => {
                           else itemRefs.current.delete(elId);
                         }}
                         className={`element-tree-item ${isSelected ? 'selected' : ''} ${isHighlighted ? 'highlighted' : ''}`}
+                        // The canonical identity, on the DOM node. Citation
+                        // reveal (AgentMessage) already queries for exactly this
+                        // attribute — until now nothing rendered it, so clicking
+                        // a citation scrolled to nothing.
+                        data-element-id={elId}
                         onClick={() => setSelectedElementId(elId)}
                         onMouseEnter={() => setHoveredElement(elId)}
                         onMouseLeave={() => setHoveredElement(null)}

@@ -147,6 +147,17 @@ export const useAgentStore = create<AgentState>((set, get) => ({
           file_names: fileNames,
           element_count: totalElementCount,
         },
+        // The authoritative interaction state, read from the same store the
+        // "Selected:" chip renders from. Sending happens to be the only thing
+        // that reads it — it never mutates it, so the selection survives.
+        interaction_context: {
+          session_id: ws.sessionId,
+          workflow_type: ws.activeWorkflow ?? null,
+          active_document_id: activeDoc?.docId ?? null,
+          selected_elements: sync.selection,
+          selected_regions: [],
+          selected_documents: [],
+        },
       });
 
       const assistantMsg: AgentMessage = {

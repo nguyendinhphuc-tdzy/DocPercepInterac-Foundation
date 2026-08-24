@@ -65,6 +65,11 @@ class AgentContext(BaseModel):
     selected_element: Optional[dict[str, Any]] = None
     available_documents: list[dict[str, Any]] = Field(default_factory=list)
     relevant_elements: list[dict[str, Any]] = Field(default_factory=list)
+    # Verified user selection (Phase P0-A). Rebuilt server-side from the
+    # documents themselves, so it is evidence rather than a claim. Ranked ABOVE
+    # the active document and far above the generic workspace listing.
+    selected_evidence: list[dict[str, Any]] = Field(default_factory=list)
+    interaction_context: Optional[dict[str, Any]] = None
     # Structured workflow context (Phase PROD-UX-1). Populated by the server from
     # the session's own intake state when a workflow with a structured intake is
     # active, so the Agent is TOLD which document plays which role and never has

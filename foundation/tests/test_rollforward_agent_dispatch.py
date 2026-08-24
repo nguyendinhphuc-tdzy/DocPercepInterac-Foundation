@@ -126,7 +126,8 @@ def _stale_context(session_id: str):
     """Context carrying nine unrelated documents, as a long-lived session has."""
     from applications.agent.models import AgentContext
 
-    def _build(session_id=session_id, active_doc_id=None, selected_element_id=None):
+    def _build(session_id=session_id, active_doc_id=None, selected_element_id=None,
+               interaction=None):
         from applications.agent.context_builder import _load_workflow_context
 
         return AgentContext(

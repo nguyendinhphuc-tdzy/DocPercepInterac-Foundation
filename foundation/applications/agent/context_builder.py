@@ -117,7 +117,19 @@ class ContextBuilder:
         session_id: Optional[str],
         active_doc_id: Optional[str] = None,
         selected_element_id: Optional[str] = None,
+        interaction: Optional[Any] = None,
     ) -> AgentContext:
+        """Assemble the request's context, evidence first.
+
+        Priority, highest first:
+
+            1. verified selected evidence — what the user actually pointed at
+            2. the active document
+            3. the generic workspace listing
+
+        `interaction` is a VerifiedInteractionContext: already checked for
+        ownership and existence, with its metadata rebuilt from the documents.
+        """
         context = AgentContext(
             session_id=session_id,
             active_doc_id=active_doc_id,
@@ -125,6 +137,28 @@ class ContextBuilder:
             available_documents=[],
             relevant_elements=[],
         )
+
+        if interaction is not None:
+            context.interaction_context = interaction.to_dict()
+            context.selected_evidence = [s.to_dict() for s in interaction.selected_elements]
+            if interaction.selected_elements:
+                # The selection carries its OWN document id, so it resolves even
+                # when the workspace holds many documents and none is "active" —
+                # the case where selection used to be silently dropped.
+                first = interaction.selected_elements[0]
+                context.selected_element = {
+                    "doc_id": first.document_id,
+                    "doc_name": first.document_name,
+                    "element_id": first.element_id,
+                    "name": first.display_label,
+                    "type": first.element_type,
+                    "text": first.text,
+                    "capabilities": first.capabilities,
+                    "anchor": first.anchor,
+                }
+                context.active_doc_id = active_doc_id or first.document_id
+            if interaction.active_document_id and not context.active_doc_id:
+                context.active_doc_id = interaction.active_document_id
 
         if not session_id:
             return context
@@ -141,7 +175,7 @@ class ContextBuilder:
             return context
 
         # If active doc is not explicitly specified, default to first document ONLY if exactly 1 document is loaded
-        effective_doc_id = active_doc_id
+        effective_doc_id = context.active_doc_id or active_doc_id
         if not effective_doc_id:
             if len(context.available_documents) == 1:
                 effective_doc_id = context.available_documents[0]["doc_id"]
@@ -150,8 +184,9 @@ class ContextBuilder:
                 # Ambiguous document context when multiple documents are present without selection
                 context.active_doc_id = None
 
-        # Resolve selected element if requested
-        if effective_doc_id and selected_element_id:
+        # Resolve selected element if requested. Skipped when verified evidence
+        # already supplied it — that path is authoritative.
+        if context.selected_element is None and effective_doc_id and selected_element_id:
             try:
                 entry, elements = perceive_session_document(session_id, effective_doc_id)
                 for el in elements:

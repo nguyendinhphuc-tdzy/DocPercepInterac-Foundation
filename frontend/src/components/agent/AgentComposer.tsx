@@ -13,7 +13,11 @@ export const AgentComposer: React.FC = () => {
 
   const { sendMessage, status, selectedModel, setSelectedModel } = useAgentStore();
   const { documents, activeDocClientId } = useWorkspaceStore();
-  const { selectedElementId } = useSyncStore();
+  // The chip is rendered from the SAME state the request carries. Deriving it
+  // from the active document's element list is what let the two disagree.
+  const selection = useSyncStore((state) => state.selection);
+  const clearSelection = useSyncStore((state) => state.clearSelection);
+  const selectedElementId = useSyncStore((state) => state.selectedElementId);
 
   const readyDocuments = documents.filter((d) => d.status === 'ready');
   const hasReadyDocument = readyDocuments.length > 0;
@@ -21,6 +25,7 @@ export const AgentComposer: React.FC = () => {
   const canSend = input.trim().length > 0 && !isSending && hasReadyDocument;
 
   const activeDoc = documents.find((d) => d.clientId === activeDocClientId);
+  const selectedRecord = selection[0] ?? null;
   const selectedElement = activeDoc?.elements?.find(
     (e) => e.element_id === selectedElementId
   );
@@ -183,20 +188,35 @@ export const AgentComposer: React.FC = () => {
               </span>
             </div>
 
-            {selectedElement && (
-              <div style={{
-                display: 'flex',
-                alignItems: 'center',
-                gap: '3px',
-                color: 'var(--accent)',
-                fontWeight: 500,
-                background: 'var(--bg-surface)',
-                padding: '1px 6px',
-                borderRadius: 'var(--radius-sm)',
-                border: '1px solid var(--border)',
-              }}>
+            {selectedRecord && (
+              <div
+                data-testid="selection-chip"
+                data-element-id={selectedRecord.element_id}
+                data-document-id={selectedRecord.document_id}
+                data-selection-count={selection.length}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '3px',
+                  color: 'var(--accent)',
+                  fontWeight: 500,
+                  background: 'var(--bg-surface)',
+                  padding: '1px 6px',
+                  borderRadius: 'var(--radius-sm)',
+                  border: '1px solid var(--border)',
+                }}>
                 <MapPin size={10} />
-                <span>Selected: {selectedElement.name || selectedElement.type}</span>
+                <span>
+                  Selected: {selectedRecord.display_label}
+                  {selection.length > 1 ? ` +${selection.length - 1}` : ''}
+                </span>
+                <button
+                  data-testid="composer-deselect"
+                  onClick={clearSelection}
+                  title="Deselect"
+                  style={{ background: 'none', border: 'none', cursor: 'pointer',
+                           color: 'inherit', padding: 0, lineHeight: 1 }}
+                >×</button>
               </div>
             )}
           </div>

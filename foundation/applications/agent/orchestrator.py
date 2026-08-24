@@ -52,6 +52,7 @@ class AgentOrchestrator:
         context_input: Optional[dict[str, Any]] = None,
         model: Optional[str] = None,
         user_id: str = "anonymous",
+        interaction: Optional[Any] = None,
     ) -> AgentResponse:
         context_input = context_input or {}
         active_doc_id = context_input.get("active_doc_id")
@@ -67,6 +68,7 @@ class AgentOrchestrator:
             session_id=session_id,
             active_doc_id=active_doc_id,
             selected_element_id=selected_element_id,
+            interaction=interaction,
         )
 
         run_id = str(uuid.uuid4())
@@ -538,11 +540,31 @@ class AgentOrchestrator:
         return block + "These roles are authoritative; do not re-derive them from filenames.\n"
 
     @staticmethod
+    def _selected_evidence_block(context: AgentContext) -> str:
+        """What the user pointed at, verified. Comes before the document list.
+
+        Without this the model saw a workspace listing and a bare prompt, and a
+        request like "explain this value" had nothing to attach to.
+        """
+        if not context.selected_evidence:
+            return ""
+        lines = ["The user has SELECTED the following evidence. Answer about it "
+                 "specifically; do not search the workspace for a substitute."]
+        for item in context.selected_evidence:
+            location = ", ".join(f"{k}={v}" for k, v in item.get("location", {}).items())
+            lines.append(
+                f"  - {item['display_label']} ({item['element_type']}) in "
+                f"{item['document_name']} [{location}] (element_id={item['element_id']}): "
+                f"{(item.get('text') or '')[:400]}")
+        return "\n".join(lines) + "\n"
+
+    @staticmethod
     def _build_general_prompt(context: AgentContext) -> str:
         doc_names = [d["filename"] for d in context.available_documents]
         return (
             "You are the Foundation Document Intelligence Agent.\n"
             + AgentOrchestrator._workflow_prompt_block(context)
+            + AgentOrchestrator._selected_evidence_block(context)
             + f"Documents loaded: {', '.join(doc_names) if doc_names else 'None'}.\n"
             "Answer the user's questions clearly based on Foundation document primitives."
         )

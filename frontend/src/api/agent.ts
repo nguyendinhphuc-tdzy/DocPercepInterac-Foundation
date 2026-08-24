@@ -118,6 +118,26 @@ export interface AgentStep {
   status: 'done' | 'active' | 'pending';
 }
 
+// What the user has selected, travelling with the request. The server verifies
+// every id against its own state and rebuilds the metadata, so nothing here is
+// taken on trust — but nothing here may be dropped either.
+export interface InteractionContextPayload {
+  session_id: string | null;
+  workflow_id?: string | null;
+  workflow_type?: string | null;
+  active_document_id: string | null;
+  selected_elements: Array<{
+    document_id: string;
+    element_id: string;
+    element_type: string;
+    display_label: string;
+    location: Record<string, unknown>;
+    selection_source: string;
+  }>;
+  selected_regions: unknown[];
+  selected_documents: string[];
+}
+
 export interface AgentChatRequest {
   session_id: string | null;
   message: string;
@@ -128,6 +148,7 @@ export interface AgentChatRequest {
     file_names?: string[];
     element_count?: number;
   };
+  interaction_context?: InteractionContextPayload;
 }
 
 // What a completed roll-forward run reports into the conversation. The Agent is
