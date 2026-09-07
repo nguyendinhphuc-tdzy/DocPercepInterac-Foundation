@@ -1,0 +1,15 @@
+{
+  "schema_version": "0.1.0",
+  "validator": "foundation-contract-fixture-validator",
+  "overall_result": "PASS",
+  "scenarios": [
+    {"scenario": "C2-01", "schema_result": "PASS", "reference_result": "PASS", "state_machine_result": "PASS", "governance_result": "PASS", "hash_result": "PASS", "overall_result": "PASS"},
+    {"scenario": "C2-02", "schema_result": "PASS", "reference_result": "PASS", "state_machine_result": "PASS", "governance_result": "PASS", "hash_result": "PASS", "overall_result": "PASS"},
+    {"scenario": "C2-03", "schema_result": "PASS", "reference_result": "PASS", "state_machine_result": "PASS", "governance_result": "PASS", "hash_result": "PASS", "overall_result": "PASS"},
+    {"scenario": "C2-04", "schema_result": "PASS", "reference_result": "PASS", "state_machine_result": "PASS", "governance_result": "PASS", "hash_result": "PASS", "overall_result": "PASS"},
+    {"scenario": "C2-05", "schema_result": "PASS", "reference_result": "PASS", "state_machine_result": "PASS", "governance_result": "PASS", "hash_result": "PASS", "overall_result": "PASS"},
+    {"scenario": "C2-06", "schema_result": "PASS", "reference_result": "PASS", "state_machine_result": "PASS", "governance_result": "PASS", "hash_result": "PASS", "overall_result": "PASS"},
+    {"scenario": "C2-07", "schema_result": "PASS", "reference_result": "PASS", "state_machine_result": "PASS", "governance_result": "PASS", "hash_result": "PASS", "overall_result": "PASS"},
+    {"scenario": "C2-08", "schema_result": "PASS", "reference_result": "PASS", "state_machine_result": "PASS", "governance_result": "PASS", "hash_result": "PASS", "overall_result": "PASS"}
+  ]
+}

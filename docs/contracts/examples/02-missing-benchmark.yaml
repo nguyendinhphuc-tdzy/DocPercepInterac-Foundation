@@ -1637,7 +1637,7 @@ records:
     title: "C2-02 contract scenario"
     business_case: "LOCAL_FILE"
     current_period: {"label":"ILLUSTRATIVE_CURRENT_PERIOD","start_date":"2026-01-01","end_date":"2026-12-31"}
-    status: "READY_FOR_EXECUTION"
+    status: "BLOCKED"
     document_refs:
       - {"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":1}
       - {"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":1}
@@ -1652,6 +1652,25 @@ records:
     object_type: "FoundationTask"
     id: "task-c2-02"
     revision: 5
+    created_at: "2026-09-07T02:00:35Z"
+    title: "C2-02 contract scenario"
+    business_case: "LOCAL_FILE"
+    current_period: {"label":"ILLUSTRATIVE_CURRENT_PERIOD","start_date":"2026-01-01","end_date":"2026-12-31"}
+    status: "READY_FOR_EXECUTION"
+    document_refs:
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":1}
+      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":1}
+    required_business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR","VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION"]
+    exception_refs: []
+    release_status: "WITHHELD"
+    target_contract_definition_ref: {"object_type":"TargetContractDefinition","object_id":"target-contract-c2-02","revision":1}
+    target_contract_instance_ref: {"object_type":"TargetContractInstance","object_id":"target-instance-c2-02","revision":1}
+    rule_pack_ref: {"object_type":"RulePack","object_id":"rule-pack-c2-02","revision":1}
+  -
+    schema_version: "0.1.0"
+    object_type: "FoundationTask"
+    id: "task-c2-02"
+    revision: 6
     created_at: "2026-09-07T02:00:36Z"
     title: "C2-02 contract scenario"
     business_case: "LOCAL_FILE"
@@ -1847,7 +1866,7 @@ records:
     schema_version: "0.1.0"
     object_type: "FoundationTask"
     id: "task-c2-02"
-    revision: 6
+    revision: 7
     created_at: "2026-09-07T02:00:41Z"
     title: "C2-02 contract scenario"
     business_case: "LOCAL_FILE"
@@ -1991,7 +2010,7 @@ records:
     schema_version: "0.1.0"
     object_type: "FoundationTask"
     id: "task-c2-02"
-    revision: 7
+    revision: 8
     created_at: "2026-09-07T02:00:43Z"
     title: "C2-02 contract scenario"
     business_case: "LOCAL_FILE"
@@ -2350,16 +2369,23 @@ actions:
       - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":3}
       - {"object_type":"ReviewDecision","object_id":"review-c2-02","revision":1}
       - {"object_type":"ChangeProposal","object_id":"ncp-proposal-c2-02","revision":3}
-    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":4}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":5}]
     audit_event_ids: ["event-036-c2-02"]
+  -
+    action_id: "action-036b-c2-02"
+    description: "A governed eligible NCP subset proceeds from the blocked aggregate task to execution readiness."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":4}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":5}]
+    audit_event_ids: ["event-036b-c2-02"]
   -
     action_id: "action-038-c2-02"
     description: "Dispatch the exact sealed authorization to controlled replay."
     actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
     input_refs:
-      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":4}
+      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":5}
       - {"object_type":"ChangeProposal","object_id":"ncp-proposal-c2-02","revision":3}
-    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":5}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}]
     audit_event_ids: ["event-037-c2-02"]
   -
     action_id: "action-039-c2-02"
@@ -2413,9 +2439,9 @@ actions:
     description: "Mechanical replay staged an output for independent validation."
     actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
     input_refs:
-      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":5}
+      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}
       - {"object_type":"ExecutionResult","object_id":"execution-c2-02","revision":1}
-    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}]
     audit_event_ids: ["event-042-c2-02"]
   -
     action_id: "action-044-c2-02"
@@ -2437,18 +2463,18 @@ actions:
     action_id: "action-045-c2-02"
     description: "Bind final release projection after governed workflow outcome."
     actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
-    input_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}]
-    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}]
+    input_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":8}]
     audit_event_ids: ["event-044-c2-02"]
   -
     action_id: "action-046-c2-02"
     description: "Whole-task release stays withheld; independent branch records are preserved."
     actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
     input_refs:
-      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}
+      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}
       - {"object_type":"ValidationReport","object_id":"validation-c2-02","revision":1}
       - {"object_type":"EvidenceAssessment","object_id":"conclusion-evidence-assessment-c2-02","revision":1}
-    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":8}]
     audit_event_ids: ["event-045-c2-02"]
 audit_events:
   -
@@ -3680,20 +3706,43 @@ audit_events:
     object_refs:
       - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":4}
       - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":3}
-      - {"object_type":"ReviewDecision","object_id":"review-c2-02","revision":1}
-      - {"object_type":"ChangeProposal","object_id":"ncp-proposal-c2-02","revision":3}
-    input_refs:
-      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":3}
-      - {"object_type":"ReviewDecision","object_id":"review-c2-02","revision":1}
-      - {"object_type":"ChangeProposal","object_id":"ncp-proposal-c2-02","revision":3}
+    input_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":3}]
     output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":4}]
     error_codes: []
     metadata:
       metadata_kind: "GOVERNANCE"
-      summary: "Human approval and deterministic gates make the eligible subset ready for controlled execution."
+      summary: "A required target remains blocked while an eligible NCP subset is isolated for review."
       prior_status: "AWAITING_REVIEW"
+      resulting_status: "BLOCKED"
+    integrity_payload_hash: "300f1154f31430f08b5a372a9d97fd44cbe1fc184d4953083a996a61db44d12c"
+  -
+    event_id: "event-036b-c2-02"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "STATUS_TRANSITIONED"
+    occurred_at: "2026-09-07T02:00:35Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-02"
+    correlation_id: "attempt-c2-02"
+    causation_event_id: "event-036-c2-02"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-02"
+        version_id: "target-version-c2-02"
+        binary_hash: "32359d8d7e230cdfc4829ef26c7f02eaf4dde2260a98eeae21ee9f0b702b95c6"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":5}
+      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":4}
+    input_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":4}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":5}]
+    error_codes: []
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "A governed eligible NCP subset proceeds from the blocked aggregate task to execution readiness."
+      prior_status: "BLOCKED"
       resulting_status: "READY_FOR_EXECUTION"
-    integrity_payload_hash: "070e75ef0012e13272101f88d4661673c3e0f4b700f9b98ce169352d2a154663"
+    integrity_payload_hash: "371e3af9264d0935ce9716398daaaca581686975de7196eafb40d89d358fba8e"
   -
     event_id: "event-037-c2-02"
     event_version: 1
@@ -3711,20 +3760,20 @@ audit_events:
         binary_hash: "32359d8d7e230cdfc4829ef26c7f02eaf4dde2260a98eeae21ee9f0b702b95c6"
     business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
     object_refs:
+      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}
       - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":5}
-      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":4}
       - {"object_type":"ChangeProposal","object_id":"ncp-proposal-c2-02","revision":3}
     input_refs:
-      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":4}
+      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":5}
       - {"object_type":"ChangeProposal","object_id":"ncp-proposal-c2-02","revision":3}
-    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":5}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}]
     error_codes: []
     metadata:
       metadata_kind: "GOVERNANCE"
       summary: "Dispatch the exact sealed authorization to controlled replay."
       prior_status: "READY_FOR_EXECUTION"
       resulting_status: "EXECUTING"
-    integrity_payload_hash: "b7b74900cf9528b442788196b6b7844ab78fa7810927851451ed4625073177e7"
+    integrity_payload_hash: "30afc3b2ca16430c1b8b0c2e5457a606c43f84b009b8ba29c37ea0c73af01956"
   -
     event_id: "event-038-c2-02"
     event_version: 1
@@ -3888,20 +3937,20 @@ audit_events:
         binary_hash: "32359d8d7e230cdfc4829ef26c7f02eaf4dde2260a98eeae21ee9f0b702b95c6"
     business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
     object_refs:
+      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}
       - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}
-      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":5}
       - {"object_type":"ExecutionResult","object_id":"execution-c2-02","revision":1}
     input_refs:
-      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":5}
+      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}
       - {"object_type":"ExecutionResult","object_id":"execution-c2-02","revision":1}
-    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}]
     error_codes: []
     metadata:
       metadata_kind: "GOVERNANCE"
       summary: "Mechanical replay staged an output for independent validation."
       prior_status: "EXECUTING"
       resulting_status: "VALIDATING"
-    integrity_payload_hash: "7919974a908b259860bbae8d6180b68d00fe3d5113e9029ec436b5f9c70bd3fc"
+    integrity_payload_hash: "7e5a51b6c4bb98a6d76ad7582991079b175750dc362953b7b4e17c45d454db99"
   -
     event_id: "event-043-c2-02"
     event_version: 1
@@ -4005,17 +4054,17 @@ audit_events:
         binary_hash: "32359d8d7e230cdfc4829ef26c7f02eaf4dde2260a98eeae21ee9f0b702b95c6"
     business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR","VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION"]
     object_refs:
+      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":8}
       - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}
-      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}
-    input_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}]
-    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}]
+    input_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":8}]
     error_codes: []
     metadata:
       metadata_kind: "GOVERNANCE"
       summary: "Bind final release projection after governed workflow outcome."
       prior_status: "VALIDATING"
       resulting_status: "BLOCKED"
-    integrity_payload_hash: "8563b11b5df882920d57a4560d15f253aa3f344cde190827b8194d593793705e"
+    integrity_payload_hash: "199ccbff0dc43147c2194174c454c4edcc9eda870dc73b9cae366812198c3a11"
   -
     event_id: "event-045-c2-02"
     event_version: 1
@@ -4033,15 +4082,15 @@ audit_events:
         binary_hash: "1517af4b64cbe1d0dd92a13083e30e371a5e492d141212fee14b762d11ba780c"
     business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR","VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION"]
     object_refs:
+      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":8}
       - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}
-      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}
       - {"object_type":"ValidationReport","object_id":"validation-c2-02","revision":1}
       - {"object_type":"EvidenceAssessment","object_id":"conclusion-evidence-assessment-c2-02","revision":1}
     input_refs:
-      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":6}
+      - {"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}
       - {"object_type":"ValidationReport","object_id":"validation-c2-02","revision":1}
       - {"object_type":"EvidenceAssessment","object_id":"conclusion-evidence-assessment-c2-02","revision":1}
-    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-02","revision":8}]
     error_codes: ["SOURCE_MISSING","RELEASE_BLOCKED_INCOMPLETE_TARGETS"]
     metadata:
       metadata_kind: "GOVERNANCE"
@@ -4049,9 +4098,9 @@ audit_events:
       prior_status: "WITHHELD"
       resulting_status: "WITHHELD"
       first_material_failure_event_id: "event-019-c2-02"
-    integrity_payload_hash: "0900d8554fe257a878db3b3272b08873b90591490d24374b9cbcfba72ff95e84"
+    integrity_payload_hash: "15a919a3331e57b5cc7941c530d23aa32f15f1bbf5ecce40de2950be35cd823c"
 expected:
-  task_ref: {"object_type":"FoundationTask","object_id":"task-c2-02","revision":7}
+  task_ref: {"object_type":"FoundationTask","object_id":"task-c2-02","revision":8}
   task_status: "BLOCKED"
   release_status: "WITHHELD"
   first_material_failure_event_id: "event-019-c2-02"

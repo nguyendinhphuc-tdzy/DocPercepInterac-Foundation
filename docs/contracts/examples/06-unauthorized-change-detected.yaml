@@ -3244,7 +3244,8 @@ audit_events:
       summary: "Record the independent unauthorized-change exception before quarantining output."
       exception_ref: {"object_type":"ExceptionRecord","object_id":"unauthorized-exception-c2-06","revision":1}
       first_material_failure_event_id: "event-032-c2-06"
-    integrity_payload_hash: "ef7319190731c307dc5f4c993b6a08aeca723c5348df31b3f8e02c5048051524"
+      remediation_refs: []
+    integrity_payload_hash: "3b22336c627c9d7cfdac2c9be27af0f2c348fcd43144eab71b866b85f4fc6a1e"
   -
     event_id: "event-034-c2-06"
     event_version: 1
