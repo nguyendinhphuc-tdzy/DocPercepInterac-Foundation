@@ -584,6 +584,25 @@ records:
       binary_hash: "32359d8d7e230cdfc4829ef26c7f02eaf4dde2260a98eeae21ee9f0b702b95c6"
   -
     schema_version: "0.1.0"
+    object_type: "DocumentArtifact"
+    id: "target-document-c2-02"
+    revision: 2
+    created_at: "2026-09-07T02:00:02Z"
+    task_id: "task-c2-02"
+    file_name: "target.docx"
+    role: "TARGET"
+    status: "PREFLIGHTING"
+    version_refs:
+      -
+        document_id: "target-document-c2-02"
+        version_id: "target-version-c2-02"
+        binary_hash: "32359d8d7e230cdfc4829ef26c7f02eaf4dde2260a98eeae21ee9f0b702b95c6"
+    current_version_ref:
+      document_id: "target-document-c2-02"
+      version_id: "target-version-c2-02"
+      binary_hash: "32359d8d7e230cdfc4829ef26c7f02eaf4dde2260a98eeae21ee9f0b702b95c6"
+  -
+    schema_version: "0.1.0"
     object_type: "DocumentVersion"
     id: "source-version-c2-02"
     revision: 1
@@ -606,6 +625,25 @@ records:
     file_name: "source.docx"
     role: "CURRENT_SOURCE"
     status: "REGISTERED"
+    version_refs:
+      -
+        document_id: "source-document-c2-02"
+        version_id: "source-version-c2-02"
+        binary_hash: "bfe81fa269f199f0fa9a82f6fbf9ab1fcad1c20ed107951bd532a3d3994b8847"
+    current_version_ref:
+      document_id: "source-document-c2-02"
+      version_id: "source-version-c2-02"
+      binary_hash: "bfe81fa269f199f0fa9a82f6fbf9ab1fcad1c20ed107951bd532a3d3994b8847"
+  -
+    schema_version: "0.1.0"
+    object_type: "DocumentArtifact"
+    id: "source-document-c2-02"
+    revision: 2
+    created_at: "2026-09-07T02:00:03Z"
+    task_id: "task-c2-02"
+    file_name: "source.docx"
+    role: "CURRENT_SOURCE"
+    status: "PREFLIGHTING"
     version_refs:
       -
         document_id: "source-document-c2-02"
@@ -782,7 +820,7 @@ records:
     schema_version: "0.1.0"
     object_type: "DocumentArtifact"
     id: "target-document-c2-02"
-    revision: 2
+    revision: 3
     created_at: "2026-09-07T02:00:05Z"
     task_id: "task-c2-02"
     file_name: "target.docx"
@@ -801,7 +839,7 @@ records:
     schema_version: "0.1.0"
     object_type: "DocumentArtifact"
     id: "source-document-c2-02"
-    revision: 2
+    revision: 3
     created_at: "2026-09-07T02:00:06Z"
     task_id: "task-c2-02"
     file_name: "source.docx"
@@ -2017,8 +2055,8 @@ records:
     current_period: {"label":"ILLUSTRATIVE_CURRENT_PERIOD","start_date":"2026-01-01","end_date":"2026-12-31"}
     status: "BLOCKED"
     document_refs:
-      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":2}
-      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":2}
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":3}
+      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":3}
       - {"object_type":"DocumentArtifact","object_id":"output-document-c2-02","revision":1}
     required_business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR","VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION"]
     exception_refs: []
@@ -2082,6 +2120,20 @@ actions:
       - {"object_type":"TargetContractInstance","object_id":"target-instance-c2-02","revision":1}
     audit_event_ids: ["event-004-c2-02"]
   -
+    action_id: "action-006a-c2-02"
+    description: "Begin deterministic preflight for target document."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":1}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":2}]
+    audit_event_ids: ["event-004a-c2-02"]
+  -
+    action_id: "action-006b-c2-02"
+    description: "Begin deterministic preflight for current_source document."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":1}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":2}]
+    audit_event_ids: ["event-004b-c2-02"]
+  -
     action_id: "action-006-c2-02"
     description: "DocumentPreflightAssessment completed under its pinned fixture evaluator."
     actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
@@ -2100,14 +2152,14 @@ actions:
     input_refs:
       - {"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":1}
       - {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-02","revision":1}
-    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":2}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":3}]
     audit_event_ids: ["event-006-c2-02"]
   -
     action_id: "action-008-c2-02"
     description: "Source excerpt is readable in the fixture context."
     actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
     input_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":1}]
-    output_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":2}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":3}]
     audit_event_ids: ["event-007-c2-02"]
   -
     action_id: "action-009-c2-02"
@@ -2592,6 +2644,62 @@ audit_events:
       resulting_status: "ANALYZING"
     integrity_payload_hash: "e80650fd78b545e951190a6bebbd77e11945d9d8a05777274182286b703bb8d0"
   -
+    event_id: "event-004a-c2-02"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "STATUS_TRANSITIONED"
+    occurred_at: "2026-09-07T02:00:04Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-02"
+    correlation_id: "attempt-c2-02"
+    causation_event_id: "event-004-c2-02"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-02"
+        version_id: "target-version-c2-02"
+        binary_hash: "32359d8d7e230cdfc4829ef26c7f02eaf4dde2260a98eeae21ee9f0b702b95c6"
+    business_target_ids: []
+    object_refs:
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":1}
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":2}
+    input_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":1}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":2}]
+    error_codes: []
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "Begin deterministic preflight for target document."
+      prior_status: "REGISTERED"
+      resulting_status: "PREFLIGHTING"
+    integrity_payload_hash: "8fe81d81f744c42c5f6b855bb6b67c23f35d74d8054fb9e5030a3e6ba4ff539c"
+  -
+    event_id: "event-004b-c2-02"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "STATUS_TRANSITIONED"
+    occurred_at: "2026-09-07T02:00:06Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-02"
+    correlation_id: "attempt-c2-02"
+    causation_event_id: "event-004a-c2-02"
+    document_version_refs:
+      -
+        document_id: "source-document-c2-02"
+        version_id: "source-version-c2-02"
+        binary_hash: "bfe81fa269f199f0fa9a82f6fbf9ab1fcad1c20ed107951bd532a3d3994b8847"
+    business_target_ids: []
+    object_refs:
+      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":1}
+      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":2}
+    input_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":1}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":2}]
+    error_codes: []
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "Begin deterministic preflight for current_source document."
+      prior_status: "REGISTERED"
+      resulting_status: "PREFLIGHTING"
+    integrity_payload_hash: "af3fc08736a5f081dbbfc44498ac9c9cf60dabd1b716ea9b53ffbe0addc8306b"
+  -
     event_id: "event-005-c2-02"
     event_version: 1
     schema_version: "0.1.0"
@@ -2600,7 +2708,7 @@ audit_events:
     actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
     task_id: "task-c2-02"
     correlation_id: "attempt-c2-02"
-    causation_event_id: "event-004-c2-02"
+    causation_event_id: "event-004a-c2-02"
     document_version_refs:
       -
         document_id: "target-document-c2-02"
@@ -2631,7 +2739,7 @@ audit_events:
           sha256: "5e355c57a28df6b19cdc3780d2d9e8b71af73c548913415f24c42df3f5707305"
           media_type: "application/json"
       outcome: "COMPLETED"
-    integrity_payload_hash: "fb0370e6341e73df1d61d461fc315d81fd392ce7ca5d756a5c22536387e1c70c"
+    integrity_payload_hash: "c5ff3049b00fcf6049332a6bc7892dace166fde519bb3a5aacb35a22265cdc67"
   -
     event_id: "event-006-c2-02"
     event_version: 1
@@ -2649,20 +2757,20 @@ audit_events:
         binary_hash: "32359d8d7e230cdfc4829ef26c7f02eaf4dde2260a98eeae21ee9f0b702b95c6"
     business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR","VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION"]
     object_refs:
-      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":2}
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":3}
       - {"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":1}
       - {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-02","revision":1}
     input_refs:
       - {"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":1}
       - {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-02","revision":1}
-    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":2}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-02","revision":3}]
     error_codes: []
     metadata:
       metadata_kind: "GOVERNANCE"
       summary: "Project document readiness from explicit preflight findings."
       prior_status: null
       resulting_status: null
-    integrity_payload_hash: "12b8e1627c44b7b83c09791a17669f4bbcca4aa0259d2256866b9bd4218bdf14"
+    integrity_payload_hash: "f7c8827c77c162bae5d94132fce06ab44cfcd20837179acf61feebf7895a5f57"
   -
     event_id: "event-007-c2-02"
     event_version: 1
@@ -2672,7 +2780,7 @@ audit_events:
     actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
     task_id: "task-c2-02"
     correlation_id: "attempt-c2-02"
-    causation_event_id: "event-006-c2-02"
+    causation_event_id: "event-004b-c2-02"
     document_version_refs:
       -
         document_id: "source-document-c2-02"
@@ -2680,17 +2788,17 @@ audit_events:
         binary_hash: "bfe81fa269f199f0fa9a82f6fbf9ab1fcad1c20ed107951bd532a3d3994b8847"
     business_target_ids: []
     object_refs:
-      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":2}
+      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":3}
       - {"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":1}
     input_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":1}]
-    output_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":2}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-02","revision":3}]
     error_codes: []
     metadata:
       metadata_kind: "GOVERNANCE"
       summary: "Source excerpt is readable in the fixture context."
       prior_status: null
       resulting_status: null
-    integrity_payload_hash: "2b5b6688c39c6c0ee5e97b1537383dc78ef09ed1531353ca95607b8473e7fd9b"
+    integrity_payload_hash: "12ed30b58c42124f4f25cc68b6cebba5c48e79b2b27e3d3beeb9bf797a809373"
   -
     event_id: "event-008-c2-02"
     event_version: 1
@@ -3752,7 +3860,7 @@ audit_events:
     actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
     task_id: "task-c2-02"
     correlation_id: "attempt-c2-02"
-    causation_event_id: "event-036-c2-02"
+    causation_event_id: "event-036b-c2-02"
     document_version_refs:
       -
         document_id: "target-document-c2-02"

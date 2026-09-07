@@ -16,6 +16,7 @@ from pathlib import Path
 from typing import Any
 
 import yaml
+from jsonschema import Draft202012Validator, RefResolver
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACTS = ROOT / "docs" / "contracts"
@@ -34,155 +35,57 @@ REUSABLE_TYPES = {
     "TargetContractDefinition", "TargetRegionDefinition", "RulePack",
     "BusinessRule", "FreshnessPolicy", "SourceRequirement", "ValidationPlan",
 }
-EVENT_FIELDS = {
-    "event_id", "event_version", "schema_version", "event_type", "occurred_at",
-    "actor", "task_id", "correlation_id", "causation_event_id",
-    "document_version_refs", "business_target_ids", "object_refs", "input_refs",
-    "output_refs", "error_codes", "metadata", "integrity_payload_hash",
-}
-STATUS_MAP = {
-    "FoundationTask": "TaskStatus", "DocumentArtifact": "DocumentStatus",
-    "DocumentPreflightAssessment": "DocumentPreflightStatus",
-    "SourceAssessment": "SourceAssessmentStatus",
-    "MappingProposal": "MappingProposalStatus",
-    "ChangeProposal": "ChangeProposalStatus",
-    "ApprovedChangeSet": "ApprovedChangeSetStatus",
-    "ExecutionResult": "ExecutionStatus", "ValidationReport": "ValidationStatus",
-    "ExceptionRecord": "ExceptionStatus", "AnalysisRun": "AnalysisStatus",
-    "EvidenceAssessment": "EvidenceStatus",
-    "ChangeExecutionResult": "ChangeExecutionStatus",
-}
-OUTCOME_MAP = {
-    "SourceAssessment": "SourceSufficiencyOutcome",
-    "EvidenceCheck": "CheckOutcome", "RuleEvaluation": "CheckOutcome",
-    "ValidationCheckResult": "CheckOutcome",
-}
-MATERIAL_EVENT_MAP = {
-    "AnalysisRun": "ANALYSIS_COMPLETED",
-    "RuleEvaluation": "RULE_EVALUATED",
-    "SourceAssessment": "SOURCE_ASSESSED",
-    "EvidenceCheck": "EVIDENCE_CHECKED",
-    "EvidenceAssessment": "EVIDENCE_ASSESSED",
-    "DocumentPreflightAssessment": "DOCUMENT_PREFLIGHT_COMPLETED",
-    "PerceptionSnapshot": "PERCEPTION_COMPLETED",
-    "NativeBinding": "NATIVE_BINDING_ASSESSED",
-    "AIInteractionRecord": "AI_INTERACTION_RECORDED",
+TASK_BOUNDARY_REF_TYPES = {
+    "DocumentArtifact", "DocumentVersion", "DocumentPreflightAssessment", "PerceptionSnapshot",
+    "SemanticObject", "NativeLocator", "NativeBinding", "TargetContractInstance", "TargetRegion",
+    "RuleEvaluation", "SourceAssessment", "EvidenceRecord", "EvidenceCheck", "EvidenceAssessment",
+    "MappingProposal", "AIInteractionRecord", "ChangeProposal", "ReviewDecision", "ApprovedChangeSet",
+    "ExecutionResult", "ChangeExecutionResult", "ValidationReport", "ValidationCheckResult",
+    "ExceptionRecord", "AnalysisRun",
 }
 EVENT_METADATA_KIND = {
     "TASK_CREATED": "GOVERNANCE", "DOCUMENT_REGISTERED": "GOVERNANCE",
     "DOCUMENT_PREFLIGHT_COMPLETED": "DETERMINISTIC_EVALUATION",
     "PERCEPTION_COMPLETED": "PERCEPTION", "PERCEPTION_FAILED": "PERCEPTION",
-    "NATIVE_BINDING_ASSESSED": "NATIVE_BINDING",
-    "ANALYSIS_COMPLETED": "GOVERNANCE",
-    "RULE_EVALUATED": "DETERMINISTIC_EVALUATION",
-    "SOURCE_ASSESSED": "DETERMINISTIC_EVALUATION",
-    "EVIDENCE_CHECKED": "DETERMINISTIC_EVALUATION",
-    "EVIDENCE_ASSESSED": "DETERMINISTIC_EVALUATION",
-    "AI_INTERACTION_RECORDED": "AI_INTERACTION",
-    "MAPPING_PROPOSED": "GOVERNANCE", "CHANGE_PROPOSED": "GOVERNANCE",
-    "REVIEW_DECIDED": "GOVERNANCE", "SOURCE_REQUESTED": "GOVERNANCE",
+    "NATIVE_BINDING_ASSESSED": "NATIVE_BINDING", "ANALYSIS_COMPLETED": "GOVERNANCE",
+    "RULE_EVALUATED": "DETERMINISTIC_EVALUATION", "SOURCE_ASSESSED": "DETERMINISTIC_EVALUATION",
+    "EVIDENCE_CHECKED": "DETERMINISTIC_EVALUATION", "EVIDENCE_ASSESSED": "DETERMINISTIC_EVALUATION",
+    "AI_INTERACTION_RECORDED": "AI_INTERACTION", "MAPPING_PROPOSED": "GOVERNANCE",
+    "CHANGE_PROPOSED": "GOVERNANCE", "REVIEW_DECIDED": "GOVERNANCE", "SOURCE_REQUESTED": "GOVERNANCE",
     "DECISION_SUPERSEDED": "GOVERNANCE", "CHANGE_SET_APPROVED": "GOVERNANCE",
-    "APPROVAL_INVALIDATED": "GOVERNANCE", "APPROVAL_REVOKED": "GOVERNANCE",
-    "REPLAY_REQUESTED": "REPLAY", "EXECUTION_COMPLETED": "REPLAY",
-    "EXECUTION_REFUSED": "REPLAY", "VALIDATION_COMPLETED": "VALIDATION",
+    "APPROVAL_INVALIDATED": "GOVERNANCE", "APPROVAL_REVOKED": "GOVERNANCE", "REPLAY_REQUESTED": "REPLAY",
+    "EXECUTION_COMPLETED": "REPLAY", "EXECUTION_REFUSED": "REPLAY", "VALIDATION_COMPLETED": "VALIDATION",
     "RELEASE_ELIGIBILITY_CONFIRMED": "GOVERNANCE", "RELEASE_WITHHELD": "GOVERNANCE",
     "OUTPUT_RELEASED": "GOVERNANCE", "STATUS_TRANSITIONED": "GOVERNANCE",
-    "OUTPUT_QUARANTINED": "VALIDATION",
-    "EXCEPTION_RECORDED": "EXCEPTION", "EXCEPTION_RESOLVED": "EXCEPTION",
+    "OUTPUT_QUARANTINED": "VALIDATION", "EXCEPTION_RECORDED": "EXCEPTION", "EXCEPTION_RESOLVED": "EXCEPTION",
 }
 EVENT_ACTOR_TYPES = {
     "TASK_CREATED": {"SYSTEM", "HUMAN"}, "DOCUMENT_REGISTERED": {"SYSTEM"},
-    "ANALYSIS_COMPLETED": {"SYSTEM"}, "CHANGE_PROPOSED": {"SYSTEM"},
-    "REVIEW_DECIDED": {"HUMAN"}, "SOURCE_REQUESTED": {"HUMAN"},
-    "DECISION_SUPERSEDED": {"HUMAN", "SYSTEM"}, "CHANGE_SET_APPROVED": {"SYSTEM"},
-    "APPROVAL_INVALIDATED": {"SYSTEM"}, "APPROVAL_REVOKED": {"HUMAN", "SYSTEM"},
-    "RELEASE_ELIGIBILITY_CONFIRMED": {"SYSTEM"}, "RELEASE_WITHHELD": {"SYSTEM"},
-    "OUTPUT_RELEASED": {"SYSTEM"}, "STATUS_TRANSITIONED": {"SYSTEM", "HUMAN"},
-    "AI_INTERACTION_RECORDED": {"AI"}, "REPLAY_REQUESTED": {"SYSTEM"},
+    "ANALYSIS_COMPLETED": {"SYSTEM"}, "CHANGE_PROPOSED": {"SYSTEM"}, "REVIEW_DECIDED": {"HUMAN"},
+    "SOURCE_REQUESTED": {"HUMAN"}, "DECISION_SUPERSEDED": {"HUMAN", "SYSTEM"},
+    "CHANGE_SET_APPROVED": {"SYSTEM"}, "APPROVAL_INVALIDATED": {"SYSTEM"}, "APPROVAL_REVOKED": {"HUMAN", "SYSTEM"},
+    "RELEASE_ELIGIBILITY_CONFIRMED": {"SYSTEM"}, "RELEASE_WITHHELD": {"SYSTEM"}, "OUTPUT_RELEASED": {"SYSTEM"},
+    "STATUS_TRANSITIONED": {"SYSTEM", "HUMAN"}, "AI_INTERACTION_RECORDED": {"AI"}, "REPLAY_REQUESTED": {"SYSTEM"},
     "EXECUTION_COMPLETED": {"REPLAY_ENGINE"}, "EXECUTION_REFUSED": {"REPLAY_ENGINE"},
     "VALIDATION_COMPLETED": {"VALIDATOR"}, "OUTPUT_QUARANTINED": {"SYSTEM", "VALIDATOR"},
-    "DOCUMENT_PREFLIGHT_COMPLETED": {"SYSTEM"}, "PERCEPTION_COMPLETED": {"SYSTEM"},
-    "PERCEPTION_FAILED": {"SYSTEM"}, "NATIVE_BINDING_ASSESSED": {"SYSTEM"},
-    "RULE_EVALUATED": {"SYSTEM"}, "SOURCE_ASSESSED": {"SYSTEM"},
-    "EVIDENCE_CHECKED": {"SYSTEM"}, "EVIDENCE_ASSESSED": {"SYSTEM"},
-    "MAPPING_PROPOSED": {"SYSTEM"},
+    "DOCUMENT_PREFLIGHT_COMPLETED": {"SYSTEM"}, "PERCEPTION_COMPLETED": {"SYSTEM"}, "PERCEPTION_FAILED": {"SYSTEM"},
+    "NATIVE_BINDING_ASSESSED": {"SYSTEM"}, "RULE_EVALUATED": {"SYSTEM"}, "SOURCE_ASSESSED": {"SYSTEM"},
+    "EVIDENCE_CHECKED": {"SYSTEM"}, "EVIDENCE_ASSESSED": {"SYSTEM"}, "MAPPING_PROPOSED": {"SYSTEM"},
 }
 TASK_EDGES = {
-    "CREATED": {"ANALYZING", "CANCELLED"},
-    "ANALYZING": {"AWAITING_REVIEW", "BLOCKED", "FAILED", "CANCELLED"},
+    "CREATED": {"ANALYZING", "CANCELLED"}, "ANALYZING": {"AWAITING_REVIEW", "BLOCKED", "FAILED", "CANCELLED"},
     "AWAITING_REVIEW": {"READY_FOR_EXECUTION", "BLOCKED", "CANCELLED"},
     "READY_FOR_EXECUTION": {"EXECUTING", "BLOCKED", "CANCELLED"},
-    "EXECUTING": {"VALIDATING", "BLOCKED", "FAILED"},
-    "VALIDATING": {"COMPLETED", "BLOCKED", "FAILED"},
+    "EXECUTING": {"VALIDATING", "BLOCKED", "FAILED"}, "VALIDATING": {"COMPLETED", "BLOCKED", "FAILED"},
     "BLOCKED": {"ANALYZING", "AWAITING_REVIEW", "READY_FOR_EXECUTION", "CANCELLED"},
 }
-CONDITION_FIELDS = {
-    "BINARY_HASH_EQUALS": {"condition_id", "kind", "document_version_ref", "expected_binary_hash"},
-    "TEXT_EQUALS": {"condition_id", "kind", "target", "expected_text"},
-    "VALUE_EQUALS": {"condition_id", "kind", "target", "expected_value", "value_reader_policy_ref"},
-    "CAPABILITY_SUPPORTED": {"condition_id", "kind", "native_locator_ref", "capability_result_ref",
-                            "operation", "engine", "engine_version", "conformance"},
-    "EVIDENCE_VERIFIED": {"condition_id", "kind", "evidence_assessment_ref", "business_target_id"},
-    "PRESERVE_SCOPE": {"condition_id", "kind", "protected_scope"},
+MATERIAL_EVENT_MAP = {
+    "AnalysisRun": "ANALYSIS_COMPLETED", "RuleEvaluation": "RULE_EVALUATED",
+    "SourceAssessment": "SOURCE_ASSESSED", "EvidenceCheck": "EVIDENCE_CHECKED",
+    "EvidenceAssessment": "EVIDENCE_ASSESSED", "DocumentPreflightAssessment": "DOCUMENT_PREFLIGHT_COMPLETED",
+    "PerceptionSnapshot": "PERCEPTION_COMPLETED", "NativeBinding": "NATIVE_BINDING_ASSESSED",
+    "AIInteractionRecord": "AI_INTERACTION_RECORDED",
 }
-BUSINESS_VALUE_FIELDS = {
-    "TEXT": {"kind", "review_text", "value"}, "DECIMAL": {"kind", "review_text", "value"},
-    "INTEGER": {"kind", "review_text", "value"}, "DATE": {"kind", "review_text", "value"},
-    "BOOLEAN": {"kind", "review_text", "value"},
-    "CURRENCY": {"kind", "review_text", "amount", "currency_code"},
-    "PERCENT": {"kind", "review_text", "percentage"},
-    "STRUCTURED": {"kind", "review_text", "schema_ref", "value"},
-}
-NATIVE_ADDRESS_FIELDS = {
-    "DOCX_CONTENT_CONTROL": {"kind", "sdt_id", "element_path"},
-    "DOCX_BOOKMARK": {"kind", "bookmark_id", "bookmark_name", "start_path", "end_path"},
-    "DOCX_PARAGRAPH": {"kind", "paragraph_path"}, "DOCX_RUN": {"kind", "run_path"},
-    "DOCX_TABLE_CELL": {"kind", "table_path", "row_ordinal", "cell_ordinal", "cell_path"},
-    "DOCX_RELATIONSHIP": {"kind", "relationship_id", "owner_part_uri"},
-    "XLSX_CELL": {"kind", "sheet_id", "cell_address"},
-    "XLSX_DEFINED_NAME": {"kind", "name", "scope", "scope_sheet_id"},
-    "XLSX_TABLE_RANGE": {"kind", "range_kind", "sheet_id", "range_address", "table_id", "table_part_uri"},
-}
-MUTATION_PAYLOAD_FIELDS = {
-    "RUN_TEXT_REPLACEMENT": {"kind", "replacement_text"},
-    "SDT_TEXT_REPLACEMENT": {"kind", "replacement_text"},
-    "SIMPLE_TABLE_CELL_TEXT_REPLACEMENT": {"kind", "replacement_text"},
-}
-CONDITION_TARGET_FIELDS = {
-    "INPUT_NATIVE_OBJECT": {"kind", "native_locator_ref"},
-    "OUTPUT_APPROVED_CHANGE": {"kind", "approved_change_id"},
-}
-METADATA_FIELDS = {
-    "GOVERNANCE": ({"metadata_kind", "summary", "prior_status", "resulting_status"},
-                   {"decision_ref", "first_material_failure_event_id"}),
-    "PERCEPTION": ({"metadata_kind", "summary", "analysis_run_ref", "engine", "engine_version",
-                    "configuration_ref", "observation_refs"},
-                   {"perception_snapshot_ref", "first_material_failure_event_id"}),
-    "NATIVE_BINDING": ({"metadata_kind", "summary", "native_binding_ref", "evaluator_binding",
-                        "observation_refs", "outcome"}, {"first_material_failure_event_id"}),
-    "DETERMINISTIC_EVALUATION": ({"metadata_kind", "summary", "evaluation_ref",
-                                  "evaluator_binding", "outcome"},
-                                 {"first_material_failure_event_id"}),
-    "AI_INTERACTION": ({"metadata_kind", "summary", "ai_interaction_ref", "provider", "model",
-                        "model_version", "instruction_ref", "context_refs", "output_ref"}, set()),
-    "REPLAY": ({"metadata_kind", "summary", "approved_change_set_ref", "engine", "engine_version",
-                "input_document_version_ref", "output_document_version_ref"},
-               {"execution_ref", "first_material_failure_event_id"}),
-    "VALIDATION": ({"metadata_kind", "summary", "validation_report_ref", "validator",
-                    "validator_version", "configuration_ref", "input_document_version_ref",
-                    "output_document_version_ref", "observation_refs"},
-                   {"first_material_failure_event_id"}),
-    "EXCEPTION": ({"metadata_kind", "summary", "exception_ref", "first_material_failure_event_id",
-                   "remediation_refs"}, set()),
-}
-AUTH_FIELDS = {
-    "target_document_version_ref", "source_document_version_refs",
-    "target_contract_definition_ref", "target_contract_instance_ref", "rule_pack_ref",
-    "source_assessment_refs", "evidence_assessment_refs", "review_decision_refs",
-    "approved_changes", "preconditions", "postconditions", "protected_scope",
-    "validation_plan_ref", "mutation_profile", "qualification_refs",
-}
-
 
 def section(text: str, heading: str) -> str:
     match = re.search(rf"^### {re.escape(heading)}\s*\n(.*?)(?=^### |\Z)",
@@ -201,26 +104,12 @@ def enum_registry() -> dict[str, set[str]]:
     return result
 
 
-def domain_schemas() -> dict[str, tuple[dict[str, str], set[str]]]:
-    text = (CONTRACTS / "domain-model.md").read_text(encoding="utf-8")
-    result: dict[str, tuple[dict[str, str], set[str]]] = {}
-    for match in re.finditer(r"^### (.+?)\s*$", text, flags=re.MULTILINE):
-        name = match.group(1).strip()
-        end = re.search(r"^### ", text[match.end():], flags=re.MULTILINE)
-        body = text[match.end(): match.end() + end.start() if end else None]
-        fields: dict[str, str] = {}
-        required: set[str] = set()
-        for line in body.splitlines():
-            row = re.match(r"^\|\s*([^|]+?)\s*\|\s*([^|]+?)\s*\|\s*(Yes|No)\s*\|", line)
-            if row:
-                field = row.group(1).strip().strip(chr(96))
-                type_name = row.group(2).strip().strip(chr(96))
-                fields[field] = type_name
-                if row.group(3) == "Yes":
-                    required.add(field)
-        if fields:
-            result[name] = (fields, required)
-    return result
+def load_openapi_contract() -> dict[str, Any]:
+    """Load the machine projection; field shape authority lives there."""
+    spec = yaml.safe_load((CONTRACTS / "foundation.openapi.yaml").read_text(encoding="utf-8"))
+    if not isinstance(spec, dict) or spec.get("openapi") != "3.1.0":
+        raise ValueError("foundation.openapi.yaml must be OpenAPI 3.1.0")
+    return spec
 
 
 def canonical(value: Any) -> str:
@@ -255,8 +144,9 @@ def digest(value: Any) -> str:
 
 class FixtureValidator:
     def __init__(self, path: Path, enums: dict[str, set[str]],
-                 schemas: dict[str, tuple[dict[str, str], set[str]]]):
-        self.path, self.enums, self.schemas = path, enums, schemas
+                 openapi: dict[str, Any]):
+        self.path, self.enums, self.openapi = path, enums, openapi
+        self.openapi_resolver = RefResolver.from_schema(openapi)
         self.data: dict[str, Any] = {}
         self.errors: list[dict[str, str]] = []
         self.records: dict[tuple[str, str, int], dict[str, Any]] = {}
@@ -365,6 +255,127 @@ class FixtureValidator:
         if (value["document_id"], value["version_id"], value["binary_hash"]) not in self.versions:
             self.error(path, "DocumentVersionRef does not match DocumentVersion")
 
+    def validate_evaluator(self, value: Any, path: str) -> None:
+        """Check semantic binding resolution; shape is projected by OpenAPI."""
+        if not isinstance(value, dict):
+            self.error(path, "EvaluatorBinding must be an object")
+            return
+        for key in ("evaluator_key", "evaluator_version", "configuration_ref"):
+            if key not in value:
+                self.error(path, "missing evaluator binding field: " + key)
+        if "configuration_ref" in value:
+            self.validate_content(value["configuration_ref"], path + ".configuration_ref")
+
+    def validate_freshness_evaluation(self, value: Any, path: str) -> None:
+        """Validate references and evaluator identity; field shape is OpenAPI-owned."""
+        if not isinstance(value, dict):
+            self.error(path, "FreshnessEvaluation must be an object")
+            return
+        if "freshness_policy_ref" in value:
+            self.validate_ref(value["freshness_policy_ref"], path + ".freshness_policy_ref")
+        for index, ref in enumerate(value.get("document_version_refs", [])):
+            self.validate_document_ref(ref, f"{path}.document_version_refs[{index}]")
+        for index, ref in enumerate(value.get("input_refs", [])):
+            self.validate_content(ref, f"{path}.input_refs[{index}]")
+        if "evaluator_key" in value and not isinstance(value["evaluator_key"], str):
+            self.error(path + ".evaluator_key", "evaluator_key must be text")
+        if "evaluator_version" in value and not isinstance(value["evaluator_version"], str):
+            self.error(path + ".evaluator_version", "evaluator_version must be text")
+
+    def validate_condition_semantics(self, value: Any, path: str) -> None:
+        """Check cross-field condition rules without duplicating union schemas."""
+        if not isinstance(value, dict):
+            return
+        kind = value.get("kind")
+        if kind == "BINARY_HASH_EQUALS":
+            document_ref = value.get("document_version_ref", {})
+            if isinstance(document_ref, dict) and value.get("expected_binary_hash") != document_ref.get("binary_hash"):
+                self.error(path, "binary hash condition does not equal its pinned document hash")
+            if isinstance(document_ref, dict):
+                self.validate_document_ref(document_ref, path + ".document_version_ref")
+        elif kind == "TEXT_EQUALS":
+            target = value.get("target", {})
+            if isinstance(target, dict) and target.get("kind") == "INPUT_NATIVE_OBJECT":
+                self.validate_ref(target.get("native_locator_ref"), path + ".target.native_locator_ref")
+        elif kind == "VALUE_EQUALS":
+            target = value.get("target", {})
+            if isinstance(target, dict) and target.get("kind") == "INPUT_NATIVE_OBJECT":
+                self.validate_ref(target.get("native_locator_ref"), path + ".target.native_locator_ref")
+            if "value_reader_policy_ref" in value:
+                self.validate_content(value["value_reader_policy_ref"], path + ".value_reader_policy_ref")
+        elif kind == "CAPABILITY_SUPPORTED":
+            self.validate_ref(value.get("native_locator_ref"), path + ".native_locator_ref")
+            capability_ref = value.get("capability_result_ref", {})
+            if isinstance(capability_ref, dict):
+                self.validate_ref(capability_ref.get("preflight_assessment_ref"), path + ".capability_result_ref.preflight_assessment_ref")
+        elif kind == "EVIDENCE_VERIFIED":
+            self.validate_ref(value.get("evidence_assessment_ref"), path + ".evidence_assessment_ref")
+        elif kind == "PRESERVE_SCOPE":
+            scope = value.get("protected_scope", {})
+            if isinstance(scope, dict) and scope.get("preserve_outside_approved_changes") is not True:
+                self.error(path, "preserve scope must retain all non-approved content")
+
+    def validate_approved_change_semantics(self, value: Any, path: str) -> None:
+        """Validate inline authorization references and cross-field gates."""
+        if not isinstance(value, dict):
+            return
+        for field in ("change_proposal_ref", "native_locator_ref", "review_decision_ref"):
+            if field in value:
+                self.validate_ref(value[field], f"{path}.{field}")
+        for index, ref in enumerate(value.get("evidence_refs", [])):
+            self.validate_ref(ref, f"{path}.evidence_refs[{index}]")
+        for field in ("preconditions", "postconditions"):
+            for index, condition in enumerate(value.get(field, [])):
+                self.validate_condition_semantics(condition, f"{path}.{field}[{index}]")
+
+    def validate_authorization_semantics(self, value: Any, path: str) -> None:
+        """Resolve authorization references without defining another field schema."""
+        if not isinstance(value, dict):
+            return
+        if "target_document_version_ref" in value:
+            self.validate_document_ref(value["target_document_version_ref"], path + ".target_document_version_ref")
+        for index, ref in enumerate(value.get("source_document_version_refs", [])):
+            self.validate_document_ref(ref, f"{path}.source_document_version_refs[{index}]")
+        expected_types = {
+            "target_contract_definition_ref": "TargetContractDefinition",
+            "target_contract_instance_ref": "TargetContractInstance",
+            "rule_pack_ref": "RulePack",
+            "validation_plan_ref": "ValidationPlan",
+        }
+        for field, expected_type in expected_types.items():
+            ref = value.get(field)
+            self.validate_ref(ref, f"{path}.{field}")
+            if isinstance(ref, dict) and ref.get("object_type") != expected_type:
+                self.error(f"{path}.{field}", f"expected {expected_type} reference")
+        list_types = {
+            "source_assessment_refs": "SourceAssessment",
+            "evidence_assessment_refs": "EvidenceAssessment",
+            "review_decision_refs": "ReviewDecision",
+        }
+        for field, expected_type in list_types.items():
+            for index, ref in enumerate(value.get(field, [])):
+                self.validate_ref(ref, f"{path}.{field}[{index}]")
+                if isinstance(ref, dict) and ref.get("object_type") != expected_type:
+                    self.error(f"{path}.{field}[{index}]", f"expected {expected_type} reference")
+        identifiers: set[str] = set()
+        for index, change in enumerate(value.get("approved_changes", [])):
+            change_path = f"{path}.approved_changes[{index}]"
+            self.validate_approved_change_semantics(change, change_path)
+            identifier = change.get("approved_change_id") if isinstance(change, dict) else None
+            if identifier in identifiers:
+                self.error(path, "duplicate approved_change_id")
+            identifiers.add(identifier)
+        scope = value.get("protected_scope")
+        if isinstance(scope, dict):
+            if scope.get("preserve_outside_approved_changes") is not True:
+                self.error(path + ".protected_scope", "protected scope must preserve outside approved changes")
+            if "document_version_ref" in scope:
+                self.validate_document_ref(scope["document_version_ref"], path + ".protected_scope.document_version_ref")
+            for index, ref in enumerate(scope.get("protected_locator_refs", [])):
+                self.validate_ref(ref, f"{path}.protected_scope.protected_locator_refs[{index}]")
+        for index, ref in enumerate(value.get("qualification_refs", [])):
+            self.validate_content(ref, f"{path}.qualification_refs[{index}]")
+
     def validate_period(self, value: Any, path: str) -> None:
         if self.exact(value, {"label", "start_date", "end_date"}, set(), path):
             self.primitive(value["label"], "Text", path + ".label")
@@ -376,343 +387,28 @@ class FixtureValidator:
             self.primitive(value["actor_type"], "ActorType", path + ".actor_type")
             self.primitive(value["actor_id"], "ID", path + ".actor_id")
 
-    def validate_business_value(self, value: Any, path: str) -> None:
-        if not isinstance(value, dict):
-            self.error(path, "BusinessValue must be an object")
-            return
-        kind, fields = value.get("kind"), BUSINESS_VALUE_FIELDS.get(value.get("kind"))
-        self.enum(kind, "BusinessValueKind", path + ".kind")
-        if not fields or not self.exact(value, fields, set(), path):
-            return
-        self.primitive(value["review_text"], "ExactText", path + ".review_text")
-        if kind in {"TEXT", "DECIMAL", "INTEGER", "DATE", "BOOLEAN"}:
-            self.primitive(value["value"], {"TEXT": "ExactText", "DECIMAL": "DecimalString",
-                                            "INTEGER": "IntegerString", "DATE": "LocalDate",
-                                            "BOOLEAN": "Bool"}[kind], path + ".value")
-        elif kind == "CURRENCY":
-            self.primitive(value["amount"], "DecimalString", path + ".amount")
-            self.primitive(value["currency_code"], "CurrencyCode", path + ".currency_code")
-        elif kind == "PERCENT":
-            self.primitive(value["percentage"], "DecimalString", path + ".percentage")
-        elif kind == "STRUCTURED":
-            self.validate_content(value["schema_ref"], path + ".schema_ref")
-
-    def validate_native_path(self, value: Any, path: str) -> None:
-        if not isinstance(value, list) or not value:
-            self.error(path, "NativeElementPath must be nonempty")
-            return
-        for index, step in enumerate(value):
-            if self.exact(step, {"namespace_uri", "local_name", "ordinal"}, set(), f"{path}[{index}]"):
-                self.primitive(step["namespace_uri"], "URI", f"{path}[{index}].namespace_uri")
-                self.primitive(step["local_name"], "Text", f"{path}[{index}].local_name")
-                self.primitive(step["ordinal"], "PositiveInt", f"{path}[{index}].ordinal")
-
-    def validate_native_address(self, value: Any, path: str) -> None:
-        if not isinstance(value, dict):
-            self.error(path, "NativeAddress must be an object")
-            return
-        kind = value.get("kind")
-        self.enum(kind, "LocatorType", path + ".kind")
-        fields = NATIVE_ADDRESS_FIELDS.get(kind)
-        if not fields:
-            return
-        optional: set[str] = set()
-        if kind == "XLSX_DEFINED_NAME" and value.get("scope") != "WORKSHEET":
-            optional.add("scope_sheet_id")
-        if kind == "XLSX_TABLE_RANGE" and value.get("range_kind") != "TABLE":
-            optional |= {"table_id", "table_part_uri"}
-        if not self.exact(value, fields - optional, optional, path):
-            return
-        for field, type_name in {
-            "sdt_id": "Text", "bookmark_id": "Text", "bookmark_name": "Text",
-            "relationship_id": "Text", "owner_part_uri": "Text", "sheet_id": "Text",
-            "name": "Text", "table_id": "Text", "table_part_uri": "Text",
-            "cell_address": "CellAddress", "range_address": "RangeAddress",
-            "scope": "DefinedNameScope", "range_kind": "XlsxRangeKind",
-            "row_ordinal": "PositiveInt", "cell_ordinal": "PositiveInt",
-        }.items():
-            if field in value:
-                self.primitive(value[field], type_name, f"{path}.{field}")
-        for field in ("element_path", "start_path", "end_path", "paragraph_path",
-                      "run_path", "table_path", "cell_path"):
-            if field in value:
-                self.validate_native_path(value[field], f"{path}.{field}")
-
-    def validate_condition_target(self, value: Any, path: str) -> None:
-        if not isinstance(value, dict):
-            self.error(path, "ConditionValueTarget must be an object")
-            return
-        kind = value.get("kind")
-        self.enum(kind, "ConditionValueTargetKind", path + ".kind")
-        fields = CONDITION_TARGET_FIELDS.get(kind)
-        if not fields or not self.exact(value, fields, set(), path):
-            return
-        if kind == "INPUT_NATIVE_OBJECT":
-            self.validate_ref(value["native_locator_ref"], path + ".native_locator_ref")
-        else:
-            self.primitive(value["approved_change_id"], "ID", path + ".approved_change_id")
-
-    def validate_condition(self, value: Any, path: str) -> None:
-        if not isinstance(value, dict):
-            self.error(path, "Condition must be an object")
-            return
-        kind = value.get("kind")
-        self.enum(kind, "ConditionKind", path + ".kind")
-        fields = CONDITION_FIELDS.get(kind)
-        if not fields or not self.exact(value, fields, set(), path):
-            return
-        if kind == "BINARY_HASH_EQUALS":
-            self.validate_document_ref(value["document_version_ref"], path + ".document_version_ref")
-            self.primitive(value["expected_binary_hash"], "SHA256", path + ".expected_binary_hash")
-            if value["expected_binary_hash"] != value["document_version_ref"].get("binary_hash"):
-                self.error(path, "binary hash condition mismatch")
-        elif kind == "TEXT_EQUALS":
-            self.validate_condition_target(value["target"], path + ".target")
-            self.primitive(value["expected_text"], "ExactText", path + ".expected_text")
-        elif kind == "VALUE_EQUALS":
-            self.validate_condition_target(value["target"], path + ".target")
-            self.validate_business_value(value["expected_value"], path + ".expected_value")
-            self.validate_content(value["value_reader_policy_ref"], path + ".value_reader_policy_ref")
-        elif kind == "CAPABILITY_SUPPORTED":
-            self.validate_ref(value["native_locator_ref"], path + ".native_locator_ref")
-            self.validate_capability_ref(value["capability_result_ref"], path + ".capability_result_ref")
-            self.primitive(value["operation"], "MutationOperation", path + ".operation")
-            self.primitive(value["conformance"], "ConformanceClass", path + ".conformance")
-        elif kind == "EVIDENCE_VERIFIED":
-            self.validate_ref(value["evidence_assessment_ref"], path + ".evidence_assessment_ref")
-            self.primitive(value["business_target_id"], "BusinessTargetID", path + ".business_target_id")
-        elif kind == "PRESERVE_SCOPE":
-            self.validate_protected_scope(value["protected_scope"], path + ".protected_scope")
-
-    def validate_payload(self, value: Any, path: str) -> None:
-        if not isinstance(value, dict):
-            self.error(path, "MutationPayload must be an object")
-            return
-        kind = value.get("kind")
-        self.enum(kind, "MutationPayloadType", path + ".kind")
-        if kind in MUTATION_PAYLOAD_FIELDS and self.exact(value, MUTATION_PAYLOAD_FIELDS[kind], set(), path):
-            self.primitive(value["replacement_text"], "ExactText", path + ".replacement_text")
-
-    def validate_evaluator(self, value: Any, path: str) -> None:
-        if self.exact(value, {"evaluator_key", "evaluator_version", "configuration_ref"}, set(), path):
-            self.primitive(value["evaluator_key"], "EvaluatorKey", path + ".evaluator_key")
-            self.primitive(value["evaluator_version"], "Text", path + ".evaluator_version")
-            self.validate_content(value["configuration_ref"], path + ".configuration_ref")
-
-    def validate_capability_ref(self, value: Any, path: str) -> None:
-        if self.exact(value, {"preflight_assessment_ref", "capability_result_id"}, set(), path):
-            self.validate_ref(value["preflight_assessment_ref"], path + ".preflight_assessment_ref")
-            self.primitive(value["capability_result_id"], "ID", path + ".capability_result_id")
-
-    def validate_capability(self, value: Any, path: str) -> None:
-        fields = {"capability_result_id", "operation", "native_structure", "document_version_ref",
-                  "native_locator_refs", "engine", "engine_version", "conformance",
-                  "qualification_evidence_refs", "status", "reason"}
-        if not self.exact(value, fields, set(), path):
-            return
-        for field, type_name in {
-            "capability_result_id": "ID", "operation": "MutationOperation",
-            "native_structure": "LocatorType", "engine": "Text",
-            "engine_version": "Text", "conformance": "ConformanceClass",
-            "status": "CapabilityStatus", "reason": "Text",
-        }.items():
-            self.primitive(value[field], type_name, f"{path}.{field}")
-        self.validate_document_ref(value["document_version_ref"], path + ".document_version_ref")
-        for i, ref in enumerate(value["native_locator_refs"]):
-            self.validate_ref(ref, f"{path}.native_locator_refs[{i}]")
-        for i, ref in enumerate(value["qualification_evidence_refs"]):
-            self.validate_content(ref, f"{path}.qualification_evidence_refs[{i}]")
-
-    def validate_preflight_finding(self, value: Any, path: str) -> None:
-        fields = {"finding_id", "native_object_type", "part_uri", "native_locator_refs",
-                  "observation_ref", "description"}
-        if not self.exact(value, fields, set(), path):
-            return
-        self.primitive(value["finding_id"], "ID", path + ".finding_id")
-        self.primitive(value["native_object_type"], "Text", path + ".native_object_type")
-        if value["part_uri"] is not None:
-            self.primitive(value["part_uri"], "Text", path + ".part_uri")
-        for i, ref in enumerate(value["native_locator_refs"]):
-            self.validate_ref(ref, f"{path}.native_locator_refs[{i}]")
-        self.validate_content(value["observation_ref"], path + ".observation_ref")
-        self.primitive(value["description"], "Text", path + ".description")
-
-    def validate_freshness(self, value: Any, path: str) -> None:
-        fields = {"freshness_policy_ref", "document_version_refs", "as_of", "input_refs",
-                  "evaluator_key", "evaluator_version", "outcome", "valid_until", "reason", "error_codes"}
-        if not self.exact(value, fields, set(), path):
-            return
-        self.validate_ref(value["freshness_policy_ref"], path + ".freshness_policy_ref")
-        for i, ref in enumerate(value["document_version_refs"]):
-            self.validate_document_ref(ref, f"{path}.document_version_refs[{i}]")
-        self.primitive(value["as_of"], "Timestamp", path + ".as_of")
-        for i, ref in enumerate(value["input_refs"]):
-            self.validate_content(ref, f"{path}.input_refs[{i}]")
-        self.primitive(value["evaluator_key"], "EvaluatorKey", path + ".evaluator_key")
-        self.primitive(value["evaluator_version"], "Text", path + ".evaluator_version")
-        self.primitive(value["outcome"], "CheckOutcome", path + ".outcome")
-        if value["valid_until"] is not None:
-            self.primitive(value["valid_until"], "Timestamp", path + ".valid_until")
-        self.primitive(value["reason"], "Text", path + ".reason")
-        for i, code in enumerate(value["error_codes"]):
-            self.primitive(code, "ErrorCode", f"{path}.error_codes[{i}]")
-
-    def validate_protected_scope(self, value: Any, path: str) -> None:
-        required = {"document_version_ref", "protected_locator_refs", "preserve_outside_approved_changes"}
-        optional = {"serialization_allowance_ref"}
-        if not self.exact(value, required, optional, path):
-            return
-        self.validate_document_ref(value["document_version_ref"], path + ".document_version_ref")
-        for i, ref in enumerate(value["protected_locator_refs"]):
-            self.validate_ref(ref, f"{path}.protected_locator_refs[{i}]")
-        if value["preserve_outside_approved_changes"] is not True:
-            self.error(path, "preserve_outside_approved_changes must be true")
-        if "serialization_allowance_ref" in value:
-            self.validate_content(value["serialization_allowance_ref"], path + ".serialization_allowance_ref")
-
-    def validate_requirement(self, value: Any, path: str) -> None:
-        fields = {"requirement_id", "kind", "mandatory", "business_target_ids", "description"}
-        if not self.exact(value, fields, set(), path):
-            return
-        self.primitive(value["requirement_id"], "ID", path + ".requirement_id")
-        self.primitive(value["kind"], "ValidationCheckKind", path + ".kind")
-        self.primitive(value["mandatory"], "Bool", path + ".mandatory")
-        for i, target in enumerate(value["business_target_ids"]):
-            self.primitive(target, "BusinessTargetID", f"{path}.business_target_ids[{i}]")
-        self.primitive(value["description"], "Text", path + ".description")
-
-    def validate_approved_change(self, value: Any, path: str) -> None:
-        fields = {"approved_change_id", "business_target_id", "change_proposal_ref", "native_locator_ref",
-                  "operation", "payload", "evidence_refs", "review_decision_ref", "preconditions", "postconditions"}
-        if not self.exact(value, fields, set(), path):
-            return
-        self.primitive(value["approved_change_id"], "ID", path + ".approved_change_id")
-        self.primitive(value["business_target_id"], "BusinessTargetID", path + ".business_target_id")
-        self.validate_ref(value["change_proposal_ref"], path + ".change_proposal_ref")
-        self.validate_ref(value["native_locator_ref"], path + ".native_locator_ref")
-        self.primitive(value["operation"], "MutationOperation", path + ".operation")
-        self.validate_payload(value["payload"], path + ".payload")
-        for i, ref in enumerate(value["evidence_refs"]):
-            self.validate_ref(ref, f"{path}.evidence_refs[{i}]")
-        self.validate_ref(value["review_decision_ref"], path + ".review_decision_ref")
-        for i, condition in enumerate(value["preconditions"]):
-            self.validate_condition(condition, f"{path}.preconditions[{i}]")
-        for i, condition in enumerate(value["postconditions"]):
-            self.validate_condition(condition, f"{path}.postconditions[{i}]")
-
-    def validate_authorization(self, value: Any, path: str) -> None:
-        if not self.exact(value, AUTH_FIELDS, set(), path):
-            return
-        self.validate_document_ref(value["target_document_version_ref"], path + ".target_document_version_ref")
-        for i, ref in enumerate(value["source_document_version_refs"]):
-            self.validate_document_ref(ref, f"{path}.source_document_version_refs[{i}]")
-        for field, expected in {
-            "target_contract_definition_ref": "TargetContractDefinition",
-            "target_contract_instance_ref": "TargetContractInstance",
-            "rule_pack_ref": "RulePack", "validation_plan_ref": "ValidationPlan",
-        }.items():
-            self.validate_ref(value[field], f"{path}.{field}")
-            if value[field].get("object_type") != expected:
-                self.error(path + "." + field, f"expected {expected} reference")
-        for field, expected in {
-            "source_assessment_refs": "SourceAssessment",
-            "evidence_assessment_refs": "EvidenceAssessment",
-            "review_decision_refs": "ReviewDecision",
-        }.items():
-            for i, ref in enumerate(value[field]):
-                self.validate_ref(ref, f"{path}.{field}[{i}]")
-                if ref.get("object_type") != expected:
-                    self.error(f"{path}.{field}[{i}]", f"expected {expected} reference")
-        identifiers: set[str] = set()
-        for i, change in enumerate(value["approved_changes"]):
-            self.validate_approved_change(change, f"{path}.approved_changes[{i}]")
-            if change.get("approved_change_id") in identifiers:
-                self.error(path, "duplicate approved_change_id")
-            identifiers.add(change.get("approved_change_id"))
-        for i, condition in enumerate(value["preconditions"]):
-            self.validate_condition(condition, f"{path}.preconditions[{i}]")
-        for i, condition in enumerate(value["postconditions"]):
-            self.validate_condition(condition, f"{path}.postconditions[{i}]")
-        self.validate_protected_scope(value["protected_scope"], path + ".protected_scope")
-        self.primitive(value["mutation_profile"], "ConformanceClass", path + ".mutation_profile")
-        for i, ref in enumerate(value["qualification_refs"]):
-            self.validate_content(ref, f"{path}.qualification_refs[{i}]")
-
-    def validate_type(self, value: Any, type_name: str, path: str) -> None:
-        type_name = type_name.strip().strip(chr(96))
-        if type_name.startswith("Nullable<") and type_name.endswith(">"):
-            if value is not None:
-                self.validate_type(value, type_name[9:-1], path)
-            return
-        if type_name.endswith("[+]") or type_name.endswith("[]"):
-            if not isinstance(value, list):
-                self.error(path, "expected array")
-                return
-            if type_name.endswith("[+]") and not value:
-                self.error(path, "array must be nonempty")
-            inner = type_name[:-3] if type_name.endswith("[+]") else type_name[:-2]
-            for i, item in enumerate(value):
-                self.validate_type(item, inner, f"{path}[{i}]")
-            return
-        if type_name.startswith("Ref<") and type_name.endswith(">"):
-            self.validate_ref(value, path)
-            return
-        dispatch = {
-            "Reference": self.validate_ref, "DocumentVersionRef": self.validate_document_ref,
-            "ContentRef": self.validate_content, "EvaluatorBinding": self.validate_evaluator,
-            "Actor": self.validate_actor, "Period": self.validate_period,
-            "BusinessValue": self.validate_business_value, "CapabilityResult": self.validate_capability,
-            "CapabilityResultRef": self.validate_capability_ref, "PreflightFinding": self.validate_preflight_finding,
-            "NativeAddress": self.validate_native_address, "Condition": self.validate_condition,
-            "ConditionValueTarget": self.validate_condition_target, "FreshnessEvaluation": self.validate_freshness,
-            "ProtectedScope": self.validate_protected_scope, "ValidationRequirement": self.validate_requirement,
-            "AuthorizationBinding": self.validate_authorization, "MutationPayload": self.validate_payload,
-            "ApprovedChange": self.validate_approved_change,
-        }
-        if type_name == "NativeElementPath":
-            self.validate_native_path(value, path)
-        elif type_name == "NativePathStep":
-            self.validate_native_path([value], path)
-        elif type_name in dispatch:
-            dispatch[type_name](value, path)
-        else:
-            self.primitive(value, type_name, path)
-
     def load(self) -> None:
         try:
-            self.data = yaml.safe_load(self.path.read_text(encoding="utf-8"))
+            loaded = yaml.safe_load(self.path.read_text(encoding="utf-8"))
         except Exception as exc:
-            self.error("$", f"YAML parse failed: {exc}")
+            self.error("$", "YAML parse failed: " + str(exc))
             return
-        if not isinstance(self.data, dict):
+        if not isinstance(loaded, dict):
             self.error("$", "fixture must be an object")
             return
-        top = {"schema_version", "fixture_type", "scenario_id", "title", "facts",
-               "records", "actions", "audit_events", "expected"}
-        self.exact(self.data, top, set(), "$")
+        self.data = loaded
+        top_level = {"schema_version", "fixture_type", "scenario_id", "title", "facts",
+                     "records", "actions", "audit_events", "expected"}
+        self.exact(self.data, top_level, set(), "$")
         if self.data.get("schema_version") != SCHEMA_VERSION:
-            self.error("$.schema_version", "must be 0.1.0")
+            self.error("$.schema_version", "must be contract schema version 0.1.0")
         if self.data.get("fixture_type") != "CONTRACT_SCENARIO":
             self.error("$.fixture_type", "must be CONTRACT_SCENARIO")
-        expected = self.data.get("expected")
-        expected_fields = {
-            "task_ref", "task_status", "release_status", "first_material_failure_event_id",
-            "ai_execution_authority", "fuzzy_fallback_attempted", "mutation_attempted",
-            "approved_change_set_refs", "execution_refs", "validation_report_refs",
-            "error_codes", "targets", "output_document_ref", "output_document_status",
-            "preserved_record_refs", "new_correlation_id",
-        }
-        if isinstance(expected, dict):
-            required_expected = {"task_ref", "task_status", "release_status", "first_material_failure_event_id",
-                                 "ai_execution_authority", "fuzzy_fallback_attempted", "mutation_attempted",
-                                 "approved_change_set_refs", "execution_refs", "validation_report_refs", "error_codes", "targets"}
-            self.exact(expected, required_expected, expected_fields - required_expected, "$.expected")
-        else:
-            self.error("$.expected", "must be an object")
         facts = self.data.get("facts", {})
         if not isinstance(facts, dict):
             self.error("$.facts", "must be an object")
-        for item in facts.get("artifacts", []) if isinstance(facts, dict) else []:
+            facts = {}
+        for item in facts.get("artifacts", []) or []:
             ref = item.get("ref") if isinstance(item, dict) else None
             if isinstance(ref, dict) and {"uri", "sha256", "media_type"} <= set(ref):
                 self.content_refs.add((ref["uri"], ref["sha256"], ref["media_type"]))
@@ -734,32 +430,93 @@ class FixtureValidator:
         for event in self.data.get("audit_events", []) or []:
             if isinstance(event, dict):
                 self.events[(event.get("event_id"), event.get("event_version"))] = event
+        expected = self.data.get("expected", {})
+        expected_fields = {"task_ref", "task_status", "release_status", "first_material_failure_event_id",
+                           "ai_execution_authority", "fuzzy_fallback_attempted", "mutation_attempted",
+                           "approved_change_set_refs", "execution_refs", "validation_report_refs",
+                           "error_codes", "targets", "output_document_ref", "output_document_status",
+                           "preserved_record_refs", "new_correlation_id"}
+        required_expected = {"task_ref", "task_status", "release_status", "first_material_failure_event_id",
+                             "ai_execution_authority", "fuzzy_fallback_attempted", "mutation_attempted",
+                             "approved_change_set_refs", "execution_refs", "validation_report_refs", "error_codes", "targets"}
+        if isinstance(expected, dict):
+            self.exact(expected, required_expected, expected_fields - required_expected, "$.expected")
+        else:
+            self.error("$.expected", "must be an object")
 
     def validate_records(self) -> None:
         for index, record in enumerate(self.data.get("records", []) or []):
             if not isinstance(record, dict):
                 continue
             typ = record.get("object_type")
-            if typ not in self.schemas:
+            schema = self.openapi.get("components", {}).get("schemas", {}).get(typ)
+            if not schema:
+                self.error(f"$.records[{index}]", "no OpenAPI schema for ObjectType")
                 continue
-            fields, required = self.schemas[typ]
-            envelope = {"schema_version", "object_type", "id", "revision", "created_at"}
-            allowed = envelope | set(fields)
-            if typ != "FoundationTask" and typ not in REUSABLE_TYPES:
-                allowed.add("task_id")
-            self.exact(record, required | envelope, allowed - (required | envelope), f"$.records[{index}]")
-            for field, type_name in fields.items():
-                if field in record:
-                    self.validate_type(record[field], type_name, f"$.records[{index}].{field}")
-            self.primitive(record.get("id"), "ID", f"$.records[{index}].id")
-            self.primitive(record.get("revision"), "PositiveInt", f"$.records[{index}].revision")
-            self.primitive(record.get("created_at"), "Timestamp", f"$.records[{index}].created_at")
+            validator = Draft202012Validator(schema, resolver=self.openapi_resolver)
+            for issue in sorted(validator.iter_errors(record), key=lambda error: list(error.path)):
+                location = ".".join(str(part) for part in issue.path)
+                self.error(f"$.records[{index}]" + ("." + location if location else ""),
+                           "OpenAPI schema: " + issue.message)
+            self.validate_closed_record_keys(typ, record, f"$.records[{index}]")
+            self.validate_schema_refs(schema, record, f"$.records[{index}]")
+            if typ in REUSABLE_TYPES:
+                if "task_id" in record:
+                    self.error(f"$.records[{index}].task_id", "reusable definition must not carry task_id")
+                self.validate_reusable_boundary(record, f"$.records[{index}]")
             if typ != "FoundationTask" and typ not in REUSABLE_TYPES:
                 task_records = [r for r in self.records.values() if r.get("object_type") == "FoundationTask"]
                 if task_records and record.get("task_id") != task_records[0].get("id"):
                     self.error(f"$.records[{index}].task_id", "must reference FoundationTask")
             if typ == "DocumentVersion" and record.get("content_ref", {}).get("sha256") != record.get("binary_hash"):
                 self.error(f"$.records[{index}]", "DocumentVersion content hash mismatch")
+            if typ == "DocumentVersion" and record.get("revision") != 1:
+                self.error(f"$.records[{index}].revision", "DocumentVersion revision must remain 1")
+            if typ in {
+                "DocumentPreflightAssessment", "TargetContractInstance", "TargetRegion",
+                "NativeLocator", "ChangeProposal", "ExecutionResult", "ValidationReport",
+            } and "document_version_ref" in record:
+                self.validate_document_ref(record["document_version_ref"], f"$.records[{index}].document_version_ref")
+            if typ in {"ChangeProposal", "ExecutionResult", "ValidationReport"} and "input_document_version_ref" in record:
+                self.validate_document_ref(record["input_document_version_ref"], f"$.records[{index}].input_document_version_ref")
+            if typ == "TargetContractInstance" and "target_document_version_ref" in record:
+                self.validate_document_ref(record["target_document_version_ref"], f"$.records[{index}].target_document_version_ref")
+            if typ == "ApprovedChangeSet" and record.get("authorization", {}).get("target_document_version_ref") is not None:
+                self.validate_document_ref(record["authorization"]["target_document_version_ref"], f"$.records[{index}].authorization.target_document_version_ref")
+            if typ in {"ExecutionResult", "ValidationReport"} and "output_document_version_ref" in record:
+                output_version = record["output_document_version_ref"]
+                if output_version is not None:
+                    self.validate_document_ref(output_version, f"$.records[{index}].output_document_version_ref")
+            if typ == "DocumentPreflightAssessment":
+                for cap_index, capability in enumerate(record.get("capability_results", [])):
+                    if isinstance(capability, dict) and "document_version_ref" in capability:
+                        self.validate_document_ref(capability["document_version_ref"], f"$.records[{index}].capability_results[{cap_index}].document_version_ref")
+                    if isinstance(capability, dict):
+                        compatible = {
+                            "REPLACE_RUN_TEXT": {"DOCX_RUN"},
+                            "REPLACE_SDT_TEXT": {"DOCX_CONTENT_CONTROL"},
+                            "REPLACE_SIMPLE_TABLE_CELL_TEXT": {"DOCX_TABLE_CELL"},
+                        }.get(capability.get("operation"))
+                        if compatible and capability.get("native_structure") not in compatible:
+                            self.error(f"$.records[{index}].capability_results[{cap_index}]", "capability operation and native structure are incompatible")
+                        if capability.get("status") == "SUPPORTED" and not capability.get("qualification_evidence_refs"):
+                            self.error(f"$.records[{index}].capability_results[{cap_index}]", "SUPPORTED capability requires qualification evidence")
+            if typ == "TargetRegion":
+                for cap_index, capability_ref in enumerate(record.get("capability_result_refs", [])):
+                    if not isinstance(capability_ref, dict):
+                        continue
+                    preflight_ref = capability_ref.get("preflight_assessment_ref")
+                    self.validate_ref(preflight_ref, f"$.records[{index}].capability_result_refs[{cap_index}].preflight_assessment_ref")
+                    if isinstance(preflight_ref, dict):
+                        if preflight_ref.get("object_type") != "DocumentPreflightAssessment":
+                            self.error(f"$.records[{index}].capability_result_refs[{cap_index}].preflight_assessment_ref", "capability assessment must reference DocumentPreflightAssessment")
+                        assessment = self.records.get((preflight_ref.get("object_type"), preflight_ref.get("object_id"), preflight_ref.get("revision")))
+                        if assessment and not any(item.get("capability_result_id") == capability_ref.get("capability_result_id") for item in assessment.get("capability_results", [])):
+                            self.error(f"$.records[{index}].capability_result_refs[{cap_index}]", "capability result is absent from its preflight assessment")
+            if typ == "FreshnessEvaluation":
+                self.validate_freshness_evaluation(record, f"$.records[{index}]")
+            if typ == "ApprovedChangeSet":
+                self.validate_authorization_semantics(record.get("authorization"), f"$.records[{index}].authorization")
             if typ == "NativeLocator" and record.get("locator_type") != record.get("address", {}).get("kind"):
                 self.error(f"$.records[{index}]", "locator_type and typed address kind must match")
             if typ == "TargetRegion" and "capability_status" in record:
@@ -773,11 +530,17 @@ class FixtureValidator:
             if typ == "SourceAssessment" and record.get("outcome") == "SUFFICIENT":
                 if record.get("freshness_evaluation", {}).get("outcome") != "PASS":
                     self.error(f"$.records[{index}]", "SUFFICIENT requires passing freshness")
+            if typ == "SourceAssessment" and record.get("freshness_evaluation") is not None:
+                self.validate_freshness_evaluation(record["freshness_evaluation"], f"$.records[{index}].freshness_evaluation")
             if typ == "EvidenceCheck":
                 if record.get("check_kind") == "FRESHNESS" and "freshness_evaluation" not in record:
                     self.error(f"$.records[{index}]", "FRESHNESS requires freshness_evaluation")
                 if record.get("check_kind") != "FRESHNESS" and "freshness_evaluation" in record:
                     self.error(f"$.records[{index}]", "only FRESHNESS may carry freshness_evaluation")
+                if record.get("freshness_evaluation") is not None:
+                    self.validate_freshness_evaluation(record["freshness_evaluation"], f"$.records[{index}].freshness_evaluation")
+                    if record.get("outcome") != record["freshness_evaluation"].get("outcome"):
+                        self.error(f"$.records[{index}]", "freshness check outcome must equal freshness evaluation outcome")
             if typ == "ReviewDecision":
                 requested = record.get("requested_source_requirement_refs", [])
                 if record.get("outcome") == "REQUEST_MORE_SOURCE" and not requested:
@@ -785,16 +548,106 @@ class FixtureValidator:
                 if record.get("outcome") != "REQUEST_MORE_SOURCE" and requested:
                     self.error(f"$.records[{index}]", "only REQUEST_MORE_SOURCE may request source")
 
+    def _schema_parts(self, node: Any) -> tuple[set[str], set[str]]:
+        if not isinstance(node, dict):
+            return set(), set()
+        if "$ref" in node:
+            with self.openapi_resolver.resolving(node["$ref"]) as resolved:
+                return self._schema_parts(resolved)
+        props = set(node.get("properties", {}))
+        required = set(node.get("required", []))
+        for child in node.get("allOf", []) or []:
+            c_props, c_required = self._schema_parts(child)
+            props |= c_props
+            required |= c_required
+        return props, required
+
+    def validate_closed_record_keys(self, typ: str, record: dict[str, Any], path: str) -> None:
+        allowed, required = self._schema_parts(self.openapi["components"]["schemas"][typ])
+        missing, extra = sorted(required - set(record)), sorted(set(record) - allowed)
+        if missing:
+            self.error(path, "missing fields: " + ", ".join(missing))
+        if extra:
+            self.error(path, "unknown fields: " + ", ".join(extra))
+
+    def validate_schema_refs(self, node: Any, value: Any, path: str) -> None:
+        """Resolve references by following the OpenAPI projection, not a second field map."""
+        if value is None or not isinstance(node, dict):
+            return
+        if "$ref" in node:
+            ref_name = node["$ref"].rsplit("/", 1)[-1]
+            if ref_name in {"Ref", "Reference"}:
+                self.validate_ref(value, path)
+                return
+            if ref_name == "DocumentVersionRef":
+                self.validate_document_ref(value, path)
+                return
+            if ref_name == "ContentRef":
+                self.validate_content(value, path)
+                return
+            if ref_name == "EvaluatorBinding":
+                self.validate_evaluator(value, path)
+                return
+            if ref_name == "FreshnessEvaluation":
+                self.validate_freshness_evaluation(value, path)
+                return
+            with self.openapi_resolver.resolving(node["$ref"]) as resolved:
+                self.validate_schema_refs(resolved, value, path)
+            return
+        if "allOf" in node:
+            for child in node.get("allOf", []):
+                self.validate_schema_refs(child, value, path)
+        if "oneOf" in node:
+            branches = node.get("oneOf", [])
+            discriminator = node.get("discriminator", {}).get("propertyName")
+            selected = []
+            if discriminator and isinstance(value, dict) and value.get(discriminator) is not None:
+                wanted = value.get(discriminator)
+                mapping = node.get("discriminator", {}).get("mapping", {})
+                if wanted in mapping:
+                    selected = [{"$ref": mapping[wanted]}]
+            if not selected:
+                for branch in branches:
+                    if not isinstance(branch, dict):
+                        continue
+                    branch_node = branch
+                    if "$ref" in branch:
+                        with self.openapi_resolver.resolving(branch["$ref"]) as resolved:
+                            branch_node = resolved
+                    const = branch_node.get("properties", {}).get(discriminator or "kind", {}).get("const")
+                    if const is not None and isinstance(value, dict) and value.get(discriminator or "kind") == const:
+                        selected.append(branch)
+            for branch in selected:
+                self.validate_schema_refs(branch, value, path)
+            return
+        if "properties" in node and isinstance(value, dict):
+            for key, child in node.get("properties", {}).items():
+                if key in value:
+                    self.validate_schema_refs(child, value[key], f"{path}.{key}")
+        if "items" in node and isinstance(value, list):
+            for index, item in enumerate(value):
+                self.validate_schema_refs(node["items"], item, f"{path}[{index}]")
+
+    def validate_reusable_boundary(self, value: Any, path: str, root: bool = True) -> None:
+        if isinstance(value, dict):
+            if not root and {"object_type", "object_id", "revision"} <= set(value):
+                if value.get("object_type") in TASK_BOUNDARY_REF_TYPES:
+                    self.error(path, "reusable definition references task-owned object")
+                return
+            for key, child in value.items():
+                self.validate_reusable_boundary(child, f"{path}.{key}", False)
+        elif isinstance(value, list):
+            for index, child in enumerate(value):
+                self.validate_reusable_boundary(child, f"{path}[{index}]", False)
+
     def validate_metadata(self, metadata: Any, path: str) -> None:
         if not isinstance(metadata, dict):
             self.error(path, "metadata must be an object")
             return
         kind = metadata.get("metadata_kind")
         self.enum(kind, "AuditMetadataKind", path + ".metadata_kind")
-        required, optional = METADATA_FIELDS.get(kind, (set(), set()))
-        if not required:
+        if kind not in self.enums.get("AuditMetadataKind", set()):
             return
-        self.exact(metadata, required, optional, path)
         if "summary" in metadata:
             self.primitive(metadata["summary"], "Text", path + ".summary")
         if kind == "GOVERNANCE":
@@ -872,7 +725,13 @@ class FixtureValidator:
                 self.error(path, "must be an object")
                 continue
             positions[event.get("event_id")] = index
-            self.exact(event, EVENT_FIELDS, set(), path)
+            event_schema = self.openapi.get("components", {}).get("schemas", {}).get("AuditEvent")
+            if event_schema:
+                validator = Draft202012Validator(event_schema, resolver=self.openapi_resolver)
+                for issue in sorted(validator.iter_errors(event), key=lambda error: list(error.path)):
+                    location = ".".join(str(part) for part in issue.path)
+                    self.error(path + ("." + location if location else ""),
+                               "OpenAPI schema: " + issue.message)
             for field, type_name in {
                 "event_id": "ID", "event_version": "PositiveInt", "schema_version": "SchemaVersion",
                 "event_type": "EventType", "occurred_at": "Timestamp", "task_id": "ID",
@@ -1169,8 +1028,8 @@ def main() -> int:
     args = parser.parse_args()
     global CONTRACTS, EXAMPLES
     CONTRACTS, EXAMPLES = args.root / "docs" / "contracts", args.root / "docs" / "contracts" / "examples"
-    enums, schemas = enum_registry(), domain_schemas()
-    results = [FixtureValidator(path, enums, schemas).run() for path in sorted(EXAMPLES.glob("*.yaml"))]
+    enums, openapi = enum_registry(), load_openapi_contract()
+    results = [FixtureValidator(path, enums, openapi).run() for path in sorted(EXAMPLES.glob("*.yaml"))]
     report = {
         "schema_version": SCHEMA_VERSION,
         "validator": "foundation-contract-fixture-validator",

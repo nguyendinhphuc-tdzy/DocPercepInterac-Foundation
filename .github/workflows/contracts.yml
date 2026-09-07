@@ -32,7 +32,7 @@ jobs:
         with:
           python-version: '3.12'
       - name: Install contract tooling
-        run: python -m pip install --disable-pip-version-check pyyaml openapi-spec-validator
+        run: python -m pip install --disable-pip-version-check pyyaml openapi-spec-validator jsonschema
       - name: Validate OpenAPI 3.1 projection
         run: >-
           python -c "from pathlib import Path; import yaml; from openapi_spec_validator import validate;

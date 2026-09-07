@@ -401,6 +401,25 @@ records:
       binary_hash: "e7fb908f0cbb17d2f14fe1925d4e990ca7d09d12f2ef2b798cb9a94d51524817"
   -
     schema_version: "0.1.0"
+    object_type: "DocumentArtifact"
+    id: "target-document-c2-05"
+    revision: 2
+    created_at: "2026-09-07T05:00:02Z"
+    task_id: "task-c2-05"
+    file_name: "target.docx"
+    role: "TARGET"
+    status: "PREFLIGHTING"
+    version_refs:
+      -
+        document_id: "target-document-c2-05"
+        version_id: "target-version-c2-05"
+        binary_hash: "e7fb908f0cbb17d2f14fe1925d4e990ca7d09d12f2ef2b798cb9a94d51524817"
+    current_version_ref:
+      document_id: "target-document-c2-05"
+      version_id: "target-version-c2-05"
+      binary_hash: "e7fb908f0cbb17d2f14fe1925d4e990ca7d09d12f2ef2b798cb9a94d51524817"
+  -
+    schema_version: "0.1.0"
     object_type: "TargetContractInstance"
     id: "target-instance-c2-05"
     revision: 1
@@ -518,7 +537,7 @@ records:
     schema_version: "0.1.0"
     object_type: "DocumentArtifact"
     id: "target-document-c2-05"
-    revision: 2
+    revision: 3
     created_at: "2026-09-07T05:00:04Z"
     task_id: "task-c2-05"
     file_name: "target.docx"
@@ -988,6 +1007,13 @@ actions:
       - {"object_type":"TargetContractInstance","object_id":"target-instance-c2-05","revision":1}
     audit_event_ids: ["event-003-c2-05"]
   -
+    action_id: "action-006a-c2-05"
+    description: "Begin deterministic preflight for target document."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":1}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":2}]
+    audit_event_ids: ["event-004a-c2-05"]
+  -
     action_id: "action-005-c2-05"
     description: "DocumentPreflightAssessment completed under its pinned fixture evaluator."
     actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
@@ -1003,7 +1029,7 @@ actions:
     input_refs:
       - {"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":1}
       - {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-05","revision":1}
-    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":2}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":3}]
     audit_event_ids: ["event-005-c2-05"]
   -
     action_id: "action-007-c2-05"
@@ -1225,6 +1251,34 @@ audit_events:
       resulting_status: "ANALYZING"
     integrity_payload_hash: "63a209ff85b0cd5e9c03725f3df1a2e7446cef942800fda0cb719cd2ddd1f761"
   -
+    event_id: "event-004a-c2-05"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "STATUS_TRANSITIONED"
+    occurred_at: "2026-09-07T05:00:04Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-05"
+    correlation_id: "attempt-c2-05"
+    causation_event_id: "event-003-c2-05"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-05"
+        version_id: "target-version-c2-05"
+        binary_hash: "e7fb908f0cbb17d2f14fe1925d4e990ca7d09d12f2ef2b798cb9a94d51524817"
+    business_target_ids: []
+    object_refs:
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":1}
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":2}
+    input_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":1}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":2}]
+    error_codes: []
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "Begin deterministic preflight for target document."
+      prior_status: "REGISTERED"
+      resulting_status: "PREFLIGHTING"
+    integrity_payload_hash: "d8932139ed2b9c1bebb62b1cf8bb964514b5673b336ad6bf4579bbe669e7343c"
+  -
     event_id: "event-004-c2-05"
     event_version: 1
     schema_version: "0.1.0"
@@ -1233,7 +1287,7 @@ audit_events:
     actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
     task_id: "task-c2-05"
     correlation_id: "attempt-c2-05"
-    causation_event_id: "event-003-c2-05"
+    causation_event_id: "event-004a-c2-05"
     document_version_refs:
       -
         document_id: "target-document-c2-05"
@@ -1260,7 +1314,7 @@ audit_events:
           sha256: "5e355c57a28df6b19cdc3780d2d9e8b71af73c548913415f24c42df3f5707305"
           media_type: "application/json"
       outcome: "COMPLETED"
-    integrity_payload_hash: "16e051bc1d8b1c6889b286787fff07022fdc6afa5d75b26f16bc8588fb61c426"
+    integrity_payload_hash: "d59f901a0e63375d72aceaac1fa4efc6a5b93d2d3c141b3babd6488846423a18"
   -
     event_id: "event-005-c2-05"
     event_version: 1
@@ -1278,20 +1332,20 @@ audit_events:
         binary_hash: "e7fb908f0cbb17d2f14fe1925d4e990ca7d09d12f2ef2b798cb9a94d51524817"
     business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
     object_refs:
-      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":2}
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":3}
       - {"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":1}
       - {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-05","revision":1}
     input_refs:
       - {"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":1}
       - {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-05","revision":1}
-    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":2}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-05","revision":3}]
     error_codes: []
     metadata:
       metadata_kind: "GOVERNANCE"
       summary: "Project document readiness from explicit preflight findings."
       prior_status: null
       resulting_status: null
-    integrity_payload_hash: "0d1d0b9a7389215547ec74aef4594870cb0a4f95145355f981fe97a048cafaf3"
+    integrity_payload_hash: "6b6fbac2079fd9cebe037a156413d830f69d865e7319a237a433dcc1b99ce20a"
   -
     event_id: "event-006-c2-05"
     event_version: 1

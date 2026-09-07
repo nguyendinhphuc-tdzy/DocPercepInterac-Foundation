@@ -231,6 +231,10 @@ components:
     IntegerString:
       type: string
       pattern: '^-?(0|[1-9][0-9]*)$'
+    EvaluatorKey:
+      type: string
+      minLength: 1
+      pattern: '^[A-Za-z0-9][A-Za-z0-9._:-]*$'
     ContentRef:
       type: object
       additionalProperties: false
@@ -255,6 +259,8 @@ components:
         object_type: { $ref: '#/components/schemas/ObjectType' }
         object_id: { $ref: '#/components/schemas/ID' }
         revision: { type: integer, minimum: 1 }
+    Reference:
+      $ref: '#/components/schemas/Ref'
     Actor:
       type: object
       additionalProperties: false
@@ -286,9 +292,31 @@ components:
       additionalProperties: false
       required: [evaluator_key, evaluator_version, configuration_ref]
       properties:
-        evaluator_key: { type: string, minLength: 1 }
+        evaluator_key: { $ref: '#/components/schemas/EvaluatorKey' }
         evaluator_version: { type: string, minLength: 1 }
         configuration_ref: { $ref: '#/components/schemas/ContentRef' }
+    FreshnessEvaluation:
+      type: object
+      additionalProperties: false
+      required: [freshness_policy_ref, document_version_refs, as_of, input_refs, evaluator_key, evaluator_version, outcome, valid_until, reason, error_codes]
+      properties:
+        freshness_policy_ref: { $ref: '#/components/schemas/Ref' }
+        document_version_refs: { type: array, items: { $ref: '#/components/schemas/DocumentVersionRef' } }
+        as_of: { $ref: '#/components/schemas/Timestamp' }
+        input_refs: { type: array, items: { $ref: '#/components/schemas/ContentRef' } }
+        evaluator_key: { $ref: '#/components/schemas/EvaluatorKey' }
+        evaluator_version: { type: string, minLength: 1 }
+        outcome: { type: string, enum: [PASS, FAIL, BLOCKED] }
+        valid_until: { type: [string, 'null'], format: date-time }
+        reason: { type: string }
+        error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
+    SemanticReference:
+      type: object
+      additionalProperties: false
+      required: [snapshot_ref, semantic_id]
+      properties:
+        snapshot_ref: { $ref: '#/components/schemas/Ref' }
+        semantic_id: { type: string, minLength: 1 }
     BusinessValue:
       oneOf:
         - $ref: '#/components/schemas/TextBusinessValue'
@@ -505,7 +533,7 @@ components:
           CAPABILITY_SUPPORTED: '#/components/schemas/CapabilitySupportedCondition'
           EVIDENCE_VERIFIED: '#/components/schemas/EvidenceVerifiedCondition'
           PRESERVE_SCOPE: '#/components/schemas/PreserveScopeCondition'
-    ConditionTarget:
+    ConditionValueTarget:
       oneOf:
         - $ref: '#/components/schemas/InputNativeObjectTarget'
         - $ref: '#/components/schemas/OutputApprovedChangeTarget'
@@ -530,7 +558,7 @@ components:
       properties:
         condition_id: { $ref: '#/components/schemas/ID' }
         kind: { const: TEXT_EQUALS }
-        target: { $ref: '#/components/schemas/ConditionTarget' }
+        target: { $ref: '#/components/schemas/ConditionValueTarget' }
         expected_text: { type: string }
     ValueEqualsCondition:
       type: object
@@ -539,7 +567,7 @@ components:
       properties:
         condition_id: { $ref: '#/components/schemas/ID' }
         kind: { const: VALUE_EQUALS }
-        target: { $ref: '#/components/schemas/ConditionTarget' }
+        target: { $ref: '#/components/schemas/ConditionValueTarget' }
         expected_value: { $ref: '#/components/schemas/BusinessValue' }
         value_reader_policy_ref: { $ref: '#/components/schemas/ContentRef' }
     CapabilitySupportedCondition:
@@ -551,10 +579,10 @@ components:
         kind: { const: CAPABILITY_SUPPORTED }
         native_locator_ref: { $ref: '#/components/schemas/Ref' }
         capability_result_ref: { $ref: '#/components/schemas/CapabilityResultRef' }
-        operation: { type: string }
+        operation: { type: string, enum: [REPLACE_RUN_TEXT, REPLACE_SDT_TEXT, REPLACE_SIMPLE_TABLE_CELL_TEXT] }
         engine: { type: string }
         engine_version: { type: string }
-        conformance: { type: string }
+        conformance: { type: string, enum: [TRANSITIONAL, STRICT, UNKNOWN, NOT_APPLICABLE] }
     EvidenceVerifiedCondition:
       type: object
       additionalProperties: false
@@ -635,7 +663,7 @@ components:
       required: [requirement_id, kind, mandatory, business_target_ids, description]
       properties:
         requirement_id: { $ref: '#/components/schemas/ID' }
-        kind: { type: string }
+        kind: { type: string, enum: [SCHEMA_PACKAGE, PACKAGE_DIFF, INTRA_PART_DIFF, PROTECTED_SCOPE, SEMANTIC_REPERCEPTION, BUSINESS_POSTCONDITION] }
         mandatory: { type: boolean }
         business_target_ids:
           type: array
@@ -654,20 +682,20 @@ components:
       required: [target_document_version_ref, source_document_version_refs, target_contract_definition_ref, target_contract_instance_ref, rule_pack_ref, source_assessment_refs, evidence_assessment_refs, review_decision_refs, approved_changes, preconditions, postconditions, protected_scope, validation_plan_ref, mutation_profile, qualification_refs]
       properties:
         target_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
-        source_document_version_refs: { type: array, items: { $ref: '#/components/schemas/DocumentVersionRef' } }
+        source_document_version_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/DocumentVersionRef' } }
         target_contract_definition_ref: { $ref: '#/components/schemas/Ref' }
         target_contract_instance_ref: { $ref: '#/components/schemas/Ref' }
         rule_pack_ref: { $ref: '#/components/schemas/Ref' }
-        source_assessment_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
-        evidence_assessment_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
-        review_decision_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
-        approved_changes: { type: array, items: { $ref: '#/components/schemas/ApprovedChange' } }
-        preconditions: { type: array, items: { $ref: '#/components/schemas/Condition' } }
-        postconditions: { type: array, items: { $ref: '#/components/schemas/Condition' } }
+        source_assessment_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Ref' } }
+        evidence_assessment_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Ref' } }
+        review_decision_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Ref' } }
+        approved_changes: { type: array, minItems: 1, items: { $ref: '#/components/schemas/ApprovedChange' } }
+        preconditions: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Condition' } }
+        postconditions: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Condition' } }
         protected_scope: { $ref: '#/components/schemas/ProtectedScope' }
         validation_plan_ref: { $ref: '#/components/schemas/Ref' }
-        mutation_profile: { type: string }
-        qualification_refs: { type: array, items: { $ref: '#/components/schemas/ContentRef' } }
+        mutation_profile: { type: string, enum: [TRANSITIONAL] }
+        qualification_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/ContentRef' } }
     ApprovedChange:
       type: object
       additionalProperties: false
@@ -677,23 +705,22 @@ components:
         business_target_id: { $ref: '#/components/schemas/BusinessTargetID' }
         change_proposal_ref: { $ref: '#/components/schemas/Ref' }
         native_locator_ref: { $ref: '#/components/schemas/Ref' }
-        operation: { type: string }
+        operation: { type: string, enum: [REPLACE_RUN_TEXT, REPLACE_SDT_TEXT, REPLACE_SIMPLE_TABLE_CELL_TEXT] }
         payload: { $ref: '#/components/schemas/MutationPayload' }
-        evidence_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+        evidence_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Ref' } }
         review_decision_ref: { $ref: '#/components/schemas/Ref' }
-        preconditions: { type: array, items: { $ref: '#/components/schemas/Condition' } }
-        postconditions: { type: array, items: { $ref: '#/components/schemas/Condition' } }
+        preconditions: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Condition' } }
+        postconditions: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Condition' } }
     RecordEnvelope:
       type: object
       required: [schema_version, object_type, id, revision, created_at]
       properties:
         schema_version: { $ref: '#/components/schemas/SchemaVersion' }
-        object_type: { type: string }
+        object_type: { $ref: '#/components/schemas/ObjectType' }
         id: { $ref: '#/components/schemas/ID' }
         revision: { type: integer, minimum: 1 }
         created_at: { $ref: '#/components/schemas/Timestamp' }
         task_id: { $ref: '#/components/schemas/ID' }
-      unevaluatedProperties: false
     FoundationTask:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
@@ -712,38 +739,41 @@ components:
             exception_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
             release_status: { type: string, enum: [WITHHELD, ELIGIBLE, RELEASED] }
             prior_period: { $ref: '#/components/schemas/Period' }
+      unevaluatedProperties: false
     DocumentArtifact:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [file_name, role, status, version_refs, current_version_ref]
+          required: [task_id, file_name, role, status, version_refs, current_version_ref]
           properties:
             file_name: { type: string }
-            role: { type: string }
-            status: { type: string }
-            version_refs: { type: array, items: { $ref: '#/components/schemas/DocumentVersionRef' } }
+            role: { type: string, enum: [TARGET, CURRENT_SOURCE, HISTORICAL_SOURCE, TEMPLATE, EVALUATION_ONLY, GENERATED_OUTPUT] }
+            status: { type: string, enum: [REGISTERED, PREFLIGHTING, READY, BLOCKED, REJECTED, SUPERSEDED, STAGED, RELEASED, QUARANTINED] }
+            version_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/DocumentVersionRef' } }
             current_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
+      unevaluatedProperties: false
     DocumentVersion:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [document_id, binary_hash, byte_length, content_ref]
+          required: [task_id, document_id, binary_hash, byte_length, content_ref]
           properties:
             document_id: { $ref: '#/components/schemas/ID' }
             binary_hash: { $ref: '#/components/schemas/SHA256' }
             byte_length: { type: integer, minimum: 0 }
             content_ref: { $ref: '#/components/schemas/ContentRef' }
             derived_from: { $ref: '#/components/schemas/DocumentVersionRef' }
+      unevaluatedProperties: false
     DocumentPreflightAssessment:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [document_version_ref, status, detected_format, detected_conformance, format_observation_refs, protection_findings, native_structure_findings, capability_results, assessor, engine, engine_version, configuration_ref, assessed_at, error_codes]
+          required: [task_id, document_version_ref, status, detected_format, detected_conformance, format_observation_refs, protection_findings, native_structure_findings, capability_results, assessor, engine, engine_version, configuration_ref, assessed_at, error_codes]
           properties:
             document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
-            status: { type: string }
-            detected_format: { type: [string, 'null'] }
-            detected_conformance: { type: string }
+            status: { type: string, enum: [PENDING, ASSESSING, COMPLETED, FAILED, SUPERSEDED] }
+            detected_format: { type: [string, 'null'], enum: [DOCX, XLSX, PDF, IMAGE, null] }
+            detected_conformance: { type: string, enum: [TRANSITIONAL, STRICT, UNKNOWN, NOT_APPLICABLE] }
             format_observation_refs: { type: array, items: { $ref: '#/components/schemas/ContentRef' } }
             protection_findings: { type: array, items: { $ref: '#/components/schemas/PreflightFinding' } }
             native_structure_findings: { type: array, items: { $ref: '#/components/schemas/PreflightFinding' } }
@@ -753,8 +783,9 @@ components:
             engine_version: { type: string }
             configuration_ref: { $ref: '#/components/schemas/ContentRef' }
             assessed_at: { type: [string, 'null'], format: date-time }
-            error_codes: { type: array, items: { type: string } }
+            error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
             supersedes_assessment_ref: { $ref: '#/components/schemas/Ref' }
+      unevaluatedProperties: false
     PreflightFinding:
       type: object
       additionalProperties: false
@@ -772,92 +803,126 @@ components:
       required: [capability_result_id, operation, native_structure, document_version_ref, native_locator_refs, engine, engine_version, conformance, qualification_evidence_refs, status, reason]
       properties:
         capability_result_id: { $ref: '#/components/schemas/ID' }
-        operation: { type: string }
-        native_structure: { type: string }
+        operation: { type: string, enum: [REPLACE_RUN_TEXT, REPLACE_SDT_TEXT, REPLACE_SIMPLE_TABLE_CELL_TEXT] }
+        native_structure: { type: string, enum: [DOCX_CONTENT_CONTROL, DOCX_BOOKMARK, DOCX_PARAGRAPH, DOCX_RUN, DOCX_TABLE_CELL, DOCX_RELATIONSHIP, XLSX_CELL, XLSX_DEFINED_NAME, XLSX_TABLE_RANGE] }
         document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
         native_locator_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
         engine: { type: string }
         engine_version: { type: string }
-        conformance: { type: string }
+        conformance: { type: string, enum: [TRANSITIONAL, STRICT, UNKNOWN, NOT_APPLICABLE] }
         qualification_evidence_refs: { type: array, items: { $ref: '#/components/schemas/ContentRef' } }
-        status: { type: string }
+        status: { type: string, enum: [SUPPORTED, PROTECTED, UNSUPPORTED, UNKNOWN] }
         reason: { type: string }
     AnalysisRun:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [document_version_ref, status, engine, engine_version, configuration_ref]
+          required: [task_id, document_version_refs, target_contract_definition_ref, target_contract_instance_ref, rule_pack_ref, status, output_refs, error_codes]
+          properties:
+            document_version_refs:
+              type: array
+              minItems: 1
+              items: { $ref: '#/components/schemas/DocumentVersionRef' }
+            target_contract_definition_ref: { $ref: '#/components/schemas/Ref' }
+            target_contract_instance_ref: { $ref: '#/components/schemas/Ref' }
+            rule_pack_ref: { $ref: '#/components/schemas/Ref' }
+            status: { type: string, enum: [QUEUED, RUNNING, COMPLETED, BLOCKED, FAILED, CANCELLED] }
+            output_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
+      unevaluatedProperties: false
+    PerceptionSnapshot:
+      allOf:
+        - $ref: '#/components/schemas/RecordEnvelope'
+        - type: object
+          required: [task_id, document_version_ref, analysis_run_ref, engine, engine_version, configuration_ref, semantic_object_refs, limitations]
           properties:
             document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
-            status: { type: string }
+            analysis_run_ref: { $ref: '#/components/schemas/Ref' }
             engine: { type: string }
             engine_version: { type: string }
             configuration_ref: { $ref: '#/components/schemas/ContentRef' }
+            semantic_object_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            limitations: { type: array, items: { type: string } }
+      unevaluatedProperties: false
     SourceAssessment:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [source_requirement_ref, business_target_id, document_version_refs, status, outcome, evaluator_binding]
+          required: [task_id, source_requirement_ref, business_target_id, document_version_refs, outcome, resolved_task_period, resolved_source_period, freshness_policy_ref, freshness_evaluation, evaluator_binding, status, method, authority, satisfied_fields, missing_fields, evidence_refs, error_codes]
           properties:
             source_requirement_ref: { $ref: '#/components/schemas/Ref' }
             business_target_id: { $ref: '#/components/schemas/BusinessTargetID' }
             document_version_refs: { type: array, items: { $ref: '#/components/schemas/DocumentVersionRef' } }
-            status: { type: string }
-            outcome: { type: [string, 'null'] }
+            outcome: { type: [string, 'null'], enum: [SUFFICIENT, MISSING, STALE, CONFLICTING, NOT_AUTHORITATIVE, AMBIGUOUS, null] }
             resolved_task_period: { $ref: '#/components/schemas/Period' }
-            resolved_source_period: { $ref: '#/components/schemas/Period' }
+            resolved_source_period: { type: [object, 'null'], oneOf: [{ $ref: '#/components/schemas/Period' }, { type: 'null' }] }
             freshness_policy_ref: { $ref: '#/components/schemas/Ref' }
-            freshness_evaluation: { type: [object, 'null'] }
-            evidence_record_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
-            error_codes: { type: array, items: { type: string } }
+            freshness_evaluation: { type: [object, 'null'], oneOf: [{ $ref: '#/components/schemas/FreshnessEvaluation' }, { type: 'null' }] }
             evaluator_binding: { $ref: '#/components/schemas/EvaluatorBinding' }
+            status: { type: string, enum: [PENDING, ASSESSING, COMPLETED, SUPERSEDED, FAILED] }
+            method: { type: string, enum: [DETERMINISTIC] }
+            authority: { type: string, enum: [AUTHORITATIVE, CONTEXT_ONLY, UNDETERMINED] }
+            satisfied_fields: { type: array, items: { type: string } }
+            missing_fields: { type: array, items: { type: string } }
+            evidence_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
+      unevaluatedProperties: false
     EvidenceRecord:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [source_document_version_ref, source_locator, observed_value, observed_period, provenance]
+          required: [task_id, kind, document_version_ref, content_ref, observed_value, authority, period_scope, period]
           properties:
-            source_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
-            source_locator: { $ref: '#/components/schemas/Ref' }
-            observed_value: { $ref: '#/components/schemas/BusinessValue' }
-            observed_period: { type: [object, 'null'] }
-            provenance: { type: object }
+            kind: { type: string, enum: [NATIVE_VALUE, FORMULA_IDENTITY, SOURCE_EXCERPT, VALIDATION_OUTPUT] }
+            document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
+            semantic_object_ref: { $ref: '#/components/schemas/Ref' }
+            native_locator_ref: { $ref: '#/components/schemas/Ref' }
+            content_ref: { $ref: '#/components/schemas/ContentRef' }
+            observed_value: { type: [object, 'null'], oneOf: [{ $ref: '#/components/schemas/BusinessValue' }, { type: 'null' }] }
+            formula_text: { type: string }
+            authority: { type: string, enum: [AUTHORITATIVE, CONTEXT_ONLY, UNDETERMINED] }
+            period_scope: { type: string, enum: [SPECIFIC_PERIOD, PERIOD_INDEPENDENT, UNKNOWN] }
+            period: { type: [object, 'null'], oneOf: [{ $ref: '#/components/schemas/Period' }, { type: 'null' }] }
+      unevaluatedProperties: false
     SemanticObject:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [semantic_reference, object_kind, value, native_binding_refs]
+          required: [task_id, semantic_reference, object_kind, value, native_binding_refs]
           properties:
-            semantic_reference: { type: string }
+            semantic_reference: { $ref: '#/components/schemas/SemanticReference' }
             object_kind: { type: string }
             value: { $ref: '#/components/schemas/BusinessValue' }
             parent_ref: { $ref: '#/components/schemas/Ref' }
             native_binding_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+      unevaluatedProperties: false
     NativeLocator:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [document_version_ref, part_uri, locator_type, address, expected_object_type, capture_engine, structural_fingerprint, fingerprint_profile_ref]
+          required: [task_id, document_version_ref, part_uri, locator_type, address, expected_object_type, capture_engine, structural_fingerprint, fingerprint_profile_ref]
           properties:
             document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
             part_uri: { type: string }
-            locator_type: { type: string }
+            locator_type: { type: string, enum: [DOCX_CONTENT_CONTROL, DOCX_BOOKMARK, DOCX_PARAGRAPH, DOCX_RUN, DOCX_TABLE_CELL, DOCX_RELATIONSHIP, XLSX_CELL, XLSX_DEFINED_NAME, XLSX_TABLE_RANGE] }
             address: { $ref: '#/components/schemas/NativeAddress' }
             expected_object_type: { type: string }
             capture_engine: { type: string }
             structural_fingerprint: { $ref: '#/components/schemas/SHA256' }
             fingerprint_profile_ref: { $ref: '#/components/schemas/ContentRef' }
+      unevaluatedProperties: false
     NativeBinding:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [semantic_object_ref, native_locator_refs, status, method, reason]
+          required: [task_id, semantic_object_ref, native_locator_refs, status, method, reason]
           properties:
             semantic_object_ref: { $ref: '#/components/schemas/Ref' }
             native_locator_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
-            status: { type: string }
+            status: { type: string, enum: [PROPOSED, RESOLVED, AMBIGUOUS, UNSUPPORTED] }
             method: { type: string }
             reason: { type: string }
+      unevaluatedProperties: false
     TargetContractDefinition:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
@@ -865,11 +930,12 @@ components:
           required: [name, business_target_ids, target_region_definition_refs, source_requirement_refs, validation_plan_ref, protection_policy_ref]
           properties:
             name: { type: string }
-            business_target_ids: { type: array, items: { $ref: '#/components/schemas/BusinessTargetID' } }
-            target_region_definition_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            business_target_ids: { type: array, minItems: 1, items: { $ref: '#/components/schemas/BusinessTargetID' } }
+            target_region_definition_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Ref' } }
             source_requirement_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
             validation_plan_ref: { $ref: '#/components/schemas/Ref' }
             protection_policy_ref: { $ref: '#/components/schemas/ContentRef' }
+      unevaluatedProperties: false
     TargetRegionDefinition:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
@@ -878,22 +944,24 @@ components:
           properties:
             business_target_id: { $ref: '#/components/schemas/BusinessTargetID' }
             description: { type: string }
-            allowed_value_kinds: { type: array, items: { type: string } }
+            allowed_value_kinds: { type: array, minItems: 1, items: { type: string, enum: [TEXT, DECIMAL, INTEGER, DATE, BOOLEAN, CURRENCY, PERCENT, STRUCTURED] } }
             value_schema_ref: { $ref: '#/components/schemas/ContentRef' }
-            permitted_operations: { type: array, items: { type: string } }
+            permitted_operations: { type: array, minItems: 1, items: { type: string, enum: [REPLACE_RUN_TEXT, REPLACE_SDT_TEXT, REPLACE_SIMPLE_TABLE_CELL_TEXT] } }
             source_requirement_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
             protection_policy_ref: { $ref: '#/components/schemas/ContentRef' }
+      unevaluatedProperties: false
     TargetContractInstance:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [definition_ref, target_document_version_ref, target_region_refs, protected_scope, validation_plan_ref]
+          required: [task_id, definition_ref, target_document_version_ref, target_region_refs, protected_scope, validation_plan_ref]
           properties:
             definition_ref: { $ref: '#/components/schemas/Ref' }
             target_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
             target_region_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
             protected_scope: { $ref: '#/components/schemas/ProtectedScope' }
             validation_plan_ref: { $ref: '#/components/schemas/Ref' }
+      unevaluatedProperties: false
     RulePack:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
@@ -901,132 +969,171 @@ components:
           required: [name, business_rule_refs, policy_document_ref]
           properties:
             name: { type: string }
-            business_rule_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            business_rule_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Ref' } }
             policy_document_ref: { $ref: '#/components/schemas/ContentRef' }
+      unevaluatedProperties: false
     BusinessRule:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
           required: [rule_type, evaluator_key, business_target_ids, source_requirement_refs, policy_ref, description]
           properties:
-            rule_type: { type: string }
-            evaluator_key: { type: string }
-            business_target_ids: { type: array, items: { $ref: '#/components/schemas/BusinessTargetID' } }
+            rule_type: { type: string, enum: [ALWAYS_UPDATE, UPDATE_IF_CHANGED, DERIVED_UPDATE, CARRY_FORWARD, TEMPLATE_CONTROLLED, PROTECTED] }
+            evaluator_key: { $ref: '#/components/schemas/EvaluatorKey' }
+            business_target_ids: { type: array, minItems: 1, items: { $ref: '#/components/schemas/BusinessTargetID' } }
             source_requirement_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
             policy_ref: { $ref: '#/components/schemas/ContentRef' }
             description: { type: string }
+      unevaluatedProperties: false
     RuleEvaluation:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [business_rule_ref, business_target_id, evaluator_binding, input_refs, outcome, error_codes]
+          required: [task_id, business_rule_ref, business_target_id, evaluator_binding, input_refs, outcome, error_codes]
           properties:
             business_rule_ref: { $ref: '#/components/schemas/Ref' }
             business_target_id: { $ref: '#/components/schemas/BusinessTargetID' }
             evaluator_binding: { $ref: '#/components/schemas/EvaluatorBinding' }
             input_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
-            outcome: { type: string }
+            outcome: { type: string, enum: [PASS, FAIL, BLOCKED, NOT_APPLICABLE] }
             proposed_value: { $ref: '#/components/schemas/BusinessValue' }
-            error_codes: { type: array, items: { type: string } }
+            error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
+      unevaluatedProperties: false
     FreshnessPolicy:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [name, evaluator_key, policy_document_ref]
+          required: [name, evaluator_key, policy_ref, configuration_ref, required_input_keys, description]
           properties:
             name: { type: string }
-            evaluator_key: { type: string }
-            policy_document_ref: { $ref: '#/components/schemas/ContentRef' }
+            evaluator_key: { $ref: '#/components/schemas/EvaluatorKey' }
+            policy_ref: { $ref: '#/components/schemas/ContentRef' }
+            configuration_ref: { $ref: '#/components/schemas/ContentRef' }
+            required_input_keys: { type: array, minItems: 1, items: { type: string } }
+            description: { type: string }
+      unevaluatedProperties: false
     SourceRequirement:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [requirement_id, description, period_policy, freshness_policy_ref, authority_policy_ref, mandatory]
+          required: [business_target_id, period_policy, freshness_policy_ref, required_fields, permitted_roles, required_authority, blocking, policy_ref]
           properties:
-            requirement_id: { $ref: '#/components/schemas/ID' }
-            description: { type: string }
-            period_policy: { type: string }
+            business_target_id: { $ref: '#/components/schemas/BusinessTargetID' }
+            period_policy: { type: string, enum: [CURRENT_PERIOD, PRIOR_PERIOD, SPECIFIC_PERIOD, PERIOD_INDEPENDENT] }
             specific_period: { $ref: '#/components/schemas/Period' }
             freshness_policy_ref: { $ref: '#/components/schemas/Ref' }
-            authority_policy_ref: { $ref: '#/components/schemas/ContentRef' }
-            mandatory: { type: boolean }
+            required_fields: { type: array, minItems: 1, items: { type: string } }
+            permitted_roles: { type: array, minItems: 1, items: { type: string, enum: [TARGET, CURRENT_SOURCE, HISTORICAL_SOURCE, TEMPLATE, EVALUATION_ONLY, GENERATED_OUTPUT] } }
+            required_authority: { type: string, enum: [AUTHORITATIVE, CONTEXT_ONLY, UNDETERMINED] }
+            blocking: { type: boolean }
+            policy_ref: { $ref: '#/components/schemas/ContentRef' }
+      unevaluatedProperties: false
     EvidenceCheck:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [evidence_record_ref, check_kind, evaluator_binding, outcome, observations, error_codes]
+          required: [task_id, check_kind, business_target_id, source_assessment_refs, evidence_refs, policy_ref, evaluator_binding, method, outcome, error_codes]
           properties:
-            evidence_record_ref: { $ref: '#/components/schemas/Ref' }
-            check_kind: { type: string }
+            check_kind: { type: string, enum: [SOURCE_PRESENCE, PERIOD, FRESHNESS, AUTHORITY, COMPLETENESS, CONSISTENCY, VALUE_TYPE, UNIT, FORMULA, PROVENANCE] }
+            business_target_id: { $ref: '#/components/schemas/BusinessTargetID' }
+            source_assessment_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Ref' } }
+            evidence_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            policy_ref: { $ref: '#/components/schemas/ContentRef' }
             evaluator_binding: { $ref: '#/components/schemas/EvaluatorBinding' }
-            outcome: { type: string }
-            observations: { type: array, items: { $ref: '#/components/schemas/ContentRef' } }
-            error_codes: { type: array, items: { type: string } }
+            method: { type: string, enum: [DETERMINISTIC] }
+            outcome: { type: string, enum: [PASS, FAIL, BLOCKED, NOT_APPLICABLE] }
+            freshness_evaluation: { $ref: '#/components/schemas/FreshnessEvaluation' }
+            error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
+      unevaluatedProperties: false
     EvidenceAssessment:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [business_target_id, evidence_record_refs, status, evaluator_binding, check_refs]
+          required: [task_id, business_target_id, source_assessment_refs, evidence_check_refs, evaluator_binding, status, method, error_codes]
           properties:
             business_target_id: { $ref: '#/components/schemas/BusinessTargetID' }
-            evidence_record_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
-            status: { type: string }
+            source_assessment_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Ref' } }
+            evidence_check_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Ref' } }
             evaluator_binding: { $ref: '#/components/schemas/EvaluatorBinding' }
-            check_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            status: { type: string, enum: [UNASSESSED, VERIFIED, INSUFFICIENT, CONFLICTED, STALE] }
+            method: { type: string, enum: [DETERMINISTIC] }
+            error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
+      unevaluatedProperties: false
     AIInteractionRecord:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [actor, provider, model, model_version, instruction_ref, context_refs, input_refs, output_ref, output_summary, verification_refs, untrusted_content_detected]
+          required: [task_id, actor, provider, model, model_version, instruction_ref, context_refs, input_refs, output_ref, output_summary, verification_refs, untrusted_content_detected]
           properties:
             actor: { $ref: '#/components/schemas/Actor' }
             provider: { type: string }
             model: { type: string }
             model_version: { type: [string, 'null'] }
             instruction_ref: { $ref: '#/components/schemas/ContentRef' }
-            context_refs: { type: array, items: { $ref: '#/components/schemas/ContentRef' } }
+            context_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/ContentRef' } }
             input_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
             output_ref: { $ref: '#/components/schemas/ContentRef' }
             output_summary: { type: string }
             verification_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
             untrusted_content_detected: { type: boolean }
+      unevaluatedProperties: false
     ChangeExecutionResult:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [approved_change_set_ref, approved_change_id, status, observations, error_codes]
+          required: [task_id, execution_ref, approved_change_set_ref, approved_change_id, status, error_codes]
           properties:
+            execution_ref: { $ref: '#/components/schemas/Ref' }
             approved_change_set_ref: { $ref: '#/components/schemas/Ref' }
             approved_change_id: { $ref: '#/components/schemas/ID' }
-            status: { type: string }
-            observations: { type: array, items: { $ref: '#/components/schemas/ContentRef' } }
-            error_codes: { type: array, items: { type: string } }
+            status: { type: string, enum: [APPLIED, REFUSED, FAILED, NOT_ATTEMPTED] }
+            observed_before: { $ref: '#/components/schemas/BusinessValue' }
+            observed_after: { $ref: '#/components/schemas/BusinessValue' }
+            error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
+      unevaluatedProperties: false
+    ValidationPlan:
+      allOf:
+        - $ref: '#/components/schemas/RecordEnvelope'
+        - type: object
+          required: [name, required_checks, validator_policy_ref, release_requires_all_targets]
+          properties:
+            name: { type: string }
+            required_checks: { type: array, minItems: 1, items: { $ref: '#/components/schemas/ValidationRequirement' } }
+            validator_policy_ref: { $ref: '#/components/schemas/ContentRef' }
+            release_requires_all_targets: { type: boolean }
+      unevaluatedProperties: false
     ValidationCheckResult:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [requirement_ref, outcome, observations, error_codes]
+          required: [task_id, validation_report_ref, requirement_id, kind, outcome, observation_ref, error_codes]
           properties:
-            requirement_ref: { $ref: '#/components/schemas/Ref' }
-            outcome: { type: string }
-            observations: { type: array, items: { $ref: '#/components/schemas/ContentRef' } }
-            error_codes: { type: array, items: { type: string } }
+            validation_report_ref: { $ref: '#/components/schemas/Ref' }
+            requirement_id: { $ref: '#/components/schemas/ID' }
+            kind: { type: string, enum: [SCHEMA_PACKAGE, PACKAGE_DIFF, INTRA_PART_DIFF, PROTECTED_SCOPE, SEMANTIC_REPERCEPTION, BUSINESS_POSTCONDITION] }
+            outcome: { type: string, enum: [PASS, FAIL, BLOCKED, NOT_APPLICABLE] }
+            observation_ref: { $ref: '#/components/schemas/ContentRef' }
+            error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
+      unevaluatedProperties: false
     ExceptionRecord:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [status, code, layer, message, first_material_failure_event_id]
+          required: [task_id, error_code, status, related_refs, detected_by, details, resolution_refs]
           properties:
-            status: { type: string }
-            code: { type: string }
-            layer: { type: string }
-            message: { type: string }
-            first_material_failure_event_id: { $ref: '#/components/schemas/ID' }
+            error_code: { $ref: '#/components/schemas/ErrorCode' }
+            status: { type: string, enum: [OPEN, ACKNOWLEDGED, REMEDIATION_PENDING, RESOLVED, CLOSED] }
+            business_target_id: { $ref: '#/components/schemas/BusinessTargetID' }
+            related_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            detected_by: { $ref: '#/components/schemas/Actor' }
+            details: { type: string }
+            resolution_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+      unevaluatedProperties: false
     TargetRegion:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [region_definition_ref, target_contract_instance_ref, business_target_id, document_version_ref, semantic_object_refs, native_binding_refs, verification_status, source_requirement_refs, preflight_assessment_refs, capability_result_refs]
+          required: [task_id, region_definition_ref, target_contract_instance_ref, business_target_id, document_version_ref, semantic_object_refs, native_binding_refs, verification_status, source_requirement_refs, preflight_assessment_refs, capability_result_refs]
           properties:
             region_definition_ref: { $ref: '#/components/schemas/Ref' }
             target_contract_instance_ref: { $ref: '#/components/schemas/Ref' }
@@ -1034,46 +1141,54 @@ components:
             document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
             semantic_object_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
             native_binding_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
-            verification_status: { type: string }
+            verification_status: { type: string, enum: [UNVERIFIED, VERIFIED, BLOCKED, STALE] }
             source_requirement_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
             preflight_assessment_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
             capability_result_refs: { type: array, items: { $ref: '#/components/schemas/CapabilityResultRef' } }
+      unevaluatedProperties: false
     MappingProposal:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [status, business_target_id, semantic_object_ref, native_binding_ref]
+          required: [task_id, business_target_id, target_region_ref, evidence_refs, rule_evaluation_refs, ai_interaction_refs, proposed_value, status, rationale, error_codes]
           properties:
-            status: { type: string }
             business_target_id: { $ref: '#/components/schemas/BusinessTargetID' }
-            semantic_object_ref: { $ref: '#/components/schemas/Ref' }
-            native_binding_ref: { $ref: '#/components/schemas/Ref' }
+            target_region_ref: { $ref: '#/components/schemas/Ref' }
+            evidence_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            rule_evaluation_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            ai_interaction_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            proposed_value: { $ref: '#/components/schemas/BusinessValue' }
+            status: { type: string, enum: [PROPOSED, UNDER_REVIEW, ACCEPTED, BLOCKED, REJECTED, SUPERSEDED] }
+            rationale: { type: string }
+            error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
+      unevaluatedProperties: false
     ChangeProposal:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [status, business_target_id, target_document_version_ref, target_contract_definition_ref, target_contract_instance_ref, rule_pack_ref, mapping_proposal_ref, source_assessment_refs, evidence_assessment_refs, native_locator_ref, operation, current_value, proposed_value, payload, error_codes]
+          required: [task_id, status, business_target_id, target_document_version_ref, target_contract_definition_ref, target_contract_instance_ref, rule_pack_ref, mapping_proposal_ref, source_assessment_refs, evidence_assessment_refs, native_locator_ref, operation, current_value, proposed_value, payload, error_codes]
           properties:
-            status: { type: string }
+            status: { type: string, enum: [DRAFT, BLOCKED, READY_FOR_REVIEW, IN_REVIEW, APPROVED, REJECTED, SUPERSEDED] }
             business_target_id: { $ref: '#/components/schemas/BusinessTargetID' }
             target_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
             target_contract_definition_ref: { $ref: '#/components/schemas/Ref' }
             target_contract_instance_ref: { $ref: '#/components/schemas/Ref' }
             rule_pack_ref: { $ref: '#/components/schemas/Ref' }
             mapping_proposal_ref: { $ref: '#/components/schemas/Ref' }
-            source_assessment_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
-            evidence_assessment_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            source_assessment_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Ref' } }
+            evidence_assessment_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/Ref' } }
             proposed_value: { $ref: '#/components/schemas/BusinessValue' }
             current_value: { $ref: '#/components/schemas/BusinessValue' }
             native_locator_ref: { $ref: '#/components/schemas/Ref' }
-            operation: { type: string }
+            operation: { type: string, enum: [REPLACE_RUN_TEXT, REPLACE_SDT_TEXT, REPLACE_SIMPLE_TABLE_CELL_TEXT] }
             payload: { $ref: '#/components/schemas/MutationPayload' }
-            error_codes: { type: array, items: { type: string } }
+            error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
+      unevaluatedProperties: false
     ReviewDecision:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [change_proposal_ref, reviewer, outcome, reason, reviewed_evidence_refs, requested_source_requirement_refs]
+          required: [task_id, change_proposal_ref, reviewer, outcome, reason, reviewed_evidence_refs, requested_source_requirement_refs]
           properties:
             change_proposal_ref: { $ref: '#/components/schemas/Ref' }
             reviewer: { $ref: '#/components/schemas/Actor' }
@@ -1081,46 +1196,54 @@ components:
             reason: { type: string }
             reviewed_evidence_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
             requested_source_requirement_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+      unevaluatedProperties: false
     ApprovedChangeSet:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [status, authorization, authorization_digest]
+          required: [task_id, status, authorization, authorization_digest]
           properties:
             status: { type: string, enum: [APPROVED, INVALIDATED, REVOKED, SUPERSEDED] }
             authorization: { $ref: '#/components/schemas/AuthorizationBinding' }
             authorization_digest: { $ref: '#/components/schemas/SHA256' }
+      unevaluatedProperties: false
     ExecutionResult:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [execution_id, approved_change_set_ref, status, input_document_version_ref, error_codes]
+          required: [task_id, approved_change_set_ref, input_document_version_ref, status, engine, engine_version, change_result_refs, error_codes]
           properties:
-            execution_id: { $ref: '#/components/schemas/ID' }
             approved_change_set_ref: { $ref: '#/components/schemas/Ref' }
-            status: { type: string }
             input_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
+            status: { type: string, enum: [QUEUED, PREFLIGHTING, RUNNING, SUCCEEDED, REFUSED, FAILED, CANCELLED] }
+            engine: { type: string }
+            engine_version: { type: string }
+            change_result_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
             output_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
-            error_codes: { type: array, items: { type: string } }
-            change_execution_result_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
+      unevaluatedProperties: false
     ValidationReport:
       allOf:
         - $ref: '#/components/schemas/RecordEnvelope'
         - type: object
-          required: [execution_ref, status, validator, validator_version, configuration_ref, input_document_version_ref, output_document_version_ref, check_result_refs]
+          required: [task_id, execution_ref, approved_change_set_ref, validation_plan_ref, input_document_version_ref, output_document_version_ref, validator, status, check_result_refs, blocking_exception_refs, error_codes]
           properties:
             execution_ref: { $ref: '#/components/schemas/Ref' }
-            status: { type: string }
-            validator: { $ref: '#/components/schemas/Actor' }
-            validator_version: { type: string }
-            configuration_ref: { $ref: '#/components/schemas/ContentRef' }
+            approved_change_set_ref: { $ref: '#/components/schemas/Ref' }
+            validation_plan_ref: { $ref: '#/components/schemas/Ref' }
             input_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
             output_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
+            validator: { $ref: '#/components/schemas/Actor' }
+            status: { type: string, enum: [PENDING, RUNNING, PASSED, FAILED, INCONCLUSIVE, CANCELLED] }
             check_result_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            blocking_exception_refs: { type: array, items: { $ref: '#/components/schemas/Ref' } }
+            error_codes: { type: array, items: { $ref: '#/components/schemas/ErrorCode' } }
+      unevaluatedProperties: false
     AuditMetadata:
       oneOf:
         - $ref: '#/components/schemas/GovernanceMetadata'
         - $ref: '#/components/schemas/PerceptionMetadata'
+        - $ref: '#/components/schemas/NativeBindingMetadata'
         - $ref: '#/components/schemas/DeterministicEvaluationMetadata'
         - $ref: '#/components/schemas/AIInteractionMetadata'
         - $ref: '#/components/schemas/ReplayMetadata'
@@ -1131,6 +1254,7 @@ components:
         mapping:
           GOVERNANCE: '#/components/schemas/GovernanceMetadata'
           PERCEPTION: '#/components/schemas/PerceptionMetadata'
+          NATIVE_BINDING: '#/components/schemas/NativeBindingMetadata'
           DETERMINISTIC_EVALUATION: '#/components/schemas/DeterministicEvaluationMetadata'
           AI_INTERACTION: '#/components/schemas/AIInteractionMetadata'
           REPLAY: '#/components/schemas/ReplayMetadata'
@@ -1143,8 +1267,8 @@ components:
       properties:
         metadata_kind: { const: GOVERNANCE }
         summary: { type: string }
-        prior_status: { type: string }
-        resulting_status: { type: string }
+        prior_status: { type: [string, 'null'] }
+        resulting_status: { type: [string, 'null'] }
         decision_ref: { $ref: '#/components/schemas/Ref' }
         first_material_failure_event_id: { $ref: '#/components/schemas/ID' }
     PerceptionMetadata:
@@ -1158,7 +1282,21 @@ components:
         engine: { type: string }
         engine_version: { type: string }
         configuration_ref: { $ref: '#/components/schemas/ContentRef' }
-        observation_refs: { type: array, items: { $ref: '#/components/schemas/ContentRef' } }
+        observation_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/ContentRef' } }
+        perception_snapshot_ref: { $ref: '#/components/schemas/Ref' }
+        first_material_failure_event_id: { $ref: '#/components/schemas/ID' }
+    NativeBindingMetadata:
+      type: object
+      additionalProperties: false
+      required: [metadata_kind, summary, native_binding_ref, evaluator_binding, observation_refs, outcome]
+      properties:
+        metadata_kind: { const: NATIVE_BINDING }
+        summary: { type: string }
+        native_binding_ref: { $ref: '#/components/schemas/Ref' }
+        evaluator_binding: { $ref: '#/components/schemas/EvaluatorBinding' }
+        observation_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/ContentRef' } }
+        outcome: { type: string, enum: [PROPOSED, RESOLVED, AMBIGUOUS, UNSUPPORTED] }
+        first_material_failure_event_id: { $ref: '#/components/schemas/ID' }
     DeterministicEvaluationMetadata:
       type: object
       additionalProperties: false
@@ -1182,7 +1320,7 @@ components:
         model: { type: string }
         model_version: { type: [string, 'null'] }
         instruction_ref: { $ref: '#/components/schemas/ContentRef' }
-        context_refs: { type: array, items: { $ref: '#/components/schemas/ContentRef' } }
+        context_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/ContentRef' } }
         output_ref: { $ref: '#/components/schemas/ContentRef' }
     ReplayMetadata:
       type: object
@@ -1196,7 +1334,7 @@ components:
         engine: { type: string }
         engine_version: { type: string }
         input_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
-        output_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
+        output_document_version_ref: { type: [object, 'null'], oneOf: [{ $ref: '#/components/schemas/DocumentVersionRef' }, { type: 'null' }] }
     ValidationMetadata:
       type: object
       additionalProperties: false
@@ -1210,7 +1348,7 @@ components:
         configuration_ref: { $ref: '#/components/schemas/ContentRef' }
         input_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
         output_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
-        observation_refs: { type: array, items: { $ref: '#/components/schemas/ContentRef' } }
+        observation_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/ContentRef' } }
     ExceptionMetadata:
       type: object
       additionalProperties: false
@@ -1261,12 +1399,12 @@ components:
     AnalysisRunCreate:
       type: object
       additionalProperties: false
-      required: [document_version_ref, engine, engine_version, configuration_ref]
+      required: [document_version_refs, target_contract_definition_ref, target_contract_instance_ref, rule_pack_ref]
       properties:
-        document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
-        engine: { type: string }
-        engine_version: { type: string }
-        configuration_ref: { $ref: '#/components/schemas/ContentRef' }
+        document_version_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/DocumentVersionRef' } }
+        target_contract_definition_ref: { $ref: '#/components/schemas/Ref' }
+        target_contract_instance_ref: { $ref: '#/components/schemas/Ref' }
+        rule_pack_ref: { $ref: '#/components/schemas/Ref' }
     RecordPage:
       type: object
       additionalProperties: false
