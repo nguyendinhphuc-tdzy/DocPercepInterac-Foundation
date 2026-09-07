@@ -1,113 +1,2020 @@
-schema_version: 0.1.0
-fixture_scope: behavioral_trace
-scenario_id: C2-08
-title: Strict OOXML mutation is refused before replay
-object_index:
-  - {object_type: FoundationTask, object_id: task-c2-08, revision: 2}
-  - {object_type: DocumentVersion, object_id: target-v1-c2-08, revision: 1}
-  - {object_type: DocumentPreflightAssessment, object_id: preflight-c2-08, revision: 1}
-  - {object_type: NativeLocator, object_id: locator-c2-08, revision: 1}
-  - {object_type: ChangeProposal, object_id: proposal-c2-08, revision: 1}
-  - {object_type: ExceptionRecord, object_id: exception-c2-08, revision: 1}
-target: &target {document_id: target-doc-c2-08, version_id: target-v1-c2-08, binary_hash: "8181818181818181818181818181818181818181818181818181818181818181"}
-preflight_assessment:
-  object_type: DocumentPreflightAssessment
-  id: preflight-c2-08
-  revision: 1
-  status: COMPLETED
-  document_version_ref: *target
-  detected_format: DOCX
-  detected_conformance: STRICT
-  assessor: {actor_type: SYSTEM, actor_id: document-preflight}
-  engine: native-ooxml-inspector
-  engine_version: 0.1.0
-  configuration_ref: {uri: "urn:foundation:config:c2-08:preflight", sha256: "8282828282828282828282828282828282828282828282828282828282828282", media_type: application/json}
-  error_codes: [STRICT_OOXML_MUTATION_UNQUALIFIED, EXECUTION_UNSUPPORTED]
-  capability_results:
-    - capability_result_id: strict-replace-sdt-c2-08
-      operation: REPLACE_SDT_TEXT
-      native_structure: DOCX_CONTENT_CONTROL
-      document_version_ref: *target
-      native_locator_refs: [{object_type: NativeLocator, object_id: locator-c2-08, revision: 1}]
-      engine: OpenXmlSdk
-      engine_version: 3.5.1
-      conformance: STRICT
-      qualification_evidence_refs: []
-      status: UNSUPPORTED
-      reason: "Strict OOXML mutation has not been qualified."
-proposal:
-  object_type: ChangeProposal
-  id: proposal-c2-08
-  revision: 1
-  status: BLOCKED
-  target_document_version_ref: *target
-  operation: REPLACE_SDT_TEXT
-  error_codes: [STRICT_OOXML_MUTATION_UNQUALIFIED, EXECUTION_UNSUPPORTED]
-approved_change_sets: []
-replay_requests: []
-execution_results: []
-expected:
-  task_status: BLOCKED
-  release_status: WITHHELD
-  mutation_attempted: false
-  first_material_failure_event_id: event-c2-08-02
+schema_version: "0.1.0"
+fixture_type: "CONTRACT_SCENARIO"
+scenario_id: "C2-08"
+title: "Unqualified Strict OOXML mutation blocked before replay"
+facts:
+  fixture_only: true
+  current_period: {"label":"ILLUSTRATIVE_CURRENT_PERIOD","start_date":"2026-01-01","end_date":"2026-12-31"}
+  current_ncp: {"kind":"PERCENT","review_text":"14.18%","percentage":"14.18"}
+  proposed_ncp: {"kind":"PERCENT","review_text":"6.08%","percentage":"6.08"}
+  source_representation: "Authoritative DOCX source excerpt; no spreadsheet derivation or formula is asserted."
+  ncp_source_present: true
+  current_benchmark_present: false
+  required_evidence_checks: ["SOURCE_PRESENCE","PERIOD","FRESHNESS","AUTHORITY","PROVENANCE"]
+  binary_artifacts_are_illustrative: true
+  qualification_is_fixture_only: true
+  artifacts:
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:validator-policy"
+        sha256: "aa0da7b5d37b1d2434f0fec057b265988a5eefb7dc67f2ca4b6d09a277db423f"
+        media_type: "application/json"
+      json_content:
+        fixture_only: true
+        validator_id: "fixture-independent-validator"
+        validator_version: "0.1.0"
+        independent_of: "fixture-replay-service"
+        required_checks: ["SCHEMA_PACKAGE","PACKAGE_DIFF","INTRA_PART_DIFF","PROTECTED_SCOPE","SEMANTIC_REPERCEPTION","BUSINESS_POSTCONDITION"]
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:freshness-policy"
+        sha256: "02baf7575be44c27b86e8c997eafceba021288c189ef52a9b0584b491f3d97c3"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"required_facts":["current_validity","not_superseded","not_revoked"],"age_threshold":null}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-freshness"
+        sha256: "5cf4221d3b0e98b2b415a928638d2bc98fd4223963a1cd3d07bf3f7a988ff960"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"evaluator_key":"fixture.freshness","version":"0.1.0"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:preservation-policy"
+        sha256: "a258479be60be26a80d95ac344365d8e23908a59695fb7786dee6a0d8e98244f"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"preserve_outside_approved_changes":true}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:percent-schema"
+        sha256: "b64dd9948fe9a531d38c7527ec9991fa475454c49e4c89df02c693caf8dc30ee"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"kind":"PERCENT","exact_decimal_string":true}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:ncp-evidence-policy"
+        sha256: "19463d555cf471862914c6ac0f6290f724d9c02e5c3b93e6feca2705f325314e"
+        media_type: "application/json"
+      json_content:
+        fixture_only: true
+        business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+        required_fields: ["current_period_ncp"]
+        required_checks: ["SOURCE_PRESENCE","PERIOD","FRESHNESS","AUTHORITY","PROVENANCE"]
+        source_kind: "SOURCE_EXCERPT"
+        require_native_formula_identity: false
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:ncp-rule-policy"
+        sha256: "dd3cf0183098aa0766a355d0e7a28071a503b58634a47ae636ae18f35744de50"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"requires":"current_period_ncp","evaluator_key":"fixture.rule-ncp"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:rule-pack-policy"
+        sha256: "7f1bd6731a1cafdd3a0fa0c88529dce4eea4b41e0afe0aa97fff292847a2023e"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"rule_keys":["fixture.rule-ncp"]}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:binary:target"
+        sha256: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+        media_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      json_content: {"fixture_only":true,"artifact_role":"target"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:binary:source"
+        sha256: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+        media_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+      json_content: {"fixture_only":true,"artifact_role":"source"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:fingerprint-profile"
+        sha256: "f38c9f3fa2400ab8dae9fabf483eb78802986678943f248173cff3a52b406d04"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"profile":"exact-native-structure-v1"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:qualification"
+        sha256: "2f7b1ce9c66293004d8be1b9f44281c802ec7e1bf464e2fc90c1b12606152427"
+        media_type: "application/json"
+      json_content:
+        fixture_only: true
+        operation: "REPLACE_SDT_TEXT"
+        native_structure: "DOCX_CONTENT_CONTROL"
+        engine: "OpenXmlSdk"
+        engine_version: "3.5.1"
+        conformance: "TRANSITIONAL"
+        production_qualified: false
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:format-observations"
+        sha256: "40e8aae3da6aac52a5c7104323da31a24a6aea37a2f18f2d3c72372bc3c3806b"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"format":"DOCX","conformance":"STRICT","coverage_complete":true}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-native-inspector"
+        sha256: "5e355c57a28df6b19cdc3780d2d9e8b71af73c548913415f24c42df3f5707305"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"evaluator_key":"fixture.native-inspector","version":"0.1.0"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:perception-config"
+        sha256: "2f23ff79113da4626dc33ba3ae152a7d131eaca3c9766ac91ef7ca00ac2cada2"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"mode":"semantic-perception"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:perception-observation"
+        sha256: "ad5b10dbeaf9210b227e73d2d92f09bca8978a8905f01ebe4e60d076854a0a97"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"semantic_ids":["#/texts/0"]}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-native-binding"
+        sha256: "ab6387574dbf8d617729d1655405a132cc1921346fa91f97cd996be28fc5c0b0"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"evaluator_key":"fixture.native-binding","version":"0.1.0"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:ncp-binding-observation"
+        sha256: "61dc4d5710139d562c2e366ff114fafc5a652000d0ecb54bf3b80bbd8fb30c6f"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"association_exact":true}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:ncp-source-excerpt"
+        sha256: "d92be287ad5d58e5d8a31ea419159353c5c8757dca3b3e0a7a67d8d2d4ffa3f8"
+        media_type: "application/json"
+      json_content:
+        fixture_only: true
+        current_period_ncp: "6.08%"
+        period: {"label":"ILLUSTRATIVE_CURRENT_PERIOD","start_date":"2026-01-01","end_date":"2026-12-31"}
+        authority: "AUTHORITATIVE"
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:ncp-freshness-observation"
+        sha256: "f1529a4c2c3c64b89ef77cc624836d65bc0f098d2c5033b6f5b72dae8dbedd5a"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"current_validity":true,"not_superseded":true,"not_revoked":true}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-source-ncp"
+        sha256: "1a5f8c20b04ffd058701bc95ae18d408422f6e2b897dbf24887678b1c6807e6e"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"evaluator_key":"fixture.source-ncp","version":"0.1.0"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-evidence-source_presence"
+        sha256: "3a29c4903c75b971606cd9e448f549c094888bc8d5bc606520617c4ea987ac24"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"evaluator_key":"fixture.evidence-source_presence","version":"0.1.0"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-evidence-period"
+        sha256: "98afe7a9d396d0b1f6d7ba79dab5f1ca4eb33581be406be0cbe291b5cd644b94"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"evaluator_key":"fixture.evidence-period","version":"0.1.0"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-evidence-freshness"
+        sha256: "9da927b1fa726a8d4585f4651aeba988e12f5b629bf9fc540303d2cfec79590b"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"evaluator_key":"fixture.evidence-freshness","version":"0.1.0"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-evidence-authority"
+        sha256: "bca17d2e99b07e9d975decccb4f25913a37f7657b08ad7e62e25adde5d6e0cb4"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"evaluator_key":"fixture.evidence-authority","version":"0.1.0"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-evidence-provenance"
+        sha256: "c6694f7ac4aa1b46e0068e695f5cbfbf6701bd4705e4fae8b61f239cc342d29a"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"evaluator_key":"fixture.evidence-provenance","version":"0.1.0"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-evidence-aggregation"
+        sha256: "9ba44ff51bc6f00b5f352f0ed267f0d36176d63813bd75c2ecac34d54c374f2a"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"evaluator_key":"fixture.evidence-aggregation","version":"0.1.0"}
+    -
+      ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-rule-ncp"
+        sha256: "a5caeb73ac9d08eafd032a02c20c150e0c0b850e9d63216f886a773b81624652"
+        media_type: "application/json"
+      json_content: {"fixture_only":true,"evaluator_key":"fixture.rule-ncp","version":"0.1.0"}
+records:
+  -
+    schema_version: "0.1.0"
+    object_type: "FoundationTask"
+    id: "task-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:00Z"
+    title: "C2-08 contract scenario"
+    business_case: "LOCAL_FILE"
+    current_period: {"label":"ILLUSTRATIVE_CURRENT_PERIOD","start_date":"2026-01-01","end_date":"2026-12-31"}
+    status: "CREATED"
+    document_refs: []
+    required_business_target_ids: []
+    exception_refs: []
+    release_status: "WITHHELD"
+  -
+    schema_version: "0.1.0"
+    object_type: "ValidationPlan"
+    id: "validation-plan-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:01Z"
+    name: "Illustrative independent validation profile"
+    required_checks:
+      -
+        requirement_id: "validation-schema_package"
+        kind: "SCHEMA_PACKAGE"
+        mandatory: true
+        business_target_ids: []
+        description: "Independently verify SCHEMA_PACKAGE for the approved subset and preserve all other content."
+      -
+        requirement_id: "validation-package_diff"
+        kind: "PACKAGE_DIFF"
+        mandatory: true
+        business_target_ids: []
+        description: "Independently verify PACKAGE_DIFF for the approved subset and preserve all other content."
+      -
+        requirement_id: "validation-intra_part_diff"
+        kind: "INTRA_PART_DIFF"
+        mandatory: true
+        business_target_ids: []
+        description: "Independently verify INTRA_PART_DIFF for the approved subset and preserve all other content."
+      -
+        requirement_id: "validation-protected_scope"
+        kind: "PROTECTED_SCOPE"
+        mandatory: true
+        business_target_ids: []
+        description: "Independently verify PROTECTED_SCOPE for the approved subset and preserve all other content."
+      -
+        requirement_id: "validation-semantic_reperception"
+        kind: "SEMANTIC_REPERCEPTION"
+        mandatory: true
+        business_target_ids: []
+        description: "Independently verify SEMANTIC_REPERCEPTION for the approved subset and preserve all other content."
+      -
+        requirement_id: "validation-business_postcondition"
+        kind: "BUSINESS_POSTCONDITION"
+        mandatory: true
+        business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+        description: "Independently verify BUSINESS_POSTCONDITION for the approved subset and preserve all other content."
+    validator_policy_ref:
+      uri: "urn:foundation:fixture:c2-08:validator-policy"
+      sha256: "aa0da7b5d37b1d2434f0fec057b265988a5eefb7dc67f2ca4b6d09a277db423f"
+      media_type: "application/json"
+    release_requires_all_targets: true
+  -
+    schema_version: "0.1.0"
+    object_type: "FreshnessPolicy"
+    id: "freshness-policy-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:01Z"
+    name: "Fixture source-validity policy; no age threshold"
+    evaluator_key: "fixture.freshness"
+    policy_ref:
+      uri: "urn:foundation:fixture:c2-08:freshness-policy"
+      sha256: "02baf7575be44c27b86e8c997eafceba021288c189ef52a9b0584b491f3d97c3"
+      media_type: "application/json"
+    configuration_ref:
+      uri: "urn:foundation:fixture:c2-08:configuration-freshness"
+      sha256: "5cf4221d3b0e98b2b415a928638d2bc98fd4223963a1cd3d07bf3f7a988ff960"
+      media_type: "application/json"
+    required_input_keys: ["current_validity","not_superseded","not_revoked"]
+    description: "Evaluate supplied fixture validity observations at as_of; no production age threshold or fiscal rule is asserted."
+  -
+    schema_version: "0.1.0"
+    object_type: "SourceRequirement"
+    id: "ncp-requirement-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:01Z"
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    period_policy: "CURRENT_PERIOD"
+    freshness_policy_ref: {"object_type":"FreshnessPolicy","object_id":"freshness-policy-c2-08","revision":1}
+    required_fields: ["current_period_ncp"]
+    permitted_roles: ["CURRENT_SOURCE"]
+    required_authority: "AUTHORITATIVE"
+    blocking: true
+    policy_ref:
+      uri: "urn:foundation:fixture:c2-08:ncp-evidence-policy"
+      sha256: "19463d555cf471862914c6ac0f6290f724d9c02e5c3b93e6feca2705f325314e"
+      media_type: "application/json"
+  -
+    schema_version: "0.1.0"
+    object_type: "BusinessRule"
+    id: "ncp-rule-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:01Z"
+    rule_type: "UPDATE_IF_CHANGED"
+    evaluator_key: "fixture.rule-ncp"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    source_requirement_refs: [{"object_type":"SourceRequirement","object_id":"ncp-requirement-c2-08","revision":1}]
+    policy_ref:
+      uri: "urn:foundation:fixture:c2-08:ncp-rule-policy"
+      sha256: "dd3cf0183098aa0766a355d0e7a28071a503b58634a47ae636ae18f35744de50"
+      media_type: "application/json"
+    description: "Illustrative governed ncp update; insufficient evidence blocks any asserted conclusion."
+  -
+    schema_version: "0.1.0"
+    object_type: "TargetRegionDefinition"
+    id: "ncp-region-definition-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:01Z"
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    description: "One illustrative ncp target occurrence."
+    allowed_value_kinds: ["PERCENT"]
+    value_schema_ref:
+      uri: "urn:foundation:fixture:c2-08:percent-schema"
+      sha256: "b64dd9948fe9a531d38c7527ec9991fa475454c49e4c89df02c693caf8dc30ee"
+      media_type: "application/json"
+    permitted_operations: ["REPLACE_SDT_TEXT"]
+    source_requirement_refs: [{"object_type":"SourceRequirement","object_id":"ncp-requirement-c2-08","revision":1}]
+    protection_policy_ref:
+      uri: "urn:foundation:fixture:c2-08:preservation-policy"
+      sha256: "a258479be60be26a80d95ac344365d8e23908a59695fb7786dee6a0d8e98244f"
+      media_type: "application/json"
+  -
+    schema_version: "0.1.0"
+    object_type: "RulePack"
+    id: "rule-pack-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:01Z"
+    name: "Illustrative Local File rules"
+    business_rule_refs: [{"object_type":"BusinessRule","object_id":"ncp-rule-c2-08","revision":1}]
+    policy_document_ref:
+      uri: "urn:foundation:fixture:c2-08:rule-pack-policy"
+      sha256: "7f1bd6731a1cafdd3a0fa0c88529dce4eea4b41e0afe0aa97fff292847a2023e"
+      media_type: "application/json"
+  -
+    schema_version: "0.1.0"
+    object_type: "TargetContractDefinition"
+    id: "target-contract-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:01Z"
+    name: "Illustrative constrained Local File contract"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    target_region_definition_refs: [{"object_type":"TargetRegionDefinition","object_id":"ncp-region-definition-c2-08","revision":1}]
+    source_requirement_refs: [{"object_type":"SourceRequirement","object_id":"ncp-requirement-c2-08","revision":1}]
+    validation_plan_ref: {"object_type":"ValidationPlan","object_id":"validation-plan-c2-08","revision":1}
+    protection_policy_ref:
+      uri: "urn:foundation:fixture:c2-08:preservation-policy"
+      sha256: "a258479be60be26a80d95ac344365d8e23908a59695fb7786dee6a0d8e98244f"
+      media_type: "application/json"
+  -
+    schema_version: "0.1.0"
+    object_type: "DocumentVersion"
+    id: "target-version-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:01Z"
+    task_id: "task-c2-08"
+    document_id: "target-document-c2-08"
+    binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    byte_length: 1024
+    content_ref:
+      uri: "urn:foundation:fixture:c2-08:binary:target"
+      sha256: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+      media_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  -
+    schema_version: "0.1.0"
+    object_type: "DocumentArtifact"
+    id: "target-document-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:01Z"
+    task_id: "task-c2-08"
+    file_name: "target.docx"
+    role: "TARGET"
+    status: "REGISTERED"
+    version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    current_version_ref:
+      document_id: "target-document-c2-08"
+      version_id: "target-version-c2-08"
+      binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+  -
+    schema_version: "0.1.0"
+    object_type: "DocumentVersion"
+    id: "source-version-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:02Z"
+    task_id: "task-c2-08"
+    document_id: "source-document-c2-08"
+    binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    byte_length: 1024
+    content_ref:
+      uri: "urn:foundation:fixture:c2-08:binary:source"
+      sha256: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+      media_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+  -
+    schema_version: "0.1.0"
+    object_type: "DocumentArtifact"
+    id: "source-document-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:02Z"
+    task_id: "task-c2-08"
+    file_name: "source.docx"
+    role: "CURRENT_SOURCE"
+    status: "REGISTERED"
+    version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    current_version_ref:
+      document_id: "source-document-c2-08"
+      version_id: "source-version-c2-08"
+      binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+  -
+    schema_version: "0.1.0"
+    object_type: "TargetContractInstance"
+    id: "target-instance-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:03Z"
+    task_id: "task-c2-08"
+    definition_ref: {"object_type":"TargetContractDefinition","object_id":"target-contract-c2-08","revision":1}
+    target_document_version_ref:
+      document_id: "target-document-c2-08"
+      version_id: "target-version-c2-08"
+      binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    target_region_refs: []
+    protected_scope:
+      document_version_ref:
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+      protected_locator_refs: []
+      preserve_outside_approved_changes: true
+    validation_plan_ref: {"object_type":"ValidationPlan","object_id":"validation-plan-c2-08","revision":1}
+  -
+    schema_version: "0.1.0"
+    object_type: "FoundationTask"
+    id: "task-c2-08"
+    revision: 2
+    created_at: "2026-09-07T08:00:03Z"
+    title: "C2-08 contract scenario"
+    business_case: "LOCAL_FILE"
+    current_period: {"label":"ILLUSTRATIVE_CURRENT_PERIOD","start_date":"2026-01-01","end_date":"2026-12-31"}
+    status: "ANALYZING"
+    document_refs:
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-08","revision":1}
+      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-08","revision":1}
+    required_business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    exception_refs: []
+    release_status: "WITHHELD"
+    target_contract_definition_ref: {"object_type":"TargetContractDefinition","object_id":"target-contract-c2-08","revision":1}
+    target_contract_instance_ref: {"object_type":"TargetContractInstance","object_id":"target-instance-c2-08","revision":1}
+    rule_pack_ref: {"object_type":"RulePack","object_id":"rule-pack-c2-08","revision":1}
+  -
+    schema_version: "0.1.0"
+    object_type: "NativeLocator"
+    id: "ncp-locator-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:04Z"
+    task_id: "task-c2-08"
+    document_version_ref:
+      document_id: "target-document-c2-08"
+      version_id: "target-version-c2-08"
+      binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    part_uri: "/word/document.xml"
+    locator_type: "DOCX_CONTENT_CONTROL"
+    address:
+      kind: "DOCX_CONTENT_CONTROL"
+      sdt_id: "101"
+      element_path:
+        - {"namespace_uri":"http://purl.oclc.org/ooxml/wordprocessingml/main","local_name":"document","ordinal":1}
+        - {"namespace_uri":"http://purl.oclc.org/ooxml/wordprocessingml/main","local_name":"body","ordinal":1}
+        - {"namespace_uri":"http://purl.oclc.org/ooxml/wordprocessingml/main","local_name":"sdt","ordinal":1}
+    expected_object_type: "w:sdt"
+    capture_engine: "fixture.native-inspector@0.1.0"
+    structural_fingerprint: "c73174c2bca002f33c93e8e46974de4465934d0d9c54c2e9130a003a9837606e"
+    fingerprint_profile_ref:
+      uri: "urn:foundation:fixture:c2-08:fingerprint-profile"
+      sha256: "f38c9f3fa2400ab8dae9fabf483eb78802986678943f248173cff3a52b406d04"
+      media_type: "application/json"
+  -
+    schema_version: "0.1.0"
+    object_type: "DocumentPreflightAssessment"
+    id: "preflight-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:04Z"
+    task_id: "task-c2-08"
+    document_version_ref:
+      document_id: "target-document-c2-08"
+      version_id: "target-version-c2-08"
+      binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    status: "COMPLETED"
+    detected_format: "DOCX"
+    detected_conformance: "STRICT"
+    format_observation_refs:
+      -
+        uri: "urn:foundation:fixture:c2-08:format-observations"
+        sha256: "40e8aae3da6aac52a5c7104323da31a24a6aea37a2f18f2d3c72372bc3c3806b"
+        media_type: "application/json"
+    protection_findings: []
+    native_structure_findings: []
+    capability_results:
+      -
+        capability_result_id: "ncp-sdt"
+        operation: "REPLACE_SDT_TEXT"
+        native_structure: "DOCX_CONTENT_CONTROL"
+        document_version_ref:
+          document_id: "target-document-c2-08"
+          version_id: "target-version-c2-08"
+          binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+        native_locator_refs: [{"object_type":"NativeLocator","object_id":"ncp-locator-c2-08","revision":1}]
+        engine: "OpenXmlSdk"
+        engine_version: "3.5.1"
+        conformance: "STRICT"
+        qualification_evidence_refs: []
+        status: "UNSUPPORTED"
+        reason: "Strict mutation is unqualified."
+    assessor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    engine: "fixture.native-inspector"
+    engine_version: "0.1.0"
+    configuration_ref:
+      uri: "urn:foundation:fixture:c2-08:configuration-native-inspector"
+      sha256: "5e355c57a28df6b19cdc3780d2d9e8b71af73c548913415f24c42df3f5707305"
+      media_type: "application/json"
+    assessed_at: "2026-09-07T08:00:04Z"
+    error_codes: ["STRICT_OOXML_MUTATION_UNQUALIFIED"]
+  -
+    schema_version: "0.1.0"
+    object_type: "DocumentArtifact"
+    id: "target-document-c2-08"
+    revision: 2
+    created_at: "2026-09-07T08:00:05Z"
+    task_id: "task-c2-08"
+    file_name: "target.docx"
+    role: "TARGET"
+    status: "BLOCKED"
+    version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    current_version_ref:
+      document_id: "target-document-c2-08"
+      version_id: "target-version-c2-08"
+      binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+  -
+    schema_version: "0.1.0"
+    object_type: "DocumentArtifact"
+    id: "source-document-c2-08"
+    revision: 2
+    created_at: "2026-09-07T08:00:06Z"
+    task_id: "task-c2-08"
+    file_name: "source.docx"
+    role: "CURRENT_SOURCE"
+    status: "READY"
+    version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    current_version_ref:
+      document_id: "source-document-c2-08"
+      version_id: "source-version-c2-08"
+      binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+  -
+    schema_version: "0.1.0"
+    object_type: "AnalysisRun"
+    id: "analysis-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:07Z"
+    task_id: "task-c2-08"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    target_contract_definition_ref: {"object_type":"TargetContractDefinition","object_id":"target-contract-c2-08","revision":1}
+    target_contract_instance_ref: {"object_type":"TargetContractInstance","object_id":"target-instance-c2-08","revision":1}
+    rule_pack_ref: {"object_type":"RulePack","object_id":"rule-pack-c2-08","revision":1}
+    status: "COMPLETED"
+    output_refs:
+      - {"object_type":"PerceptionSnapshot","object_id":"perception-c2-08","revision":1}
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+      - {"object_type":"RuleEvaluation","object_id":"ncp-rule-evaluation-c2-08","revision":1}
+      - {"object_type":"TargetRegion","object_id":"ncp-region-c2-08","revision":1}
+    error_codes: []
+  -
+    schema_version: "0.1.0"
+    object_type: "PerceptionSnapshot"
+    id: "perception-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:07Z"
+    task_id: "task-c2-08"
+    document_version_ref:
+      document_id: "target-document-c2-08"
+      version_id: "target-version-c2-08"
+      binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    analysis_run_ref: {"object_type":"AnalysisRun","object_id":"analysis-c2-08","revision":1}
+    engine: "Docling-slim"
+    engine_version: "fixture-version-0.1.0"
+    configuration_ref:
+      uri: "urn:foundation:fixture:c2-08:perception-config"
+      sha256: "2f23ff79113da4626dc33ba3ae152a7d131eaca3c9766ac91ef7ca00ac2cada2"
+      media_type: "application/json"
+    semantic_object_refs: [{"object_type":"SemanticObject","object_id":"ncp-semantic-c2-08","revision":1}]
+    limitations: []
+  -
+    schema_version: "0.1.0"
+    object_type: "SemanticObject"
+    id: "ncp-semantic-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:07Z"
+    task_id: "task-c2-08"
+    semantic_reference: {"snapshot_ref":{"object_type":"PerceptionSnapshot","object_id":"perception-c2-08","revision":1},"semantic_id":"#/texts/0"}
+    object_kind: "text"
+    value: {"kind":"PERCENT","review_text":"14.18%","percentage":"14.18"}
+    native_binding_refs: [{"object_type":"NativeBinding","object_id":"ncp-binding-c2-08","revision":1}]
+  -
+    schema_version: "0.1.0"
+    object_type: "NativeBinding"
+    id: "ncp-binding-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:07Z"
+    task_id: "task-c2-08"
+    semantic_object_ref: {"object_type":"SemanticObject","object_id":"ncp-semantic-c2-08","revision":1}
+    native_locator_refs: [{"object_type":"NativeLocator","object_id":"ncp-locator-c2-08","revision":1}]
+    status: "RESOLVED"
+    method: "fixture.native-binding@0.1.0"
+    reason: "Exact version-scoped association, with replay resolution checked independently."
+  -
+    schema_version: "0.1.0"
+    object_type: "EvidenceRecord"
+    id: "ncp-evidence-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:09Z"
+    task_id: "task-c2-08"
+    kind: "SOURCE_EXCERPT"
+    document_version_ref:
+      document_id: "source-document-c2-08"
+      version_id: "source-version-c2-08"
+      binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    content_ref:
+      uri: "urn:foundation:fixture:c2-08:ncp-source-excerpt"
+      sha256: "d92be287ad5d58e5d8a31ea419159353c5c8757dca3b3e0a7a67d8d2d4ffa3f8"
+      media_type: "application/json"
+    observed_value: {"kind":"PERCENT","review_text":"6.08%","percentage":"6.08"}
+    authority: "AUTHORITATIVE"
+    period_scope: "SPECIFIC_PERIOD"
+    period: {"label":"ILLUSTRATIVE_CURRENT_PERIOD","start_date":"2026-01-01","end_date":"2026-12-31"}
+  -
+    schema_version: "0.1.0"
+    object_type: "SourceAssessment"
+    id: "ncp-source-assessment-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:09Z"
+    task_id: "task-c2-08"
+    source_requirement_ref: {"object_type":"SourceRequirement","object_id":"ncp-requirement-c2-08","revision":1}
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    document_version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    outcome: "SUFFICIENT"
+    resolved_task_period: {"label":"ILLUSTRATIVE_CURRENT_PERIOD","start_date":"2026-01-01","end_date":"2026-12-31"}
+    resolved_source_period: {"label":"ILLUSTRATIVE_CURRENT_PERIOD","start_date":"2026-01-01","end_date":"2026-12-31"}
+    freshness_policy_ref: {"object_type":"FreshnessPolicy","object_id":"freshness-policy-c2-08","revision":1}
+    freshness_evaluation:
+      freshness_policy_ref: {"object_type":"FreshnessPolicy","object_id":"freshness-policy-c2-08","revision":1}
+      document_version_refs:
+        -
+          document_id: "source-document-c2-08"
+          version_id: "source-version-c2-08"
+          binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+      as_of: "2026-09-07T08:00:09Z"
+      input_refs:
+        -
+          uri: "urn:foundation:fixture:c2-08:ncp-freshness-observation"
+          sha256: "f1529a4c2c3c64b89ef77cc624836d65bc0f098d2c5033b6f5b72dae8dbedd5a"
+          media_type: "application/json"
+      evaluator_key: "fixture.freshness"
+      evaluator_version: "0.1.0"
+      outcome: "PASS"
+      valid_until: null
+      reason: "Fixture validity observations pass at as_of; null expiry does not waive rechecks."
+      error_codes: []
+    evaluator_binding:
+      evaluator_key: "fixture.source-ncp"
+      evaluator_version: "0.1.0"
+      configuration_ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-source-ncp"
+        sha256: "1a5f8c20b04ffd058701bc95ae18d408422f6e2b897dbf24887678b1c6807e6e"
+        media_type: "application/json"
+    status: "COMPLETED"
+    method: "DETERMINISTIC"
+    authority: "AUTHORITATIVE"
+    satisfied_fields: ["current_period_ncp"]
+    missing_fields: []
+    evidence_refs: [{"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}]
+    error_codes: []
+  -
+    schema_version: "0.1.0"
+    object_type: "EvidenceCheck"
+    id: "ncp-check-source_presence-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:10Z"
+    task_id: "task-c2-08"
+    check_kind: "SOURCE_PRESENCE"
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    source_assessment_refs: [{"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}]
+    evidence_refs: [{"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}]
+    policy_ref:
+      uri: "urn:foundation:fixture:c2-08:ncp-evidence-policy"
+      sha256: "19463d555cf471862914c6ac0f6290f724d9c02e5c3b93e6feca2705f325314e"
+      media_type: "application/json"
+    evaluator_binding:
+      evaluator_key: "fixture.evidence-source_presence"
+      evaluator_version: "0.1.0"
+      configuration_ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-evidence-source_presence"
+        sha256: "3a29c4903c75b971606cd9e448f549c094888bc8d5bc606520617c4ea987ac24"
+        media_type: "application/json"
+    method: "DETERMINISTIC"
+    outcome: "PASS"
+    error_codes: []
+  -
+    schema_version: "0.1.0"
+    object_type: "EvidenceCheck"
+    id: "ncp-check-period-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:11Z"
+    task_id: "task-c2-08"
+    check_kind: "PERIOD"
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    source_assessment_refs: [{"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}]
+    evidence_refs: [{"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}]
+    policy_ref:
+      uri: "urn:foundation:fixture:c2-08:ncp-evidence-policy"
+      sha256: "19463d555cf471862914c6ac0f6290f724d9c02e5c3b93e6feca2705f325314e"
+      media_type: "application/json"
+    evaluator_binding:
+      evaluator_key: "fixture.evidence-period"
+      evaluator_version: "0.1.0"
+      configuration_ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-evidence-period"
+        sha256: "98afe7a9d396d0b1f6d7ba79dab5f1ca4eb33581be406be0cbe291b5cd644b94"
+        media_type: "application/json"
+    method: "DETERMINISTIC"
+    outcome: "PASS"
+    error_codes: []
+  -
+    schema_version: "0.1.0"
+    object_type: "EvidenceCheck"
+    id: "ncp-check-freshness-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:12Z"
+    task_id: "task-c2-08"
+    check_kind: "FRESHNESS"
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    source_assessment_refs: [{"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}]
+    evidence_refs: [{"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}]
+    policy_ref:
+      uri: "urn:foundation:fixture:c2-08:ncp-evidence-policy"
+      sha256: "19463d555cf471862914c6ac0f6290f724d9c02e5c3b93e6feca2705f325314e"
+      media_type: "application/json"
+    evaluator_binding:
+      evaluator_key: "fixture.evidence-freshness"
+      evaluator_version: "0.1.0"
+      configuration_ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-evidence-freshness"
+        sha256: "9da927b1fa726a8d4585f4651aeba988e12f5b629bf9fc540303d2cfec79590b"
+        media_type: "application/json"
+    method: "DETERMINISTIC"
+    outcome: "PASS"
+    error_codes: []
+    freshness_evaluation:
+      freshness_policy_ref: {"object_type":"FreshnessPolicy","object_id":"freshness-policy-c2-08","revision":1}
+      document_version_refs:
+        -
+          document_id: "source-document-c2-08"
+          version_id: "source-version-c2-08"
+          binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+      as_of: "2026-09-07T08:00:09Z"
+      input_refs:
+        -
+          uri: "urn:foundation:fixture:c2-08:ncp-freshness-observation"
+          sha256: "f1529a4c2c3c64b89ef77cc624836d65bc0f098d2c5033b6f5b72dae8dbedd5a"
+          media_type: "application/json"
+      evaluator_key: "fixture.freshness"
+      evaluator_version: "0.1.0"
+      outcome: "PASS"
+      valid_until: null
+      reason: "Fixture validity observations pass at as_of; null expiry does not waive rechecks."
+      error_codes: []
+  -
+    schema_version: "0.1.0"
+    object_type: "EvidenceCheck"
+    id: "ncp-check-authority-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:13Z"
+    task_id: "task-c2-08"
+    check_kind: "AUTHORITY"
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    source_assessment_refs: [{"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}]
+    evidence_refs: [{"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}]
+    policy_ref:
+      uri: "urn:foundation:fixture:c2-08:ncp-evidence-policy"
+      sha256: "19463d555cf471862914c6ac0f6290f724d9c02e5c3b93e6feca2705f325314e"
+      media_type: "application/json"
+    evaluator_binding:
+      evaluator_key: "fixture.evidence-authority"
+      evaluator_version: "0.1.0"
+      configuration_ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-evidence-authority"
+        sha256: "bca17d2e99b07e9d975decccb4f25913a37f7657b08ad7e62e25adde5d6e0cb4"
+        media_type: "application/json"
+    method: "DETERMINISTIC"
+    outcome: "PASS"
+    error_codes: []
+  -
+    schema_version: "0.1.0"
+    object_type: "EvidenceCheck"
+    id: "ncp-check-provenance-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:14Z"
+    task_id: "task-c2-08"
+    check_kind: "PROVENANCE"
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    source_assessment_refs: [{"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}]
+    evidence_refs: [{"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}]
+    policy_ref:
+      uri: "urn:foundation:fixture:c2-08:ncp-evidence-policy"
+      sha256: "19463d555cf471862914c6ac0f6290f724d9c02e5c3b93e6feca2705f325314e"
+      media_type: "application/json"
+    evaluator_binding:
+      evaluator_key: "fixture.evidence-provenance"
+      evaluator_version: "0.1.0"
+      configuration_ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-evidence-provenance"
+        sha256: "c6694f7ac4aa1b46e0068e695f5cbfbf6701bd4705e4fae8b61f239cc342d29a"
+        media_type: "application/json"
+    method: "DETERMINISTIC"
+    outcome: "PASS"
+    error_codes: []
+  -
+    schema_version: "0.1.0"
+    object_type: "EvidenceAssessment"
+    id: "ncp-evidence-assessment-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:15Z"
+    task_id: "task-c2-08"
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    source_assessment_refs: [{"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}]
+    evidence_check_refs:
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-source_presence-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-period-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-freshness-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-authority-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-provenance-c2-08","revision":1}
+    evaluator_binding:
+      evaluator_key: "fixture.evidence-aggregation"
+      evaluator_version: "0.1.0"
+      configuration_ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-evidence-aggregation"
+        sha256: "9ba44ff51bc6f00b5f352f0ed267f0d36176d63813bd75c2ecac34d54c374f2a"
+        media_type: "application/json"
+    status: "VERIFIED"
+    method: "DETERMINISTIC"
+    error_codes: []
+  -
+    schema_version: "0.1.0"
+    object_type: "RuleEvaluation"
+    id: "ncp-rule-evaluation-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:16Z"
+    task_id: "task-c2-08"
+    business_rule_ref: {"object_type":"BusinessRule","object_id":"ncp-rule-c2-08","revision":1}
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    evaluator_binding:
+      evaluator_key: "fixture.rule-ncp"
+      evaluator_version: "0.1.0"
+      configuration_ref:
+        uri: "urn:foundation:fixture:c2-08:configuration-rule-ncp"
+        sha256: "a5caeb73ac9d08eafd032a02c20c150e0c0b850e9d63216f886a773b81624652"
+        media_type: "application/json"
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    outcome: "PASS"
+    proposed_value: {"kind":"PERCENT","review_text":"6.08%","percentage":"6.08"}
+    error_codes: []
+  -
+    schema_version: "0.1.0"
+    object_type: "TargetRegion"
+    id: "ncp-region-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:17Z"
+    task_id: "task-c2-08"
+    region_definition_ref: {"object_type":"TargetRegionDefinition","object_id":"ncp-region-definition-c2-08","revision":1}
+    target_contract_instance_ref: {"object_type":"TargetContractInstance","object_id":"target-instance-c2-08","revision":2}
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    document_version_ref:
+      document_id: "target-document-c2-08"
+      version_id: "target-version-c2-08"
+      binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    semantic_object_refs: [{"object_type":"SemanticObject","object_id":"ncp-semantic-c2-08","revision":1}]
+    native_binding_refs: [{"object_type":"NativeBinding","object_id":"ncp-binding-c2-08","revision":1}]
+    verification_status: "VERIFIED"
+    source_requirement_refs: [{"object_type":"SourceRequirement","object_id":"ncp-requirement-c2-08","revision":1}]
+    preflight_assessment_refs: [{"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-08","revision":1}]
+    capability_result_refs:
+      -
+        preflight_assessment_ref: {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-08","revision":1}
+        capability_result_id: "ncp-sdt"
+  -
+    schema_version: "0.1.0"
+    object_type: "TargetContractInstance"
+    id: "target-instance-c2-08"
+    revision: 2
+    created_at: "2026-09-07T08:00:17Z"
+    task_id: "task-c2-08"
+    definition_ref: {"object_type":"TargetContractDefinition","object_id":"target-contract-c2-08","revision":1}
+    target_document_version_ref:
+      document_id: "target-document-c2-08"
+      version_id: "target-version-c2-08"
+      binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    target_region_refs: [{"object_type":"TargetRegion","object_id":"ncp-region-c2-08","revision":1}]
+    protected_scope:
+      document_version_ref:
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+      protected_locator_refs: []
+      preserve_outside_approved_changes: true
+    validation_plan_ref: {"object_type":"ValidationPlan","object_id":"validation-plan-c2-08","revision":1}
+  -
+    schema_version: "0.1.0"
+    object_type: "FoundationTask"
+    id: "task-c2-08"
+    revision: 3
+    created_at: "2026-09-07T08:00:18Z"
+    title: "C2-08 contract scenario"
+    business_case: "LOCAL_FILE"
+    current_period: {"label":"ILLUSTRATIVE_CURRENT_PERIOD","start_date":"2026-01-01","end_date":"2026-12-31"}
+    status: "BLOCKED"
+    document_refs:
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-08","revision":1}
+      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-08","revision":1}
+    required_business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    exception_refs: []
+    release_status: "WITHHELD"
+    target_contract_definition_ref: {"object_type":"TargetContractDefinition","object_id":"target-contract-c2-08","revision":1}
+    target_contract_instance_ref: {"object_type":"TargetContractInstance","object_id":"target-instance-c2-08","revision":1}
+    rule_pack_ref: {"object_type":"RulePack","object_id":"rule-pack-c2-08","revision":1}
+  -
+    schema_version: "0.1.0"
+    object_type: "MappingProposal"
+    id: "ncp-mapping-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:19Z"
+    task_id: "task-c2-08"
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    target_region_ref: {"object_type":"TargetRegion","object_id":"ncp-region-c2-08","revision":1}
+    evidence_refs: [{"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}]
+    rule_evaluation_refs: [{"object_type":"RuleEvaluation","object_id":"ncp-rule-evaluation-c2-08","revision":1}]
+    ai_interaction_refs: []
+    proposed_value: {"kind":"PERCENT","review_text":"6.08%","percentage":"6.08"}
+    status: "ACCEPTED"
+    rationale: "SYSTEM records the association; source/evidence gates independently determine eligibility."
+    error_codes: []
+  -
+    schema_version: "0.1.0"
+    object_type: "ChangeProposal"
+    id: "ncp-proposal-c2-08"
+    revision: 1
+    created_at: "2026-09-07T08:00:20Z"
+    task_id: "task-c2-08"
+    business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    target_document_version_ref:
+      document_id: "target-document-c2-08"
+      version_id: "target-version-c2-08"
+      binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    target_contract_definition_ref: {"object_type":"TargetContractDefinition","object_id":"target-contract-c2-08","revision":1}
+    target_contract_instance_ref: {"object_type":"TargetContractInstance","object_id":"target-instance-c2-08","revision":2}
+    rule_pack_ref: {"object_type":"RulePack","object_id":"rule-pack-c2-08","revision":1}
+    mapping_proposal_ref: {"object_type":"MappingProposal","object_id":"ncp-mapping-c2-08","revision":1}
+    source_assessment_refs: [{"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}]
+    evidence_assessment_refs: [{"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}]
+    native_locator_ref: {"object_type":"NativeLocator","object_id":"ncp-locator-c2-08","revision":1}
+    operation: "REPLACE_SDT_TEXT"
+    current_value: {"kind":"PERCENT","review_text":"14.18%","percentage":"14.18"}
+    proposed_value: {"kind":"PERCENT","review_text":"6.08%","percentage":"6.08"}
+    payload: {"kind":"SDT_TEXT_REPLACEMENT","replacement_text":"6.08%"}
+    status: "BLOCKED"
+    error_codes: ["STRICT_OOXML_MUTATION_UNQUALIFIED"]
+actions:
+  -
+    action_id: "action-001-c2-08"
+    description: "Create the single task-lineage root."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: []
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-08","revision":1}]
+    audit_event_ids: ["event-001-c2-08"]
+  -
+    action_id: "seed-policies-c2-08"
+    description: "Load complete reusable fixture declarations; these are test-only policies, not production qualification."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: []
+    output_refs:
+      - {"object_type":"ValidationPlan","object_id":"validation-plan-c2-08","revision":1}
+      - {"object_type":"FreshnessPolicy","object_id":"freshness-policy-c2-08","revision":1}
+      - {"object_type":"SourceRequirement","object_id":"ncp-requirement-c2-08","revision":1}
+      - {"object_type":"BusinessRule","object_id":"ncp-rule-c2-08","revision":1}
+      - {"object_type":"TargetRegionDefinition","object_id":"ncp-region-definition-c2-08","revision":1}
+      - {"object_type":"RulePack","object_id":"rule-pack-c2-08","revision":1}
+      - {"object_type":"TargetContractDefinition","object_id":"target-contract-c2-08","revision":1}
+    audit_event_ids: []
+  -
+    action_id: "action-003-c2-08"
+    description: "Register the exact illustrative input target."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: []
+    output_refs:
+      - {"object_type":"DocumentVersion","object_id":"target-version-c2-08","revision":1}
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-08","revision":1}
+    audit_event_ids: ["event-002-c2-08"]
+  -
+    action_id: "action-004-c2-08"
+    description: "Register the authoritative current-period source excerpt."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: []
+    output_refs:
+      - {"object_type":"DocumentVersion","object_id":"source-version-c2-08","revision":1}
+      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-08","revision":1}
+    audit_event_ids: ["event-003-c2-08"]
+  -
+    action_id: "action-005-c2-08"
+    description: "Pin reusable policies and exact target instance before analysis."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"FoundationTask","object_id":"task-c2-08","revision":1}
+      - {"object_type":"TargetContractDefinition","object_id":"target-contract-c2-08","revision":1}
+      - {"object_type":"RulePack","object_id":"rule-pack-c2-08","revision":1}
+    output_refs:
+      - {"object_type":"FoundationTask","object_id":"task-c2-08","revision":2}
+      - {"object_type":"TargetContractInstance","object_id":"target-instance-c2-08","revision":1}
+    audit_event_ids: ["event-004-c2-08"]
+  -
+    action_id: "action-006-c2-08"
+    description: "DocumentPreflightAssessment completed under its pinned fixture evaluator."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: [{"object_type":"NativeLocator","object_id":"ncp-locator-c2-08","revision":1}]
+    output_refs:
+      - {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-08","revision":1}
+      - {"object_type":"NativeLocator","object_id":"ncp-locator-c2-08","revision":1}
+    audit_event_ids: ["event-005-c2-08"]
+  -
+    action_id: "action-007-c2-08"
+    description: "Project document readiness from explicit preflight findings."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-08","revision":1}
+      - {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-08","revision":1}
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-08","revision":2}]
+    audit_event_ids: ["event-006-c2-08"]
+  -
+    action_id: "action-008-c2-08"
+    description: "Source excerpt is readable in the fixture context."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-08","revision":1}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-08","revision":2}]
+    audit_event_ids: ["event-007-c2-08"]
+  -
+    action_id: "action-009-c2-08"
+    description: "Capture semantic references separately from native identity."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: [{"object_type":"AnalysisRun","object_id":"analysis-c2-08","revision":1}]
+    output_refs:
+      - {"object_type":"PerceptionSnapshot","object_id":"perception-c2-08","revision":1}
+      - {"object_type":"SemanticObject","object_id":"ncp-semantic-c2-08","revision":1}
+    audit_event_ids: ["event-008-c2-08"]
+  -
+    action_id: "action-010-c2-08"
+    description: "Record exact semantic-to-native association."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"SemanticObject","object_id":"ncp-semantic-c2-08","revision":1}
+      - {"object_type":"NativeLocator","object_id":"ncp-locator-c2-08","revision":1}
+    output_refs: [{"object_type":"NativeBinding","object_id":"ncp-binding-c2-08","revision":1}]
+    audit_event_ids: ["event-009-c2-08"]
+  -
+    action_id: "action-011-c2-08"
+    description: "SourceAssessment completed under its pinned fixture evaluator."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"SourceRequirement","object_id":"ncp-requirement-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}]
+    audit_event_ids: ["event-010-c2-08"]
+  -
+    action_id: "action-012-c2-08"
+    description: "EvidenceCheck completed under its pinned fixture evaluator."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"EvidenceCheck","object_id":"ncp-check-source_presence-c2-08","revision":1}]
+    audit_event_ids: ["event-011-c2-08"]
+  -
+    action_id: "action-013-c2-08"
+    description: "EvidenceCheck completed under its pinned fixture evaluator."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"EvidenceCheck","object_id":"ncp-check-period-c2-08","revision":1}]
+    audit_event_ids: ["event-012-c2-08"]
+  -
+    action_id: "action-014-c2-08"
+    description: "EvidenceCheck completed under its pinned fixture evaluator."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"EvidenceCheck","object_id":"ncp-check-freshness-c2-08","revision":1}]
+    audit_event_ids: ["event-013-c2-08"]
+  -
+    action_id: "action-015-c2-08"
+    description: "EvidenceCheck completed under its pinned fixture evaluator."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"EvidenceCheck","object_id":"ncp-check-authority-c2-08","revision":1}]
+    audit_event_ids: ["event-014-c2-08"]
+  -
+    action_id: "action-016-c2-08"
+    description: "EvidenceCheck completed under its pinned fixture evaluator."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"EvidenceCheck","object_id":"ncp-check-provenance-c2-08","revision":1}]
+    audit_event_ids: ["event-015-c2-08"]
+  -
+    action_id: "action-017-c2-08"
+    description: "EvidenceAssessment completed under its pinned fixture evaluator."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-source_presence-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-period-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-freshness-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-authority-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-provenance-c2-08","revision":1}
+    output_refs: [{"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}]
+    audit_event_ids: ["event-016-c2-08"]
+  -
+    action_id: "action-018-c2-08"
+    description: "RuleEvaluation completed under its pinned fixture evaluator."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"RuleEvaluation","object_id":"ncp-rule-evaluation-c2-08","revision":1}]
+    audit_event_ids: ["event-017-c2-08"]
+  -
+    action_id: "action-019-c2-08"
+    description: "Complete analysis; target verification follows actual deterministic evidence."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"PerceptionSnapshot","object_id":"perception-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+    output_refs:
+      - {"object_type":"AnalysisRun","object_id":"analysis-c2-08","revision":1}
+      - {"object_type":"TargetContractInstance","object_id":"target-instance-c2-08","revision":2}
+      - {"object_type":"TargetRegion","object_id":"ncp-region-c2-08","revision":1}
+    audit_event_ids: ["event-018-c2-08"]
+  -
+    action_id: "action-020-c2-08"
+    description: "Analysis is blocked by deterministic gates."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: [{"object_type":"FoundationTask","object_id":"task-c2-08","revision":2}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-08","revision":3}]
+    audit_event_ids: ["event-019-c2-08"]
+  -
+    action_id: "action-021-c2-08"
+    description: "Persist the governed SYSTEM mapping and any bounded AI input."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"RuleEvaluation","object_id":"ncp-rule-evaluation-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+    output_refs: [{"object_type":"MappingProposal","object_id":"ncp-mapping-c2-08","revision":1}]
+    audit_event_ids: ["event-020-c2-08"]
+  -
+    action_id: "action-022-c2-08"
+    description: "Record a proposal with no execution authority."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs:
+      - {"object_type":"MappingProposal","object_id":"ncp-mapping-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+    output_refs: [{"object_type":"ChangeProposal","object_id":"ncp-proposal-c2-08","revision":1}]
+    audit_event_ids: ["event-021-c2-08"]
+  -
+    action_id: "action-023-c2-08"
+    description: "Whole-task release stays withheld; independent branch records are preserved."
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    input_refs: [{"object_type":"FoundationTask","object_id":"task-c2-08","revision":3}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-08","revision":3}]
+    audit_event_ids: ["event-022-c2-08"]
 audit_events:
-  - event_id: event-c2-08-01
+  -
+    event_id: "event-001-c2-08"
     event_version: 1
-    schema_version: 0.1.0
-    event_type: TASK_CREATED
-    occurred_at: "2026-09-07T08:00:00Z"
-    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
-    task_id: task-c2-08
-    correlation_id: correlation-c2-08
+    schema_version: "0.1.0"
+    event_type: "TASK_CREATED"
+    occurred_at: "2026-09-07T08:00:01Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
     causation_event_id: null
     document_version_refs: []
     business_target_ids: []
-    object_refs: []
+    object_refs: [{"object_type":"FoundationTask","object_id":"task-c2-08","revision":1}]
     input_refs: []
-    output_refs: [{object_type: FoundationTask, object_id: task-c2-08, revision: 1}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-08","revision":1}]
     error_codes: []
-    metadata: {metadata_kind: GOVERNANCE, summary: "Governed task created.", prior_status: null, resulting_status: CREATED}
-    integrity_payload_hash: "1baf749952992cd27937be5e818fce71ae5167efe00357a3ecd6c84ccce726f9"
-  - event_id: event-c2-08-02
+    metadata: {"metadata_kind":"GOVERNANCE","summary":"Create the single task-lineage root.","prior_status":null,"resulting_status":"CREATED"}
+    integrity_payload_hash: "fe62ed76d8a6e102ac18b7c881a75aeb227612e63309f948306d84280a10b4d3"
+  -
+    event_id: "event-002-c2-08"
     event_version: 1
-    schema_version: 0.1.0
-    event_type: DOCUMENT_PREFLIGHT_COMPLETED
-    occurred_at: "2026-09-07T08:01:00Z"
-    actor: {actor_type: SYSTEM, actor_id: document-preflight}
-    task_id: task-c2-08
-    correlation_id: correlation-c2-08
-    causation_event_id: event-c2-08-01
-    document_version_refs: [*target]
-    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
-    object_refs: [{object_type: DocumentPreflightAssessment, object_id: preflight-c2-08, revision: 1}]
-    input_refs: [{object_type: DocumentVersion, object_id: target-v1-c2-08, revision: 1}]
-    output_refs: [{object_type: DocumentPreflightAssessment, object_id: preflight-c2-08, revision: 1}]
-    error_codes: [STRICT_OOXML_MUTATION_UNQUALIFIED, EXECUTION_UNSUPPORTED]
+    schema_version: "0.1.0"
+    event_type: "DOCUMENT_REGISTERED"
+    occurred_at: "2026-09-07T08:00:02Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-001-c2-08"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    business_target_ids: []
+    object_refs:
+      - {"object_type":"DocumentVersion","object_id":"target-version-c2-08","revision":1}
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-08","revision":1}
+    input_refs: []
+    output_refs:
+      - {"object_type":"DocumentVersion","object_id":"target-version-c2-08","revision":1}
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-08","revision":1}
+    error_codes: []
     metadata:
-      metadata_kind: DETERMINISTIC_EVALUATION
-      summary: "Strict OOXML was recognized, but mutation qualification is absent."
-      evaluation_ref: {object_type: DocumentPreflightAssessment, object_id: preflight-c2-08, revision: 1}
-      evaluator_binding:
-        evaluator_key: document.preflight.ooxml
-        evaluator_version: 0.1.0
-        configuration_ref: {uri: "urn:foundation:config:c2-08:preflight", sha256: "8282828282828282828282828282828282828282828282828282828282828282", media_type: application/json}
-      outcome: UNSUPPORTED
-    integrity_payload_hash: "8a0885aecf28f0b03984fde97781765976ba7fca3e0b143e854d3a85bb02a6e3"
-  - event_id: event-c2-08-03
+      metadata_kind: "GOVERNANCE"
+      summary: "Register the exact illustrative input target."
+      prior_status: null
+      resulting_status: null
+    integrity_payload_hash: "d186871e96814bf11e020bf4efbba4dcfd77d9e174f7608f3ceeb9d02d962fea"
+  -
+    event_id: "event-003-c2-08"
     event_version: 1
-    schema_version: 0.1.0
-    event_type: EXCEPTION_RECORDED
-    occurred_at: "2026-09-07T08:02:00Z"
-    actor: {actor_type: SYSTEM, actor_id: proposal-governance}
-    task_id: task-c2-08
-    correlation_id: correlation-c2-08
-    causation_event_id: event-c2-08-02
-    document_version_refs: [*target]
-    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
-    object_refs: [{object_type: ExceptionRecord, object_id: exception-c2-08, revision: 1}, {object_type: ChangeProposal, object_id: proposal-c2-08, revision: 1}]
-    input_refs: [{object_type: DocumentPreflightAssessment, object_id: preflight-c2-08, revision: 1}]
-    output_refs: [{object_type: ExceptionRecord, object_id: exception-c2-08, revision: 1}, {object_type: ChangeProposal, object_id: proposal-c2-08, revision: 1}]
-    error_codes: [STRICT_OOXML_MUTATION_UNQUALIFIED, EXECUTION_UNSUPPORTED]
-    metadata: {metadata_kind: EXCEPTION, summary: "Proposal blocked before authorization or replay.", exception_ref: {object_type: ExceptionRecord, object_id: exception-c2-08, revision: 1}, first_material_failure_event_id: event-c2-08-02, remediation_refs: []}
-    integrity_payload_hash: "25b96267ba91a68a91ab9ad7ea97670cc2d012f02721bec108d0b4c3fcb49ef6"
+    schema_version: "0.1.0"
+    event_type: "DOCUMENT_REGISTERED"
+    occurred_at: "2026-09-07T08:00:03Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-002-c2-08"
+    document_version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    business_target_ids: []
+    object_refs:
+      - {"object_type":"DocumentVersion","object_id":"source-version-c2-08","revision":1}
+      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-08","revision":1}
+    input_refs: []
+    output_refs:
+      - {"object_type":"DocumentVersion","object_id":"source-version-c2-08","revision":1}
+      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-08","revision":1}
+    error_codes: []
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "Register the authoritative current-period source excerpt."
+      prior_status: null
+      resulting_status: null
+    integrity_payload_hash: "ba5fc4ff0053e4d783ec1ee57294b23d8253cd8444a10722263b6bf584b7538c"
+  -
+    event_id: "event-004-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "STATUS_TRANSITIONED"
+    occurred_at: "2026-09-07T08:00:04Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-003-c2-08"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"FoundationTask","object_id":"task-c2-08","revision":2}
+      - {"object_type":"TargetContractInstance","object_id":"target-instance-c2-08","revision":1}
+      - {"object_type":"FoundationTask","object_id":"task-c2-08","revision":1}
+      - {"object_type":"TargetContractDefinition","object_id":"target-contract-c2-08","revision":1}
+      - {"object_type":"RulePack","object_id":"rule-pack-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"FoundationTask","object_id":"task-c2-08","revision":1}
+      - {"object_type":"TargetContractDefinition","object_id":"target-contract-c2-08","revision":1}
+      - {"object_type":"RulePack","object_id":"rule-pack-c2-08","revision":1}
+    output_refs:
+      - {"object_type":"FoundationTask","object_id":"task-c2-08","revision":2}
+      - {"object_type":"TargetContractInstance","object_id":"target-instance-c2-08","revision":1}
+    error_codes: []
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "Pin reusable policies and exact target instance before analysis."
+      prior_status: "CREATED"
+      resulting_status: "ANALYZING"
+    integrity_payload_hash: "a8ab85c4eb8cf6d7de2a4baf06be81639d0c303f937cc1c389ec3e4ef343c4e7"
+  -
+    event_id: "event-005-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "DOCUMENT_PREFLIGHT_COMPLETED"
+    occurred_at: "2026-09-07T08:00:05Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-004-c2-08"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-08","revision":1}
+      - {"object_type":"NativeLocator","object_id":"ncp-locator-c2-08","revision":1}
+    input_refs: [{"object_type":"NativeLocator","object_id":"ncp-locator-c2-08","revision":1}]
+    output_refs:
+      - {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-08","revision":1}
+      - {"object_type":"NativeLocator","object_id":"ncp-locator-c2-08","revision":1}
+    error_codes: ["STRICT_OOXML_MUTATION_UNQUALIFIED"]
+    metadata:
+      metadata_kind: "DETERMINISTIC_EVALUATION"
+      summary: "DocumentPreflightAssessment completed under its pinned fixture evaluator."
+      evaluation_ref: {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-08","revision":1}
+      evaluator_binding:
+        evaluator_key: "fixture.native-inspector"
+        evaluator_version: "0.1.0"
+        configuration_ref:
+          uri: "urn:foundation:fixture:c2-08:configuration-native-inspector"
+          sha256: "5e355c57a28df6b19cdc3780d2d9e8b71af73c548913415f24c42df3f5707305"
+          media_type: "application/json"
+      outcome: "COMPLETED"
+    integrity_payload_hash: "2cdd7bc7a79e00afd10c94858f64c1a5210091bb2c8afb36ec10888ef207e4a6"
+  -
+    event_id: "event-006-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "STATUS_TRANSITIONED"
+    occurred_at: "2026-09-07T08:00:06Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-005-c2-08"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-08","revision":2}
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-08","revision":1}
+      - {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"DocumentArtifact","object_id":"target-document-c2-08","revision":1}
+      - {"object_type":"DocumentPreflightAssessment","object_id":"preflight-c2-08","revision":1}
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"target-document-c2-08","revision":2}]
+    error_codes: ["STRICT_OOXML_MUTATION_UNQUALIFIED"]
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "Project document readiness from explicit preflight findings."
+      prior_status: null
+      resulting_status: null
+      first_material_failure_event_id: "event-005-c2-08"
+    integrity_payload_hash: "98f474b4e439d7ed72a60c667553e5fd93ed8b60498a7ae1cd049ea99d889488"
+  -
+    event_id: "event-007-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "STATUS_TRANSITIONED"
+    occurred_at: "2026-09-07T08:00:07Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-006-c2-08"
+    document_version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    business_target_ids: []
+    object_refs:
+      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-08","revision":2}
+      - {"object_type":"DocumentArtifact","object_id":"source-document-c2-08","revision":1}
+    input_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-08","revision":1}]
+    output_refs: [{"object_type":"DocumentArtifact","object_id":"source-document-c2-08","revision":2}]
+    error_codes: []
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "Source excerpt is readable in the fixture context."
+      prior_status: null
+      resulting_status: null
+    integrity_payload_hash: "8b9898ed415b50dc8cf4fca815e40a35a3aedb2e976e4419288746da8e8ce2f1"
+  -
+    event_id: "event-008-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "PERCEPTION_COMPLETED"
+    occurred_at: "2026-09-07T08:00:08Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-007-c2-08"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"PerceptionSnapshot","object_id":"perception-c2-08","revision":1}
+      - {"object_type":"SemanticObject","object_id":"ncp-semantic-c2-08","revision":1}
+      - {"object_type":"AnalysisRun","object_id":"analysis-c2-08","revision":1}
+    input_refs: [{"object_type":"AnalysisRun","object_id":"analysis-c2-08","revision":1}]
+    output_refs:
+      - {"object_type":"PerceptionSnapshot","object_id":"perception-c2-08","revision":1}
+      - {"object_type":"SemanticObject","object_id":"ncp-semantic-c2-08","revision":1}
+    error_codes: []
+    metadata:
+      metadata_kind: "PERCEPTION"
+      summary: "Capture semantic references separately from native identity."
+      analysis_run_ref: {"object_type":"AnalysisRun","object_id":"analysis-c2-08","revision":1}
+      perception_snapshot_ref: {"object_type":"PerceptionSnapshot","object_id":"perception-c2-08","revision":1}
+      engine: "Docling-slim"
+      engine_version: "fixture-version-0.1.0"
+      configuration_ref:
+        uri: "urn:foundation:fixture:c2-08:perception-config"
+        sha256: "2f23ff79113da4626dc33ba3ae152a7d131eaca3c9766ac91ef7ca00ac2cada2"
+        media_type: "application/json"
+      observation_refs:
+        -
+          uri: "urn:foundation:fixture:c2-08:perception-observation"
+          sha256: "ad5b10dbeaf9210b227e73d2d92f09bca8978a8905f01ebe4e60d076854a0a97"
+          media_type: "application/json"
+    integrity_payload_hash: "ed0ba69193b47632e8528bf911f22bf1330a57a65dd5f91f1000228d3d0b2124"
+  -
+    event_id: "event-009-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "NATIVE_BINDING_ASSESSED"
+    occurred_at: "2026-09-07T08:00:09Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-008-c2-08"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"NativeBinding","object_id":"ncp-binding-c2-08","revision":1}
+      - {"object_type":"SemanticObject","object_id":"ncp-semantic-c2-08","revision":1}
+      - {"object_type":"NativeLocator","object_id":"ncp-locator-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"SemanticObject","object_id":"ncp-semantic-c2-08","revision":1}
+      - {"object_type":"NativeLocator","object_id":"ncp-locator-c2-08","revision":1}
+    output_refs: [{"object_type":"NativeBinding","object_id":"ncp-binding-c2-08","revision":1}]
+    error_codes: []
+    metadata:
+      metadata_kind: "NATIVE_BINDING"
+      summary: "Record exact semantic-to-native association."
+      native_binding_ref: {"object_type":"NativeBinding","object_id":"ncp-binding-c2-08","revision":1}
+      evaluator_binding:
+        evaluator_key: "fixture.native-binding"
+        evaluator_version: "0.1.0"
+        configuration_ref:
+          uri: "urn:foundation:fixture:c2-08:configuration-native-binding"
+          sha256: "ab6387574dbf8d617729d1655405a132cc1921346fa91f97cd996be28fc5c0b0"
+          media_type: "application/json"
+      observation_refs:
+        -
+          uri: "urn:foundation:fixture:c2-08:ncp-binding-observation"
+          sha256: "61dc4d5710139d562c2e366ff114fafc5a652000d0ecb54bf3b80bbd8fb30c6f"
+          media_type: "application/json"
+      outcome: "RESOLVED"
+    integrity_payload_hash: "f52d7ef3bb0162d589bf5c62e993f75dce884f57b80ca0f09e701d146f4b78e0"
+  -
+    event_id: "event-010-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "SOURCE_ASSESSED"
+    occurred_at: "2026-09-07T08:00:10Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-009-c2-08"
+    document_version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"SourceRequirement","object_id":"ncp-requirement-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"SourceRequirement","object_id":"ncp-requirement-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}]
+    error_codes: []
+    metadata:
+      metadata_kind: "DETERMINISTIC_EVALUATION"
+      summary: "SourceAssessment completed under its pinned fixture evaluator."
+      evaluation_ref: {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      evaluator_binding:
+        evaluator_key: "fixture.source-ncp"
+        evaluator_version: "0.1.0"
+        configuration_ref:
+          uri: "urn:foundation:fixture:c2-08:configuration-source-ncp"
+          sha256: "1a5f8c20b04ffd058701bc95ae18d408422f6e2b897dbf24887678b1c6807e6e"
+          media_type: "application/json"
+      outcome: "SUFFICIENT"
+    integrity_payload_hash: "e8d2cd1687b55e368514fd3d7c173a7ee039514cbc31ae1542aa4e1b446833cf"
+  -
+    event_id: "event-011-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "EVIDENCE_CHECKED"
+    occurred_at: "2026-09-07T08:00:11Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-010-c2-08"
+    document_version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-source_presence-c2-08","revision":1}
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"EvidenceCheck","object_id":"ncp-check-source_presence-c2-08","revision":1}]
+    error_codes: []
+    metadata:
+      metadata_kind: "DETERMINISTIC_EVALUATION"
+      summary: "EvidenceCheck completed under its pinned fixture evaluator."
+      evaluation_ref: {"object_type":"EvidenceCheck","object_id":"ncp-check-source_presence-c2-08","revision":1}
+      evaluator_binding:
+        evaluator_key: "fixture.evidence-source_presence"
+        evaluator_version: "0.1.0"
+        configuration_ref:
+          uri: "urn:foundation:fixture:c2-08:configuration-evidence-source_presence"
+          sha256: "3a29c4903c75b971606cd9e448f549c094888bc8d5bc606520617c4ea987ac24"
+          media_type: "application/json"
+      outcome: "PASS"
+    integrity_payload_hash: "40a2977d6a4c48930d8511dd473165d07391dfa6b43077148954eba2c3f0928e"
+  -
+    event_id: "event-012-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "EVIDENCE_CHECKED"
+    occurred_at: "2026-09-07T08:00:12Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-011-c2-08"
+    document_version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-period-c2-08","revision":1}
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"EvidenceCheck","object_id":"ncp-check-period-c2-08","revision":1}]
+    error_codes: []
+    metadata:
+      metadata_kind: "DETERMINISTIC_EVALUATION"
+      summary: "EvidenceCheck completed under its pinned fixture evaluator."
+      evaluation_ref: {"object_type":"EvidenceCheck","object_id":"ncp-check-period-c2-08","revision":1}
+      evaluator_binding:
+        evaluator_key: "fixture.evidence-period"
+        evaluator_version: "0.1.0"
+        configuration_ref:
+          uri: "urn:foundation:fixture:c2-08:configuration-evidence-period"
+          sha256: "98afe7a9d396d0b1f6d7ba79dab5f1ca4eb33581be406be0cbe291b5cd644b94"
+          media_type: "application/json"
+      outcome: "PASS"
+    integrity_payload_hash: "64a13c11bd8acb2ce85a945b211a1edb08fa206b6cdec2e30149750ee46f2767"
+  -
+    event_id: "event-013-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "EVIDENCE_CHECKED"
+    occurred_at: "2026-09-07T08:00:13Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-012-c2-08"
+    document_version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-freshness-c2-08","revision":1}
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"EvidenceCheck","object_id":"ncp-check-freshness-c2-08","revision":1}]
+    error_codes: []
+    metadata:
+      metadata_kind: "DETERMINISTIC_EVALUATION"
+      summary: "EvidenceCheck completed under its pinned fixture evaluator."
+      evaluation_ref: {"object_type":"EvidenceCheck","object_id":"ncp-check-freshness-c2-08","revision":1}
+      evaluator_binding:
+        evaluator_key: "fixture.evidence-freshness"
+        evaluator_version: "0.1.0"
+        configuration_ref:
+          uri: "urn:foundation:fixture:c2-08:configuration-evidence-freshness"
+          sha256: "9da927b1fa726a8d4585f4651aeba988e12f5b629bf9fc540303d2cfec79590b"
+          media_type: "application/json"
+      outcome: "PASS"
+    integrity_payload_hash: "39a0b6082d176bbe359aeb71f4338ad95ef71bba0f1a78f57e31dc20cfec3095"
+  -
+    event_id: "event-014-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "EVIDENCE_CHECKED"
+    occurred_at: "2026-09-07T08:00:14Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-013-c2-08"
+    document_version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-authority-c2-08","revision":1}
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"EvidenceCheck","object_id":"ncp-check-authority-c2-08","revision":1}]
+    error_codes: []
+    metadata:
+      metadata_kind: "DETERMINISTIC_EVALUATION"
+      summary: "EvidenceCheck completed under its pinned fixture evaluator."
+      evaluation_ref: {"object_type":"EvidenceCheck","object_id":"ncp-check-authority-c2-08","revision":1}
+      evaluator_binding:
+        evaluator_key: "fixture.evidence-authority"
+        evaluator_version: "0.1.0"
+        configuration_ref:
+          uri: "urn:foundation:fixture:c2-08:configuration-evidence-authority"
+          sha256: "bca17d2e99b07e9d975decccb4f25913a37f7657b08ad7e62e25adde5d6e0cb4"
+          media_type: "application/json"
+      outcome: "PASS"
+    integrity_payload_hash: "967ab609723a3111aaa3cf1c3f60fdf91da34173dfdb65815de7f71cc6a29de5"
+  -
+    event_id: "event-015-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "EVIDENCE_CHECKED"
+    occurred_at: "2026-09-07T08:00:15Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-014-c2-08"
+    document_version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-provenance-c2-08","revision":1}
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"EvidenceCheck","object_id":"ncp-check-provenance-c2-08","revision":1}]
+    error_codes: []
+    metadata:
+      metadata_kind: "DETERMINISTIC_EVALUATION"
+      summary: "EvidenceCheck completed under its pinned fixture evaluator."
+      evaluation_ref: {"object_type":"EvidenceCheck","object_id":"ncp-check-provenance-c2-08","revision":1}
+      evaluator_binding:
+        evaluator_key: "fixture.evidence-provenance"
+        evaluator_version: "0.1.0"
+        configuration_ref:
+          uri: "urn:foundation:fixture:c2-08:configuration-evidence-provenance"
+          sha256: "c6694f7ac4aa1b46e0068e695f5cbfbf6701bd4705e4fae8b61f239cc342d29a"
+          media_type: "application/json"
+      outcome: "PASS"
+    integrity_payload_hash: "cd9dfee429d8cb0a93a2a87ceb54ef3088a05c4606b476c9c6d774aea0fa12bd"
+  -
+    event_id: "event-016-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "EVIDENCE_ASSESSED"
+    occurred_at: "2026-09-07T08:00:16Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-015-c2-08"
+    document_version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-source_presence-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-period-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-freshness-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-authority-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-provenance-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-source_presence-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-period-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-freshness-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-authority-c2-08","revision":1}
+      - {"object_type":"EvidenceCheck","object_id":"ncp-check-provenance-c2-08","revision":1}
+    output_refs: [{"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}]
+    error_codes: []
+    metadata:
+      metadata_kind: "DETERMINISTIC_EVALUATION"
+      summary: "EvidenceAssessment completed under its pinned fixture evaluator."
+      evaluation_ref: {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+      evaluator_binding:
+        evaluator_key: "fixture.evidence-aggregation"
+        evaluator_version: "0.1.0"
+        configuration_ref:
+          uri: "urn:foundation:fixture:c2-08:configuration-evidence-aggregation"
+          sha256: "9ba44ff51bc6f00b5f352f0ed267f0d36176d63813bd75c2ecac34d54c374f2a"
+          media_type: "application/json"
+      outcome: "VERIFIED"
+    integrity_payload_hash: "c69155cf4f5be89478be66466a133bcf2b8711c6af62315b55738bdd05e00672"
+  -
+    event_id: "event-017-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "RULE_EVALUATED"
+    occurred_at: "2026-09-07T08:00:17Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-016-c2-08"
+    document_version_refs:
+      -
+        document_id: "source-document-c2-08"
+        version_id: "source-version-c2-08"
+        binary_hash: "780e382f6bedb0f5668fa5a8266bb1bc87a62c7728199dfa5f677bf9c5ee695b"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"RuleEvaluation","object_id":"ncp-rule-evaluation-c2-08","revision":1}
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"SourceAssessment","object_id":"ncp-source-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+      - {"object_type":"EvidenceRecord","object_id":"ncp-evidence-c2-08","revision":1}
+    output_refs: [{"object_type":"RuleEvaluation","object_id":"ncp-rule-evaluation-c2-08","revision":1}]
+    error_codes: []
+    metadata:
+      metadata_kind: "DETERMINISTIC_EVALUATION"
+      summary: "RuleEvaluation completed under its pinned fixture evaluator."
+      evaluation_ref: {"object_type":"RuleEvaluation","object_id":"ncp-rule-evaluation-c2-08","revision":1}
+      evaluator_binding:
+        evaluator_key: "fixture.rule-ncp"
+        evaluator_version: "0.1.0"
+        configuration_ref:
+          uri: "urn:foundation:fixture:c2-08:configuration-rule-ncp"
+          sha256: "a5caeb73ac9d08eafd032a02c20c150e0c0b850e9d63216f886a773b81624652"
+          media_type: "application/json"
+      outcome: "PASS"
+    integrity_payload_hash: "ab8a3cd9a34f902aa585889358a92e3dee7d394fed894384cc54bcc2e5f8497f"
+  -
+    event_id: "event-018-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "ANALYSIS_COMPLETED"
+    occurred_at: "2026-09-07T08:00:18Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-017-c2-08"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"AnalysisRun","object_id":"analysis-c2-08","revision":1}
+      - {"object_type":"TargetContractInstance","object_id":"target-instance-c2-08","revision":2}
+      - {"object_type":"TargetRegion","object_id":"ncp-region-c2-08","revision":1}
+      - {"object_type":"PerceptionSnapshot","object_id":"perception-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"PerceptionSnapshot","object_id":"perception-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+    output_refs:
+      - {"object_type":"AnalysisRun","object_id":"analysis-c2-08","revision":1}
+      - {"object_type":"TargetContractInstance","object_id":"target-instance-c2-08","revision":2}
+      - {"object_type":"TargetRegion","object_id":"ncp-region-c2-08","revision":1}
+    error_codes: []
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "Complete analysis; target verification follows actual deterministic evidence."
+      prior_status: null
+      resulting_status: null
+    integrity_payload_hash: "218b06bc6b5eebcc6139d6ec9a0cdfe947b7e6d5d83c75bf608182d207d6340d"
+  -
+    event_id: "event-019-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "STATUS_TRANSITIONED"
+    occurred_at: "2026-09-07T08:00:19Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-018-c2-08"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"FoundationTask","object_id":"task-c2-08","revision":3}
+      - {"object_type":"FoundationTask","object_id":"task-c2-08","revision":2}
+    input_refs: [{"object_type":"FoundationTask","object_id":"task-c2-08","revision":2}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-08","revision":3}]
+    error_codes: []
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "Analysis is blocked by deterministic gates."
+      prior_status: "ANALYZING"
+      resulting_status: "BLOCKED"
+    integrity_payload_hash: "4da6c13118e4870dc6c0569a7d3d2251ccbd6a2fd3e67a7f206e501bce46b5f4"
+  -
+    event_id: "event-020-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "MAPPING_PROPOSED"
+    occurred_at: "2026-09-07T08:00:20Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-019-c2-08"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"MappingProposal","object_id":"ncp-mapping-c2-08","revision":1}
+      - {"object_type":"RuleEvaluation","object_id":"ncp-rule-evaluation-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"RuleEvaluation","object_id":"ncp-rule-evaluation-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+    output_refs: [{"object_type":"MappingProposal","object_id":"ncp-mapping-c2-08","revision":1}]
+    error_codes: []
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "Persist the governed SYSTEM mapping and any bounded AI input."
+      prior_status: null
+      resulting_status: null
+    integrity_payload_hash: "0b0d16e543cf9cbe0324cb222d608bac7e8f1a6bd55b89778057d469a4428517"
+  -
+    event_id: "event-021-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "CHANGE_PROPOSED"
+    occurred_at: "2026-09-07T08:00:21Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-020-c2-08"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs:
+      - {"object_type":"ChangeProposal","object_id":"ncp-proposal-c2-08","revision":1}
+      - {"object_type":"MappingProposal","object_id":"ncp-mapping-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+    input_refs:
+      - {"object_type":"MappingProposal","object_id":"ncp-mapping-c2-08","revision":1}
+      - {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+    output_refs: [{"object_type":"ChangeProposal","object_id":"ncp-proposal-c2-08","revision":1}]
+    error_codes: ["STRICT_OOXML_MUTATION_UNQUALIFIED"]
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "Record a proposal with no execution authority."
+      prior_status: null
+      resulting_status: null
+      first_material_failure_event_id: "event-005-c2-08"
+    integrity_payload_hash: "20f1e0778eea00a2b0c3d34006a41ad21a063774d5157b54c1e77a66159869ed"
+  -
+    event_id: "event-022-c2-08"
+    event_version: 1
+    schema_version: "0.1.0"
+    event_type: "RELEASE_WITHHELD"
+    occurred_at: "2026-09-07T08:00:22Z"
+    actor: {"actor_type":"SYSTEM","actor_id":"foundation-governance"}
+    task_id: "task-c2-08"
+    correlation_id: "attempt-c2-08"
+    causation_event_id: "event-021-c2-08"
+    document_version_refs:
+      -
+        document_id: "target-document-c2-08"
+        version_id: "target-version-c2-08"
+        binary_hash: "d988b33ac85d89bd71bbc79043eae8ceb6067bd66c55a1f91f284cdd83514d68"
+    business_target_ids: ["VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"]
+    object_refs: [{"object_type":"FoundationTask","object_id":"task-c2-08","revision":3}]
+    input_refs: [{"object_type":"FoundationTask","object_id":"task-c2-08","revision":3}]
+    output_refs: [{"object_type":"FoundationTask","object_id":"task-c2-08","revision":3}]
+    error_codes: ["STRICT_OOXML_MUTATION_UNQUALIFIED"]
+    metadata:
+      metadata_kind: "GOVERNANCE"
+      summary: "Whole-task release stays withheld; independent branch records are preserved."
+      prior_status: "WITHHELD"
+      resulting_status: "WITHHELD"
+      first_material_failure_event_id: "event-005-c2-08"
+    integrity_payload_hash: "204685771c534524c3c213c7475b7d5193f2dca0c311f67799e6fdd325eb7599"
+expected:
+  task_ref: {"object_type":"FoundationTask","object_id":"task-c2-08","revision":3}
+  task_status: "BLOCKED"
+  release_status: "WITHHELD"
+  first_material_failure_event_id: "event-005-c2-08"
+  ai_execution_authority: false
+  fuzzy_fallback_attempted: false
+  mutation_attempted: false
+  approved_change_set_refs: []
+  execution_refs: []
+  validation_report_refs: []
+  error_codes: ["STRICT_OOXML_MUTATION_UNQUALIFIED"]
+  targets:
+    -
+      business_target_id: "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+      target_region_ref: {"object_type":"TargetRegion","object_id":"ncp-region-c2-08","revision":1}
+      verification_status: "VERIFIED"
+      evidence_assessment_ref: {"object_type":"EvidenceAssessment","object_id":"ncp-evidence-assessment-c2-08","revision":1}
+      target_local_progress_permitted: false
