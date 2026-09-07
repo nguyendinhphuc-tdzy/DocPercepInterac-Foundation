@@ -1,0 +1,120 @@
+schema_version: 0.1.0
+fixture_scope: behavioral_trace
+scenario_id: C2-02
+title: Factual NCP target is independently valid while benchmark conclusion is blocked
+facts:
+  ncp_target_id: VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR
+  conclusion_target_id: VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION
+  current_benchmark_present: false
+object_index:
+  - {object_type: FoundationTask, object_id: task-c2-02, revision: 2}
+  - {object_type: SourceRequirement, object_id: benchmark-requirement-c2-02, revision: 1}
+  - {object_type: SourceAssessment, object_id: benchmark-assessment-c2-02, revision: 1}
+  - {object_type: EvidenceCheck, object_id: benchmark-check-c2-02, revision: 1}
+  - {object_type: EvidenceAssessment, object_id: conclusion-evidence-c2-02, revision: 1}
+  - {object_type: ChangeProposal, object_id: ncp-proposal-c2-02, revision: 1}
+deterministic_evaluations:
+  source_assessment:
+    object_type: SourceAssessment
+    id: benchmark-assessment-c2-02
+    status: COMPLETED
+    outcome: MISSING
+    evaluator_binding: &binding
+      evaluator_key: source.sufficiency.benchmark
+      evaluator_version: 0.1.0
+      configuration_ref: {uri: "urn:foundation:config:c2-02:benchmark", sha256: "2222222222222222222222222222222222222222222222222222222222222222", media_type: application/json}
+    document_version_refs: []
+    error_codes: [SOURCE_MISSING]
+  evidence_check:
+    object_type: EvidenceCheck
+    id: benchmark-check-c2-02
+    check_kind: SOURCE_PRESENCE
+    outcome: FAIL
+    evaluator_binding: *binding
+    error_codes: [SOURCE_MISSING, EVIDENCE_INSUFFICIENT]
+target_outcomes:
+  - business_target_id: VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR
+    verification_status: VERIFIED
+    proposal_ref: {object_type: ChangeProposal, object_id: ncp-proposal-c2-02, revision: 1}
+    target_local_progress_permitted: true
+  - business_target_id: VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION
+    verification_status: BLOCKED
+    source_assessment_ref: {object_type: SourceAssessment, object_id: benchmark-assessment-c2-02, revision: 1}
+    error_codes: [SOURCE_MISSING, EVIDENCE_INSUFFICIENT]
+    target_local_progress_permitted: false
+approved_change_sets: []
+replay_requests: []
+expected:
+  task_status: BLOCKED
+  release_status: WITHHELD
+  error_codes: [SOURCE_MISSING, RELEASE_BLOCKED_INCOMPLETE_TARGETS]
+  first_material_failure_event_id: event-c2-02-02
+audit_events:
+  - event_id: event-c2-02-01
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: TASK_CREATED
+    occurred_at: "2026-09-07T02:00:00Z"
+    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
+    task_id: task-c2-02
+    correlation_id: correlation-c2-02
+    causation_event_id: null
+    document_version_refs: []
+    business_target_ids: []
+    object_refs: []
+    input_refs: []
+    output_refs: [{object_type: FoundationTask, object_id: task-c2-02, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: GOVERNANCE, summary: "Governed task created.", prior_status: null, resulting_status: CREATED}
+    integrity_payload_hash: "38039c52817abb585fd649f02c4ca366d8260135a09ade1e371ed7571e41cb36"
+  - event_id: event-c2-02-02
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: SOURCE_ASSESSED
+    occurred_at: "2026-09-07T02:01:00Z"
+    actor: {actor_type: SYSTEM, actor_id: source-governance}
+    task_id: task-c2-02
+    correlation_id: correlation-c2-02
+    causation_event_id: event-c2-02-01
+    document_version_refs: []
+    business_target_ids: [VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION]
+    object_refs: [{object_type: SourceAssessment, object_id: benchmark-assessment-c2-02, revision: 1}]
+    input_refs: [{object_type: SourceRequirement, object_id: benchmark-requirement-c2-02, revision: 1}]
+    output_refs: [{object_type: SourceAssessment, object_id: benchmark-assessment-c2-02, revision: 1}]
+    error_codes: [SOURCE_MISSING]
+    metadata: {metadata_kind: DETERMINISTIC_EVALUATION, summary: "Current benchmark source is missing.", evaluation_ref: {object_type: SourceAssessment, object_id: benchmark-assessment-c2-02, revision: 1}, evaluator_binding: *binding, outcome: MISSING}
+    integrity_payload_hash: "ee4c8d8247421511de8b1ae1ff38442aaa328d6240d39f6f4bab3f8379bf3d49"
+  - event_id: event-c2-02-03
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: EVIDENCE_ASSESSED
+    occurred_at: "2026-09-07T02:02:00Z"
+    actor: {actor_type: SYSTEM, actor_id: evidence-governance}
+    task_id: task-c2-02
+    correlation_id: correlation-c2-02
+    causation_event_id: event-c2-02-02
+    document_version_refs: []
+    business_target_ids: [VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION]
+    object_refs: [{object_type: EvidenceAssessment, object_id: conclusion-evidence-c2-02, revision: 1}]
+    input_refs: [{object_type: SourceAssessment, object_id: benchmark-assessment-c2-02, revision: 1}, {object_type: EvidenceCheck, object_id: benchmark-check-c2-02, revision: 1}]
+    output_refs: [{object_type: EvidenceAssessment, object_id: conclusion-evidence-c2-02, revision: 1}]
+    error_codes: [SOURCE_MISSING, EVIDENCE_INSUFFICIENT]
+    metadata: {metadata_kind: DETERMINISTIC_EVALUATION, summary: "Arm's-length conclusion evidence is insufficient.", evaluation_ref: {object_type: EvidenceAssessment, object_id: conclusion-evidence-c2-02, revision: 1}, evaluator_binding: *binding, outcome: INSUFFICIENT, first_material_failure_event_id: event-c2-02-02}
+    integrity_payload_hash: "c9b7f34d4c6ceeeb6cff912b2fcd99f967e65991f2f37f1589b2ee91774c15ee"
+  - event_id: event-c2-02-04
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: RELEASE_WITHHELD
+    occurred_at: "2026-09-07T02:03:00Z"
+    actor: {actor_type: SYSTEM, actor_id: release-governance}
+    task_id: task-c2-02
+    correlation_id: correlation-c2-02
+    causation_event_id: event-c2-02-03
+    document_version_refs: []
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR, VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION]
+    object_refs: [{object_type: FoundationTask, object_id: task-c2-02, revision: 2}]
+    input_refs: [{object_type: EvidenceAssessment, object_id: conclusion-evidence-c2-02, revision: 1}]
+    output_refs: [{object_type: FoundationTask, object_id: task-c2-02, revision: 2}]
+    error_codes: [SOURCE_MISSING, RELEASE_BLOCKED_INCOMPLETE_TARGETS]
+    metadata: {metadata_kind: GOVERNANCE, summary: "Whole-task release is withheld; the independent factual target does not verify the blocked conclusion.", prior_status: WITHHELD, resulting_status: WITHHELD, first_material_failure_event_id: event-c2-02-02}
+    integrity_payload_hash: "f129ebdd401138f869141d6487cd20055e3e7ebdf7309175b19eeea76e116f74"

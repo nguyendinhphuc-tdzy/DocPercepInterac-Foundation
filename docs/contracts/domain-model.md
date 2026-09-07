@@ -12,7 +12,7 @@ The [current baseline](../CURRENT_BASELINE.md) and active [ADRs](../adr/README.m
 
 ## Reading and identity conventions
 
-Lifecycle and enumeration definitions are in [status-model.md](status-model.md). The pending OpenAPI, error, event, invariant and example contracts must use these corrected definitions; they cannot weaken the invariants preserved below.
+Lifecycle and enumeration definitions are in [status-model.md](status-model.md). The C2 [invariants](invariants.md), [error catalog](error-catalog.md), [event model](event-model.md) and [behavioral examples](examples/) use these definitions. The future OpenAPI must align with them and cannot weaken the invariants preserved below.
 
 Each top-level record has the following required envelope unless explicitly excluded:
 
@@ -94,6 +94,18 @@ Immutable artifact reference with SHA-256 and media type. The URI alone is never
 | `uri` | `URI` | Yes | Immutable artifact address; governed storage, not arbitrary retrieval authorization. |
 | `sha256` | `SHA256` | Yes | SHA-256 of artifact bytes. |
 | `media_type` | `Text` | Yes | Content media type. |
+
+### EvaluatorBinding
+
+Exact deterministic evaluator execution identity. This inline value is data, not executable content.
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `evaluator_key` | `EvaluatorKey` | Yes | Registered deterministic implementation identifier. |
+| `evaluator_version` | `Text` | Yes | Exact immutable implementation version used for this evaluation. |
+| `configuration_ref` | `ContentRef` | Yes | Pinned declarative configuration and digest used by that implementation. |
+
+The binding must resolve in the approved evaluator registry. It cannot contain or resolve caller-supplied source code, scripts, queries, expressions or prompts. Changing any binding field produces a new evaluation and can invalidate dependent authorization; historical evaluation records remain unchanged.
 
 ### Actor
 
@@ -665,6 +677,7 @@ Uses the full task-owned record envelope.
 | --- | --- | --- | --- |
 | `business_rule_ref` | `Ref<BusinessRule>` | Yes | Exact evaluated rule revision. |
 | `business_target_id` | `BusinessTargetID` | Yes | Evaluated target. |
+| `evaluator_binding` | `EvaluatorBinding` | Yes | Exact deterministic implementation/version/configuration used; evaluator_key must match the BusinessRule declaration. |
 | `input_refs` | `Reference[]` | Yes | Pinned inputs. |
 | `outcome` | `CheckOutcome` | Yes | Recorded deterministic outcome. |
 | `proposed_value` | `BusinessValue` | No | Value proposed by a successful evaluation. |
@@ -727,6 +740,7 @@ Uses the full task-owned record envelope.
 | `resolved_source_period` | `Nullable<Period>` | Yes | Period resolved from the requirement; null only for PERIOD_INDEPENDENT on a completed assessment. |
 | `freshness_policy_ref` | `Ref<FreshnessPolicy>` | Yes | Exact policy revision from source_requirement_ref; independent of resolved period. |
 | `freshness_evaluation` | `Nullable<FreshnessEvaluation>` | Yes | Recorded deterministic freshness result; non-null with outcome PASS is required for COMPLETED/SUFFICIENT. |
+| `evaluator_binding` | `EvaluatorBinding` | Yes | Exact deterministic sufficiency evaluator implementation/version/configuration used. This is separate from the nested freshness evaluator identity. |
 | `status` | `SourceAssessmentStatus` | Yes | Lifecycle only: PENDING, ASSESSING, COMPLETED, SUPERSEDED or FAILED. |
 | `method` | `AssessmentMethod` | Yes | DETERMINISTIC only. |
 | `authority` | `SourceAuthority` | Yes | Authority supported by policy and provenance. |
@@ -771,6 +785,7 @@ Uses the full task-owned record envelope.
 | `source_assessment_refs` | `Ref<SourceAssessment>[+]` | Yes | Sufficiency inputs. |
 | `evidence_refs` | `Ref<EvidenceRecord>[]` | Yes | Evidence tested; empty allowed for missing-source checks. |
 | `policy_ref` | `ContentRef` | Yes | Check policy. |
+| `evaluator_binding` | `EvaluatorBinding` | Yes | Exact deterministic check implementation/version/configuration used. |
 | `method` | `AssessmentMethod` | Yes | DETERMINISTIC only. |
 | `outcome` | `CheckOutcome` | Yes | Explicit result. |
 | `error_codes` | `ErrorCode[]` | Yes | Catalog diagnostics. |
@@ -804,6 +819,7 @@ Uses the full task-owned record envelope.
 | `business_target_id` | `BusinessTargetID` | Yes | Target assessed. |
 | `source_assessment_refs` | `Ref<SourceAssessment>[+]` | Yes | Pinned sufficiency records. |
 | `evidence_check_refs` | `Ref<EvidenceCheck>[+]` | Yes | Deterministic checks. |
+| `evaluator_binding` | `EvaluatorBinding` | Yes | Exact deterministic aggregation implementation/version/configuration used. |
 | `status` | `EvidenceStatus` | Yes | VERIFIED only if every required check passes. |
 | `method` | `AssessmentMethod` | Yes | DETERMINISTIC only. |
 | `error_codes` | `ErrorCode[]` | Yes | Reasons for insufficient, conflicting or stale evidence. |
@@ -1066,7 +1082,7 @@ Uses the full task-owned record envelope.
 
 ### AuditEvent references
 
-Governance, execution, validation and exception actions emit immutable AuditEvent records. Their full event envelope is pending completion in event-model.md. The reference convention is object_type AuditEvent, object_id equal to event_id and revision equal to event_version. An event proves a recorded action; it does not replace the ApprovedChangeSet or independent validation.
+Governance, execution, validation and exception actions emit immutable AuditEvent records defined in event-model.md. The reference convention is object_type AuditEvent, object_id equal to event_id and revision equal to event_version. An event proves a recorded action; it does not replace the ApprovedChangeSet or independent validation.
 
 ## Reusability and binding boundary
 
@@ -1134,7 +1150,7 @@ Only authorization is hashed by this field. The outer lifecycle envelope and aut
 15. Task completion and whole-document release require every required business target. A supported NCP factual change does not verify an arm's-length conclusion when current benchmark evidence is missing.
 16. Every recorded revision is immutable and every reference is pinned. Supersession, override, revocation and correction append new records/events. No historical rewriting or silent reuse of obsolete approval is allowed.
 17. DocumentVersion owns immutable binary identity; DocumentPreflightAssessment owns evolving observation history through new immutable assessments/revisions. Capability remains specific to its exact native scope, operation, engine/version, conformance and qualification evidence.
-18. Every BusinessRule declares RuleType and a deterministic evaluator_key. Every EvidenceCheck declares EvidenceCheckKind. Neither taxonomy supplies executable code or authorization.
+18. Every BusinessRule declares RuleType and a deterministic evaluator_key. Every RuleEvaluation, SourceAssessment, EvidenceCheck and EvidenceAssessment records the exact EvaluatorBinding used. Every EvidenceCheck declares EvidenceCheckKind. Neither taxonomy nor binding supplies executable code or authorization.
 19. Period policy and freshness policy are separate, independently required governance concerns. A pinned period, unchanged hash or prior PASS never supplies indefinite freshness.
 20. Every Condition is one closed typed variant; every BusinessValue includes kind and review_text. No generic executable condition/payload or implicit fallback is allowed.
 
@@ -1155,7 +1171,7 @@ These corrections are breaking changes to the un-frozen draft, not a runtime or 
 - Execution/validation/release labels are removed from ApprovedChangeSetStatus. Those states cannot be mechanically mapped to new approval without checking approval history, revocation and sealed content.
 - Architecture generation stays v2; the pre-freeze wire/persistence schema version is 0.1.0. Do not silently relabel historical 2.0.0 draft records or reuse their digests. A converted authorization requires a newly sealed set and renewed explicit review.
 
-Before freeze, the remaining shared package must align OpenAPI, examples, complete error metadata, event integrity fields and the consolidated invariants. Production fingerprint profiles, native-operation qualification, structured-value schema allowlisting, fiscal period policy and deterministic precedence for multiple source findings still require explicit policy/evidence decisions. None is a reason to weaken the fail-closed boundary or invent runtime behavior in this phase.
+Before freeze, the future OpenAPI and any additional shared-package material must align the domain, status and C2 behavioral contracts. Production fingerprint profiles, native-operation qualification, structured-value schema allowlisting, fiscal period policy and deterministic precedence for multiple source findings still require explicit policy/evidence decisions. None is a reason to weaken the fail-closed boundary or invent runtime behavior in this phase.
 
 ## C1.1 migration consequences
 

@@ -1,0 +1,110 @@
+schema_version: 0.1.0
+fixture_scope: behavioral_trace
+scenario_id: C2-03
+title: Target binary changes after approval
+object_index:
+  - {object_type: FoundationTask, object_id: task-c2-03, revision: 2}
+  - {object_type: DocumentVersion, object_id: target-v1-c2-03, revision: 1}
+  - {object_type: DocumentVersion, object_id: target-v2-c2-03, revision: 1}
+  - {object_type: ApprovedChangeSet, object_id: changeset-c2-03, revision: 1}
+  - {object_type: ApprovedChangeSet, object_id: changeset-c2-03, revision: 2}
+  - {object_type: ExecutionResult, object_id: execution-c2-03, revision: 1}
+approved_target: &approved_target {document_id: target-doc-c2-03, version_id: target-v1-c2-03, binary_hash: "3131313131313131313131313131313131313131313131313131313131313131"}
+current_target: &current_target {document_id: target-doc-c2-03, version_id: target-v2-c2-03, binary_hash: "3232323232323232323232323232323232323232323232323232323232323232"}
+authorization:
+  object_type: ApprovedChangeSet
+  id: changeset-c2-03
+  revision: 1
+  status: APPROVED
+  target_document_version_ref: *approved_target
+replay_request:
+  execution_id: execution-c2-03
+  approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-03, revision: 1}
+execution_result:
+  object_type: ExecutionResult
+  id: execution-c2-03
+  revision: 1
+  status: REFUSED
+  approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-03, revision: 1}
+  input_document_version_ref: *current_target
+  output_document_version_ref: null
+  error_codes: [STALE_DOCUMENT_VERSION]
+authorization_after_refusal:
+  object_type: ApprovedChangeSet
+  id: changeset-c2-03
+  revision: 2
+  status: INVALIDATED
+  sealed_authorization_revision: 1
+expected:
+  mutation_attempted: false
+  fuzzy_rebinding_attempted: false
+  first_material_failure_event_id: event-c2-03-03
+audit_events:
+  - event_id: event-c2-03-01
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: TASK_CREATED
+    occurred_at: "2026-09-07T03:00:00Z"
+    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
+    task_id: task-c2-03
+    correlation_id: correlation-c2-03
+    causation_event_id: null
+    document_version_refs: []
+    business_target_ids: []
+    object_refs: []
+    input_refs: []
+    output_refs: [{object_type: FoundationTask, object_id: task-c2-03, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: GOVERNANCE, summary: "Governed task created.", prior_status: null, resulting_status: CREATED}
+    integrity_payload_hash: "85d9658652789c450add4a9989899d12d0df5b92c3fe6c4d1c9f94537124d537"
+  - event_id: event-c2-03-02
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: REPLAY_REQUESTED
+    occurred_at: "2026-09-07T03:01:00Z"
+    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
+    task_id: task-c2-03
+    correlation_id: correlation-c2-03
+    causation_event_id: event-c2-03-01
+    document_version_refs: [*approved_target, *current_target]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-03, revision: 1}]
+    input_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-03, revision: 1}]
+    output_refs: []
+    error_codes: []
+    metadata: {metadata_kind: REPLAY, summary: "Replay requested from sealed authorization.", approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-03, revision: 1}, engine: OpenXmlSdk, engine_version: 3.5.1, input_document_version_ref: *current_target, output_document_version_ref: null}
+    integrity_payload_hash: "cc1df103dfc88daecd0bf3b8eee033e6877103ba3b03c6d056276f326f5e97f2"
+  - event_id: event-c2-03-03
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: EXECUTION_REFUSED
+    occurred_at: "2026-09-07T03:02:00Z"
+    actor: {actor_type: REPLAY_ENGINE, actor_id: replay-openxmlsdk}
+    task_id: task-c2-03
+    correlation_id: correlation-c2-03
+    causation_event_id: event-c2-03-02
+    document_version_refs: [*approved_target, *current_target]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ExecutionResult, object_id: execution-c2-03, revision: 1}]
+    input_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-03, revision: 1}]
+    output_refs: [{object_type: ExecutionResult, object_id: execution-c2-03, revision: 1}]
+    error_codes: [STALE_DOCUMENT_VERSION]
+    metadata: {metadata_kind: REPLAY, summary: "Current bytes differ from the approved target hash; no mutation occurred.", approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-03, revision: 1}, execution_ref: {object_type: ExecutionResult, object_id: execution-c2-03, revision: 1}, engine: OpenXmlSdk, engine_version: 3.5.1, input_document_version_ref: *current_target, output_document_version_ref: null}
+    integrity_payload_hash: "635dd888e13ffe3dcaf9d37903e2990e1035f8cb5b558a43c7268f6aa8a3e26d"
+  - event_id: event-c2-03-04
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: APPROVAL_INVALIDATED
+    occurred_at: "2026-09-07T03:03:00Z"
+    actor: {actor_type: SYSTEM, actor_id: authorization-governance}
+    task_id: task-c2-03
+    correlation_id: correlation-c2-03
+    causation_event_id: event-c2-03-03
+    document_version_refs: [*approved_target, *current_target]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-03, revision: 2}]
+    input_refs: [{object_type: ExecutionResult, object_id: execution-c2-03, revision: 1}]
+    output_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-03, revision: 2}]
+    error_codes: [STALE_DOCUMENT_VERSION]
+    metadata: {metadata_kind: GOVERNANCE, summary: "Authorization invalidated while sealed revision 1 remains unchanged.", prior_status: APPROVED, resulting_status: INVALIDATED, first_material_failure_event_id: event-c2-03-03}
+    integrity_payload_hash: "b1deac8c646629630736da0b984f9143333d671bb16ab01ee7ccbc33b6556c57"

@@ -1,0 +1,130 @@
+schema_version: 0.1.0
+fixture_scope: behavioral_trace
+scenario_id: C2-05
+title: Correct AI proposal has no authority when deterministic evidence is insufficient
+facts:
+  business_target_id: VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR
+  ai_proposed_value: {kind: PERCENT, review_text: "6.08%", percentage: "6.08"}
+object_index:
+  - {object_type: FoundationTask, object_id: task-c2-05, revision: 2}
+  - {object_type: AIInteractionRecord, object_id: ai-c2-05, revision: 1}
+  - {object_type: SourceRequirement, object_id: source-requirement-c2-05, revision: 1}
+  - {object_type: SourceAssessment, object_id: source-assessment-c2-05, revision: 1}
+  - {object_type: EvidenceCheck, object_id: evidence-check-c2-05, revision: 1}
+  - {object_type: EvidenceAssessment, object_id: evidence-assessment-c2-05, revision: 1}
+  - {object_type: MappingProposal, object_id: mapping-c2-05, revision: 1}
+  - {object_type: ChangeProposal, object_id: proposal-c2-05, revision: 1}
+ai_interaction:
+  object_type: AIInteractionRecord
+  id: ai-c2-05
+  revision: 1
+  actor: {actor_type: AI, actor_id: bounded-semantic-assistant}
+  provider: illustrative-provider
+  model: illustrative-model
+  model_version: null
+  instruction_ref: {uri: "urn:foundation:instruction:c2-05", sha256: "5151515151515151515151515151515151515151515151515151515151515151", media_type: application/json}
+  context_refs:
+    - {uri: "urn:foundation:context:c2-05", sha256: "5252525252525252525252525252525252525252525252525252525252525252", media_type: application/json}
+  output_ref: {uri: "urn:foundation:ai-output:c2-05", sha256: "5353535353535353535353535353535353535353535353535353535353535353", media_type: application/json}
+  output_summary: "Proposed 6.08%."
+  execution_authority: false
+deterministic_evaluation:
+  source_assessment:
+    object_type: SourceAssessment
+    id: source-assessment-c2-05
+    status: COMPLETED
+    outcome: MISSING
+    evaluator_binding: &binding
+      evaluator_key: source.sufficiency.local-file
+      evaluator_version: 0.1.0
+      configuration_ref: {uri: "urn:foundation:config:c2-05", sha256: "5454545454545454545454545454545454545454545454545454545454545454", media_type: application/json}
+    error_codes: [SOURCE_MISSING]
+  evidence_assessment:
+    object_type: EvidenceAssessment
+    id: evidence-assessment-c2-05
+    status: INSUFFICIENT
+    evaluator_binding: *binding
+    error_codes: [SOURCE_MISSING, EVIDENCE_INSUFFICIENT]
+proposal:
+  object_type: ChangeProposal
+  id: proposal-c2-05
+  revision: 1
+  status: BLOCKED
+  proposed_value: {kind: PERCENT, review_text: "6.08%", percentage: "6.08"}
+  error_codes: [EVIDENCE_INSUFFICIENT]
+approved_change_sets: []
+replay_requests: []
+expected:
+  target_verification_status: BLOCKED
+  task_status: BLOCKED
+  release_status: WITHHELD
+  first_material_failure_event_id: event-c2-05-03
+audit_events:
+  - event_id: event-c2-05-01
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: TASK_CREATED
+    occurred_at: "2026-09-07T05:00:00Z"
+    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
+    task_id: task-c2-05
+    correlation_id: correlation-c2-05
+    causation_event_id: null
+    document_version_refs: []
+    business_target_ids: []
+    object_refs: []
+    input_refs: []
+    output_refs: [{object_type: FoundationTask, object_id: task-c2-05, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: GOVERNANCE, summary: "Governed task created.", prior_status: null, resulting_status: CREATED}
+    integrity_payload_hash: "243e6f3e7b48bd9ccdacb7cf54a16cb2b50d74e05ccabb3ba31542deca463fbd"
+  - event_id: event-c2-05-02
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: AI_INTERACTION_RECORDED
+    occurred_at: "2026-09-07T05:01:00Z"
+    actor: {actor_type: AI, actor_id: bounded-semantic-assistant}
+    task_id: task-c2-05
+    correlation_id: correlation-c2-05
+    causation_event_id: event-c2-05-01
+    document_version_refs: []
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: AIInteractionRecord, object_id: ai-c2-05, revision: 1}]
+    input_refs: []
+    output_refs: [{object_type: AIInteractionRecord, object_id: ai-c2-05, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: AI_INTERACTION, summary: "AI proposed the scenario-supplied value without authority.", ai_interaction_ref: {object_type: AIInteractionRecord, object_id: ai-c2-05, revision: 1}, provider: illustrative-provider, model: illustrative-model, model_version: null, instruction_ref: {uri: "urn:foundation:instruction:c2-05", sha256: "5151515151515151515151515151515151515151515151515151515151515151", media_type: application/json}, context_refs: [{uri: "urn:foundation:context:c2-05", sha256: "5252525252525252525252525252525252525252525252525252525252525252", media_type: application/json}], output_ref: {uri: "urn:foundation:ai-output:c2-05", sha256: "5353535353535353535353535353535353535353535353535353535353535353", media_type: application/json}}
+    integrity_payload_hash: "be66179446ad9e63418fd578e094ffacfa0fdfb35afbafe307bcbee35412a8dd"
+  - event_id: event-c2-05-03
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: SOURCE_ASSESSED
+    occurred_at: "2026-09-07T05:02:00Z"
+    actor: {actor_type: SYSTEM, actor_id: source-governance}
+    task_id: task-c2-05
+    correlation_id: correlation-c2-05
+    causation_event_id: event-c2-05-02
+    document_version_refs: []
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: SourceAssessment, object_id: source-assessment-c2-05, revision: 1}]
+    input_refs: [{object_type: AIInteractionRecord, object_id: ai-c2-05, revision: 1}, {object_type: SourceRequirement, object_id: source-requirement-c2-05, revision: 1}]
+    output_refs: [{object_type: SourceAssessment, object_id: source-assessment-c2-05, revision: 1}]
+    error_codes: [SOURCE_MISSING]
+    metadata: {metadata_kind: DETERMINISTIC_EVALUATION, summary: "Required source evidence is missing despite the plausible AI output.", evaluation_ref: {object_type: SourceAssessment, object_id: source-assessment-c2-05, revision: 1}, evaluator_binding: *binding, outcome: MISSING}
+    integrity_payload_hash: "bd2eef2cee6709d57bc9b7b4556a6c761d9b648ba8ff537079daab2b268a667d"
+  - event_id: event-c2-05-04
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: CHANGE_PROPOSED
+    occurred_at: "2026-09-07T05:03:00Z"
+    actor: {actor_type: SYSTEM, actor_id: proposal-governance}
+    task_id: task-c2-05
+    correlation_id: correlation-c2-05
+    causation_event_id: event-c2-05-03
+    document_version_refs: []
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ChangeProposal, object_id: proposal-c2-05, revision: 1}]
+    input_refs: [{object_type: AIInteractionRecord, object_id: ai-c2-05, revision: 1}, {object_type: SourceAssessment, object_id: source-assessment-c2-05, revision: 1}]
+    output_refs: [{object_type: ChangeProposal, object_id: proposal-c2-05, revision: 1}]
+    error_codes: [SOURCE_MISSING, EVIDENCE_INSUFFICIENT]
+    metadata: {metadata_kind: GOVERNANCE, summary: "Proposal remains blocked and cannot create executable authorization.", prior_status: DRAFT, resulting_status: BLOCKED, first_material_failure_event_id: event-c2-05-03}
+    integrity_payload_hash: "54134000aa64b277cc2cebc867a615d87c5f0da399dd2e691729a25e441389e3"

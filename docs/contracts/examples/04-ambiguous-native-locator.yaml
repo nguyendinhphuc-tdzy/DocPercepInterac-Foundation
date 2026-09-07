@@ -1,0 +1,118 @@
+schema_version: 0.1.0
+fixture_scope: behavioral_trace
+scenario_id: C2-04
+title: Ambiguous exact locator refuses execution without fuzzy fallback
+object_index:
+  - {object_type: FoundationTask, object_id: task-c2-04, revision: 2}
+  - {object_type: DocumentVersion, object_id: target-v1-c2-04, revision: 1}
+  - {object_type: NativeLocator, object_id: locator-c2-04, revision: 1}
+  - {object_type: ApprovedChangeSet, object_id: changeset-c2-04, revision: 1}
+  - {object_type: ApprovedChangeSet, object_id: changeset-c2-04, revision: 2}
+  - {object_type: ExecutionResult, object_id: execution-c2-04, revision: 1}
+target: &target {document_id: target-doc-c2-04, version_id: target-v1-c2-04, binary_hash: "4141414141414141414141414141414141414141414141414141414141414141"}
+locator:
+  object_type: NativeLocator
+  id: locator-c2-04
+  revision: 1
+  document_version_ref: *target
+  locator_type: DOCX_BOOKMARK
+  address:
+    kind: DOCX_BOOKMARK
+    bookmark_id: bookmark-ncp
+    bookmark_name: NCP_Current_Year
+    start_path:
+      - {namespace_uri: "http://schemas.openxmlformats.org/wordprocessingml/2006/main", local_name: document, ordinal: 1}
+      - {namespace_uri: "http://schemas.openxmlformats.org/wordprocessingml/2006/main", local_name: bookmarkStart, ordinal: 1}
+    end_path:
+      - {namespace_uri: "http://schemas.openxmlformats.org/wordprocessingml/2006/main", local_name: document, ordinal: 1}
+      - {namespace_uri: "http://schemas.openxmlformats.org/wordprocessingml/2006/main", local_name: bookmarkEnd, ordinal: 1}
+  structural_fingerprint: "4242424242424242424242424242424242424242424242424242424242424242"
+resolution_observation:
+  exact_match_count: 2
+  fuzzy_fallback_permitted: false
+replay_request:
+  execution_id: execution-c2-04
+  approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-04, revision: 1}
+execution_result:
+  object_type: ExecutionResult
+  id: execution-c2-04
+  revision: 1
+  status: REFUSED
+  approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-04, revision: 1}
+  input_document_version_ref: *target
+  output_document_version_ref: null
+  error_codes: [LOCATOR_AMBIGUOUS]
+expected:
+  mutation_attempted: false
+  fuzzy_fallback_attempted: false
+  authorization_status: INVALIDATED
+  first_material_failure_event_id: event-c2-04-02
+audit_events:
+  - event_id: event-c2-04-00
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: TASK_CREATED
+    occurred_at: "2026-09-07T03:59:00Z"
+    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
+    task_id: task-c2-04
+    correlation_id: correlation-c2-04
+    causation_event_id: null
+    document_version_refs: []
+    business_target_ids: []
+    object_refs: []
+    input_refs: []
+    output_refs: [{object_type: FoundationTask, object_id: task-c2-04, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: GOVERNANCE, summary: "Governed task created.", prior_status: null, resulting_status: CREATED}
+    integrity_payload_hash: "2281d873315117a5c613c2290337b732f2a0b13b013f6db426c2d99640c8fecf"
+  - event_id: event-c2-04-01
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: REPLAY_REQUESTED
+    occurred_at: "2026-09-07T04:00:00Z"
+    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
+    task_id: task-c2-04
+    correlation_id: correlation-c2-04
+    causation_event_id: event-c2-04-00
+    document_version_refs: [*target]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-04, revision: 1}, {object_type: NativeLocator, object_id: locator-c2-04, revision: 1}]
+    input_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-04, revision: 1}]
+    output_refs: []
+    error_codes: []
+    metadata: {metadata_kind: REPLAY, summary: "Replay requested from sealed authorization.", approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-04, revision: 1}, engine: OpenXmlSdk, engine_version: 3.5.1, input_document_version_ref: *target, output_document_version_ref: null}
+    integrity_payload_hash: "fa367e290b1f6c7b6ec97b0dc69da8b06c8af8bb90ca75191929833a17703016"
+  - event_id: event-c2-04-02
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: EXECUTION_REFUSED
+    occurred_at: "2026-09-07T04:01:00Z"
+    actor: {actor_type: REPLAY_ENGINE, actor_id: replay-openxmlsdk}
+    task_id: task-c2-04
+    correlation_id: correlation-c2-04
+    causation_event_id: event-c2-04-01
+    document_version_refs: [*target]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ExecutionResult, object_id: execution-c2-04, revision: 1}, {object_type: NativeLocator, object_id: locator-c2-04, revision: 1}]
+    input_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-04, revision: 1}]
+    output_refs: [{object_type: ExecutionResult, object_id: execution-c2-04, revision: 1}]
+    error_codes: [LOCATOR_AMBIGUOUS]
+    metadata: {metadata_kind: REPLAY, summary: "Typed locator resolved two native objects; execution refused without fuzzy repair.", approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-04, revision: 1}, execution_ref: {object_type: ExecutionResult, object_id: execution-c2-04, revision: 1}, engine: OpenXmlSdk, engine_version: 3.5.1, input_document_version_ref: *target, output_document_version_ref: null}
+    integrity_payload_hash: "e664ce07e8acb90fed7be3572beba20b5ce31eeb2041b246b5ce69b64001b5ed"
+  - event_id: event-c2-04-03
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: APPROVAL_INVALIDATED
+    occurred_at: "2026-09-07T04:02:00Z"
+    actor: {actor_type: SYSTEM, actor_id: authorization-governance}
+    task_id: task-c2-04
+    correlation_id: correlation-c2-04
+    causation_event_id: event-c2-04-02
+    document_version_refs: [*target]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-04, revision: 2}]
+    input_refs: [{object_type: ExecutionResult, object_id: execution-c2-04, revision: 1}]
+    output_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-04, revision: 2}]
+    error_codes: [LOCATOR_AMBIGUOUS]
+    metadata: {metadata_kind: GOVERNANCE, summary: "Locator assumption invalidated the authorization.", prior_status: APPROVED, resulting_status: INVALIDATED, first_material_failure_event_id: event-c2-04-02}
+    integrity_payload_hash: "929cb4fae679e4ab99e8ebe34f3a0213eca5d988238f60dabaf3b71c84af84cd"

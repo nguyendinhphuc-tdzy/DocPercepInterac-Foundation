@@ -1,0 +1,167 @@
+schema_version: 0.1.0
+fixture_scope: behavioral_trace
+scenario_id: C2-06
+title: Independent validation quarantines collateral native change
+object_index:
+  - {object_type: FoundationTask, object_id: task-c2-06, revision: 3}
+  - {object_type: DocumentVersion, object_id: target-v1-c2-06, revision: 1}
+  - {object_type: DocumentVersion, object_id: output-v1-c2-06, revision: 1}
+  - {object_type: ApprovedChangeSet, object_id: changeset-c2-06, revision: 1}
+  - {object_type: ApprovedChangeSet, object_id: changeset-c2-06, revision: 2}
+  - {object_type: ExecutionResult, object_id: execution-c2-06, revision: 1}
+  - {object_type: ValidationPlan, object_id: validation-plan-c2-06, revision: 1}
+  - {object_type: ValidationReport, object_id: validation-c2-06, revision: 1}
+target: &target {document_id: target-doc-c2-06, version_id: target-v1-c2-06, binary_hash: "6161616161616161616161616161616161616161616161616161616161616161"}
+output: &output {document_id: output-doc-c2-06, version_id: output-v1-c2-06, binary_hash: "6262626262626262626262626262626262626262626262626262626262626262"}
+replay_request:
+  execution_id: execution-c2-06
+  approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-06, revision: 1}
+execution_result:
+  object_type: ExecutionResult
+  id: execution-c2-06
+  revision: 1
+  status: SUCCEEDED
+  approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-06, revision: 1}
+  input_document_version_ref: *target
+  output_document_version_ref: *output
+  engine: OpenXmlSdk
+  engine_version: 3.5.1
+  error_codes: []
+validation_report:
+  object_type: ValidationReport
+  id: validation-c2-06
+  revision: 1
+  status: FAILED
+  execution_ref: {object_type: ExecutionResult, object_id: execution-c2-06, revision: 1}
+  approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-06, revision: 1}
+  input_document_version_ref: *target
+  output_document_version_ref: *output
+  validator: {actor_type: VALIDATOR, actor_id: validator-independent-c2}
+  approved_target_check: PASS
+  out_of_scope_change_check: FAIL
+  error_codes: [UNAUTHORIZED_CHANGE_DETECTED]
+expected:
+  output_document_status: QUARANTINED
+  release_status: WITHHELD
+  authorization_status: INVALIDATED
+  first_material_failure_event_id: event-c2-06-04
+audit_events:
+  - event_id: event-c2-06-01
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: TASK_CREATED
+    occurred_at: "2026-09-07T06:00:00Z"
+    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
+    task_id: task-c2-06
+    correlation_id: correlation-c2-06
+    causation_event_id: null
+    document_version_refs: []
+    business_target_ids: []
+    object_refs: []
+    input_refs: []
+    output_refs: [{object_type: FoundationTask, object_id: task-c2-06, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: GOVERNANCE, summary: "Governed task created.", prior_status: null, resulting_status: CREATED}
+    integrity_payload_hash: "12f019ec8019a8e00b325142a87e489d1e33d0d1df72a3756c574e19e001f9bd"
+  - event_id: event-c2-06-02
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: REPLAY_REQUESTED
+    occurred_at: "2026-09-07T06:01:00Z"
+    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
+    task_id: task-c2-06
+    correlation_id: correlation-c2-06
+    causation_event_id: event-c2-06-01
+    document_version_refs: [*target]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-06, revision: 1}]
+    input_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-06, revision: 1}]
+    output_refs: []
+    error_codes: []
+    metadata: {metadata_kind: REPLAY, summary: "Replay requested from sealed authorization.", approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-06, revision: 1}, engine: OpenXmlSdk, engine_version: 3.5.1, input_document_version_ref: *target, output_document_version_ref: null}
+    integrity_payload_hash: "0f8e4bb8f5345e2cfa86712d9fa625b953ff7e8fc1e1b2c3ae82afe02cf95b2e"
+  - event_id: event-c2-06-03
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: EXECUTION_COMPLETED
+    occurred_at: "2026-09-07T06:02:00Z"
+    actor: {actor_type: REPLAY_ENGINE, actor_id: replay-openxmlsdk}
+    task_id: task-c2-06
+    correlation_id: correlation-c2-06
+    causation_event_id: event-c2-06-02
+    document_version_refs: [*target, *output]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ExecutionResult, object_id: execution-c2-06, revision: 1}]
+    input_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-06, revision: 1}]
+    output_refs: [{object_type: ExecutionResult, object_id: execution-c2-06, revision: 1}, {object_type: DocumentVersion, object_id: output-v1-c2-06, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: REPLAY, summary: "Engine reported mechanical success; release remains withheld.", approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-06, revision: 1}, execution_ref: {object_type: ExecutionResult, object_id: execution-c2-06, revision: 1}, engine: OpenXmlSdk, engine_version: 3.5.1, input_document_version_ref: *target, output_document_version_ref: *output}
+    integrity_payload_hash: "46000faf7b19da974b8a360be296489d4200c41fb63286d29c87f16aa9bbf020"
+  - event_id: event-c2-06-04
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: VALIDATION_COMPLETED
+    occurred_at: "2026-09-07T06:03:00Z"
+    actor: {actor_type: VALIDATOR, actor_id: validator-independent-c2}
+    task_id: task-c2-06
+    correlation_id: correlation-c2-06
+    causation_event_id: event-c2-06-03
+    document_version_refs: [*target, *output]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ValidationReport, object_id: validation-c2-06, revision: 1}]
+    input_refs: [{object_type: ExecutionResult, object_id: execution-c2-06, revision: 1}, {object_type: ValidationPlan, object_id: validation-plan-c2-06, revision: 1}]
+    output_refs: [{object_type: ValidationReport, object_id: validation-c2-06, revision: 1}]
+    error_codes: [UNAUTHORIZED_CHANGE_DETECTED]
+    metadata: {metadata_kind: VALIDATION, summary: "Approved target is correct, but unrelated native content also changed.", validation_report_ref: {object_type: ValidationReport, object_id: validation-c2-06, revision: 1}, validator: {actor_type: VALIDATOR, actor_id: validator-independent-c2}, validator_version: 0.1.0, configuration_ref: {uri: "urn:foundation:config:c2-06:validator", sha256: "6464646464646464646464646464646464646464646464646464646464646464", media_type: application/json}, input_document_version_ref: *target, output_document_version_ref: *output, observation_refs: [{uri: "urn:foundation:observation:c2-06:diff", sha256: "6565656565656565656565656565656565656565656565656565656565656565", media_type: application/json}]}
+    integrity_payload_hash: "f3e1efb927c0212051b3d6b022ef3e038845443bcc536807882d9dfaa73bac75"
+  - event_id: event-c2-06-05
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: OUTPUT_QUARANTINED
+    occurred_at: "2026-09-07T06:04:00Z"
+    actor: {actor_type: SYSTEM, actor_id: release-governance}
+    task_id: task-c2-06
+    correlation_id: correlation-c2-06
+    causation_event_id: event-c2-06-04
+    document_version_refs: [*target, *output]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ValidationReport, object_id: validation-c2-06, revision: 1}]
+    input_refs: [{object_type: ValidationReport, object_id: validation-c2-06, revision: 1}]
+    output_refs: [{object_type: DocumentVersion, object_id: output-v1-c2-06, revision: 1}]
+    error_codes: [UNAUTHORIZED_CHANGE_DETECTED]
+    metadata: {metadata_kind: VALIDATION, summary: "Output quarantined and release withheld.", validation_report_ref: {object_type: ValidationReport, object_id: validation-c2-06, revision: 1}, validator: {actor_type: VALIDATOR, actor_id: validator-independent-c2}, validator_version: 0.1.0, configuration_ref: {uri: "urn:foundation:config:c2-06:validator", sha256: "6464646464646464646464646464646464646464646464646464646464646464", media_type: application/json}, input_document_version_ref: *target, output_document_version_ref: *output, observation_refs: [{uri: "urn:foundation:observation:c2-06:diff", sha256: "6565656565656565656565656565656565656565656565656565656565656565", media_type: application/json}], first_material_failure_event_id: event-c2-06-04}
+    integrity_payload_hash: "9f184d2ac060a1d356ce5f4fe9627dd27a3b44dfaff7af18621b5459e2bab5b5"
+  - event_id: event-c2-06-06
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: APPROVAL_INVALIDATED
+    occurred_at: "2026-09-07T06:05:00Z"
+    actor: {actor_type: SYSTEM, actor_id: authorization-governance}
+    task_id: task-c2-06
+    correlation_id: correlation-c2-06
+    causation_event_id: event-c2-06-05
+    document_version_refs: [*target, *output]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-06, revision: 2}]
+    input_refs: [{object_type: ValidationReport, object_id: validation-c2-06, revision: 1}]
+    output_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-06, revision: 2}]
+    error_codes: [UNAUTHORIZED_CHANGE_DETECTED]
+    metadata: {metadata_kind: GOVERNANCE, summary: "Dependent authorization invalidated; sealed revision 1 remains immutable.", prior_status: APPROVED, resulting_status: INVALIDATED, first_material_failure_event_id: event-c2-06-04}
+    integrity_payload_hash: "591058dd58835eebbbd0a897a6569c1e1fdc74203f821d7a337af8359663d6ba"
+  - event_id: event-c2-06-07
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: RELEASE_WITHHELD
+    occurred_at: "2026-09-07T06:06:00Z"
+    actor: {actor_type: SYSTEM, actor_id: release-governance}
+    task_id: task-c2-06
+    correlation_id: correlation-c2-06
+    causation_event_id: event-c2-06-06
+    document_version_refs: [*output]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: FoundationTask, object_id: task-c2-06, revision: 3}, {object_type: ValidationReport, object_id: validation-c2-06, revision: 1}]
+    input_refs: [{object_type: ValidationReport, object_id: validation-c2-06, revision: 1}]
+    output_refs: [{object_type: FoundationTask, object_id: task-c2-06, revision: 3}]
+    error_codes: [UNAUTHORIZED_CHANGE_DETECTED]
+    metadata: {metadata_kind: GOVERNANCE, summary: "Release remains withheld for the quarantined output.", prior_status: WITHHELD, resulting_status: WITHHELD, first_material_failure_event_id: event-c2-06-04}
+    integrity_payload_hash: "7e10c944b68da4c3aa3b54ead0b4056f7ca20298a35f977d12841d95f7c13c65"

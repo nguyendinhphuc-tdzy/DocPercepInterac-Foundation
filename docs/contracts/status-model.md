@@ -199,7 +199,7 @@ TargetVerificationStatus begins UNVERIFIED. Deterministic evidence permits VERIF
 
 CapabilityStatus describes one inline CapabilityResult in a pinned DocumentPreflightAssessment revision, not an entire TargetRegion or DocumentVersion. A CapabilityResultRef selects that entry and exact native scope. SUPPORTED for one operation/native structure/engine/version/conformance does not grant support for another. Unknown or absent qualification is not a pass.
 
-RuleType is a required business-policy classification on every BusinessRule, not a lifecycle or MutationOperation. evaluator_key is an opaque deterministic implementation identifier. EvidenceCheckKind is required on every EvidenceCheck; PERIOD and FRESHNESS have separate semantics and must not substitute for each other. Neither taxonomy changes any passed C1 state machine.
+RuleType is a required business-policy classification on every BusinessRule, not a lifecycle or MutationOperation. evaluator_key is an opaque deterministic implementation identifier. RuleEvaluation, SourceAssessment, EvidenceCheck and EvidenceAssessment each pin the exact EvaluatorBinding used. EvidenceCheckKind is required on every EvidenceCheck; PERIOD and FRESHNESS have separate semantics and must not substitute for each other. Neither taxonomy changes any passed C1 state machine.
 
 ConditionKind selects a closed typed shape in domain-model.md. ConditionValueTargetKind distinguishes an exact input native object from an output validation subject identified inside the approved set; it introduces no new native execution address or global ApprovedChange record. BusinessValueKind selects kind-specific fields only after mandatory kind and review_text are present.
 
@@ -220,7 +220,7 @@ ReleaseStatus belongs to task/document release governance. It starts WITHHELD; a
 
 ## Canonical enum registry
 
-These are closed vocabularies for schema version 0.1.0. Identifiers such as provider/model names, business periods and descriptions are text, not enums. ObjectType includes only top-level records and deliberately excludes ApprovedChange and ReplayRequest. The ErrorCode entries reserve the symbols used in C1/C1.1; their complete error metadata must be supplied by the remaining error-catalog work before freeze.
+These are closed vocabularies for schema version 0.1.0. Identifiers such as provider/model names, business periods and descriptions are text, not enums. ObjectType includes only top-level records and deliberately excludes ApprovedChange and ReplayRequest. ErrorCode and EventType align with the C2 error and event contracts.
 
 ### SchemaVersion
 
@@ -368,11 +368,15 @@ These are closed vocabularies for schema version 0.1.0. Identifiers such as prov
 
 ### SystemAction
 
-`REJECT_REQUEST`, `REFUSE_EXECUTION`, `BLOCK_PROPOSAL`, `REQUEST_SOURCE`, `REQUIRE_REVIEW`, `REANALYZE`, `QUARANTINE_OUTPUT`, `RETRY_WITH_BACKOFF`, `HALT_AND_ESCALATE`.
+`REJECT_REQUEST`, `REFUSE_EXECUTION`, `BLOCK_PROPOSAL`, `REQUEST_SOURCE`, `REQUIRE_REVIEW`, `REANALYZE`, `QUARANTINE_OUTPUT`, `WITHHOLD_RELEASE`, `RETRY_WITH_BACKOFF`, `HALT_AND_ESCALATE`.
 
 ### EventType
 
-`TASK_CREATED`, `DOCUMENT_REGISTERED`, `ANALYSIS_COMPLETED`, `SOURCE_ASSESSED`, `EVIDENCE_ASSESSED`, `MAPPING_PROPOSED`, `AI_INTERACTION_RECORDED`, `CHANGE_PROPOSED`, `REVIEW_DECIDED`, `DECISION_SUPERSEDED`, `CHANGE_SET_APPROVED`, `APPROVAL_INVALIDATED`, `APPROVAL_REVOKED`, `REPLAY_REQUESTED`, `EXECUTION_COMPLETED`, `EXECUTION_REFUSED`, `VALIDATION_COMPLETED`, `RELEASE_WITHHELD`, `OUTPUT_RELEASED`, `EXCEPTION_RECORDED`, `EXCEPTION_RESOLVED`, `STATUS_TRANSITIONED`.
+`TASK_CREATED`, `DOCUMENT_REGISTERED`, `DOCUMENT_PREFLIGHT_COMPLETED`, `ANALYSIS_COMPLETED`, `RULE_EVALUATED`, `SOURCE_ASSESSED`, `EVIDENCE_CHECKED`, `EVIDENCE_ASSESSED`, `MAPPING_PROPOSED`, `AI_INTERACTION_RECORDED`, `CHANGE_PROPOSED`, `REVIEW_DECIDED`, `SOURCE_REQUESTED`, `DECISION_SUPERSEDED`, `CHANGE_SET_APPROVED`, `APPROVAL_INVALIDATED`, `APPROVAL_REVOKED`, `REPLAY_REQUESTED`, `EXECUTION_COMPLETED`, `EXECUTION_REFUSED`, `VALIDATION_COMPLETED`, `RELEASE_ELIGIBILITY_CONFIRMED`, `RELEASE_WITHHELD`, `OUTPUT_QUARANTINED`, `OUTPUT_RELEASED`, `EXCEPTION_RECORDED`, `EXCEPTION_RESOLVED`, `STATUS_TRANSITIONED`.
+
+### AuditMetadataKind
+
+`GOVERNANCE`, `DETERMINISTIC_EVALUATION`, `AI_INTERACTION`, `REPLAY`, `VALIDATION`, `EXCEPTION`.
 
 ### ObjectType
 
@@ -408,4 +412,4 @@ These are closed vocabularies for schema version 0.1.0. Identifiers such as prov
 
 ### ErrorCode
 
-`INVALID_CONTRACT`, `INVALID_STATE_TRANSITION`, `STALE_DOCUMENT_VERSION`, `REFERENCE_NOT_FOUND`, `APPROVAL_CONTENT_MISMATCH`, `IDEMPOTENCY_CONFLICT`, `EXECUTION_CONFLICT`, `PRECONDITION_FAILED`.
+`INVALID_CONTRACT`, `INVALID_STATE_TRANSITION`, `REFERENCE_NOT_FOUND`, `EVALUATOR_BINDING_UNAVAILABLE`, `EVALUATOR_CONFIGURATION_MISMATCH`, `STALE_DOCUMENT_VERSION`, `LOCATOR_NOT_FOUND`, `LOCATOR_AMBIGUOUS`, `LOCATOR_FINGERPRINT_MISMATCH`, `CAPABILITY_UNKNOWN`, `UNSUPPORTED_NATIVE_OBJECT`, `PROTECTED_OBJECT`, `EXECUTION_UNSUPPORTED`, `STRICT_OOXML_MUTATION_UNQUALIFIED`, `SOURCE_MISSING`, `SOURCE_STALE`, `SOURCE_NOT_AUTHORITATIVE`, `SOURCE_CONFLICTING`, `SOURCE_AMBIGUOUS`, `EVIDENCE_INSUFFICIENT`, `EVIDENCE_NOT_VERIFIED`, `AI_AUTHORITY_VIOLATION`, `APPROVAL_REQUIRED`, `APPROVAL_CONTENT_MISMATCH`, `AUTHORIZATION_NOT_APPROVED`, `IDEMPOTENCY_CONFLICT`, `EXECUTION_CONFLICT`, `PRECONDITION_FAILED`, `REPLAY_ENGINE_FAILURE`, `INDEPENDENT_VALIDATOR_NOT_QUALIFIED`, `VALIDATION_OBSERVATION_UNAVAILABLE`, `UNAUTHORIZED_CHANGE_DETECTED`, `PROTECTED_SCOPE_VIOLATION`, `RELEASE_BLOCKED_INCOMPLETE_TARGETS`, `EVENT_INTEGRITY_MISMATCH`, `EVENT_CAUSATION_INVALID`.

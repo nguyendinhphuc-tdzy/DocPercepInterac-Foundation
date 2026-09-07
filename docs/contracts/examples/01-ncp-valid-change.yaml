@@ -1,0 +1,335 @@
+schema_version: 0.1.0
+fixture_scope: behavioral_trace
+scenario_id: C2-01
+title: Verified NCP change becomes release eligible
+facts:
+  business_target_id: VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR
+  current_value: {kind: PERCENT, review_text: "14.18%", percentage: "14.18"}
+  proposed_value: {kind: PERCENT, review_text: "6.08%", percentage: "6.08"}
+  source_period_policy: CURRENT_PERIOD
+object_index:
+  - {object_type: FoundationTask, object_id: task-c2-01, revision: 3}
+  - {object_type: DocumentVersion, object_id: target-v1-c2-01, revision: 1}
+  - {object_type: DocumentVersion, object_id: source-v1-c2-01, revision: 1}
+  - {object_type: DocumentVersion, object_id: output-v1-c2-01, revision: 1}
+  - {object_type: TargetContractDefinition, object_id: target-contract-c2-01, revision: 1}
+  - {object_type: TargetContractInstance, object_id: target-instance-c2-01, revision: 1}
+  - {object_type: RulePack, object_id: rule-pack-c2-01, revision: 1}
+  - {object_type: RuleEvaluation, object_id: rule-eval-c2-01, revision: 1}
+  - {object_type: SourceAssessment, object_id: source-assessment-c2-01, revision: 1}
+  - {object_type: EvidenceCheck, object_id: evidence-check-c2-01, revision: 1}
+  - {object_type: EvidenceAssessment, object_id: evidence-assessment-c2-01, revision: 1}
+  - {object_type: NativeLocator, object_id: locator-c2-01, revision: 1}
+  - {object_type: ChangeProposal, object_id: proposal-c2-01, revision: 1}
+  - {object_type: ReviewDecision, object_id: review-c2-01, revision: 1}
+  - {object_type: ValidationPlan, object_id: validation-plan-c2-01, revision: 1}
+  - {object_type: ApprovedChangeSet, object_id: changeset-c2-01, revision: 1}
+  - {object_type: ExecutionResult, object_id: execution-c2-01, revision: 1}
+  - {object_type: ValidationReport, object_id: validation-c2-01, revision: 1}
+document_versions:
+  target: &target
+    document_id: target-doc-c2-01
+    version_id: target-v1-c2-01
+    binary_hash: "1111111111111111111111111111111111111111111111111111111111111111"
+  source: &source
+    document_id: source-doc-c2-01
+    version_id: source-v1-c2-01
+    binary_hash: "1212121212121212121212121212121212121212121212121212121212121212"
+  output: &output
+    document_id: output-doc-c2-01
+    version_id: output-v1-c2-01
+    binary_hash: "1313131313131313131313131313131313131313131313131313131313131313"
+deterministic_evaluations:
+  - object_type: RuleEvaluation
+    id: rule-eval-c2-01
+    revision: 1
+    task_id: task-c2-01
+    outcome: PASS
+    evaluator_binding: &rule_binding
+      evaluator_key: local-file.ncp.current-year
+      evaluator_version: 0.1.0
+      configuration_ref: {uri: "urn:foundation:config:c2-01:rule", sha256: "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", media_type: application/json}
+  - object_type: SourceAssessment
+    id: source-assessment-c2-01
+    revision: 1
+    task_id: task-c2-01
+    status: COMPLETED
+    outcome: SUFFICIENT
+    evaluator_binding: &source_binding
+      evaluator_key: source.sufficiency.local-file
+      evaluator_version: 0.1.0
+      configuration_ref: {uri: "urn:foundation:config:c2-01:source", sha256: "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", media_type: application/json}
+    document_version_refs: [*source]
+    error_codes: []
+  - object_type: EvidenceCheck
+    id: evidence-check-c2-01
+    revision: 1
+    task_id: task-c2-01
+    check_kind: SOURCE_PRESENCE
+    outcome: PASS
+    evaluator_binding: &evidence_binding
+      evaluator_key: evidence.source-presence
+      evaluator_version: 0.1.0
+      configuration_ref: {uri: "urn:foundation:config:c2-01:evidence", sha256: "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc", media_type: application/json}
+    error_codes: []
+  - object_type: EvidenceAssessment
+    id: evidence-assessment-c2-01
+    revision: 1
+    task_id: task-c2-01
+    status: VERIFIED
+    evaluator_binding: *evidence_binding
+    error_codes: []
+review_decision:
+  object_type: ReviewDecision
+  id: review-c2-01
+  revision: 1
+  task_id: task-c2-01
+  change_proposal_ref: {object_type: ChangeProposal, object_id: proposal-c2-01, revision: 1}
+  reviewer: {actor_type: HUMAN, actor_id: reviewer-c2-01}
+  outcome: APPROVE
+  reviewed_evidence_refs:
+    - {object_type: SourceAssessment, object_id: source-assessment-c2-01, revision: 1}
+    - {object_type: EvidenceAssessment, object_id: evidence-assessment-c2-01, revision: 1}
+  requested_source_requirement_refs: []
+authorization:
+  object_type: ApprovedChangeSet
+  id: changeset-c2-01
+  revision: 1
+  task_id: task-c2-01
+  status: APPROVED
+  target_document_version_ref: *target
+  source_document_version_refs: [*source]
+  target_contract_definition_ref: {object_type: TargetContractDefinition, object_id: target-contract-c2-01, revision: 1}
+  target_contract_instance_ref: {object_type: TargetContractInstance, object_id: target-instance-c2-01, revision: 1}
+  rule_pack_ref: {object_type: RulePack, object_id: rule-pack-c2-01, revision: 1}
+  source_assessment_refs: [{object_type: SourceAssessment, object_id: source-assessment-c2-01, revision: 1}]
+  evidence_assessment_refs: [{object_type: EvidenceAssessment, object_id: evidence-assessment-c2-01, revision: 1}]
+  review_decision_refs: [{object_type: ReviewDecision, object_id: review-c2-01, revision: 1}]
+  approved_changes:
+    - approved_change_id: ncp-change-01
+      business_target_id: VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR
+      native_locator_ref: {object_type: NativeLocator, object_id: locator-c2-01, revision: 1}
+      operation: REPLACE_SDT_TEXT
+      payload: {kind: SDT_TEXT_REPLACEMENT, replacement_text: "6.08%"}
+  validation_plan_ref: {object_type: ValidationPlan, object_id: validation-plan-c2-01, revision: 1}
+  mutation_profile: TRANSITIONAL
+  authorization_digest: "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd"
+replay_request:
+  execution_id: execution-c2-01
+  approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-01, revision: 1}
+execution_result:
+  object_type: ExecutionResult
+  id: execution-c2-01
+  revision: 1
+  status: SUCCEEDED
+  approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-01, revision: 1}
+  input_document_version_ref: *target
+  output_document_version_ref: *output
+  engine: OpenXmlSdk
+  engine_version: 3.5.1
+  error_codes: []
+validation_report:
+  object_type: ValidationReport
+  id: validation-c2-01
+  revision: 1
+  status: PASSED
+  execution_ref: {object_type: ExecutionResult, object_id: execution-c2-01, revision: 1}
+  approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-01, revision: 1}
+  input_document_version_ref: *target
+  output_document_version_ref: *output
+  validator: {actor_type: VALIDATOR, actor_id: validator-c2}
+  error_codes: []
+expected:
+  task_status: COMPLETED
+  release_status: ELIGIBLE
+  approved_change_set_status: APPROVED
+  first_material_failure_event_id: null
+audit_events:
+  - &event_base
+    event_id: event-c2-01-01
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: TASK_CREATED
+    occurred_at: "2026-09-07T01:00:00Z"
+    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
+    task_id: task-c2-01
+    correlation_id: correlation-c2-01
+    causation_event_id: null
+    document_version_refs: []
+    business_target_ids: []
+    object_refs: []
+    input_refs: []
+    output_refs: [{object_type: FoundationTask, object_id: task-c2-01, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: GOVERNANCE, summary: "Governed task created.", prior_status: null, resulting_status: CREATED}
+    integrity_payload_hash: "48d92456fbc8a3586d54a2b9a0b49004eabe5a5194eb87c88d94c4b3b449ed9e"
+  - event_id: event-c2-01-01a
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: RULE_EVALUATED
+    occurred_at: "2026-09-07T01:00:30Z"
+    actor: {actor_type: SYSTEM, actor_id: rule-governance}
+    task_id: task-c2-01
+    correlation_id: correlation-c2-01
+    causation_event_id: event-c2-01-01
+    document_version_refs: [*target, *source]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: RuleEvaluation, object_id: rule-eval-c2-01, revision: 1}]
+    input_refs: []
+    output_refs: [{object_type: RuleEvaluation, object_id: rule-eval-c2-01, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: DETERMINISTIC_EVALUATION, summary: "Pinned NCP rule evaluated deterministically.", evaluation_ref: {object_type: RuleEvaluation, object_id: rule-eval-c2-01, revision: 1}, evaluator_binding: *rule_binding, outcome: PASS}
+    integrity_payload_hash: "75f4c3a7d43ed89c8a3929f30abd9d4e44061e737514535c6b49cb7dab516073"
+  - event_id: event-c2-01-02
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: SOURCE_ASSESSED
+    occurred_at: "2026-09-07T01:01:00Z"
+    actor: {actor_type: SYSTEM, actor_id: source-governance}
+    task_id: task-c2-01
+    correlation_id: correlation-c2-01
+    causation_event_id: event-c2-01-01a
+    document_version_refs: [*source]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: SourceAssessment, object_id: source-assessment-c2-01, revision: 1}]
+    input_refs: [{object_type: RuleEvaluation, object_id: rule-eval-c2-01, revision: 1}]
+    output_refs: [{object_type: SourceAssessment, object_id: source-assessment-c2-01, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: DETERMINISTIC_EVALUATION, summary: "Current-period NCP source was sufficient.", evaluation_ref: {object_type: SourceAssessment, object_id: source-assessment-c2-01, revision: 1}, evaluator_binding: *source_binding, outcome: SUFFICIENT}
+    integrity_payload_hash: "76ab11e413f518d18d8a8bbcd48f8bb9f6c8164ca34890a89a16a3ebe74847d4"
+  - event_id: event-c2-01-03
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: EVIDENCE_CHECKED
+    occurred_at: "2026-09-07T01:02:00Z"
+    actor: {actor_type: SYSTEM, actor_id: evidence-governance}
+    task_id: task-c2-01
+    correlation_id: correlation-c2-01
+    causation_event_id: event-c2-01-02
+    document_version_refs: [*source]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: EvidenceCheck, object_id: evidence-check-c2-01, revision: 1}]
+    input_refs: [{object_type: SourceAssessment, object_id: source-assessment-c2-01, revision: 1}]
+    output_refs: [{object_type: EvidenceCheck, object_id: evidence-check-c2-01, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: DETERMINISTIC_EVALUATION, summary: "Required source-presence check passed.", evaluation_ref: {object_type: EvidenceCheck, object_id: evidence-check-c2-01, revision: 1}, evaluator_binding: *evidence_binding, outcome: PASS}
+    integrity_payload_hash: "b70cf3a99e199a1f2d0a282ab55972ec43f7030c4f982df599a7ca189038499a"
+  - event_id: event-c2-01-03a
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: EVIDENCE_ASSESSED
+    occurred_at: "2026-09-07T01:02:30Z"
+    actor: {actor_type: SYSTEM, actor_id: evidence-governance}
+    task_id: task-c2-01
+    correlation_id: correlation-c2-01
+    causation_event_id: event-c2-01-03
+    document_version_refs: [*source]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: EvidenceAssessment, object_id: evidence-assessment-c2-01, revision: 1}]
+    input_refs: [{object_type: EvidenceCheck, object_id: evidence-check-c2-01, revision: 1}]
+    output_refs: [{object_type: EvidenceAssessment, object_id: evidence-assessment-c2-01, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: DETERMINISTIC_EVALUATION, summary: "Required NCP evidence was deterministically verified.", evaluation_ref: {object_type: EvidenceAssessment, object_id: evidence-assessment-c2-01, revision: 1}, evaluator_binding: *evidence_binding, outcome: VERIFIED}
+    integrity_payload_hash: "c093462eb39f7949e1d880e6089835b116704753b02a97eff249ff5251a1cfcd"
+  - event_id: event-c2-01-03b
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: REVIEW_DECIDED
+    occurred_at: "2026-09-07T01:02:45Z"
+    actor: {actor_type: HUMAN, actor_id: reviewer-c2-01}
+    task_id: task-c2-01
+    correlation_id: correlation-c2-01
+    causation_event_id: event-c2-01-03a
+    document_version_refs: [*target, *source]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ReviewDecision, object_id: review-c2-01, revision: 1}]
+    input_refs: [{object_type: ChangeProposal, object_id: proposal-c2-01, revision: 1}, {object_type: SourceAssessment, object_id: source-assessment-c2-01, revision: 1}, {object_type: EvidenceAssessment, object_id: evidence-assessment-c2-01, revision: 1}]
+    output_refs: [{object_type: ReviewDecision, object_id: review-c2-01, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: GOVERNANCE, summary: "Human reviewer explicitly approved the pinned proposal and evidence.", prior_status: IN_REVIEW, resulting_status: APPROVED, decision_ref: {object_type: ReviewDecision, object_id: review-c2-01, revision: 1}}
+    integrity_payload_hash: "02b840c4a7cc8483ad855810c3a3cbe3c0c1ec19d42b730e6febd1e3b58a64c8"
+  - event_id: event-c2-01-04
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: CHANGE_SET_APPROVED
+    occurred_at: "2026-09-07T01:03:00Z"
+    actor: {actor_type: SYSTEM, actor_id: authorization-governance}
+    task_id: task-c2-01
+    correlation_id: correlation-c2-01
+    causation_event_id: event-c2-01-03b
+    document_version_refs: [*target, *source]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-01, revision: 1}]
+    input_refs: [{object_type: ReviewDecision, object_id: review-c2-01, revision: 1}, {object_type: EvidenceAssessment, object_id: evidence-assessment-c2-01, revision: 1}]
+    output_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-01, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: GOVERNANCE, summary: "Eligible human decision and deterministic gates produced sealed authorization.", prior_status: null, resulting_status: APPROVED}
+    integrity_payload_hash: "58c1bbbb0b95f9e1c486d221b474e9091a98c6944299292d32c79c068a85fdb8"
+  - event_id: event-c2-01-05
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: REPLAY_REQUESTED
+    occurred_at: "2026-09-07T01:03:30Z"
+    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
+    task_id: task-c2-01
+    correlation_id: correlation-c2-01
+    causation_event_id: event-c2-01-04
+    document_version_refs: [*target]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-01, revision: 1}]
+    input_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-01, revision: 1}]
+    output_refs: []
+    error_codes: []
+    metadata: {metadata_kind: REPLAY, summary: "Replay requested from sealed authorization.", approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-01, revision: 1}, engine: OpenXmlSdk, engine_version: 3.5.1, input_document_version_ref: *target, output_document_version_ref: null}
+    integrity_payload_hash: "2bafd34093333464db6d16a8f0a3a967d02c0d7d3a68eec3e3f591e62146472b"
+  - event_id: event-c2-01-06
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: EXECUTION_COMPLETED
+    occurred_at: "2026-09-07T01:04:00Z"
+    actor: {actor_type: REPLAY_ENGINE, actor_id: replay-openxmlsdk}
+    task_id: task-c2-01
+    correlation_id: correlation-c2-01
+    causation_event_id: event-c2-01-05
+    document_version_refs: [*target, *output]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ExecutionResult, object_id: execution-c2-01, revision: 1}, {object_type: ApprovedChangeSet, object_id: changeset-c2-01, revision: 1}]
+    input_refs: [{object_type: ApprovedChangeSet, object_id: changeset-c2-01, revision: 1}]
+    output_refs: [{object_type: ExecutionResult, object_id: execution-c2-01, revision: 1}, {object_type: DocumentVersion, object_id: output-v1-c2-01, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: REPLAY, summary: "Approved NCP operation completed mechanically.", approved_change_set_ref: {object_type: ApprovedChangeSet, object_id: changeset-c2-01, revision: 1}, execution_ref: {object_type: ExecutionResult, object_id: execution-c2-01, revision: 1}, engine: OpenXmlSdk, engine_version: 3.5.1, input_document_version_ref: *target, output_document_version_ref: *output}
+    integrity_payload_hash: "44614963b9779f04116f75db400b2b3a7b16543515b3edae07bdfe67548c41cc"
+  - event_id: event-c2-01-07
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: VALIDATION_COMPLETED
+    occurred_at: "2026-09-07T01:05:00Z"
+    actor: {actor_type: VALIDATOR, actor_id: validator-c2}
+    task_id: task-c2-01
+    correlation_id: correlation-c2-01
+    causation_event_id: event-c2-01-06
+    document_version_refs: [*target, *output]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ValidationReport, object_id: validation-c2-01, revision: 1}]
+    input_refs: [{object_type: ExecutionResult, object_id: execution-c2-01, revision: 1}, {object_type: ValidationPlan, object_id: validation-plan-c2-01, revision: 1}]
+    output_refs: [{object_type: ValidationReport, object_id: validation-c2-01, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: VALIDATION, summary: "Independent validation passed all mandatory checks.", validation_report_ref: {object_type: ValidationReport, object_id: validation-c2-01, revision: 1}, validator: {actor_type: VALIDATOR, actor_id: validator-c2}, validator_version: 0.1.0, configuration_ref: {uri: "urn:foundation:config:c2-01:validator", sha256: "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee", media_type: application/json}, input_document_version_ref: *target, output_document_version_ref: *output, observation_refs: [{uri: "urn:foundation:observation:c2-01:validation", sha256: "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff", media_type: application/json}]}
+    integrity_payload_hash: "b572f9a10835dcf564debdc953a886844023bbdbcb20627ac903d47ef3551e0f"
+  - event_id: event-c2-01-08
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: RELEASE_ELIGIBILITY_CONFIRMED
+    occurred_at: "2026-09-07T01:06:00Z"
+    actor: {actor_type: SYSTEM, actor_id: release-governance}
+    task_id: task-c2-01
+    correlation_id: correlation-c2-01
+    causation_event_id: event-c2-01-07
+    document_version_refs: [*output]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: FoundationTask, object_id: task-c2-01, revision: 3}, {object_type: ValidationReport, object_id: validation-c2-01, revision: 1}]
+    input_refs: [{object_type: ValidationReport, object_id: validation-c2-01, revision: 1}]
+    output_refs: [{object_type: FoundationTask, object_id: task-c2-01, revision: 3}]
+    error_codes: []
+    metadata: {metadata_kind: GOVERNANCE, summary: "The validated output is eligible for governed release.", prior_status: WITHHELD, resulting_status: ELIGIBLE}
+    integrity_payload_hash: "f83774ec4315c6476872a30d603c6dae0020ac7351fc1a530aea34ae9b79aa17"

@@ -1,0 +1,113 @@
+schema_version: 0.1.0
+fixture_scope: behavioral_trace
+scenario_id: C2-08
+title: Strict OOXML mutation is refused before replay
+object_index:
+  - {object_type: FoundationTask, object_id: task-c2-08, revision: 2}
+  - {object_type: DocumentVersion, object_id: target-v1-c2-08, revision: 1}
+  - {object_type: DocumentPreflightAssessment, object_id: preflight-c2-08, revision: 1}
+  - {object_type: NativeLocator, object_id: locator-c2-08, revision: 1}
+  - {object_type: ChangeProposal, object_id: proposal-c2-08, revision: 1}
+  - {object_type: ExceptionRecord, object_id: exception-c2-08, revision: 1}
+target: &target {document_id: target-doc-c2-08, version_id: target-v1-c2-08, binary_hash: "8181818181818181818181818181818181818181818181818181818181818181"}
+preflight_assessment:
+  object_type: DocumentPreflightAssessment
+  id: preflight-c2-08
+  revision: 1
+  status: COMPLETED
+  document_version_ref: *target
+  detected_format: DOCX
+  detected_conformance: STRICT
+  assessor: {actor_type: SYSTEM, actor_id: document-preflight}
+  engine: native-ooxml-inspector
+  engine_version: 0.1.0
+  configuration_ref: {uri: "urn:foundation:config:c2-08:preflight", sha256: "8282828282828282828282828282828282828282828282828282828282828282", media_type: application/json}
+  error_codes: [STRICT_OOXML_MUTATION_UNQUALIFIED, EXECUTION_UNSUPPORTED]
+  capability_results:
+    - capability_result_id: strict-replace-sdt-c2-08
+      operation: REPLACE_SDT_TEXT
+      native_structure: DOCX_CONTENT_CONTROL
+      document_version_ref: *target
+      native_locator_refs: [{object_type: NativeLocator, object_id: locator-c2-08, revision: 1}]
+      engine: OpenXmlSdk
+      engine_version: 3.5.1
+      conformance: STRICT
+      qualification_evidence_refs: []
+      status: UNSUPPORTED
+      reason: "Strict OOXML mutation has not been qualified."
+proposal:
+  object_type: ChangeProposal
+  id: proposal-c2-08
+  revision: 1
+  status: BLOCKED
+  target_document_version_ref: *target
+  operation: REPLACE_SDT_TEXT
+  error_codes: [STRICT_OOXML_MUTATION_UNQUALIFIED, EXECUTION_UNSUPPORTED]
+approved_change_sets: []
+replay_requests: []
+execution_results: []
+expected:
+  task_status: BLOCKED
+  release_status: WITHHELD
+  mutation_attempted: false
+  first_material_failure_event_id: event-c2-08-02
+audit_events:
+  - event_id: event-c2-08-01
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: TASK_CREATED
+    occurred_at: "2026-09-07T08:00:00Z"
+    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
+    task_id: task-c2-08
+    correlation_id: correlation-c2-08
+    causation_event_id: null
+    document_version_refs: []
+    business_target_ids: []
+    object_refs: []
+    input_refs: []
+    output_refs: [{object_type: FoundationTask, object_id: task-c2-08, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: GOVERNANCE, summary: "Governed task created.", prior_status: null, resulting_status: CREATED}
+    integrity_payload_hash: "1baf749952992cd27937be5e818fce71ae5167efe00357a3ecd6c84ccce726f9"
+  - event_id: event-c2-08-02
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: DOCUMENT_PREFLIGHT_COMPLETED
+    occurred_at: "2026-09-07T08:01:00Z"
+    actor: {actor_type: SYSTEM, actor_id: document-preflight}
+    task_id: task-c2-08
+    correlation_id: correlation-c2-08
+    causation_event_id: event-c2-08-01
+    document_version_refs: [*target]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: DocumentPreflightAssessment, object_id: preflight-c2-08, revision: 1}]
+    input_refs: [{object_type: DocumentVersion, object_id: target-v1-c2-08, revision: 1}]
+    output_refs: [{object_type: DocumentPreflightAssessment, object_id: preflight-c2-08, revision: 1}]
+    error_codes: [STRICT_OOXML_MUTATION_UNQUALIFIED, EXECUTION_UNSUPPORTED]
+    metadata:
+      metadata_kind: DETERMINISTIC_EVALUATION
+      summary: "Strict OOXML was recognized, but mutation qualification is absent."
+      evaluation_ref: {object_type: DocumentPreflightAssessment, object_id: preflight-c2-08, revision: 1}
+      evaluator_binding:
+        evaluator_key: document.preflight.ooxml
+        evaluator_version: 0.1.0
+        configuration_ref: {uri: "urn:foundation:config:c2-08:preflight", sha256: "8282828282828282828282828282828282828282828282828282828282828282", media_type: application/json}
+      outcome: UNSUPPORTED
+    integrity_payload_hash: "8a0885aecf28f0b03984fde97781765976ba7fca3e0b143e854d3a85bb02a6e3"
+  - event_id: event-c2-08-03
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: EXCEPTION_RECORDED
+    occurred_at: "2026-09-07T08:02:00Z"
+    actor: {actor_type: SYSTEM, actor_id: proposal-governance}
+    task_id: task-c2-08
+    correlation_id: correlation-c2-08
+    causation_event_id: event-c2-08-02
+    document_version_refs: [*target]
+    business_target_ids: [VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR]
+    object_refs: [{object_type: ExceptionRecord, object_id: exception-c2-08, revision: 1}, {object_type: ChangeProposal, object_id: proposal-c2-08, revision: 1}]
+    input_refs: [{object_type: DocumentPreflightAssessment, object_id: preflight-c2-08, revision: 1}]
+    output_refs: [{object_type: ExceptionRecord, object_id: exception-c2-08, revision: 1}, {object_type: ChangeProposal, object_id: proposal-c2-08, revision: 1}]
+    error_codes: [STRICT_OOXML_MUTATION_UNQUALIFIED, EXECUTION_UNSUPPORTED]
+    metadata: {metadata_kind: EXCEPTION, summary: "Proposal blocked before authorization or replay.", exception_ref: {object_type: ExceptionRecord, object_id: exception-c2-08, revision: 1}, first_material_failure_event_id: event-c2-08-02, remediation_refs: []}
+    integrity_payload_hash: "25b96267ba91a68a91ab9ad7ea97670cc2d012f02721bec108d0b4c3fcb49ef6"

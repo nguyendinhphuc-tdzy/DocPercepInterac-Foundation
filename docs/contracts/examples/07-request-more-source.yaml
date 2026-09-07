@@ -1,0 +1,112 @@
+schema_version: 0.1.0
+fixture_scope: behavioral_trace
+scenario_id: C2-07
+title: Human requests more source without rewriting prior records
+object_index:
+  - {object_type: FoundationTask, object_id: task-c2-07, revision: 2}
+  - {object_type: SourceRequirement, object_id: benchmark-requirement-c2-07, revision: 1}
+  - {object_type: SourceAssessment, object_id: source-assessment-c2-07, revision: 1}
+  - {object_type: EvidenceAssessment, object_id: evidence-assessment-c2-07, revision: 1}
+  - {object_type: AIInteractionRecord, object_id: ai-c2-07, revision: 1}
+  - {object_type: ChangeProposal, object_id: proposal-c2-07, revision: 1}
+  - {object_type: ChangeProposal, object_id: proposal-c2-07, revision: 2}
+  - {object_type: ReviewDecision, object_id: review-c2-07, revision: 1}
+binding: &binding
+  evaluator_key: source.sufficiency.benchmark
+  evaluator_version: 0.1.0
+  configuration_ref: {uri: "urn:foundation:config:c2-07", sha256: "7171717171717171717171717171717171717171717171717171717171717171", media_type: application/json}
+prior_records:
+  source_assessment: {object_type: SourceAssessment, id: source-assessment-c2-07, revision: 1, status: COMPLETED, outcome: MISSING, evaluator_binding: *binding, error_codes: [SOURCE_MISSING]}
+  evidence_assessment: {object_type: EvidenceAssessment, id: evidence-assessment-c2-07, revision: 1, status: INSUFFICIENT, evaluator_binding: *binding, error_codes: [SOURCE_MISSING, EVIDENCE_INSUFFICIENT]}
+  ai_interaction: {object_type: AIInteractionRecord, id: ai-c2-07, revision: 1, execution_authority: false}
+review_decision:
+  object_type: ReviewDecision
+  id: review-c2-07
+  revision: 1
+  change_proposal_ref: {object_type: ChangeProposal, object_id: proposal-c2-07, revision: 1}
+  reviewer: {actor_type: HUMAN, actor_id: reviewer-c2-07}
+  outcome: REQUEST_MORE_SOURCE
+  requested_source_requirement_refs:
+    - {object_type: SourceRequirement, object_id: benchmark-requirement-c2-07, revision: 1}
+proposal_after_decision:
+  object_type: ChangeProposal
+  id: proposal-c2-07
+  revision: 2
+  status: BLOCKED
+  error_codes: [SOURCE_MISSING, EVIDENCE_INSUFFICIENT]
+approved_change_sets: []
+replay_requests: []
+expected:
+  prior_record_mutations: 0
+  task_status: BLOCKED
+  release_status: WITHHELD
+  first_material_failure_event_id: event-c2-07-02
+audit_events:
+  - event_id: event-c2-07-01
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: TASK_CREATED
+    occurred_at: "2026-09-07T07:00:00Z"
+    actor: {actor_type: SYSTEM, actor_id: foundation-orchestrator}
+    task_id: task-c2-07
+    correlation_id: correlation-c2-07
+    causation_event_id: null
+    document_version_refs: []
+    business_target_ids: []
+    object_refs: []
+    input_refs: []
+    output_refs: [{object_type: FoundationTask, object_id: task-c2-07, revision: 1}]
+    error_codes: []
+    metadata: {metadata_kind: GOVERNANCE, summary: "Governed task created.", prior_status: null, resulting_status: CREATED}
+    integrity_payload_hash: "291e321bbcade1909a6f2c87c4c89e22bf220fdeac5a227abe34b7725ca537a1"
+  - event_id: event-c2-07-02
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: SOURCE_ASSESSED
+    occurred_at: "2026-09-07T07:01:00Z"
+    actor: {actor_type: SYSTEM, actor_id: source-governance}
+    task_id: task-c2-07
+    correlation_id: correlation-c2-07
+    causation_event_id: event-c2-07-01
+    document_version_refs: []
+    business_target_ids: [VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION]
+    object_refs: [{object_type: SourceAssessment, object_id: source-assessment-c2-07, revision: 1}]
+    input_refs: [{object_type: SourceRequirement, object_id: benchmark-requirement-c2-07, revision: 1}]
+    output_refs: [{object_type: SourceAssessment, object_id: source-assessment-c2-07, revision: 1}]
+    error_codes: [SOURCE_MISSING]
+    metadata: {metadata_kind: DETERMINISTIC_EVALUATION, summary: "Required benchmark source is missing.", evaluation_ref: {object_type: SourceAssessment, object_id: source-assessment-c2-07, revision: 1}, evaluator_binding: *binding, outcome: MISSING}
+    integrity_payload_hash: "1b97c0e31e443ac827feab649ac2ad9e38d9320e13aa3a7a46c322f07414f3f9"
+  - event_id: event-c2-07-03
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: REVIEW_DECIDED
+    occurred_at: "2026-09-07T07:02:00Z"
+    actor: {actor_type: HUMAN, actor_id: reviewer-c2-07}
+    task_id: task-c2-07
+    correlation_id: correlation-c2-07
+    causation_event_id: event-c2-07-02
+    document_version_refs: []
+    business_target_ids: [VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION]
+    object_refs: [{object_type: ReviewDecision, object_id: review-c2-07, revision: 1}]
+    input_refs: [{object_type: ChangeProposal, object_id: proposal-c2-07, revision: 1}, {object_type: SourceAssessment, object_id: source-assessment-c2-07, revision: 1}, {object_type: EvidenceAssessment, object_id: evidence-assessment-c2-07, revision: 1}, {object_type: AIInteractionRecord, object_id: ai-c2-07, revision: 1}]
+    output_refs: [{object_type: ReviewDecision, object_id: review-c2-07, revision: 1}]
+    error_codes: [SOURCE_MISSING, EVIDENCE_INSUFFICIENT]
+    metadata: {metadata_kind: GOVERNANCE, summary: "Reviewer explicitly requested the named missing source.", prior_status: IN_REVIEW, resulting_status: BLOCKED, decision_ref: {object_type: ReviewDecision, object_id: review-c2-07, revision: 1}, first_material_failure_event_id: event-c2-07-02}
+    integrity_payload_hash: "aff1ded7c6bc2cccd26a84fb0ad91bff99f7c17bda13014b4f1db6ffd6541942"
+  - event_id: event-c2-07-04
+    event_version: 1
+    schema_version: 0.1.0
+    event_type: SOURCE_REQUESTED
+    occurred_at: "2026-09-07T07:03:00Z"
+    actor: {actor_type: HUMAN, actor_id: reviewer-c2-07}
+    task_id: task-c2-07
+    correlation_id: correlation-c2-07
+    causation_event_id: event-c2-07-03
+    document_version_refs: []
+    business_target_ids: [VN_LOCAL_FILE.TRANSFER_PRICING.ARMS_LENGTH_CONCLUSION]
+    object_refs: [{object_type: SourceRequirement, object_id: benchmark-requirement-c2-07, revision: 1}, {object_type: ChangeProposal, object_id: proposal-c2-07, revision: 2}]
+    input_refs: [{object_type: ReviewDecision, object_id: review-c2-07, revision: 1}]
+    output_refs: [{object_type: ChangeProposal, object_id: proposal-c2-07, revision: 2}]
+    error_codes: [SOURCE_MISSING]
+    metadata: {metadata_kind: GOVERNANCE, summary: "Source request recorded; prior AI, system and evidence records remain immutable.", prior_status: IN_REVIEW, resulting_status: BLOCKED, decision_ref: {object_type: ReviewDecision, object_id: review-c2-07, revision: 1}, first_material_failure_event_id: event-c2-07-02}
+    integrity_payload_hash: "7f5afb1585f8ef7cdab5a55a622caa8059e2887d637db6ca5c078691a8dba1a0"
