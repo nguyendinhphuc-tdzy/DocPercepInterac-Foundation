@@ -139,7 +139,7 @@ NativeBinding represents the semantic-to-native association.
 NativeLocator remains the exact, version-scoped native execution
 address; a NativeBinding does not replace it.
 
-FoundationObject must therefore contain both:
+The shared domain contracts must therefore represent both:
 
 - semantic representation;
 - native binding.

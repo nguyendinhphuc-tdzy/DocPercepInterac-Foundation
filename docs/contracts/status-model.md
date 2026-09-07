@@ -1,24 +1,37 @@
 # Foundation v2 Status Model
 
-**Contract version:** 2.0.0  
+**Foundation architecture generation:** v2
+
+**Contract schema version:** 0.1.0
+
 **Date:** 2026-09-07
+
+**Status:** Pre-freeze architecture contract.
 
 ## Transition rules
 
-The tables below are exhaustive allowed edges. A comma-separated source or destination expands to individual edges with the same guard; no other transition is legal. Every transition requires the named guard, authenticated authority, optimistic revision matching and an AuditEvent. An unknown or forbidden transition returns INVALID_STATE_TRANSITION without changing the historical record.
+The tables below are exhaustive allowed edges. Comma-separated source or destination states expand into individual edges subject to the same guard. No other edge is legal. Every transition requires the named guard, authenticated authority, optimistic revision matching and an immutable AuditEvent. An unknown or forbidden transition returns INVALID_STATE_TRANSITION without rewriting a historical record.
 
-Statuses are server-owned projections of append-only events and immutable snapshots. A status is never proof of authorization. Human/AI clients cannot PATCH status fields. Repeated reads and duplicate idempotent requests do not create transitions.
+Statuses are server-owned projections of append-only events and immutable snapshots. A status alone never proves authority. Human/AI clients cannot PATCH status fields. Repeated reads and duplicate idempotent requests do not create transitions.
 
-Initial states can only be created by the responsible service. Terminal outcomes are not rewritten. Where new evidence is required, create a new evaluation, proposal, attempt, decision or successor task, and retain links to the prior record. Completion of a historical task does not suppress later exceptions or quarantine of its released document.
+Initial states can only be created by the responsible service. Terminal outcomes are not rewritten. New evidence or decisions create new records and events, preserving old findings. The mutable latest-state projection does not make historical snapshots mutable.
 
-Verification, approval, execution success and release are separate dimensions:
+## Separate state dimensions
 
-- VERIFIED is a deterministic EvidenceAssessment or TargetRegion verdict, not a model score.
-- APPROVED on ChangeProposal records a review outcome but has zero execution authority.
-- ApprovedChangeSet is the only native mutation authorization; its latest eligibility must still be checked.
-- SUCCEEDED means mechanical replay completed into staging.
-- PASSED means required independent checks passed for the report's approved scope.
-- RELEASED additionally requires all task-required targets and release gates.
+| Dimension | Owner | Meaning |
+| --- | --- | --- |
+| Workflow progress and release | FoundationTask and document/release governance | Task readiness, aggregate completion and released artifact availability. |
+| Source assessment lifecycle | SourceAssessment.status | Whether the assessment is pending, running, completed, superseded or technically failed. |
+| Source business outcome | SourceAssessment.outcome | Sufficiency verdict on completed deterministic assessment; not a lifecycle state. |
+| Evidence verification | EvidenceAssessment.status and TargetRegion.verification_status | Deterministic evidence verdict, never AI confidence. |
+| Proposal review | ChangeProposal.status and immutable ReviewDecision | Proposed content and human review; no execution authority. |
+| Authorization validity | ApprovedChangeSet.status | APPROVED, INVALIDATED, REVOKED or SUPERSEDED only. |
+| Execution progress | ExecutionResult.status | Mechanical attempt, including staged success or refusal. |
+| Independent validation | ValidationReport.status | Independent checks on exact input, output and approved scope. |
+
+An ApprovedChangeSet may remain APPROVED before, during and after successful execution and validation, unless new events invalidate, revoke or supersede it. This does not allow a second application: execution identity, attempt history, exact input version and mutation ownership separately enforce idempotency and exclusivity.
+
+SUCCEEDED on execution, PASSED on validation and RELEASED on task/document release are not authorization states. ExecutionResult and ValidationReport do not own mutable release_status fields.
 
 ## Legal lifecycles
 
@@ -28,7 +41,7 @@ Enum: TaskStatus. Initial: CREATED. Terminal: COMPLETED, FAILED, CANCELLED.
 
 | From | To | Guard and responsible action |
 | --- | --- | --- |
-| CREATED | ANALYZING, CANCELLED | Orchestrator accepts pinned inputs or records cancellation. |
+| CREATED | ANALYZING, CANCELLED | Before ANALYZING, pin the TargetContractDefinition, registered task/document TargetContractInstance and RulePack, exact input versions and a nonempty required target set from the definition. Native binding may be completed during analysis. CREATED may omit these pins; cancellation does not require them. |
 | ANALYZING | AWAITING_REVIEW, BLOCKED, FAILED, CANCELLED | Deterministic analysis completes, records gaps, fails or cancels. |
 | AWAITING_REVIEW | READY_FOR_EXECUTION, BLOCKED, CANCELLED | Explicit review and all gates produce an eligible set; otherwise block. |
 | READY_FOR_EXECUTION | EXECUTING, BLOCKED, CANCELLED | Recheck set eligibility and input hash; do not infer authority from task status. |
@@ -52,14 +65,13 @@ Enum: DocumentStatus. Initial: REGISTERED (input), STAGED (generated output). Te
 
 ### SourceAssessment
 
-Enum: SourceAssessmentStatus. Initial: PENDING. Terminal: SUPERSEDED.
+Enum: SourceAssessmentStatus. Initial: PENDING. Terminal: SUPERSEDED, FAILED.
 
 | From | To | Guard and responsible action |
 | --- | --- | --- |
-| PENDING | ASSESSING, SUPERSEDED | Deterministic sufficiency evaluator starts or input is replaced. |
-| ASSESSING | SUFFICIENT, INSUFFICIENT, CONFLICTED, STALE | Check all required fields, authority, roles, period, consistency and source versions. |
-| SUFFICIENT | STALE, SUPERSEDED | New source/version/policy evidence invalidates applicability or replaces assessment. |
-| INSUFFICIENT, CONFLICTED, STALE | SUPERSEDED | Create a new assessment for new inputs; do not overwrite the failed finding. |
+| PENDING | ASSESSING, SUPERSEDED | Deterministic evaluator starts or a newer assessment supersedes the unstarted request. |
+| ASSESSING | COMPLETED, FAILED, SUPERSEDED | Finish with one business outcome, record technical failure without an outcome, or supersede the attempt. |
+| COMPLETED | SUPERSEDED | New evidence creates a new assessment. Preserve the completed outcome and all findings; never transition outcome labels as lifecycle states. |
 
 ### MappingProposal
 
@@ -81,19 +93,18 @@ Enum: ChangeProposalStatus. Initial: DRAFT. Terminal: REJECTED, SUPERSEDED.
 | DRAFT | READY_FOR_REVIEW, BLOCKED, SUPERSEDED | Exact candidate payload, native identity and evidence are complete or explicitly blocked. |
 | BLOCKED | READY_FOR_REVIEW, SUPERSEDED | Deterministic re-evaluation removes all blockers; no human override of missing evidence or protection. |
 | READY_FOR_REVIEW | IN_REVIEW, BLOCKED, SUPERSEDED | Human review opens; changed inputs may block or supersede. |
-| IN_REVIEW | APPROVED, REJECTED, BLOCKED, SUPERSEDED | Explicit ReviewDecision and current deterministic gates; DEFER leaves IN_REVIEW or BLOCKED when there is a blocker. |
+| IN_REVIEW | APPROVED, REJECTED, BLOCKED, SUPERSEDED | Explicit ReviewDecision and current deterministic gates. APPROVE permits APPROVED only with no blockers; REJECT rejects; DEFER leaves IN_REVIEW or BLOCKED; REQUEST_MORE_SOURCE records named requirements and moves to BLOCKED. |
 | APPROVED | SUPERSEDED | Any payload, policy, evidence or target binding change invalidates dependent authorization; proposal status is never replay authority. |
 
 ### ApprovedChangeSet
 
-Enum: ApprovedChangeSetStatus. Initial: APPROVED (governance materialization only). Terminal: RELEASED, INVALIDATED, REVOKED, FAILED.
+Enum: ApprovedChangeSetStatus. Initial: APPROVED (governance materialization only). Terminal: INVALIDATED, REVOKED, SUPERSEDED.
 
 | From | To | Guard and responsible action |
 | --- | --- | --- |
-| APPROVED | EXECUTING, INVALIDATED, REVOKED | Admission validates sealed content, human decisions, exact hash and current eligibility; start EXECUTING only after preflight passes. |
-| EXECUTING | EXECUTED, FAILED, INVALIDATED | Complete all approved mechanical operations or quarantine failure; concurrent invalidation prevents release. |
-| EXECUTED | VALIDATED, FAILED, INVALIDATED | Independent mandatory validation passes or records a failure/invalidation. An INCONCLUSIVE report leaves EXECUTED and withholds release. |
-| VALIDATED | RELEASED, INVALIDATED, REVOKED | Whole-task release checks pass or a new blocker revokes eligibility. |
+| APPROVED | INVALIDATED | Deterministic checks detect changed binary, evidence, policy, payload, locator, protected scope or validation obligations. |
+| APPROVED | REVOKED | Authenticated authorized human/governance revokes permission; append the decision/event. |
+| APPROVED | SUPERSEDED | A newly approved replacement set explicitly supersedes this set; preserve both sealed authorizations. |
 
 ### Execution
 
@@ -134,37 +145,63 @@ Enum: AnalysisStatus. Initial: QUEUED. Terminal: COMPLETED, BLOCKED, FAILED, CAN
 | QUEUED | RUNNING, CANCELLED | Orchestrator admits pinned analysis inputs. |
 | RUNNING | COMPLETED, BLOCKED, FAILED, CANCELLED | Analysis publishes typed outputs, records blockers or fails. COMPLETED describes run completion, not target verification. |
 
-## Supporting state semantics
+## SourceAssessment lifecycle and outcome rules
 
-BindingStatus progresses from PROPOSED to RESOLVED, AMBIGUOUS or UNSUPPORTED only after native inspection. New mappings are new revisions. RESOLVED does not imply a one-to-one semantic/native relationship; unique native resolution is enforced per ApprovedChange.
+| Lifecycle status | Outcome requirement | Meaning |
+| --- | --- | --- |
+| PENDING | null | Assessment has not begun. |
+| ASSESSING | null | No final business verdict yet. |
+| COMPLETED | Exactly one SourceSufficiencyOutcome | Deterministic assessment finished; only SUFFICIENT passes a blocking source gate. |
+| FAILED | null | A technical failure prevented assessment; never use FAILED to mean missing business evidence. |
+| SUPERSEDED | Preserve the previous outcome, including null | New assessment replaces applicability without rewriting the earlier finding. |
 
-EvidenceStatus begins UNASSESSED. A deterministic assessment can produce VERIFIED, INSUFFICIENT, CONFLICTED or STALE. A VERIFIED assessment becomes STALE when its inputs cease to apply; changed evidence requires a new assessment. AI cannot author these transitions.
+| SourceSufficiencyOutcome | Business meaning |
+| --- | --- |
+| SUFFICIENT | Every blocking requirement is satisfied by current applicable authoritative evidence, without unresolved ambiguity/conflict. |
+| MISSING | Required source or required business fields are absent. |
+| STALE | Source version or period no longer meets the pinned requirement. |
+| CONFLICTING | Material source facts conflict under the applicable policy. |
+| NOT_AUTHORITATIVE | Available material lacks required source authority. |
+| AMBIGUOUS | Source identity, scope or interpretation remains unresolved. |
 
-TargetVerificationStatus begins UNVERIFIED; deterministic current evidence permits VERIFIED, missing/conflicting evidence gives BLOCKED, and superseded inputs give STALE. Re-evaluation, not human acceptance of a score, is required to leave BLOCKED or STALE.
+If multiple failures apply, retain all findings and use the pinned deterministic policy to select the primary outcome; do not collapse uncertainty into SUFFICIENT. New source evidence creates a new assessment. Previously COMPLETED/SUFFICIENT records are superseded, not edited into STALE. A new assessment with status COMPLETED and outcome STALE can record stale applicability.
 
-ReviewOutcome is an immutable decision, not a lifecycle. APPROVE is the approval outcome. DEFER cannot issue authorization. Supersession creates a new ReviewDecision and event.
+PERIOD_INDEPENDENT resolves to no source period. CURRENT_PERIOD and PRIOR_PERIOD require explicit task period context; SPECIFIC_PERIOD uses the reusable requirement's fixed specific_period. A completed period-sensitive assessment must record its resolved source period. It never guesses a prior fiscal period by subtracting a calendar year.
 
-CheckOutcome PASS is necessary for each mandatory validation check. FAIL and BLOCKED prevent passage. NOT_APPLICABLE is permissible only for an explicitly optional plan requirement with a recorded reason; it cannot satisfy a mandatory requirement.
+## Review and supporting semantics
 
-ReleaseStatus begins WITHHELD. The independent release gate may set ELIGIBLE only after validation and all task-required targets pass. Atomic publication sets RELEASED. New contrary evidence creates a new WITHHELD projection and quarantine event; prior release records remain immutable.
+REQUEST_MORE_SOURCE is an explicit ReviewOutcome. It requires nonempty requested_source_requirement_refs, records the source request and moves an affected in-review proposal to BLOCKED. It does not update prior SourceAssessment or EvidenceAssessment records. APPROVE still requires every blocking gate to pass; REJECT is a rejection and DEFER records a pending decision without creating authorization.
+
+BindingStatus progresses from PROPOSED to RESOLVED, AMBIGUOUS or UNSUPPORTED through native inspection. Changed bindings are new revisions. RESOLVED does not imply a one-to-one semantic/native relationship; exact unique execution resolution is checked per inline change.
+
+EvidenceStatus starts UNASSESSED. A deterministic assessment may produce VERIFIED, INSUFFICIENT, CONFLICTED or STALE. These evidence labels are intentionally distinct from SourceSufficiencyOutcome and must not be copied into SourceAssessment.status. New evidence is a new immutable assessment snapshot. AI cannot author verification transitions.
+
+TargetVerificationStatus begins UNVERIFIED. Deterministic evidence permits VERIFIED, missing/conflicting evidence gives BLOCKED, and obsolete inputs give STALE. Human acceptance of a model score cannot resolve a blocking state.
+
+CapabilityStatus describes one CapabilityResult tuple, not an entire TargetRegion. SUPPORTED for one operation/native structure/engine/version/conformance does not grant support for another. Unknown or absent qualification is not a pass.
+
+CheckOutcome PASS is required for every mandatory independent validation check. FAIL and BLOCKED prevent passage. NOT_APPLICABLE is permitted only for a plan requirement explicitly marked optional, with a recorded reason; it cannot satisfy a mandatory check.
+
+ReleaseStatus belongs to task/document release governance. It starts WITHHELD; all independent validation and task-required target gates permit ELIGIBLE; atomic publication gives RELEASED. New contrary evidence creates a new WITHHELD projection and document quarantine event without erasing a historical release.
 
 ## Retry, concurrency and invalidation
 
-- The same execution_id and same ApprovedChangeSet reference is idempotent: return the same attempt, never apply the mutation twice. The same identity with different content returns IDEMPOTENCY_CONFLICT.
-- Preflight refusal with no mutation may be retried using a new execution_id only after the cause is resolved and the same authorization is still eligible. Stale inputs or changed authorization require a new approved set.
-- A RUNNING, SUCCEEDED or uncertain prior attempt prevents another concurrent attempt for the same set and input. EXECUTION_CONFLICT blocks admission. Partial/uncertain mutation is quarantined; no blind retry.
-- A transient validation failure can create a new ValidationReport for the same staged output and plan. This does not replay the mutation or overwrite the prior report.
-- A stale hash returns STALE_DOCUMENT_VERSION and REFUSED; the affected set is INVALIDATED. Changed evidence, rule/contract revisions, locators, payloads, pre/postconditions, protected scope or validation obligations invalidate affected approval.
-- Revocation is a new explicit human/governance event. Neither revocation nor human override rewrites an earlier approval, AI interaction or machine evidence.
-- A valid numeric-only change may advance independently of a blocked conclusion only if its own source requirements and preservation checks pass. The task returns to BLOCKED and release remains WITHHELD while any required target is unresolved.
+- The same execution_id and same ApprovedChangeSet reference are idempotent: return the same attempt, never apply twice. Different content under the same execution identity returns IDEMPOTENCY_CONFLICT.
+- Preflight refusal without mutation may be retried under a new execution_id only after the cause is resolved and authorization is still valid. Changed binary, evidence, policy or authorization needs a new approved set.
+- A RUNNING, SUCCEEDED or uncertain prior attempt blocks concurrent or repeated application for the same authorized input. EXECUTION_CONFLICT prevents admission. Partial/uncertain output is quarantined; no blind retry.
+- A transient validation failure can create a new ValidationReport for the same staged output and pinned plan. It does not replay the mutation or overwrite a previous report.
+- A stale binary hash returns STALE_DOCUMENT_VERSION and execution REFUSED; affected authorization becomes INVALIDATED. Locator/fingerprint failure also refuses execution without fuzzy repair.
+- Changed evidence, definition/instance or RulePack revision, approved payload, locator, conditions, protected scope or required validation invalidates affected authorization. Failure/progress alone is not an authorization lifecycle transition.
+- Revocation and supersession are new explicit decisions/events. An invalidated/revoked/superseded set never returns to APPROVED; renewed approval creates a new set.
+- An eligible factual NCP change may proceed while another target remains blocked only if its own gates and protection obligations pass. Missing benchmark evidence still blocks the arm's-length conclusion and whole-document release.
 
 ## Canonical enum registry
 
-Every closed vocabulary in domain, error, event, API and example contracts is defined here. ObjectType uses domain class names. Free-form names such as model IDs, periods and descriptions are identifiers or text, not enums. ErrorCode values are enumerated with their full semantics in error-catalog.md; this file imports that closed ErrorCode vocabulary.
+These are closed vocabularies for schema version 0.1.0. Identifiers such as provider/model names, business periods and descriptions are text, not enums. ObjectType includes only top-level records and deliberately excludes ApprovedChange and ReplayRequest. The ErrorCode entries reserve the symbols used in C1; their complete error metadata must be supplied by the remaining error-catalog work before freeze.
 
 ### SchemaVersion
 
-`2.0.0`.
+`0.1.0`.
 
 ### TaskStatus
 
@@ -176,7 +213,7 @@ Every closed vocabulary in domain, error, event, API and example contracts is de
 
 ### SourceAssessmentStatus
 
-`PENDING`, `ASSESSING`, `SUFFICIENT`, `INSUFFICIENT`, `CONFLICTED`, `STALE`, `SUPERSEDED`.
+`PENDING`, `ASSESSING`, `COMPLETED`, `SUPERSEDED`, `FAILED`.
 
 ### MappingProposalStatus
 
@@ -188,7 +225,7 @@ Every closed vocabulary in domain, error, event, API and example contracts is de
 
 ### ApprovedChangeSetStatus
 
-`APPROVED`, `EXECUTING`, `EXECUTED`, `VALIDATED`, `RELEASED`, `INVALIDATED`, `REVOKED`, `FAILED`.
+`APPROVED`, `INVALIDATED`, `REVOKED`, `SUPERSEDED`.
 
 ### ExecutionStatus
 
@@ -240,7 +277,7 @@ Every closed vocabulary in domain, error, event, API and example contracts is de
 
 ### ReviewOutcome
 
-`APPROVE`, `REJECT`, `DEFER`.
+`APPROVE`, `REJECT`, `DEFER`, `REQUEST_MORE_SOURCE`.
 
 ### ActorType
 
@@ -260,15 +297,7 @@ Every closed vocabulary in domain, error, event, API and example contracts is de
 
 ### LocatorType
 
-`CONTENT_CONTROL`, `BOOKMARK`, `PART_PATH`, `SHEET_CELL`.
-
-### ValueKind
-
-`TEXT`, `DECIMAL`.
-
-### ValueUnit
-
-`NONE`, `PERCENT`.
+`DOCX_CONTENT_CONTROL`, `DOCX_BOOKMARK`, `DOCX_PARAGRAPH`, `DOCX_RUN`, `DOCX_TABLE_CELL`, `DOCX_RELATIONSHIP`, `XLSX_CELL`, `XLSX_DEFINED_NAME`, `XLSX_TABLE_RANGE`.
 
 ### EvidenceKind
 
@@ -308,4 +337,36 @@ Every closed vocabulary in domain, error, event, API and example contracts is de
 
 ### ObjectType
 
-`FoundationTask`, `DocumentArtifact`, `DocumentVersion`, `PerceptionSnapshot`, `SemanticObject`, `NativeLocator`, `NativeBinding`, `TargetContract`, `TargetRegion`, `RulePack`, `BusinessRule`, `RuleEvaluation`, `SourceRequirement`, `SourceAssessment`, `EvidenceRecord`, `EvidenceCheck`, `EvidenceAssessment`, `MappingProposal`, `AIInteractionRecord`, `ChangeProposal`, `ReviewDecision`, `ApprovedChange`, `ApprovedChangeSet`, `ExecutionResult`, `ChangeExecutionResult`, `ValidationPlan`, `ValidationReport`, `ValidationCheckResult`, `ExceptionRecord`, `AnalysisRun`, `AuditEvent`.
+`FoundationTask`, `DocumentArtifact`, `DocumentVersion`, `PerceptionSnapshot`, `SemanticObject`, `NativeLocator`, `NativeBinding`, `TargetContractDefinition`, `TargetRegionDefinition`, `TargetContractInstance`, `TargetRegion`, `RulePack`, `BusinessRule`, `RuleEvaluation`, `SourceRequirement`, `SourceAssessment`, `EvidenceRecord`, `EvidenceCheck`, `EvidenceAssessment`, `MappingProposal`, `AIInteractionRecord`, `ChangeProposal`, `ReviewDecision`, `ApprovedChangeSet`, `ExecutionResult`, `ChangeExecutionResult`, `ValidationPlan`, `ValidationReport`, `ValidationCheckResult`, `ExceptionRecord`, `AnalysisRun`, `AuditEvent`.
+
+### SourceSufficiencyOutcome
+
+`SUFFICIENT`, `MISSING`, `STALE`, `CONFLICTING`, `NOT_AUTHORITATIVE`, `AMBIGUOUS`.
+
+### PeriodPolicy
+
+`CURRENT_PERIOD`, `PRIOR_PERIOD`, `SPECIFIC_PERIOD`, `PERIOD_INDEPENDENT`.
+
+### EvidencePeriodScope
+
+`SPECIFIC_PERIOD`, `PERIOD_INDEPENDENT`, `UNKNOWN`.
+
+### DefinedNameScope
+
+`WORKBOOK`, `WORKSHEET`.
+
+### XlsxRangeKind
+
+`TABLE`, `RANGE`.
+
+### BusinessValueKind
+
+`TEXT`, `DECIMAL`, `INTEGER`, `DATE`, `BOOLEAN`, `CURRENCY`, `PERCENT`, `STRUCTURED`.
+
+### MutationPayloadType
+
+`RUN_TEXT_REPLACEMENT`, `SDT_TEXT_REPLACEMENT`, `SIMPLE_TABLE_CELL_TEXT_REPLACEMENT`.
+
+### ErrorCode
+
+`INVALID_CONTRACT`, `INVALID_STATE_TRANSITION`, `STALE_DOCUMENT_VERSION`, `REFERENCE_NOT_FOUND`, `APPROVAL_CONTENT_MISMATCH`, `IDEMPOTENCY_CONFLICT`, `EXECUTION_CONFLICT`, `PRECONDITION_FAILED`.
