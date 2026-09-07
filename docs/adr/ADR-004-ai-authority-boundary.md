@@ -37,6 +37,10 @@ Therefore AI must not become an uncontrolled authority.
 AI may assist reasoning but may not independently authorize native
 document mutation.
 
+Model confidence, probability, similarity or self-assessment cannot
+become execution authority. These signals cannot substitute for
+evidence verification, governed decisions or an ApprovedChangeSet.
+
 ## AI May
 
 - interpret semantic meaning;
@@ -78,26 +82,28 @@ Human Approval where required
 ApprovedChangeSet
         ↓
 Controlled Replay
+```
 
-Evidence Rule
+## Evidence Rule
 
 AI-generated explanations are not independent audit evidence.
 
 Audit evidence must reference real source objects, source versions,
 rules, validation results, and decisions.
 
-Context Traceability
+## Context Traceability
 
 Every material AI decision record must make it possible to identify:
 
-model/provider;
-model version where available;
-prompt/instruction version;
-structured input context;
-referenced source objects;
-structured AI output;
-downstream verification result.
-Failure Diagnosis
+- model/provider;
+- model version where available;
+- prompt/instruction version;
+- structured input context;
+- referenced source objects;
+- structured AI output;
+- downstream verification result.
+
+## Failure Diagnosis
 
 When an AI-related output is incorrect, the system must determine the
 earliest incorrect stage rather than automatically classify the event
@@ -105,30 +111,31 @@ as an AI model failure.
 
 Potential failure origins include:
 
-source;
-perception;
-context construction;
-semantic interpretation;
-evidence verification;
-mapping;
-approval;
-execution.
-Consequences
+- source;
+- perception;
+- context construction;
+- semantic interpretation;
+- evidence verification;
+- mapping;
+- approval;
+- execution.
+
+## Consequences
 
 AI functionality must communicate through typed domain contracts.
 
 Direct AI-to-writeback shortcuts are prohibited.
 
-Validation
+## Validation
 
 Negative evaluation cases must include:
 
-missing evidence;
-conflicting sources;
-stale evidence;
-misleading historical context;
-ambiguous mapping;
-prompt injection in document content;
-unsupported inference.
+- missing evidence;
+- conflicting sources;
+- stale evidence;
+- misleading historical context;
+- ambiguous mapping;
+- prompt injection in document content;
+- unsupported inference.
 
 Correct abstention/refusal is a valid success outcome.

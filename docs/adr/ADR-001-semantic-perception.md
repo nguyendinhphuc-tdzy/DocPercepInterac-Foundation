@@ -4,6 +4,10 @@
 
 ACCEPTED
 
+## Technology Qualification
+
+PROVISIONAL
+
 ## Date
 
 2026-09-07
@@ -68,77 +72,86 @@ Docling
 Semantic Representation
       ↓
 Foundation Semantic Adapter
+```
 
 A separate Native Office View must provide execution identity and
 Office-specific information not preserved by Docling.
 
-Why
+## Why
 
 This decision:
 
-reduces custom parsing logic;
-benefits from an external maintained engine;
-gives Foundation a richer semantic representation;
-keeps Foundation focused on differentiated business governance;
-prevents the project from recreating a generic document-processing
-engine.
-Alternatives Considered
-Custom python-docx/openpyxl parser
+- reduces custom parsing logic;
+- benefits from an external maintained engine;
+- gives Foundation a richer semantic representation;
+- keeps Foundation focused on differentiated business governance;
+- prevents the project from recreating a generic document-processing
+  engine.
+
+## Alternatives Considered
+
+### Custom python-docx/openpyxl parser
 
 Rejected as long-term semantic baseline.
 
 It remains useful for restricted native inspection or helper operations,
 but Foundation should not maintain a second generic semantic engine.
 
-Fully custom OOXML parser
+### Fully custom OOXML parser
 
 Rejected.
 
 This would recreate a large and fragile Office parsing stack with low
 business differentiation.
 
-LLM/VLM-only document understanding
+### LLM/VLM-only document understanding
 
 Rejected as the core perception layer.
 
 Semantic interpretation by AI may complement deterministic document
 perception, but it must not replace structural parsing and provenance.
 
-Consequences
+## Consequences
 
 Foundation must maintain an adapter between Docling objects and the
 Foundation domain model.
 
 Additional native readers are required for information such as:
 
-Word content-control identity;
-bookmarks;
-fields;
-revision structures;
-Office relationships;
-Excel formulas;
-defined names;
-tables;
-native sheet/cell identity.
-Risks
-Docling version changes may alter output structures.
-Some Office constructs may not be represented with enough fidelity.
-Semantic references may change after re-perception.
-Controls
-pin exact production dependency versions;
-maintain a Golden Perception Corpus;
-regression-test every dependency upgrade;
-never use semantic references as execution addresses.
-Validation
+- Word content-control identity;
+- bookmarks;
+- fields;
+- revision structures;
+- Office relationships;
+- Excel formulas;
+- defined names;
+- tables;
+- native sheet/cell identity.
 
-This ADR remains accepted as long as Golden Corpus evaluation confirms
-that Docling provides sufficient semantic perception for Foundation
-business workflows.
+## Risks
+
+- Docling version changes may alter output structures.
+- Some Office constructs may not be represented with enough fidelity.
+- Semantic references may change after re-perception.
+
+## Controls
+
+- pin exact production dependency versions;
+- maintain a Golden Perception Corpus;
+- regression-test every dependency upgrade;
+- never use semantic references as execution addresses.
+
+## Validation
+
+The architecture decision is ACCEPTED. Docling corpus qualification
+remains open; Technology Qualification is PROVISIONAL until Golden
+Corpus evaluation confirms that Docling provides sufficient semantic
+perception for Foundation business workflows.
 
 Individual unsupported constructs must be represented through
 capability detection rather than silently ignored.
 
-Supersedes
+## Supersedes
 
 Historical architecture decisions that removed Docling and treated
 custom python-docx/pdfplumber parsing as the long-term Foundation

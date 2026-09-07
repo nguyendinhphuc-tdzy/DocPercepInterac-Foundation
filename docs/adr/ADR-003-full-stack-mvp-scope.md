@@ -50,7 +50,7 @@ The MVP must include:
 8. Source Sufficiency
 9. Evidence Layer
 10. Mapping and Change Proposal
-11. Bounded AI Semantic Assistance
+11. Bounded AI Semantic Assistance Capability
 12. Structured Exceptions
 13. Human Review and Approval
 14. ApprovedChangeSet
@@ -59,6 +59,10 @@ The MVP must include:
 17. Post-Execution Validation
 18. Business Reconciliation
 19. Lineage and Audit
+
+The AI semantic assistance capability is mandatory, but not every
+deterministic case must invoke AI. Cases resolved by deterministic
+rules may proceed without an AI invocation.
 
 ## Unsupported Capability Policy
 
@@ -72,15 +76,17 @@ as:
 PROTECTED_OBJECT
 UNSUPPORTED_NATIVE_OBJECT
 EXECUTION_UNSUPPORTED
+```
 
 It must not silently ignore the requirement.
 
-Format Scope
-DOCX
+## Format Scope
+
+### DOCX
 
 DOCX controlled transformation is on the critical Local File MVP path.
 
-XLSX
+### XLSX
 
 XLSX understanding is mandatory because Excel files are important
 current-year evidence sources.
@@ -96,30 +102,30 @@ If current business requirements do not require XLSX output mutation,
 the execution capability may remain non-active while retaining the
 appropriate contracts and capability model.
 
-PDF / Scan / Image
+### PDF / Scan / Image
 
 The architecture must support capability classification.
 
 OCR or image-specific transformation must not be simulated if it has
 not passed its validation gate.
 
-MVP Principle
+## MVP Principle
 
 Reduce breadth, not architectural integrity.
 
-Why
+## Why
 
 This ensures the MVP validates the actual Foundation thesis rather than
 a simplified demo path.
 
-Consequences
+## Consequences
 
 Initial implementation effort is higher than a conventional prototype.
 
 However, results from the MVP will be meaningful for production
 decisions.
 
-Validation
+## Validation
 
 The MVP is considered architecturally valid only if one business
 workflow can run end-to-end through all mandatory control layers,
