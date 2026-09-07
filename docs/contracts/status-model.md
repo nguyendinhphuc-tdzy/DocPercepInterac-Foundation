@@ -21,6 +21,7 @@ Initial states can only be created by the responsible service. Terminal outcomes
 | Dimension | Owner | Meaning |
 | --- | --- | --- |
 | Workflow progress and release | FoundationTask and document/release governance | Task readiness, aggregate completion and released artifact availability. |
+| Document preflight lifecycle | DocumentPreflightAssessment.status | Progress of observing one exact binary; completed assessment does not imply universal operation support. |
 | Source assessment lifecycle | SourceAssessment.status | Whether the assessment is pending, running, completed, superseded or technically failed. |
 | Source business outcome | SourceAssessment.outcome | Sufficiency verdict on completed deterministic assessment; not a lifecycle state. |
 | Evidence verification | EvidenceAssessment.status and TargetRegion.verification_status | Deterministic evidence verdict, never AI confidence. |
@@ -56,12 +57,24 @@ Enum: DocumentStatus. Initial: REGISTERED (input), STAGED (generated output). Te
 | From | To | Guard and responsible action |
 | --- | --- | --- |
 | REGISTERED | PREFLIGHTING, REJECTED | Intake registers immutable binary then inspects it. |
-| PREFLIGHTING | READY, BLOCKED, REJECTED | Capability/protection/format detection is explicit. |
+| PREFLIGHTING | READY, BLOCKED, REJECTED | Derive readiness from pinned DocumentPreflightAssessment observations and coverage. READY admits the intended workflow phase; it is not universal mutation support. |
 | READY | BLOCKED, SUPERSEDED | A new version supersedes selection; new risk blocks its use. |
 | BLOCKED | PREFLIGHTING, SUPERSEDED, REJECTED | Recorded remediation permits a new inspection; no silent support upgrade. |
 | STAGED | RELEASED, QUARANTINED | Only the release gate can publish; failure or unauthorized change quarantines. |
 | QUARANTINED | STAGED, SUPERSEDED | New independent evidence and authorized remediation may return the same unchanged binary to staging; never directly release. |
 | RELEASED | QUARANTINED, SUPERSEDED | New findings withdraw availability by a new event; historical release evidence is retained. |
+
+### DocumentPreflightAssessment
+
+Enum: DocumentPreflightStatus. Initial: PENDING. Terminal: FAILED, SUPERSEDED.
+
+| From | To | Guard and responsible action |
+| --- | --- | --- |
+| PENDING | ASSESSING, SUPERSEDED | Deterministic assessor starts against the pinned binary/configuration, or an explicit replacement supersedes the unstarted request. |
+| ASSESSING | COMPLETED, FAILED, SUPERSEDED | Finish the planned inspection with preserved observations, record technical failure, or explicitly supersede the attempt. |
+| COMPLETED | SUPERSEDED | A new applicable assessment replaces the prior observations; preserve its completed findings and capability entries. |
+
+COMPLETED includes assessments that find protected, unsupported or unknown structures/capabilities. It never means all operations are SUPPORTED. FAILED is an assessment failure, not the ordinary result of recognizing an unsupported operation. New engine/configuration/qualification observations create new assessments; DocumentVersion does not gain evolving fields or lifecycle revisions. Supersession is explicit and scoped; assessing another engine/profile does not automatically invalidate unrelated evidence.
 
 ### SourceAssessment
 
@@ -159,7 +172,7 @@ Enum: AnalysisStatus. Initial: QUEUED. Terminal: COMPLETED, BLOCKED, FAILED, CAN
 | --- | --- |
 | SUFFICIENT | Every blocking requirement is satisfied by current applicable authoritative evidence, without unresolved ambiguity/conflict. |
 | MISSING | Required source or required business fields are absent. |
-| STALE | Source version or period no longer meets the pinned requirement. |
+| STALE | Source version, period or freshness applicability no longer meets the pinned requirement; record the distinct failed check and policy. |
 | CONFLICTING | Material source facts conflict under the applicable policy. |
 | NOT_AUTHORITATIVE | Available material lacks required source authority. |
 | AMBIGUOUS | Source identity, scope or interpretation remains unresolved. |
@@ -167,6 +180,12 @@ Enum: AnalysisStatus. Initial: QUEUED. Terminal: COMPLETED, BLOCKED, FAILED, CAN
 If multiple failures apply, retain all findings and use the pinned deterministic policy to select the primary outcome; do not collapse uncertainty into SUFFICIENT. New source evidence creates a new assessment. Previously COMPLETED/SUFFICIENT records are superseded, not edited into STALE. A new assessment with status COMPLETED and outcome STALE can record stale applicability.
 
 PERIOD_INDEPENDENT resolves to no source period. CURRENT_PERIOD and PRIOR_PERIOD require explicit task period context; SPECIFIC_PERIOD uses the reusable requirement's fixed specific_period. A completed period-sensitive assessment must record its resolved source period. It never guesses a prior fiscal period by subtracting a calendar year.
+
+FreshnessPolicy is independent of PeriodPolicy. A source can concern the correct business period and still be stale or superseded. PERIOD_INDEPENDENT removes a required business period, not freshness governance. The source requirement must pin a FreshnessPolicy revision; COMPLETED/SUFFICIENT requires a recorded deterministic FreshnessEvaluation with outcome PASS.
+
+Freshness evaluation records the exact policy, trusted as_of, input observations, evaluator identity/version and any policy-derived valid_until. Null valid_until never means valid forever. A policy with no age-based constraint still requires an explicit evaluated policy result. No current age limit, renewal window or other threshold is introduced by this contract.
+
+Recheck freshness applicability at approval and execution. Expiry, supersession, revocation or changed policy inputs generate new checks/assessments and invalidate affected approval when necessary; they do not rewrite a prior successful record. FreshnessEvaluation outcome uses CheckOutcome but permits only PASS, FAIL or BLOCKED; NOT_APPLICABLE cannot bypass the source freshness gate.
 
 ## Review and supporting semantics
 
@@ -178,7 +197,11 @@ EvidenceStatus starts UNASSESSED. A deterministic assessment may produce VERIFIE
 
 TargetVerificationStatus begins UNVERIFIED. Deterministic evidence permits VERIFIED, missing/conflicting evidence gives BLOCKED, and obsolete inputs give STALE. Human acceptance of a model score cannot resolve a blocking state.
 
-CapabilityStatus describes one CapabilityResult tuple, not an entire TargetRegion. SUPPORTED for one operation/native structure/engine/version/conformance does not grant support for another. Unknown or absent qualification is not a pass.
+CapabilityStatus describes one inline CapabilityResult in a pinned DocumentPreflightAssessment revision, not an entire TargetRegion or DocumentVersion. A CapabilityResultRef selects that entry and exact native scope. SUPPORTED for one operation/native structure/engine/version/conformance does not grant support for another. Unknown or absent qualification is not a pass.
+
+RuleType is a required business-policy classification on every BusinessRule, not a lifecycle or MutationOperation. evaluator_key is an opaque deterministic implementation identifier. EvidenceCheckKind is required on every EvidenceCheck; PERIOD and FRESHNESS have separate semantics and must not substitute for each other. Neither taxonomy changes any passed C1 state machine.
+
+ConditionKind selects a closed typed shape in domain-model.md. ConditionValueTargetKind distinguishes an exact input native object from an output validation subject identified inside the approved set; it introduces no new native execution address or global ApprovedChange record. BusinessValueKind selects kind-specific fields only after mandatory kind and review_text are present.
 
 CheckOutcome PASS is required for every mandatory independent validation check. FAIL and BLOCKED prevent passage. NOT_APPLICABLE is permitted only for a plan requirement explicitly marked optional, with a recorded reason; it cannot satisfy a mandatory check.
 
@@ -197,7 +220,7 @@ ReleaseStatus belongs to task/document release governance. It starts WITHHELD; a
 
 ## Canonical enum registry
 
-These are closed vocabularies for schema version 0.1.0. Identifiers such as provider/model names, business periods and descriptions are text, not enums. ObjectType includes only top-level records and deliberately excludes ApprovedChange and ReplayRequest. The ErrorCode entries reserve the symbols used in C1; their complete error metadata must be supplied by the remaining error-catalog work before freeze.
+These are closed vocabularies for schema version 0.1.0. Identifiers such as provider/model names, business periods and descriptions are text, not enums. ObjectType includes only top-level records and deliberately excludes ApprovedChange and ReplayRequest. The ErrorCode entries reserve the symbols used in C1/C1.1; their complete error metadata must be supplied by the remaining error-catalog work before freeze.
 
 ### SchemaVersion
 
@@ -210,6 +233,10 @@ These are closed vocabularies for schema version 0.1.0. Identifiers such as prov
 ### DocumentStatus
 
 `REGISTERED`, `PREFLIGHTING`, `READY`, `BLOCKED`, `REJECTED`, `SUPERSEDED`, `STAGED`, `RELEASED`, `QUARANTINED`.
+
+### DocumentPreflightStatus
+
+`PENDING`, `ASSESSING`, `COMPLETED`, `FAILED`, `SUPERSEDED`.
 
 ### SourceAssessmentStatus
 
@@ -311,6 +338,18 @@ These are closed vocabularies for schema version 0.1.0. Identifiers such as prov
 
 `DETERMINISTIC`.
 
+### RuleType
+
+`ALWAYS_UPDATE`, `UPDATE_IF_CHANGED`, `DERIVED_UPDATE`, `CARRY_FORWARD`, `TEMPLATE_CONTROLLED`, `PROTECTED`.
+
+### EvidenceCheckKind
+
+`SOURCE_PRESENCE`, `PERIOD`, `FRESHNESS`, `AUTHORITY`, `COMPLETENESS`, `CONSISTENCY`, `VALUE_TYPE`, `UNIT`, `FORMULA`, `PROVENANCE`.
+
+### ConditionValueTargetKind
+
+`INPUT_NATIVE_OBJECT`, `OUTPUT_APPROVED_CHANGE`.
+
 ### ConditionKind
 
 `BINARY_HASH_EQUALS`, `TEXT_EQUALS`, `VALUE_EQUALS`, `CAPABILITY_SUPPORTED`, `EVIDENCE_VERIFIED`, `PRESERVE_SCOPE`.
@@ -337,7 +376,7 @@ These are closed vocabularies for schema version 0.1.0. Identifiers such as prov
 
 ### ObjectType
 
-`FoundationTask`, `DocumentArtifact`, `DocumentVersion`, `PerceptionSnapshot`, `SemanticObject`, `NativeLocator`, `NativeBinding`, `TargetContractDefinition`, `TargetRegionDefinition`, `TargetContractInstance`, `TargetRegion`, `RulePack`, `BusinessRule`, `RuleEvaluation`, `SourceRequirement`, `SourceAssessment`, `EvidenceRecord`, `EvidenceCheck`, `EvidenceAssessment`, `MappingProposal`, `AIInteractionRecord`, `ChangeProposal`, `ReviewDecision`, `ApprovedChangeSet`, `ExecutionResult`, `ChangeExecutionResult`, `ValidationPlan`, `ValidationReport`, `ValidationCheckResult`, `ExceptionRecord`, `AnalysisRun`, `AuditEvent`.
+`FoundationTask`, `DocumentArtifact`, `DocumentVersion`, `DocumentPreflightAssessment`, `PerceptionSnapshot`, `SemanticObject`, `NativeLocator`, `NativeBinding`, `TargetContractDefinition`, `TargetRegionDefinition`, `TargetContractInstance`, `TargetRegion`, `RulePack`, `BusinessRule`, `RuleEvaluation`, `FreshnessPolicy`, `SourceRequirement`, `SourceAssessment`, `EvidenceRecord`, `EvidenceCheck`, `EvidenceAssessment`, `MappingProposal`, `AIInteractionRecord`, `ChangeProposal`, `ReviewDecision`, `ApprovedChangeSet`, `ExecutionResult`, `ChangeExecutionResult`, `ValidationPlan`, `ValidationReport`, `ValidationCheckResult`, `ExceptionRecord`, `AnalysisRun`, `AuditEvent`.
 
 ### SourceSufficiencyOutcome
 

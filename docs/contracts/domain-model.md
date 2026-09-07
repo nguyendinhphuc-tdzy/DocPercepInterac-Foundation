@@ -42,6 +42,7 @@ DocumentVersion has revision 1 forever; its id is the version_id used in Documen
 | CurrencyCode | Explicit three-letter uppercase currency code validated by the pinned business policy. |
 | Timestamp | RFC 3339 UTC timestamp with Z suffix. |
 | URI | Absolute artifact URI; does not authorize fetching arbitrary locations. |
+| EvaluatorKey | Opaque deterministic implementation identifier using the ID character set. Resolved only through an approved versioned registry; never interpreted as executable code, script, module path, query or prompt. |
 | PositiveInt / NonNegativeInt | Integer >= 1 / integer >= 0, within interoperable JSON integer range. |
 | Bool | Boolean, never a string. |
 | CellAddress | One uppercase native A1 address without sheet prefix, range, query or wildcard; native workbook limits apply. |
@@ -105,7 +106,14 @@ Authenticated or attested actor; request bodies cannot impersonate actor authori
 
 ### BusinessValue
 
-Closed tagged value union with an exact reviewable representation. Every variant requires kind and review_text. Normalized typed values and the original review_text are preserved together; no silent rounding or normalization.
+Closed tagged value union with an exact reviewable representation. Every BusinessValue formally contains the following common fields, serialized directly alongside the kind-specific fields. They are mandatory for every variant, not an optional presentation wrapper. Normalized typed values and the original review_text are preserved together; no silent rounding or normalization.
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `kind` | `BusinessValueKind` | Yes | Discriminator selecting exactly one kind-specific shape below. |
+| `review_text` | `ExactText` | Yes | Exact human-reviewable representation, including an intentionally empty text value. |
+
+Each variant contains these two common fields plus only its declared kind-specific fields. A missing common field, unknown kind or incompatible field is a contract failure.
 
 | kind | Additional required fields | Constraints |
 | --- | --- | --- |
@@ -126,15 +134,45 @@ Operation-specific capability observation. The complete tuple is operation + nat
 
 | Field | Type | Required | Meaning |
 | --- | --- | --- | --- |
+| `capability_result_id` | `ID` | Yes | Identifier unique within one DocumentPreflightAssessment revision; not a global record ID. |
 | `operation` | `MutationOperation` | Yes | Specific proposed native operation. |
 | `native_structure` | `LocatorType` | Yes | Concrete native structure/address class assessed. |
-| `document_version_ref` | `DocumentVersionRef` | Yes | Exact native input context. |
+| `document_version_ref` | `DocumentVersionRef` | Yes | Exact native input context; must match the containing preflight assessment. |
+| `native_locator_refs` | `Ref<NativeLocator>[]` | Yes | Exact native objects covered by this entry; nonempty for SUPPORTED. All must match the assessed version and native_structure. |
 | `engine` | `Text` | Yes | Engine identity. |
 | `engine_version` | `Text` | Yes | Exact assessed engine version. |
 | `conformance` | `ConformanceClass` | Yes | Detected conformance class. |
 | `qualification_evidence_refs` | `ContentRef[]` | Yes | Pinned operation/profile-specific qualification evidence; nonempty for SUPPORTED. |
 | `status` | `CapabilityStatus` | Yes | SUPPORTED, PROTECTED, UNSUPPORTED or UNKNOWN. |
 | `reason` | `Text` | Yes | Scope, restrictions and detected limitations. |
+
+CapabilityResult is immutable inline content owned by a DocumentPreflightAssessment revision. It does not live on DocumentVersion and is not a standalone ObjectType. Its qualified scope is explicit: an entry for one native object or structure cannot establish support for all objects in the document.
+
+### CapabilityResultRef
+
+Pinned identity of one operation-specific capability result inside its preflight assessment.
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `preflight_assessment_ref` | `Ref<DocumentPreflightAssessment>` | Yes | Exact immutable assessment revision. |
+| `capability_result_id` | `ID` | Yes | Resolves to exactly one inline CapabilityResult in that assessment revision. |
+
+An eligibility check resolves the complete tuple and qualification evidence, checks the exact native scope and current supersession/qualification validity, and refuses incomplete or incompatible entries. The reference cannot grant mutation authority.
+
+### PreflightFinding
+
+One preserved protection or native-structure observation. Its category is determined by the containing protection_findings or native_structure_findings collection; it is not a target-level capability verdict.
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `finding_id` | `ID` | Yes | Unique within the containing preflight assessment revision. |
+| `native_object_type` | `Text` | Yes | Observed construct or document-level protection; descriptive data, not an execution address. |
+| `part_uri` | `NullableText` | Yes | Exact package part when known; null for a document-wide finding or an unlocatable construct. |
+| `native_locator_refs` | `Ref<NativeLocator>[]` | Yes | Exact captured objects when available; may be empty if the structure cannot be safely located. |
+| `observation_ref` | `ContentRef` | Yes | Immutable inspection evidence and digest. |
+| `description` | `Text` | Yes | Reviewable observation and limits. |
+
+An unlocatable protection/structure finding cannot be silently ignored. Any affected operation whose preservation or support cannot be established remains blocked. This helper is inline assessment content, not a reusable policy definition or independently addressable record.
 
 ### NativeAddress
 
@@ -156,14 +194,113 @@ The addressed native structure must match expected_object_type and structural_fi
 
 ### Condition
 
-Declarative deterministic pre/postcondition. No scripts, prompts or arbitrary expressions. Unknown or unevaluable conditions block execution or release.
+Closed discriminated union of deterministic pre/postconditions. Every instance contains condition_id and kind plus exactly the fields declared for that kind. There is no generic scope_ref/expected pair, extension bag or executable condition body.
 
 | Field | Type | Required | Meaning |
 | --- | --- | --- | --- |
-| `condition_id` | `ID` | Yes | Unique within the authorization. |
-| `kind` | `ConditionKind` | Yes | Registered evaluator obligation. |
-| `scope_ref` | `Reference` | Yes | Exact object to evaluate. |
-| `expected` | `Text` | Yes | Literal expected hash, text, value or named preservation obligation. |
+| `condition_id` | `ID` | Yes | Unique within the containing authorization, including its inline changes. |
+| `kind` | `ConditionKind` | Yes | Selects exactly one typed condition shape below. |
+
+#### BINARY_HASH_EQUALS
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `document_version_ref` | `DocumentVersionRef` | Yes | Exact registered binary being checked. |
+| `expected_binary_hash` | `SHA256` | Yes | Must equal the hash pinned in document_version_ref; compare with the actual bytes. |
+
+Mismatch produces STALE_DOCUMENT_VERSION and execution refusal. This shape cannot predict an unknown future output hash; post-execution checks use the separately registered output identity and independent validation.
+
+#### TEXT_EQUALS
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `target` | `ConditionValueTarget` | Yes | Exact input native object or the approved output change being validated. |
+| `expected_text` | `ExactText` | Yes | Literal expected text; no interpolation, normalization or fuzzy comparison. |
+
+#### VALUE_EQUALS
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `target` | `ConditionValueTarget` | Yes | Exact input native object or approved output change being validated. |
+| `expected_value` | `BusinessValue` | Yes | Complete typed expected value, including kind, review_text and kind-specific fields. |
+| `value_reader_policy_ref` | `ContentRef` | Yes | Pinned deterministic observation/extraction profile, not an executable expression. |
+
+Compare the complete typed value under the declared representation. No implicit type/unit conversion, rounding or tolerance is introduced by this condition. Unsupported extraction blocks the check.
+
+#### CAPABILITY_SUPPORTED
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `native_locator_ref` | `Ref<NativeLocator>` | Yes | Exact input object that the approved operation will address. |
+| `capability_result_ref` | `CapabilityResultRef` | Yes | Pinned operation-specific assessment entry covering this locator. |
+| `operation` | `MutationOperation` | Yes | Exact approved operation. |
+| `engine` | `Text` | Yes | Exact approved replay-engine identity. |
+| `engine_version` | `Text` | Yes | Exact qualified replay-engine version. |
+| `conformance` | `ConformanceClass` | Yes | Must be TRANSITIONAL for the current mutation profile. |
+
+The referenced assessment must be COMPLETED and still applicable; the entry must be SUPPORTED, cover the exact locator/version/native structure, match this complete operation/engine/version/conformance tuple, and retain valid qualification evidence. This kind cannot ask for a different expected status to weaken the gate.
+
+#### EVIDENCE_VERIFIED
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `evidence_assessment_ref` | `Ref<EvidenceAssessment>` | Yes | Exact deterministic evidence assessment. |
+| `business_target_id` | `BusinessTargetID` | Yes | Must match the assessment and approved target. |
+
+Requires VERIFIED with all referenced source/evidence gates still applicable, including freshness under the pinned policy. A historical VERIFIED label or AI statement cannot satisfy this condition after its inputs have expired or been superseded.
+
+#### PRESERVE_SCOPE
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `protected_scope` | `ProtectedScope` | Yes | Exact protected scope from the containing authorization, including its input version and any qualified serialization allowance. |
+
+The scope must equal authorization.protected_scope; a condition cannot supply a weaker replacement. Preflight checks operation ownership against this scope. Independent post-execution validation checks the output against the preserved input and approved changes. The output version comes from the identified ExecutionResult, not a caller override.
+
+All six variants are closed. Arbitrary expressions, queries, scripts, prompts, generic executable payloads, extra fields and unknown variants are forbidden. A new condition kind requires an explicit versioned typed shape and qualified deterministic evaluation. Unknown or unevaluable conditions fail closed.
+
+### ConditionValueTarget
+
+Closed validation-subject union. Every variant contains kind and only its listed fields.
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `kind` | `ConditionValueTargetKind` | Yes | INPUT_NATIVE_OBJECT or OUTPUT_APPROVED_CHANGE. |
+
+#### INPUT_NATIVE_OBJECT
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `native_locator_ref` | `Ref<NativeLocator>` | Yes | Exact uniquely resolving address in the pinned input binary. |
+
+#### OUTPUT_APPROVED_CHANGE
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `approved_change_id` | `ID` | Yes | Inline change in the containing ApprovedChangeSet, resolved with that set and its identified execution. |
+
+OUTPUT_APPROVED_CHANGE is a validation subject, not a native execution address or a global ApprovedChange reference. Independent validation must associate the observed output object with that inline change using qualified evidence and a newly captured output-version NativeLocator. It must not execute or resolve an input locator against a different output hash. If the association cannot be established exactly, validation fails closed; no fuzzy fallback.
+
+Text/value postconditions on a mutation result MUST use OUTPUT_APPROVED_CHANGE, not merely re-read the unchanged input. This permits approval of exact postconditions before the output binary exists without inventing an output hash or weakening NativeLocator version scope.
+
+### FreshnessEvaluation
+
+Immutable task-context result of applying one pinned reusable FreshnessPolicy. It is inline assessment/check content, not a reusable definition.
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `freshness_policy_ref` | `Ref<FreshnessPolicy>` | Yes | Exact policy revision applied. |
+| `document_version_refs` | `DocumentVersionRef[]` | Yes | Sources evaluated; empty only for a blocked evaluation with missing source input. |
+| `as_of` | `Timestamp` | Yes | Trusted time/context at which freshness was evaluated; preserved for reproducibility. |
+| `input_refs` | `ContentRef[+]` | Yes | Immutable timing, version, publication, supersession or revocation observations required by policy. |
+| `evaluator_key` | `EvaluatorKey` | Yes | Must match the pinned policy's deterministic evaluator identifier. |
+| `evaluator_version` | `Text` | Yes | Exact registered evaluator implementation version used. |
+| `outcome` | `CheckOutcome` | Yes | PASS, FAIL or BLOCKED; NOT_APPLICABLE cannot satisfy this gate. |
+| `valid_until` | `Nullable<Timestamp>` | Yes | Expiry derived from the pinned policy if determinable; null never means indefinitely fresh. |
+| `reason` | `Text` | Yes | Reviewable policy result and limitations. |
+| `error_codes` | `ErrorCode[]` | Yes | Recorded evaluation failures or unavailable inputs. |
+
+No duration, age limit, renewal window or other business threshold is defined here. Policy/configuration changes and new source validity observations require new assessment/check records. A prior PASS is not a perpetual freshness guarantee; governance rechecks applicability at approval and execution. An explicit policy with no age-based restriction must still be evaluated and recorded, not inferred from PERIOD_INDEPENDENT.
 
 ### ProtectedScope
 
@@ -302,13 +439,38 @@ Uses the full task-owned record envelope.
 | `document_id` | `ID` | Yes | Owning DocumentArtifact ID. |
 | `binary_hash` | `SHA256` | Yes | Lowercase SHA-256 of exact binary bytes; no prefix. |
 | `byte_length` | `NonNegativeInt` | Yes | Length of the exact binary. |
-| `format` | `DocumentFormat` | Yes | Detected format, not filename inference. |
-| `conformance` | `ConformanceClass` | Yes | Detected OOXML conformance or explicit unknown/not applicable. |
 | `content_ref` | `ContentRef` | Yes | Immutable binary storage reference; sha256 MUST equal binary_hash. |
-| `capability_results` | `CapabilityResult[]` | Yes | Qualification evidence scoped to structure, operation, profile and engine. |
 | `derived_from` | `DocumentVersionRef` | No | Input version for generated output. |
 
-Its envelope revision is always 1. Bytes, hash and classification observations in this record are immutable; corrected observations are separate records or a new registration, never rewritten binary history.
+Its envelope revision is always 1. It records immutable binary identity, storage and derivation only. Detected format/conformance, protection/native-structure findings and operation/engine capability observations belong to DocumentPreflightAssessment. New observations or engine qualifications do not create a new binary identity or rewrite this record.
+
+### DocumentPreflightAssessment
+
+Top-level task-owned preflight assessment of exactly one immutable DocumentVersion. It records observations and operation-specific capability evidence separately from binary identity.
+
+Uses the full task-owned record envelope.
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `document_version_ref` | `DocumentVersionRef` | Yes | Exact assessed document/version/SHA-256 identity. |
+| `status` | `DocumentPreflightStatus` | Yes | Assessment lifecycle only; COMPLETED does not mean all operations are supported. |
+| `detected_format` | `Nullable<DocumentFormat>` | Yes | Observed recognized format; null when detection is pending, unknown or outside the vocabulary. |
+| `detected_conformance` | `ConformanceClass` | Yes | Observed class; UNKNOWN when unresolved, NOT_APPLICABLE only when established. |
+| `format_observation_refs` | `ContentRef[]` | Yes | Preserved format/conformance observations; nonempty for COMPLETED, including unsupported/unknown findings. |
+| `protection_findings` | `PreflightFinding[]` | Yes | Document/native-object protections with evidence and exact scope where available. |
+| `native_structure_findings` | `PreflightFinding[]` | Yes | Native structures encountered, including unsupported or unlocatable constructs. |
+| `capability_results` | `CapabilityResult[]` | Yes | Inline operation/native-structure/engine/version/conformance/qualification entries. |
+| `assessor` | `Actor` | Yes | Authenticated deterministic assessment service; actor_type SYSTEM. |
+| `engine` | `Text` | Yes | Inspection/assessment engine identity, distinct from the replay engine assessed in each capability entry. |
+| `engine_version` | `Text` | Yes | Exact inspection/assessment engine version. |
+| `configuration_ref` | `ContentRef` | Yes | Pinned deterministic inspection configuration and coverage requirements. |
+| `assessed_at` | `Nullable<Timestamp>` | Yes | Completion time; required non-null at COMPLETED and preserved on supersession. |
+| `error_codes` | `ErrorCode[]` | Yes | Detection, protection, native-structure or qualification diagnostics. |
+| `supersedes_assessment_ref` | `Ref<DocumentPreflightAssessment>` | No | Explicit prior assessment replaced by this new assessment; historical observations remain intact. |
+
+All findings and capability entries belong to the pinned binary; every captured locator must match it. Each capability_result_id is unique within this assessment revision. Empty findings are meaningful only with coverage evidence showing no applicable findings; incomplete coverage cannot establish support.
+
+A completed assessment may explicitly contain PROTECTED, UNSUPPORTED or UNKNOWN capabilities. FAILED represents technical inability to complete the assessment. New inspection engines, configurations, qualification evidence or corrected observations produce new assessments and explicit supersession where applicable, never evolving fields on DocumentVersion. Unrelated assessments for other engine/operation profiles do not automatically supersede each other. Affected approval is invalidated when changed evidence undermines its pinned capability assumptions.
 
 ## B. Perception and Native Identity
 
@@ -446,9 +608,10 @@ Uses the full task-owned record envelope.
 | `native_binding_refs` | `Ref<NativeBinding>[]` | Yes | Native associations. |
 | `verification_status` | `TargetVerificationStatus` | Yes | Deterministic evidence state. |
 | `source_requirement_refs` | `Ref<SourceRequirement>[]` | Yes | Requirements relevant to this target. |
-| `capability_results` | `CapabilityResult[]` | Yes | Operation-specific capability observations; no flattened target capability. |
+| `preflight_assessment_refs` | `Ref<DocumentPreflightAssessment>[]` | Yes | Pinned relevant assessments for this region's exact document version. |
+| `capability_result_refs` | `CapabilityResultRef[]` | Yes | Selected operation-specific entries from those assessment revisions; no copied or flattened region capability verdict. |
 
-AI output cannot independently set verification_status to VERIFIED. Verification is not approval. Every occurrence must match its instance's target version. Support for one operation/structure/engine combination says nothing about another.
+AI output cannot independently set verification_status to VERIFIED. Verification is not approval. Every occurrence and referenced assessment must match its instance's target version. Each capability reference must cover the exact contemplated native locator and belong to preflight_assessment_refs. Support for one operation/structure/engine combination says nothing about another.
 
 ### RulePack
 
@@ -472,12 +635,25 @@ Uses the record envelope without task_id.
 
 | Field | Type | Required | Meaning |
 | --- | --- | --- | --- |
+| `rule_type` | `RuleType` | Yes | Explicit Local File rule taxonomy; required for every BusinessRule. |
+| `evaluator_key` | `EvaluatorKey` | Yes | Registered deterministic implementation identifier, not executable code or a script. |
 | `business_target_ids` | `BusinessTargetID[+]` | Yes | Applicable business targets. |
 | `source_requirement_refs` | `Ref<SourceRequirement>[]` | Yes | Required sources. |
 | `policy_ref` | `ContentRef` | Yes | Versioned policy definition. |
 | `description` | `Text` | Yes | Plain-language purpose and input/output obligations. |
 
-Known policy is evaluated deterministically. Unknown policy produces an exception, not invented policy.
+Known policy is evaluated deterministically. evaluator_key is resolved only through the approved registry and pinned policy/configuration binding; it is never dynamically executed as source text, a module path, query or prompt. Unknown policy or an unregistered/incompatible evaluator produces a blocking exception, not invented behavior.
+
+| RuleType | Contract meaning |
+| --- | --- |
+| ALWAYS_UPDATE | Require a governed current-task update assessment under the pinned policy; the name does not bypass evidence, review or authorization. |
+| UPDATE_IF_CHANGED | Propose an update when the registered deterministic comparison establishes a relevant change. |
+| DERIVED_UPDATE | Propose a value derived by the registered deterministic evaluator from required authoritative inputs. |
+| CARRY_FORWARD | Preserve prior content only when the pinned policy and evidence permit carrying it forward; historical presence alone is insufficient. |
+| TEMPLATE_CONTROLLED | Govern the target according to the pinned template/contract policy, without granting the template independent mutation authority. |
+| PROTECTED | Preserve the governed target; do not authorize native mutation that violates its protected scope. |
+
+RuleType classifies business policy, not native operations or authorization states. Every type retains source/evidence gates, human review where applicable, exact native identity, controlled replay and independent validation. This taxonomy defines contracts only; no business evaluator or current threshold is implemented.
 
 ### RuleEvaluation
 
@@ -496,6 +672,25 @@ Uses the full task-owned record envelope.
 
 ## D. Source, Evidence and Mapping
 
+### FreshnessPolicy
+
+Reusable versioned deterministic source-freshness policy definition. It is separate from PeriodPolicy and contains no task-owned document, timestamp observation or assessment reference.
+
+Uses the record envelope without task_id.
+
+| Field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| `name` | `Text` | Yes | Reusable freshness policy name. |
+| `evaluator_key` | `EvaluatorKey` | Yes | Registered deterministic freshness evaluator identifier, never executable policy text. |
+| `policy_ref` | `ContentRef` | Yes | Authoritative policy definition and digest, including the governing freshness criteria. |
+| `configuration_ref` | `ContentRef` | Yes | Pinned approved declarative configuration/schema and any policy-authorized parameters. |
+| `required_input_keys` | `Text[+]` | Yes | Named timing/version/validity observations required for deterministic evaluation; task values are supplied by assessment, not stored here. |
+| `description` | `Text` | Yes | Reviewable policy purpose and applicability, without implicit defaults. |
+
+The record revision is the FreshnessPolicy version. Evaluator binding and configuration must be reproducible. Configuration is declarative data, never a script, query, prompt or arbitrary expression. Approved business policy may later supply age/version/validity parameters; this contract sets no current threshold or default.
+
+PeriodPolicy answers which business period evidence must concern. FreshnessPolicy answers whether that evidence remains current and usable at the trusted evaluation context, considering the policy's required timing/version/validity facts. PERIOD_INDEPENDENT never means freshness-independent. Missing policy, configuration, evaluator registration or required observations fails closed rather than treating evidence as fresh.
+
 ### SourceRequirement
 
 Policy-level source requirements for a target and period.
@@ -505,7 +700,8 @@ Uses the record envelope without task_id.
 | Field | Type | Required | Meaning |
 | --- | --- | --- | --- |
 | `business_target_id` | `BusinessTargetID` | Yes | Target whose evidence is required. |
-| `period_policy` | `PeriodPolicy` | Yes | Reusable temporal requirement; resolved in task context. |
+| `period_policy` | `PeriodPolicy` | Yes | Reusable business-period requirement; resolved in task context. |
+| `freshness_policy_ref` | `Ref<FreshnessPolicy>` | Yes | Independently pinned deterministic freshness policy revision; required even for PERIOD_INDEPENDENT. |
 | `specific_period` | `Period` | No | Required only for SPECIFIC_PERIOD; forbidden for the other policies. |
 | `required_fields` | `Text[+]` | Yes | Business information required; no invented values. |
 | `permitted_roles` | `DocumentRole[+]` | Yes | Roles allowed by the pinned policy. |
@@ -513,7 +709,7 @@ Uses the record envelope without task_id.
 | `blocking` | `Bool` | Yes | Whether unsatisfied requirements block the target. |
 | `policy_ref` | `ContentRef` | Yes | Authority for these requirements. |
 
-Reusable and task-independent. CURRENT_PERIOD resolves to FoundationTask.current_period; PRIOR_PERIOD resolves to its explicit prior_period; SPECIFIC_PERIOD uses this definition's specific_period; PERIOD_INDEPENDENT has no resolved source period. No assumed calendar subtraction. Missing period context blocks assessment and cannot be guessed.
+Reusable and task-independent. CURRENT_PERIOD resolves to FoundationTask.current_period; PRIOR_PERIOD resolves to its explicit prior_period; SPECIFIC_PERIOD uses this definition's specific_period; PERIOD_INDEPENDENT has no resolved source period. No assumed calendar subtraction. Missing period context blocks assessment and cannot be guessed. Resolving that period does not establish freshness: the separate freshness_policy_ref must also be evaluated on current task/source observations.
 
 ### SourceAssessment
 
@@ -529,6 +725,8 @@ Uses the full task-owned record envelope.
 | `outcome` | `Nullable<SourceSufficiencyOutcome>` | Yes | Always present. Non-null at COMPLETED and retained when a completed assessment is SUPERSEDED; null for pending/in-progress/technical failure. |
 | `resolved_task_period` | `Period` | Yes | Current task period used as assessment context. |
 | `resolved_source_period` | `Nullable<Period>` | Yes | Period resolved from the requirement; null only for PERIOD_INDEPENDENT on a completed assessment. |
+| `freshness_policy_ref` | `Ref<FreshnessPolicy>` | Yes | Exact policy revision from source_requirement_ref; independent of resolved period. |
+| `freshness_evaluation` | `Nullable<FreshnessEvaluation>` | Yes | Recorded deterministic freshness result; non-null with outcome PASS is required for COMPLETED/SUFFICIENT. |
 | `status` | `SourceAssessmentStatus` | Yes | Lifecycle only: PENDING, ASSESSING, COMPLETED, SUPERSEDED or FAILED. |
 | `method` | `AssessmentMethod` | Yes | DETERMINISTIC only. |
 | `authority` | `SourceAuthority` | Yes | Authority supported by policy and provenance. |
@@ -537,7 +735,7 @@ Uses the full task-owned record envelope.
 | `evidence_refs` | `Ref<EvidenceRecord>[]` | Yes | Observed supporting evidence. |
 | `error_codes` | `ErrorCode[]` | Yes | Blocking/diagnostic catalog codes. |
 
-COMPLETED means the deterministic assessment finished, not that sources are sufficient. Only outcome SUFFICIENT can pass a blocking source gate. MISSING covers absent sources or required fields; STALE covers inapplicable versions/period; CONFLICTING covers contradictory facts; NOT_AUTHORITATIVE rejects source authority; AMBIGUOUS means unresolved identification or interpretation. FAILED is a technical assessment failure and has no business verdict. Preserve every finding in error_codes; deterministic policy chooses the primary outcome when several apply. A completed finding is immutable; new evidence produces a new assessment, and supersession preserves the original outcome.
+COMPLETED means the deterministic assessment finished, not that sources are sufficient. Only outcome SUFFICIENT can pass a blocking source gate. MISSING covers absent sources or required fields; STALE covers inapplicable versions/period or failed freshness applicability; CONFLICTING covers contradictory facts; NOT_AUTHORITATIVE rejects source authority; AMBIGUOUS means unresolved identification or interpretation. FAILED is a technical assessment failure and has no business verdict. Preserve every finding in error_codes; deterministic policy chooses the primary outcome when several apply. A completed finding is immutable; new evidence produces a new assessment, and supersession preserves the original outcome. A period match alone cannot yield SUFFICIENT. The freshness evaluation must use the pinned policy and assessed source versions, record its as_of and provenance, and pass independently. Missing inputs may leave freshness_evaluation null or BLOCKED but can never produce SUFFICIENT.
 
 ### EvidenceRecord
 
@@ -568,6 +766,7 @@ Uses the full task-owned record envelope.
 
 | Field | Type | Required | Meaning |
 | --- | --- | --- | --- |
+| `check_kind` | `EvidenceCheckKind` | Yes | Explicit deterministic evidence check category; required for every EvidenceCheck. |
 | `business_target_id` | `BusinessTargetID` | Yes | Checked target. |
 | `source_assessment_refs` | `Ref<SourceAssessment>[+]` | Yes | Sufficiency inputs. |
 | `evidence_refs` | `Ref<EvidenceRecord>[]` | Yes | Evidence tested; empty allowed for missing-source checks. |
@@ -575,6 +774,24 @@ Uses the full task-owned record envelope.
 | `method` | `AssessmentMethod` | Yes | DETERMINISTIC only. |
 | `outcome` | `CheckOutcome` | Yes | Explicit result. |
 | `error_codes` | `ErrorCode[]` | Yes | Catalog diagnostics. |
+| `freshness_evaluation` | `FreshnessEvaluation` | No | Required only for FRESHNESS; absent for other kinds. Pins the policy, as_of, evaluator version, inputs and outcome. |
+
+For FRESHNESS, the evaluation outcome must equal this check's outcome and its policy must match the referenced source requirement/assessment. One FRESHNESS check covers one pinned policy and evaluation context; split mixed policies into separate checks. A later check may find a prior source assessment no longer applicable, but it never rewrites that earlier result.
+
+| EvidenceCheckKind | Explicit obligation |
+| --- | --- |
+| SOURCE_PRESENCE | Establish that required source artifacts/observations exist. |
+| PERIOD | Check applicability to the resolved required business period. |
+| FRESHNESS | Apply the separate versioned deterministic freshness policy at the recorded as_of context. |
+| AUTHORITY | Check source authority against governed policy. |
+| COMPLETENESS | Check every required field/record requirement. |
+| CONSISTENCY | Detect contradictions among relevant source facts. |
+| VALUE_TYPE | Check the declared typed business value and structured schema where applicable. |
+| UNIT | Check explicit units/currency/percentage representation without implicit conversion. |
+| FORMULA | Check required native formula identity and its relation to the observed value; calculated value alone is insufficient. |
+| PROVENANCE | Check immutable source versions, locations, artifact hashes and traceable lineage. |
+
+Check categories are not confidence scores or lifecycle states. Each check records a deterministic outcome with evidence. Period and freshness require distinct checks when applicable; neither implies the other.
 
 ### EvidenceAssessment
 
@@ -857,11 +1074,12 @@ Governance, execution, validation and exception actions emit immutable AuditEven
 | --- | --- |
 | TargetContractDefinition | TargetRegionDefinition, SourceRequirement, reusable ValidationPlan and reusable policy ContentRefs. |
 | TargetRegionDefinition | SourceRequirement, business target identifiers, type/operation declarations and reusable declarative policy/schema artifacts. |
-| SourceRequirement | Business target identifiers, reusable period policy, optional fixed specific_period and reusable policy artifacts. |
+| SourceRequirement | Business target identifiers, reusable period policy, optional fixed specific_period, pinned FreshnessPolicy and reusable policy artifacts. |
+| FreshnessPolicy | Reusable deterministic evaluator identifiers and policy/configuration artifacts; never task-specific freshness observations. |
 | RulePack and BusinessRule | Other reusable rule/source definitions, business target identifiers and reusable policy artifacts. |
 | ValidationPlan | Reusable check definitions, business target identifiers and validator policy artifacts. |
 
-This boundary is transitive. Reusable definitions MUST NOT reference task-owned DocumentVersions, SemanticObjects, NativeBindings, NativeLocators, TargetRegions, TargetContractInstances or ProtectedScope instances, including through an intermediate reference or an artifact URI used to hide the dependency. A policy describes preservation rules; a ProtectedScope instance identifies actual objects in a particular binary.
+This boundary is transitive. Reusable definitions MUST NOT reference task-owned DocumentVersions, DocumentPreflightAssessments, CapabilityResultRefs, PreflightFindings, FreshnessEvaluations, SemanticObjects, NativeBindings, NativeLocators, TargetRegions, TargetContractInstances or ProtectedScope instances, including through an intermediate reference or an artifact URI used to hide the dependency. A policy describes preservation rules; a ProtectedScope instance identifies actual objects in a particular binary.
 
 TargetContractInstance binds a pinned TargetContractDefinition to exactly one task and one target DocumentVersion. TargetRegion binds a TargetRegionDefinition to an occurrence in that instance. A task can register an instance before perception; unresolved bindings do not confer readiness or authorization.
 
@@ -915,6 +1133,10 @@ Only authorization is hashed by this field. The outer lifecycle envelope and aut
 14. Replay and independent validation are separate responsibilities. Successful mechanical execution produces only a staged version. Unauthorized changes prevent successful release.
 15. Task completion and whole-document release require every required business target. A supported NCP factual change does not verify an arm's-length conclusion when current benchmark evidence is missing.
 16. Every recorded revision is immutable and every reference is pinned. Supersession, override, revocation and correction append new records/events. No historical rewriting or silent reuse of obsolete approval is allowed.
+17. DocumentVersion owns immutable binary identity; DocumentPreflightAssessment owns evolving observation history through new immutable assessments/revisions. Capability remains specific to its exact native scope, operation, engine/version, conformance and qualification evidence.
+18. Every BusinessRule declares RuleType and a deterministic evaluator_key. Every EvidenceCheck declares EvidenceCheckKind. Neither taxonomy supplies executable code or authorization.
+19. Period policy and freshness policy are separate, independently required governance concerns. A pinned period, unchanged hash or prior PASS never supplies indefinite freshness.
+20. Every Condition is one closed typed variant; every BusinessValue includes kind and review_text. No generic executable condition/payload or implicit fallback is allowed.
 
 One set may have several refused attempts, but at most one committed transformation of its approved input. Retry and concurrency guards are defined in status-model.md and remain independent of authorization validity.
 
@@ -934,3 +1156,17 @@ These corrections are breaking changes to the un-frozen draft, not a runtime or 
 - Architecture generation stays v2; the pre-freeze wire/persistence schema version is 0.1.0. Do not silently relabel historical 2.0.0 draft records or reuse their digests. A converted authorization requires a newly sealed set and renewed explicit review.
 
 Before freeze, the remaining shared package must align OpenAPI, examples, complete error metadata, event integrity fields and the consolidated invariants. Production fingerprint profiles, native-operation qualification, structured-value schema allowlisting, fiscal period policy and deterministic precedence for multiple source findings still require explicit policy/evidence decisions. None is a reason to weaken the fail-closed boundary or invent runtime behavior in this phase.
+
+## C1.1 migration consequences
+
+- Move DocumentVersion.format, conformance and capability_results observations into new DocumentPreflightAssessment records bound to the same binary identity. Do not rewrite historical DocumentVersion revisions or mint new binary identity merely because an engine assessment changes.
+- Replace TargetRegion's copied capability_results with pinned preflight_assessment_refs and capability_result_refs. Assign entry IDs within each immutable assessment revision; no global capability record or broad target capability flag is introduced.
+- Add explicit rule_type and evaluator_key to every BusinessRule through new definition revisions. Revalidate affected RulePack/approval references rather than silently defaulting a type or inferring an evaluator from free text.
+- Add a reusable FreshnessPolicy and pin it in SourceRequirement. Record the resolved freshness evaluation separately from period resolution; there is no default age threshold or exemption for period-independent evidence.
+- Add check_kind to every EvidenceCheck. Historical checks without sufficient provenance cannot be relabeled as passing a new freshness or formula check.
+- Convert the generic Condition scope/expected shape into its exact typed variant. Output postconditions use the inline approved-change validation subject, never an input locator reused against a different hash.
+- Make BusinessValue.kind and review_text explicit common fields without changing the eight passed C1 kinds or discarding exact representations.
+
+These changes remain within pre-freeze schema version 0.1.0. Existing sealed authorizations are immutable: changed definition/policy/condition/capability bindings require a newly reviewed and sealed set with its RFC 8785 authorization digest. C1 authorization/execution/validation/release separation, inline ApprovedChange identity and restricted ReplayRequest remain unchanged.
+
+Production freshness criteria/configuration, deterministic evaluator bindings and native preflight/qualification coverage still need approved evidence. No business thresholds, runtime implementations, error-catalog definitions, event-envelope changes or OpenAPI changes are supplied by C1.1.
