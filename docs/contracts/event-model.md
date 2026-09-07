@@ -6,7 +6,7 @@
 
 **Date:** 2026-09-07
 
-**Status:** C2 pre-freeze behavioral contract.
+**Status:** C2.1 pre-freeze behavioral contract.
 
 AuditEvent is the immutable, append-only account of material Foundation actions and outcomes. Events record what happened and why; they do not replace the referenced domain records, authorize replay or establish validation by themselves.
 
@@ -23,7 +23,7 @@ AuditEvent uses its own event envelope and is a top-level ObjectType.
 | occurred_at | Timestamp | Yes | Trusted UTC event time. |
 | actor | Actor | Yes | Authenticated or attested actor responsible for the event. |
 | task_id | ID | Yes | Owning FoundationTask ID. |
-| correlation_id | ID | Yes | Root correlation shared by one governed workflow attempt or remediation chain. |
+| correlation_id | ID | Yes | Groups one processing or remediation attempt; a task can span several correlations. |
 | causation_event_id | Nullable<ID> | Yes | Direct causal AuditEvent ID; null only for the root TASK_CREATED event. |
 | document_version_refs | DocumentVersionRef[] | Yes | Exact input/output/source binaries material to this event. |
 | business_target_ids | BusinessTargetID[] | Yes | Affected business targets; empty only when the event is task/document-wide. |
@@ -55,6 +55,34 @@ Used for task, document, proposal, review, authorization, release and status eve
 | resulting_status | NullableText | Yes | Resulting closed-enum state when this event represents a transition; otherwise null. |
 | decision_ref | Reference | No | Exact human/governance decision when applicable. |
 | first_material_failure_event_id | ID | No | Required on downstream blocking responses; points to the event where the material failure was first established. |
+
+### PERCEPTION
+
+Used by PERCEPTION_COMPLETED and PERCEPTION_FAILED.
+
+| Additional field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| analysis_run_ref | Ref<AnalysisRun> | Yes | Exact run containing the perception attempt. |
+| perception_snapshot_ref | Ref<PerceptionSnapshot> | No | Required on completion; absent when no snapshot was produced. |
+| engine | Text | Yes | Exact semantic engine identity. |
+| engine_version | Text | Yes | Exact implementation version. |
+| configuration_ref | ContentRef | Yes | Pinned perception configuration. |
+| observation_refs | ContentRef[+] | Yes | Preserved completion or failure observations. |
+| first_material_failure_event_id | ID | No | Earlier detector when propagating failure; otherwise omitted. |
+
+Completion does not imply business verification. A failed attempt names the exact input binary in document_version_refs and preserves a specific error and its observations.
+
+### NATIVE_BINDING
+
+Used by NATIVE_BINDING_ASSESSED.
+
+| Additional field | Type | Required | Meaning |
+| --- | --- | --- | --- |
+| native_binding_ref | Ref<NativeBinding> | Yes | Exact assessed association; not an execution address. |
+| evaluator_binding | EvaluatorBinding | Yes | Exact deterministic binding assessor/version/configuration. |
+| observation_refs | ContentRef[+] | Yes | Preserved native association observations. |
+| outcome | BindingStatus | Yes | Must equal the referenced NativeBinding.status. |
+| first_material_failure_event_id | ID | No | Earlier detector when propagating failure; otherwise omitted. |
 
 ### DETERMINISTIC_EVALUATION
 
@@ -139,12 +167,12 @@ Array order is significant and must be deterministic. The hash is an integrity c
 
 ## Causation and first material failure
 
-- TASK_CREATED is the only root event and has causation_event_id null.
-- Every other event names one earlier event in the same task and correlation chain as its direct cause.
+- TASK_CREATED is the only task-lineage event with null causation_event_id. There is exactly one such root per task.
+- Every other event names one earlier event in the same task (correlation_id may differ) as its direct cause.
 - Event causation is acyclic. A downstream response such as proposal blocking, execution refusal, validation quarantine or release withholding carries first_material_failure_event_id in its metadata and preserves the first specific error code in error_codes.
 - A detector event that first establishes a failure is itself the first material failure. It does not point first_material_failure_event_id to a later response.
 - Parallel successful target branches may share an earlier cause. Their events remain distinct and do not erase a failure on another required target.
-- Remediation starts a new causal branch or correlation as governed by orchestration, but references the prior exception/decision in object_refs and preserves the original events.
+- correlation_id groups one processing/remediation attempt. A later attempt may use a new correlation_id and a causation_event_id from an earlier correlation in the same task. It does not create another TASK_CREATED root. Preserve the prior exception/decision in object_refs and all original events.
 
 ## Event responsibility matrix
 
@@ -153,12 +181,15 @@ Array order is significant and must be deterministic. The hash is an integrity c
 | TASK_CREATED | SYSTEM or HUMAN / GOVERNANCE | FoundationTask output. |
 | DOCUMENT_REGISTERED | SYSTEM / GOVERNANCE | DocumentArtifact and DocumentVersion outputs; exact document_version_refs. |
 | DOCUMENT_PREFLIGHT_COMPLETED | SYSTEM / DETERMINISTIC_EVALUATION | DocumentPreflightAssessment output and assessor implementation binding. |
+| PERCEPTION_COMPLETED | SYSTEM / PERCEPTION | PerceptionSnapshot, AnalysisRun, exact binary and engine/version/configuration. |
+| PERCEPTION_FAILED | SYSTEM / PERCEPTION | AnalysisRun, exact binary, engine/version/configuration, error and failure observations. |
+| NATIVE_BINDING_ASSESSED | SYSTEM / NATIVE_BINDING | NativeBinding, semantic/native refs and assessor/version/configuration. |
 | ANALYSIS_COMPLETED | SYSTEM / GOVERNANCE | AnalysisRun and typed analysis outputs. |
 | RULE_EVALUATED | SYSTEM / DETERMINISTIC_EVALUATION | RuleEvaluation and exact EvaluatorBinding. |
 | SOURCE_ASSESSED | SYSTEM / DETERMINISTIC_EVALUATION | SourceAssessment and exact EvaluatorBinding. |
 | EVIDENCE_CHECKED | SYSTEM / DETERMINISTIC_EVALUATION | EvidenceCheck and exact EvaluatorBinding. |
 | EVIDENCE_ASSESSED | SYSTEM / DETERMINISTIC_EVALUATION | EvidenceAssessment and aggregation evaluator binding. |
-| MAPPING_PROPOSED | SYSTEM or AI / GOVERNANCE | MappingProposal; AI participation also has a distinct AI_INTERACTION_RECORDED event. |
+| MAPPING_PROPOSED | SYSTEM / GOVERNANCE | MappingProposal persisted by a governed service; AI participation is a separate AI_INTERACTION_RECORDED input/causal event. |
 | AI_INTERACTION_RECORDED | AI / AI_INTERACTION | AIInteractionRecord and instruction/context/output references. |
 | CHANGE_PROPOSED | SYSTEM or HUMAN / GOVERNANCE | Exact ChangeProposal revision. |
 | REVIEW_DECIDED | HUMAN / GOVERNANCE | ReviewDecision and pinned proposal/evidence. |
@@ -184,3 +215,11 @@ Array order is significant and must be deterministic. The hash is an integrity c
 Events are append-only and immutable. Actor, timestamps, references, metadata, errors and integrity hashes cannot be rewritten. A correction uses a new event and causal link.
 
 An AuditEvent proves that Foundation recorded an action or observation. It does not make an invalid transition valid, transform AI output into evidence, create approval, authorize replay or replace an independent ValidationReport.
+
+## Material event coverage
+
+Every material RuleEvaluation, SourceAssessment, EvidenceCheck and EvidenceAssessment snapshot in a scenario has a corresponding RULE_EVALUATED, SOURCE_ASSESSED, EVIDENCE_CHECKED or EVIDENCE_ASSESSED event referencing that exact revision. The event's evaluator binding matches the record. Every material DocumentPreflightAssessment, PerceptionSnapshot and NativeBinding is similarly traceable through its named event family. ValidationCheckResult observations are covered explicitly by their ValidationReport's VALIDATION_COMPLETED event and output_refs; a separate per-check validation event is not required.
+
+Only a governed SYSTEM service persists/emits MappingProposal. AI-interaction events record bounded assistance; SYSTEM mapping events reference those immutable AI records as inputs and their causal events where directly applicable. Verification and approval still require independent deterministic gates and explicit human decisions.
+
+GOVERNANCE status fields are null for events that record a decision without changing a lifecycle state. When non-null, their enum is determined by the referenced affected record (ReleaseStatus for release events). An already BLOCKED proposal can receive REQUEST_MORE_SOURCE without a fictitious IN_REVIEW transition: record the decision and source request, preserving the blocked proposal and earlier evidence.

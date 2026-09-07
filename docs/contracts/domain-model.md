@@ -826,7 +826,7 @@ Uses the full task-owned record envelope.
 
 ### MappingProposal
 
-Suggested association of source information to a business target; acceptance is not write authority.
+Suggested association of source information to a business target; acceptance is not write authority. A governed SYSTEM service persists and emits MappingProposal. AI participation is recorded separately in AIInteractionRecord and referenced as input/causation; it never authors a governed verification or approval transition.
 
 Uses the full task-owned record envelope.
 

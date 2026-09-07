@@ -6,7 +6,7 @@
 
 **Date:** 2026-09-07
 
-**Status:** C2 pre-freeze behavioral contract.
+**Status:** C2.1 pre-freeze behavioral contract.
 
 These invariants govern every service, persisted projection, event and interface. The [current baseline](../CURRENT_BASELINE.md), active [ADRs](../adr/README.md), [domain model](domain-model.md), [status model](status-model.md), [error catalog](error-catalog.md) and [event model](event-model.md) must be interpreted together.
 
@@ -39,7 +39,7 @@ Violation outcomes name the minimum required response. A service may add a more 
 | --- | --- |
 | Rule | NativeBinding records semantic-to-native association. Only a NativeLocator can provide the exact native execution address, and each approved change names one locator. |
 | Rationale | A semantic association can be one-to-many or unresolved and therefore cannot safely direct mutation. |
-| Violation outcome | Block the proposal with EVIDENCE_NOT_VERIFIED or refuse execution with LOCATOR_NOT_FOUND, as applicable. |
+| Violation outcome | Block the proposal with NATIVE_BINDING_MISSING or refuse execution with LOCATOR_NOT_FOUND, as applicable. |
 | Owning layer | NATIVE_IDENTITY |
 
 ### FND-INV-LOC-001 — Exact version-scoped native resolution
@@ -77,7 +77,7 @@ Violation outcomes name the minimum required response. A service may add a more 
 
 | Attribute | Contract |
 | --- | --- |
-| Rule | Every business-critical RuleEvaluation, SourceAssessment and EvidenceCheck records an EvaluatorBinding containing evaluator_key, exact evaluator_version and configuration_ref. The key must agree with its declared policy/rule. |
+| Rule | Every business-critical RuleEvaluation, SourceAssessment, EvidenceCheck and EvidenceAssessment records an EvaluatorBinding containing evaluator_key, exact evaluator_version and configuration_ref. The key must agree with its declared policy/rule. |
 | Rationale | A deterministic result is reproducible only when its implementation and configuration are pinned. |
 | Violation outcome | Block the result with EVALUATOR_BINDING_UNAVAILABLE or EVALUATOR_CONFIGURATION_MISMATCH. It cannot support VERIFIED, approval or release. |
 | Owning layer | CONTRACT |
@@ -221,7 +221,7 @@ Violation outcomes name the minimum required response. A service may add a more 
 
 | Attribute | Contract |
 | --- | --- |
-| Rule | Each event has correlation_id and, except the root event, causation_event_id. The chain points to the event that directly caused it and preserves the first material failure stage and error code. |
+| Rule | TASK_CREATED is the only task-lineage event with null causation. Every later event references an earlier event in the same task; the acyclic cause may cross correlation_id boundaries because correlations group separate attempts. The chain preserves the first material failure stage and error code. |
 | Rationale | Later blocking, refusal or quarantine events must not obscure where the scenario first failed. |
 | Violation outcome | EVENT_CAUSATION_INVALID; reject the event and do not claim a complete audit trail. |
 | Owning layer | AUDIT |
@@ -230,7 +230,7 @@ Violation outcomes name the minimum required response. A service may add a more 
 
 | Attribute | Contract |
 | --- | --- |
-| Rule | Every AuditEvent has an integrity payload hash. Deterministic evaluation events record evaluator key/version/configuration; replay events record ApprovedChangeSet, engine/version and exact input/output; validation events record independent validator identity/version/configuration and observations; AI events record provider/model/version/instruction/context/output references without hidden chain-of-thought. |
+| Rule | Every AuditEvent has an integrity payload hash. Every material EvidenceCheck has an EVIDENCE_CHECKED event for its exact revision. Deterministic evaluation events record evaluator key/version/configuration; replay events record ApprovedChangeSet, engine/version and exact input/output; validation events record independent validator identity/version/configuration and observations; AI events record provider/model/version/instruction/context/output references without hidden chain-of-thought. |
 | Rationale | The audit trail must identify the concrete mechanism and immutable evidence behind each material result. |
 | Violation outcome | EVENT_INTEGRITY_MISMATCH or EVALUATOR_BINDING_UNAVAILABLE; the event cannot support approval, validation or release. |
 | Owning layer | AUDIT |

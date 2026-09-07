@@ -6,7 +6,7 @@
 
 **Date:** 2026-09-07
 
-**Status:** C2 pre-freeze behavioral contract.
+**Status:** C2.1 pre-freeze behavioral contract.
 
 An ErrorDefinition is immutable contract data keyed by code. Every occurrence is recorded on the domain object and AuditEvent that first detects it; an ExceptionRecord carries scenario-specific facts and remediation. Codes describe material causes rather than generic failure summaries.
 
@@ -33,40 +33,64 @@ retryable true never means blind replay. The recorded cause must be remediated, 
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | INVALID_CONTRACT | CONTRACT | ERROR | true | false | true | true | REJECT_REQUEST | The submitted contract does not satisfy the required schema or invariant. | true |
 | INVALID_STATE_TRANSITION | CONTRACT | ERROR | true | false | false | false | REJECT_REQUEST | The requested lifecycle transition is not permitted. | true |
-| REFERENCE_NOT_FOUND | CONTRACT | ERROR | true | true | true | true | REJECT_REQUEST | A required pinned record or artifact reference could not be resolved. | true |
-| EVALUATOR_BINDING_UNAVAILABLE | CONTRACT | ERROR | true | true | false | true | HALT_AND_ESCALATE | The exact deterministic evaluator implementation or version is unavailable. | true |
+| REFERENCE_NOT_FOUND | CONTRACT | ERROR | true | false | true | true | REJECT_REQUEST | A required pinned record or artifact reference could not be resolved. | true |
+| EVALUATOR_BINDING_UNAVAILABLE | CONTRACT | ERROR | true | false | false | true | HALT_AND_ESCALATE | The exact deterministic evaluator implementation or version is unavailable. | true |
 | EVALUATOR_CONFIGURATION_MISMATCH | CONTRACT | ERROR | true | false | false | true | HALT_AND_ESCALATE | The evaluator configuration does not match the pinned configuration reference. | true |
 | STALE_DOCUMENT_VERSION | EXECUTION | CRITICAL | true | false | true | true | REFUSE_EXECUTION | The target bytes do not match the approved document version and hash. | true |
 | LOCATOR_NOT_FOUND | NATIVE_IDENTITY | ERROR | true | false | true | true | REANALYZE | The approved native locator did not resolve an object on the approved binary. | true |
 | LOCATOR_AMBIGUOUS | NATIVE_IDENTITY | ERROR | true | false | true | true | REANALYZE | The approved native locator resolved more than one object; execution was refused. | true |
 | LOCATOR_FINGERPRINT_MISMATCH | NATIVE_IDENTITY | ERROR | true | false | true | true | REANALYZE | The addressed native object does not match the approved structural fingerprint. | true |
-| CAPABILITY_UNKNOWN | NATIVE_IDENTITY | ERROR | true | true | false | true | REANALYZE | Required operation capability has not been established for this exact native scope and engine profile. | true |
+| CAPABILITY_UNKNOWN | NATIVE_IDENTITY | ERROR | true | false | false | true | REANALYZE | Required operation capability has not been established for this exact native scope and engine profile. | true |
 | UNSUPPORTED_NATIVE_OBJECT | NATIVE_IDENTITY | ERROR | true | false | false | true | REFUSE_EXECUTION | The requested native structure is outside the qualified mutation profile. | true |
 | PROTECTED_OBJECT | AUTHORIZATION | CRITICAL | true | false | false | true | REFUSE_EXECUTION | The requested operation targets an object that must be preserved. | true |
 | EXECUTION_UNSUPPORTED | EXECUTION | ERROR | true | false | false | true | REFUSE_EXECUTION | The exact operation, structure, engine, version and conformance tuple is unsupported. | true |
-| STRICT_OOXML_MUTATION_UNQUALIFIED | EXECUTION | ERROR | true | false | false | true | REFUSE_EXECUTION | Mutation of Strict OOXML is not qualified and was refused before replay. | true |
-| SOURCE_MISSING | SOURCE | ERROR | true | true | true | true | REQUEST_SOURCE | A required authoritative source or required source field is missing. | true |
-| SOURCE_STALE | SOURCE | ERROR | true | true | true | true | REQUEST_SOURCE | Required evidence is no longer current under the pinned freshness policy or applicable period. | true |
-| SOURCE_NOT_AUTHORITATIVE | SOURCE | ERROR | true | true | true | true | REQUEST_SOURCE | The available source does not meet the required authority policy. | true |
-| SOURCE_CONFLICTING | SOURCE | ERROR | true | true | true | true | REQUEST_SOURCE | Material source facts conflict under the pinned deterministic policy. | true |
-| SOURCE_AMBIGUOUS | SOURCE | ERROR | true | true | true | true | REQUEST_SOURCE | The required source identity, scope or meaning cannot be resolved deterministically. | true |
-| EVIDENCE_INSUFFICIENT | EVIDENCE | ERROR | true | true | true | true | BLOCK_PROPOSAL | Required evidence checks did not establish sufficiency for the business target. | true |
-| EVIDENCE_NOT_VERIFIED | EVIDENCE | ERROR | true | true | true | true | BLOCK_PROPOSAL | The business target does not have a current deterministic VERIFIED evidence assessment. | true |
+| STRICT_OOXML_MUTATION_UNQUALIFIED | PREFLIGHT | ERROR | true | false | false | true | REFUSE_EXECUTION | Mutation of Strict OOXML is not qualified and was refused before replay. | true |
+| SOURCE_MISSING | SOURCE | ERROR | true | false | true | true | REQUEST_SOURCE | A required authoritative source or required source field is missing. | true |
+| SOURCE_STALE | SOURCE | ERROR | true | false | true | true | REQUEST_SOURCE | Required evidence is no longer current under the pinned freshness policy or applicable period. | true |
+| SOURCE_NOT_AUTHORITATIVE | SOURCE | ERROR | true | false | true | true | REQUEST_SOURCE | The available source does not meet the required authority policy. | true |
+| SOURCE_CONFLICTING | SOURCE | ERROR | true | false | true | true | REQUEST_SOURCE | Material source facts conflict under the pinned deterministic policy. | true |
+| SOURCE_AMBIGUOUS | SOURCE | ERROR | true | false | true | true | REQUEST_SOURCE | The required source identity, scope or meaning cannot be resolved deterministically. | true |
+| EVIDENCE_INSUFFICIENT | EVIDENCE | ERROR | true | false | true | true | BLOCK_PROPOSAL | Required evidence checks did not establish sufficiency for the business target. | true |
+| EVIDENCE_NOT_VERIFIED | EVIDENCE | ERROR | true | false | true | true | BLOCK_PROPOSAL | The business target does not have a current deterministic VERIFIED evidence assessment. | true |
 | AI_AUTHORITY_VIOLATION | AUTHORIZATION | CRITICAL | true | false | false | true | HALT_AND_ESCALATE | AI output attempted to create verification, approval or mutation authority. | true |
-| APPROVAL_REQUIRED | AUTHORIZATION | ERROR | true | true | true | false | REQUIRE_REVIEW | An explicit eligible human approval and ApprovedChangeSet are required before replay. | true |
+| APPROVAL_REQUIRED | AUTHORIZATION | ERROR | true | false | true | false | REQUIRE_REVIEW | An explicit eligible human approval and ApprovedChangeSet are required before replay. | true |
 | APPROVAL_CONTENT_MISMATCH | AUTHORIZATION | CRITICAL | true | false | true | true | REFUSE_EXECUTION | Current authorization content does not match the sealed approved content or digest. | true |
 | AUTHORIZATION_NOT_APPROVED | AUTHORIZATION | ERROR | true | false | true | false | REFUSE_EXECUTION | The referenced change set is invalidated, revoked, superseded or otherwise ineligible. | true |
 | IDEMPOTENCY_CONFLICT | EXECUTION | CRITICAL | true | false | false | true | HALT_AND_ESCALATE | The execution identity was reused with different authorization content. | true |
 | EXECUTION_CONFLICT | EXECUTION | CRITICAL | true | false | false | false | HALT_AND_ESCALATE | Another or uncertain attempt prevents safe application of this authorization. | true |
-| PRECONDITION_FAILED | EXECUTION | ERROR | true | true | true | true | REFUSE_EXECUTION | A sealed typed execution precondition failed. | true |
+| PRECONDITION_FAILED | EXECUTION | ERROR | true | false | true | true | REFUSE_EXECUTION | A sealed typed execution precondition failed. | true |
 | REPLAY_ENGINE_FAILURE | EXECUTION | CRITICAL | true | false | false | false | QUARANTINE_OUTPUT | The replay engine failed after execution admission; any staged or uncertain output is quarantined. | true |
 | INDEPENDENT_VALIDATOR_NOT_QUALIFIED | VALIDATION | CRITICAL | true | false | false | false | QUARANTINE_OUTPUT | The validator does not satisfy the pinned independent qualification policy. | true |
 | VALIDATION_OBSERVATION_UNAVAILABLE | VALIDATION | ERROR | true | true | false | false | QUARANTINE_OUTPUT | A mandatory independent validation observation could not be obtained. | true |
 | UNAUTHORIZED_CHANGE_DETECTED | VALIDATION | CRITICAL | true | false | false | true | QUARANTINE_OUTPUT | Independent validation detected a document change outside the approved scope. | true |
 | PROTECTED_SCOPE_VIOLATION | VALIDATION | CRITICAL | true | false | false | true | QUARANTINE_OUTPUT | Independent validation detected a change in protected content or structure. | true |
-| RELEASE_BLOCKED_INCOMPLETE_TARGETS | VALIDATION | ERROR | true | true | true | false | WITHHOLD_RELEASE | One or more required business targets remain blocked, so whole-task release is withheld. | true |
+| RELEASE_BLOCKED_INCOMPLETE_TARGETS | VALIDATION | ERROR | true | false | true | false | WITHHOLD_RELEASE | One or more required business targets remain blocked, so whole-task release is withheld. | true |
 | EVENT_INTEGRITY_MISMATCH | AUDIT | CRITICAL | true | false | false | true | HALT_AND_ESCALATE | An audit event does not match its recorded integrity payload hash. | true |
-| EVENT_CAUSATION_INVALID | AUDIT | ERROR | true | false | false | false | REJECT_REQUEST | The audit event causation reference is missing, cyclic or inconsistent with the task correlation chain. | true |
+| EVENT_CAUSATION_INVALID | AUDIT | ERROR | true | false | false | false | REJECT_REQUEST | The audit event causation reference is missing, cyclic or inconsistent with task lineage. | true |
+
+| UNSUPPORTED_FILE_FORMAT | INTAKE | ERROR | true | false | true | false | REJECT_REQUEST | The detected file format is outside the supported intake profile. | true |
+| ENCRYPTED_DOCUMENT | INTAKE | ERROR | true | false | true | false | REJECT_REQUEST | The encrypted document cannot be inspected under the qualified intake profile; supply an authorized unencrypted version. | true |
+| CORRUPTED_DOCUMENT | INTAKE | ERROR | true | false | true | true | REJECT_REQUEST | The document package is corrupted or internally inconsistent. | true |
+| DOCUMENT_TOO_LARGE | INTAKE | ERROR | true | false | true | false | REJECT_REQUEST | The document exceeds the configured intake limit; no size threshold is defined by this contract. | true |
+| MALWARE_DETECTED | INTAKE | CRITICAL | true | false | false | true | HALT_AND_ESCALATE | Malware was detected; isolate the intake artifact and stop processing. | true |
+| PREFLIGHT_FAILED | PREFLIGHT | ERROR | true | false | false | true | HALT_AND_ESCALATE | Preflight could not establish required observations; use a specific format, protection or structure code when identified. | true |
+| PERCEPTION_FAILED | PERCEPTION | ERROR | true | false | false | true | HALT_AND_ESCALATE | The perception run could not produce the required semantic representation. | true |
+| PERCEPTION_MISMATCH | PERCEPTION | ERROR | true | false | true | true | REANALYZE | Semantic perception conflicts with independently observed document content. | true |
+| SEMANTIC_OBJECT_NOT_FOUND | PERCEPTION | ERROR | true | false | true | true | REANALYZE | The referenced semantic object does not exist in the pinned perception snapshot. | true |
+| NATIVE_BINDING_MISSING | NATIVE_IDENTITY | ERROR | true | false | true | true | REANALYZE | A required semantic-to-native association has not been established. | true |
+| MAPPING_AMBIGUOUS | MAPPING | ERROR | true | false | true | true | BLOCK_PROPOSAL | Multiple unresolved mappings remain for the business target. | true |
+| MAPPING_UNRESOLVED | MAPPING | ERROR | true | false | true | true | BLOCK_PROPOSAL | No governed mapping has been established for the business target. | true |
+| AI_CONTEXT_INCOMPLETE | MAPPING | ERROR | true | false | true | true | REANALYZE | Required context was omitted from the bounded AI interaction; rebuild context and reassess dependent proposals. | true |
+| AI_OUTPUT_INVALID | MAPPING | ERROR | true | false | false | true | BLOCK_PROPOSAL | The AI output violates its declared structured output contract. | true |
+| AI_UNSUPPORTED_INFERENCE | MAPPING | ERROR | true | false | true | true | BLOCK_PROPOSAL | The AI proposal asserts an inference unsupported by the supplied evidence. | true |
+| AI_SERVICE_UNAVAILABLE | MAPPING | ERROR | true | true | false | false | RETRY_WITH_BACKOFF | The bounded AI service is temporarily unavailable; retry only the same non-mutating interaction under the pinned context. | true |
+| MUTATION_NOT_AUTHORIZED | AUTHORIZATION | CRITICAL | true | false | true | false | REFUSE_EXECUTION | The requested mutation has no eligible sealed authorization or exceeds its authorized scope. | true |
+| POSTCONDITION_FAILED | VALIDATION | ERROR | true | false | true | true | QUARANTINE_OUTPUT | A sealed typed postcondition failed on the staged output; record the specific reconciliation or preservation cause where known. | true |
+| SCHEMA_VALIDATION_FAILED | VALIDATION | ERROR | true | false | false | true | QUARANTINE_OUTPUT | Independent schema or package validation rejected the staged output. | true |
+| PACKAGE_DIFF_FAILED | VALIDATION | ERROR | true | false | false | true | QUARANTINE_OUTPUT | Independent package comparison failed its approved preservation constraints. | true |
+| INTRA_PART_DIFF_FAILED | VALIDATION | ERROR | true | false | false | true | QUARANTINE_OUTPUT | Independent within-part comparison failed its approved preservation constraints. | true |
+| SEMANTIC_REPERCEPTION_FAILED | VALIDATION | ERROR | true | false | false | false | QUARANTINE_OUTPUT | Independent output semantic re-perception could not satisfy the validation requirement. | true |
+| BUSINESS_RECONCILIATION_FAILED | VALIDATION | ERROR | true | false | true | true | QUARANTINE_OUTPUT | Independent reconciliation found that the staged business result does not meet the approved result. | true |
 
 ## Use rules
 
@@ -75,3 +99,11 @@ retryable true never means blind replay. The recorded cause must be remediated, 
 - PRECONDITION_FAILED identifies a failed closed typed condition only when no more specific code applies. Hash, locator, capability, evidence and protection failures use their specific codes.
 - A blocking error prevents the affected transition. A task with an independent eligible target may retain that target's successful records, but RELEASE_BLOCKED_INCOMPLETE_TARGETS withholds whole-task release.
 - Human remediation creates new evidence, assessment, proposal, decision or authorization records. It never changes an ErrorDefinition or rewrites a prior error occurrence.
+
+## Retry and attribution boundaries
+
+Remediation is not retry. Supplying a missing source, replacing stale evidence, rebuilding a binding, changing a configuration or obtaining new approval creates new inputs and new evaluation records. These failures have retryable false even when user_resolvable is true. REFERENCE_NOT_FOUND concerns a missing pinned identity, not a transient storage timeout. EVALUATOR_BINDING_UNAVAILABLE concerns an unresolvable exact implementation, not an invocation timeout.
+
+VALIDATION_OBSERVATION_UNAVAILABLE is retryable only for a transient observation-service failure with unchanged input/output/plan and a new ValidationReport; it never retries mutation. Missing qualification or unsupported extraction uses the corresponding non-retryable code. AI_SERVICE_UNAVAILABLE can retry the unchanged bounded AI request; it cannot retry a mutation or reuse an uncertain replay attempt.
+
+Layer identifies the owning failure category; the detecting event and references establish the concrete first failing stage. PREFLIGHT owns operation readiness observations, including unqualified Strict OOXML. AI assistance errors use MAPPING because bounded semantic assistance feeds governed interpretation and mapping; they grant no AI authority. PREFLIGHT_FAILED and PERCEPTION_FAILED describe inability to complete their named stage only when a more specific cause has not been established. Diff failure codes represent observed preservation failures; unavailable comparisons use VALIDATION_OBSERVATION_UNAVAILABLE. Add UNAUTHORIZED_CHANGE_DETECTED whenever a diff identifies actual out-of-scope mutation.
