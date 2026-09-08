@@ -1,0 +1,4513 @@
+{
+  "cases": [
+    {
+      "behavior_result": "PASS",
+      "case_id": "docx-basic",
+      "feature_profile": [
+        "headings",
+        "paragraphs",
+        "multiple_runs",
+        "table"
+      ],
+      "format": "DOCX",
+      "input_sha256": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17",
+      "repeatability": {
+        "content": "PASS",
+        "ordering": "PASS",
+        "references": "PASS",
+        "structure": "PASS",
+        "tables": "PASS"
+      },
+      "run_count": 3,
+      "runs": [
+        {
+          "candidate_package": "docling-slim",
+          "candidate_version": "2.126.0",
+          "conversion_status": "PASS",
+          "errors": [],
+          "format": "DOCX",
+          "input_sha256": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17",
+          "observations": {
+            "collection_counts": {
+              "form_items": 0,
+              "groups": 2,
+              "key_value_items": 0,
+              "pictures": 0,
+              "tables": 1,
+              "texts": 3
+            },
+            "counts_by_kind": {
+              "inline": 1,
+              "section": 1,
+              "section_header": 1,
+              "table": 1,
+              "text": 2
+            },
+            "hierarchy": {
+              "body_children": [
+                4
+              ],
+              "furniture_children": [],
+              "nodes": [
+                {
+                  "children": [
+                    5,
+                    3
+                  ],
+                  "kind": "texts",
+                  "label": "section_header",
+                  "parent": 4
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 5
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 5
+                },
+                {
+                  "children": [],
+                  "kind": "tables",
+                  "label": "table",
+                  "parent": 0
+                },
+                {
+                  "children": [
+                    0
+                  ],
+                  "kind": "groups",
+                  "label": "section",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                },
+                {
+                  "children": [
+                    1,
+                    2
+                  ],
+                  "kind": "groups",
+                  "label": "inline",
+                  "parent": 0
+                }
+              ]
+            },
+            "semantic_reference_values": [
+              "#/texts/0",
+              "#/texts/1",
+              "#/texts/2",
+              "#/tables/0",
+              "#/groups/0",
+              "#/groups/1"
+            ],
+            "signatures": {
+              "content": "06eb7d3b4c0d0ca653d38d76340c09d690efb3c65e593657bd82b7ac281597bc",
+              "ordering": "b0a1cd15451431d89dc67e9d1fbe598417cbc2b4a157aa041e3f2bd26698301a",
+              "references": "8c44cff05fe90ef5f379e3035e5b34d7abcc0dfea9e380405da42a0b82fd13fb",
+              "structure": "cebb01eb79adb574c037607ceef01039b454b8b518b089e9c3d482868d82f747",
+              "tables": "73251198ec0aeaf1b2974f2ecfcc07a8e8b42a0d6b4ffd4993f50dcaef675056"
+            },
+            "table_count": 1,
+            "table_shapes": [
+              [
+                2,
+                2
+              ]
+            ],
+            "text_content_digest": "06eb7d3b4c0d0ca653d38d76340c09d690efb3c65e593657bd82b7ac281597bc",
+            "text_items": [
+              "Synthetic Local File",
+              "NCP current value",
+              "14.18%"
+            ],
+            "unclassified_top_level_fields": []
+          },
+          "semantic_document": {
+            "body": {
+              "children": [
+                {
+                  "$ref": "#/groups/0"
+                }
+              ],
+              "content_layer": "body",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/body"
+            },
+            "form_items": [],
+            "furniture": {
+              "children": [],
+              "content_layer": "furniture",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/furniture"
+            },
+            "groups": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/0"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "section",
+                "name": "header-0",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/0"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/1"
+                  },
+                  {
+                    "$ref": "#/texts/2"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "inline",
+                "name": "group",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "self_ref": "#/groups/1"
+              }
+            ],
+            "key_value_items": [],
+            "name": "immutable-input",
+            "origin": {
+              "binary_hash": 12044305736868662551,
+              "filename": "immutable-input.docx",
+              "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            },
+            "pages": {},
+            "pictures": [],
+            "schema_name": "DoclingDocument",
+            "tables": [
+              {
+                "annotations": [],
+                "captions": [],
+                "children": [],
+                "content_layer": "body",
+                "data": {
+                  "grid": [
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "Metric"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 0,
+                        "text": "Value"
+                      }
+                    ],
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 1,
+                        "text": "NCP"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 1,
+                        "text": "6.08%"
+                      }
+                    ]
+                  ],
+                  "num_cols": 2,
+                  "num_rows": 2,
+                  "orientation": "rot_0",
+                  "table_cells": [
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 0,
+                      "text": "Metric"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 0,
+                      "text": "Value"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 1,
+                      "text": "NCP"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 1,
+                      "text": "6.08%"
+                    }
+                  ]
+                },
+                "footnotes": [],
+                "label": "table",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "references": [],
+                "self_ref": "#/tables/0"
+              }
+            ],
+            "texts": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/groups/1"
+                  },
+                  {
+                    "$ref": "#/tables/0"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "section_header",
+                "level": 1,
+                "orig": "Synthetic Local File",
+                "parent": {
+                  "$ref": "#/groups/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/0",
+                "text": "Synthetic Local File"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "NCP current value",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [],
+                "self_ref": "#/texts/1",
+                "text": "NCP current value"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": true,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "14.18%",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [],
+                "self_ref": "#/texts/2",
+                "text": "14.18%"
+              }
+            ],
+            "version": "1.10.0"
+          }
+        },
+        {
+          "candidate_package": "docling-slim",
+          "candidate_version": "2.126.0",
+          "conversion_status": "PASS",
+          "errors": [],
+          "format": "DOCX",
+          "input_sha256": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17",
+          "observations": {
+            "collection_counts": {
+              "form_items": 0,
+              "groups": 2,
+              "key_value_items": 0,
+              "pictures": 0,
+              "tables": 1,
+              "texts": 3
+            },
+            "counts_by_kind": {
+              "inline": 1,
+              "section": 1,
+              "section_header": 1,
+              "table": 1,
+              "text": 2
+            },
+            "hierarchy": {
+              "body_children": [
+                4
+              ],
+              "furniture_children": [],
+              "nodes": [
+                {
+                  "children": [
+                    5,
+                    3
+                  ],
+                  "kind": "texts",
+                  "label": "section_header",
+                  "parent": 4
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 5
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 5
+                },
+                {
+                  "children": [],
+                  "kind": "tables",
+                  "label": "table",
+                  "parent": 0
+                },
+                {
+                  "children": [
+                    0
+                  ],
+                  "kind": "groups",
+                  "label": "section",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                },
+                {
+                  "children": [
+                    1,
+                    2
+                  ],
+                  "kind": "groups",
+                  "label": "inline",
+                  "parent": 0
+                }
+              ]
+            },
+            "semantic_reference_values": [
+              "#/texts/0",
+              "#/texts/1",
+              "#/texts/2",
+              "#/tables/0",
+              "#/groups/0",
+              "#/groups/1"
+            ],
+            "signatures": {
+              "content": "06eb7d3b4c0d0ca653d38d76340c09d690efb3c65e593657bd82b7ac281597bc",
+              "ordering": "b0a1cd15451431d89dc67e9d1fbe598417cbc2b4a157aa041e3f2bd26698301a",
+              "references": "8c44cff05fe90ef5f379e3035e5b34d7abcc0dfea9e380405da42a0b82fd13fb",
+              "structure": "cebb01eb79adb574c037607ceef01039b454b8b518b089e9c3d482868d82f747",
+              "tables": "73251198ec0aeaf1b2974f2ecfcc07a8e8b42a0d6b4ffd4993f50dcaef675056"
+            },
+            "table_count": 1,
+            "table_shapes": [
+              [
+                2,
+                2
+              ]
+            ],
+            "text_content_digest": "06eb7d3b4c0d0ca653d38d76340c09d690efb3c65e593657bd82b7ac281597bc",
+            "text_items": [
+              "Synthetic Local File",
+              "NCP current value",
+              "14.18%"
+            ],
+            "unclassified_top_level_fields": []
+          },
+          "semantic_document": {
+            "body": {
+              "children": [
+                {
+                  "$ref": "#/groups/0"
+                }
+              ],
+              "content_layer": "body",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/body"
+            },
+            "form_items": [],
+            "furniture": {
+              "children": [],
+              "content_layer": "furniture",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/furniture"
+            },
+            "groups": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/0"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "section",
+                "name": "header-0",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/0"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/1"
+                  },
+                  {
+                    "$ref": "#/texts/2"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "inline",
+                "name": "group",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "self_ref": "#/groups/1"
+              }
+            ],
+            "key_value_items": [],
+            "name": "immutable-input",
+            "origin": {
+              "binary_hash": 12044305736868662551,
+              "filename": "immutable-input.docx",
+              "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            },
+            "pages": {},
+            "pictures": [],
+            "schema_name": "DoclingDocument",
+            "tables": [
+              {
+                "annotations": [],
+                "captions": [],
+                "children": [],
+                "content_layer": "body",
+                "data": {
+                  "grid": [
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "Metric"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 0,
+                        "text": "Value"
+                      }
+                    ],
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 1,
+                        "text": "NCP"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 1,
+                        "text": "6.08%"
+                      }
+                    ]
+                  ],
+                  "num_cols": 2,
+                  "num_rows": 2,
+                  "orientation": "rot_0",
+                  "table_cells": [
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 0,
+                      "text": "Metric"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 0,
+                      "text": "Value"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 1,
+                      "text": "NCP"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 1,
+                      "text": "6.08%"
+                    }
+                  ]
+                },
+                "footnotes": [],
+                "label": "table",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "references": [],
+                "self_ref": "#/tables/0"
+              }
+            ],
+            "texts": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/groups/1"
+                  },
+                  {
+                    "$ref": "#/tables/0"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "section_header",
+                "level": 1,
+                "orig": "Synthetic Local File",
+                "parent": {
+                  "$ref": "#/groups/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/0",
+                "text": "Synthetic Local File"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "NCP current value",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [],
+                "self_ref": "#/texts/1",
+                "text": "NCP current value"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": true,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "14.18%",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [],
+                "self_ref": "#/texts/2",
+                "text": "14.18%"
+              }
+            ],
+            "version": "1.10.0"
+          }
+        },
+        {
+          "candidate_package": "docling-slim",
+          "candidate_version": "2.126.0",
+          "conversion_status": "PASS",
+          "errors": [],
+          "format": "DOCX",
+          "input_sha256": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17",
+          "observations": {
+            "collection_counts": {
+              "form_items": 0,
+              "groups": 2,
+              "key_value_items": 0,
+              "pictures": 0,
+              "tables": 1,
+              "texts": 3
+            },
+            "counts_by_kind": {
+              "inline": 1,
+              "section": 1,
+              "section_header": 1,
+              "table": 1,
+              "text": 2
+            },
+            "hierarchy": {
+              "body_children": [
+                4
+              ],
+              "furniture_children": [],
+              "nodes": [
+                {
+                  "children": [
+                    5,
+                    3
+                  ],
+                  "kind": "texts",
+                  "label": "section_header",
+                  "parent": 4
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 5
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 5
+                },
+                {
+                  "children": [],
+                  "kind": "tables",
+                  "label": "table",
+                  "parent": 0
+                },
+                {
+                  "children": [
+                    0
+                  ],
+                  "kind": "groups",
+                  "label": "section",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                },
+                {
+                  "children": [
+                    1,
+                    2
+                  ],
+                  "kind": "groups",
+                  "label": "inline",
+                  "parent": 0
+                }
+              ]
+            },
+            "semantic_reference_values": [
+              "#/texts/0",
+              "#/texts/1",
+              "#/texts/2",
+              "#/tables/0",
+              "#/groups/0",
+              "#/groups/1"
+            ],
+            "signatures": {
+              "content": "06eb7d3b4c0d0ca653d38d76340c09d690efb3c65e593657bd82b7ac281597bc",
+              "ordering": "b0a1cd15451431d89dc67e9d1fbe598417cbc2b4a157aa041e3f2bd26698301a",
+              "references": "8c44cff05fe90ef5f379e3035e5b34d7abcc0dfea9e380405da42a0b82fd13fb",
+              "structure": "cebb01eb79adb574c037607ceef01039b454b8b518b089e9c3d482868d82f747",
+              "tables": "73251198ec0aeaf1b2974f2ecfcc07a8e8b42a0d6b4ffd4993f50dcaef675056"
+            },
+            "table_count": 1,
+            "table_shapes": [
+              [
+                2,
+                2
+              ]
+            ],
+            "text_content_digest": "06eb7d3b4c0d0ca653d38d76340c09d690efb3c65e593657bd82b7ac281597bc",
+            "text_items": [
+              "Synthetic Local File",
+              "NCP current value",
+              "14.18%"
+            ],
+            "unclassified_top_level_fields": []
+          },
+          "semantic_document": {
+            "body": {
+              "children": [
+                {
+                  "$ref": "#/groups/0"
+                }
+              ],
+              "content_layer": "body",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/body"
+            },
+            "form_items": [],
+            "furniture": {
+              "children": [],
+              "content_layer": "furniture",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/furniture"
+            },
+            "groups": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/0"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "section",
+                "name": "header-0",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/0"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/1"
+                  },
+                  {
+                    "$ref": "#/texts/2"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "inline",
+                "name": "group",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "self_ref": "#/groups/1"
+              }
+            ],
+            "key_value_items": [],
+            "name": "immutable-input",
+            "origin": {
+              "binary_hash": 12044305736868662551,
+              "filename": "immutable-input.docx",
+              "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            },
+            "pages": {},
+            "pictures": [],
+            "schema_name": "DoclingDocument",
+            "tables": [
+              {
+                "annotations": [],
+                "captions": [],
+                "children": [],
+                "content_layer": "body",
+                "data": {
+                  "grid": [
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "Metric"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 0,
+                        "text": "Value"
+                      }
+                    ],
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 1,
+                        "text": "NCP"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 1,
+                        "text": "6.08%"
+                      }
+                    ]
+                  ],
+                  "num_cols": 2,
+                  "num_rows": 2,
+                  "orientation": "rot_0",
+                  "table_cells": [
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 0,
+                      "text": "Metric"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 0,
+                      "text": "Value"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 1,
+                      "text": "NCP"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 1,
+                      "text": "6.08%"
+                    }
+                  ]
+                },
+                "footnotes": [],
+                "label": "table",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "references": [],
+                "self_ref": "#/tables/0"
+              }
+            ],
+            "texts": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/groups/1"
+                  },
+                  {
+                    "$ref": "#/tables/0"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "section_header",
+                "level": 1,
+                "orig": "Synthetic Local File",
+                "parent": {
+                  "$ref": "#/groups/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/0",
+                "text": "Synthetic Local File"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "NCP current value",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [],
+                "self_ref": "#/texts/1",
+                "text": "NCP current value"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": true,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "14.18%",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [],
+                "self_ref": "#/texts/2",
+                "text": "14.18%"
+              }
+            ],
+            "version": "1.10.0"
+          }
+        }
+      ]
+    },
+    {
+      "behavior_result": "PASS",
+      "case_id": "docx-native-edge",
+      "feature_profile": [
+        "content_control",
+        "bookmark",
+        "field",
+        "hyperlink",
+        "revision",
+        "header",
+        "table"
+      ],
+      "format": "DOCX",
+      "input_sha256": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882",
+      "repeatability": {
+        "content": "PASS",
+        "ordering": "PASS",
+        "references": "PASS",
+        "structure": "PASS",
+        "tables": "PASS"
+      },
+      "run_count": 3,
+      "runs": [
+        {
+          "candidate_package": "docling-slim",
+          "candidate_version": "2.126.0",
+          "conversion_status": "PASS",
+          "errors": [],
+          "format": "DOCX",
+          "input_sha256": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882",
+          "observations": {
+            "collection_counts": {
+              "form_items": 0,
+              "groups": 4,
+              "key_value_items": 0,
+              "pictures": 0,
+              "tables": 1,
+              "texts": 9
+            },
+            "counts_by_kind": {
+              "inline": 2,
+              "section": 2,
+              "section_header": 1,
+              "table": 1,
+              "text": 8
+            },
+            "hierarchy": {
+              "body_children": [
+                10,
+                13
+              ],
+              "furniture_children": [],
+              "nodes": [
+                {
+                  "children": [
+                    11,
+                    9,
+                    3,
+                    4,
+                    12,
+                    7
+                  ],
+                  "kind": "texts",
+                  "label": "section_header",
+                  "parent": 10
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 11
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 11
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 0
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 0
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 12
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 12
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 0
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 13
+                },
+                {
+                  "children": [],
+                  "kind": "tables",
+                  "label": "table",
+                  "parent": 0
+                },
+                {
+                  "children": [
+                    0
+                  ],
+                  "kind": "groups",
+                  "label": "section",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                },
+                {
+                  "children": [
+                    1,
+                    2
+                  ],
+                  "kind": "groups",
+                  "label": "inline",
+                  "parent": 0
+                },
+                {
+                  "children": [
+                    5,
+                    6
+                  ],
+                  "kind": "groups",
+                  "label": "inline",
+                  "parent": 0
+                },
+                {
+                  "children": [
+                    8
+                  ],
+                  "kind": "groups",
+                  "label": "section",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                }
+              ]
+            },
+            "semantic_reference_values": [
+              "#/texts/0",
+              "#/texts/1",
+              "#/texts/2",
+              "#/texts/3",
+              "#/texts/4",
+              "#/texts/5",
+              "#/texts/6",
+              "#/texts/7",
+              "#/texts/8",
+              "#/tables/0",
+              "#/groups/0",
+              "#/groups/1",
+              "#/groups/2",
+              "#/groups/3"
+            ],
+            "signatures": {
+              "content": "11802728d4ecc9a6dd6fd4828cd11bbd9757d8b730aeb387db51a70e2989683d",
+              "ordering": "12ab75e4bec45e6945b1828c0627dd061fd7b91285b2735818076ee2d73c649b",
+              "references": "8d7bee66f5b8a97137cc4f283f453f4dfd3d17f31ae675d0714dbbc4c33fd8fc",
+              "structure": "ebf156e77b2969f11e7a1e57610d674f118c35795d427660801091f1dcc1002a",
+              "tables": "73251198ec0aeaf1b2974f2ecfcc07a8e8b42a0d6b4ffd4993f50dcaef675056"
+            },
+            "table_count": 1,
+            "table_shapes": [
+              [
+                2,
+                2
+              ]
+            ],
+            "text_content_digest": "11802728d4ecc9a6dd6fd4828cd11bbd9757d8b730aeb387db51a70e2989683d",
+            "text_items": [
+              "Synthetic Local File",
+              "NCP current value",
+              "14.18%",
+              "CONTROL_SENTINEL",
+              "BOOKMARK_SENTINEL",
+              "FIELD_SENTINEL",
+              "LINK_SENTINEL",
+              "REVISION_SENTINEL",
+              "HEADER_SENTINEL"
+            ],
+            "unclassified_top_level_fields": []
+          },
+          "semantic_document": {
+            "body": {
+              "children": [
+                {
+                  "$ref": "#/groups/0"
+                },
+                {
+                  "$ref": "#/groups/3"
+                }
+              ],
+              "content_layer": "body",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/body"
+            },
+            "form_items": [],
+            "furniture": {
+              "children": [],
+              "content_layer": "furniture",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/furniture"
+            },
+            "groups": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/0"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "section",
+                "name": "header-0",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/0"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/1"
+                  },
+                  {
+                    "$ref": "#/texts/2"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "inline",
+                "name": "group",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "self_ref": "#/groups/1"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/5"
+                  },
+                  {
+                    "$ref": "#/texts/6"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "inline",
+                "name": "group",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "self_ref": "#/groups/2"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/8"
+                  }
+                ],
+                "content_layer": "furniture",
+                "label": "section",
+                "name": "page header",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/3"
+              }
+            ],
+            "key_value_items": [],
+            "name": "immutable-input",
+            "origin": {
+              "binary_hash": 4415788013952006274,
+              "filename": "immutable-input.docx",
+              "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            },
+            "pages": {},
+            "pictures": [],
+            "schema_name": "DoclingDocument",
+            "tables": [
+              {
+                "annotations": [],
+                "captions": [],
+                "children": [],
+                "content_layer": "body",
+                "data": {
+                  "grid": [
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "Metric"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 0,
+                        "text": "Value"
+                      }
+                    ],
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 1,
+                        "text": "NCP"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 1,
+                        "text": "6.08%"
+                      }
+                    ]
+                  ],
+                  "num_cols": 2,
+                  "num_rows": 2,
+                  "orientation": "rot_0",
+                  "table_cells": [
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 0,
+                      "text": "Metric"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 0,
+                      "text": "Value"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 1,
+                      "text": "NCP"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 1,
+                      "text": "6.08%"
+                    }
+                  ]
+                },
+                "footnotes": [],
+                "label": "table",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "references": [],
+                "self_ref": "#/tables/0"
+              }
+            ],
+            "texts": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/groups/1"
+                  },
+                  {
+                    "$ref": "#/tables/0"
+                  },
+                  {
+                    "$ref": "#/texts/3"
+                  },
+                  {
+                    "$ref": "#/texts/4"
+                  },
+                  {
+                    "$ref": "#/groups/2"
+                  },
+                  {
+                    "$ref": "#/texts/7"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "section_header",
+                "level": 1,
+                "orig": "Synthetic Local File",
+                "parent": {
+                  "$ref": "#/groups/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/0",
+                "text": "Synthetic Local File"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "NCP current value",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [],
+                "self_ref": "#/texts/1",
+                "text": "NCP current value"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": true,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "14.18%",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [],
+                "self_ref": "#/texts/2",
+                "text": "14.18%"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "CONTROL_SENTINEL",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/3",
+                "text": "CONTROL_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "BOOKMARK_SENTINEL",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/4",
+                "text": "BOOKMARK_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "FIELD_SENTINEL",
+                "parent": {
+                  "$ref": "#/groups/2"
+                },
+                "prov": [],
+                "self_ref": "#/texts/5",
+                "text": "FIELD_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "hyperlink": "https://example.invalid/synthetic",
+                "label": "text",
+                "orig": "LINK_SENTINEL",
+                "parent": {
+                  "$ref": "#/groups/2"
+                },
+                "prov": [],
+                "self_ref": "#/texts/6",
+                "text": "LINK_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "REVISION_SENTINEL",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/7",
+                "text": "REVISION_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "furniture",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "HEADER_SENTINEL",
+                "parent": {
+                  "$ref": "#/groups/3"
+                },
+                "prov": [],
+                "self_ref": "#/texts/8",
+                "text": "HEADER_SENTINEL"
+              }
+            ],
+            "version": "1.10.0"
+          }
+        },
+        {
+          "candidate_package": "docling-slim",
+          "candidate_version": "2.126.0",
+          "conversion_status": "PASS",
+          "errors": [],
+          "format": "DOCX",
+          "input_sha256": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882",
+          "observations": {
+            "collection_counts": {
+              "form_items": 0,
+              "groups": 4,
+              "key_value_items": 0,
+              "pictures": 0,
+              "tables": 1,
+              "texts": 9
+            },
+            "counts_by_kind": {
+              "inline": 2,
+              "section": 2,
+              "section_header": 1,
+              "table": 1,
+              "text": 8
+            },
+            "hierarchy": {
+              "body_children": [
+                10,
+                13
+              ],
+              "furniture_children": [],
+              "nodes": [
+                {
+                  "children": [
+                    11,
+                    9,
+                    3,
+                    4,
+                    12,
+                    7
+                  ],
+                  "kind": "texts",
+                  "label": "section_header",
+                  "parent": 10
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 11
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 11
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 0
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 0
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 12
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 12
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 0
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 13
+                },
+                {
+                  "children": [],
+                  "kind": "tables",
+                  "label": "table",
+                  "parent": 0
+                },
+                {
+                  "children": [
+                    0
+                  ],
+                  "kind": "groups",
+                  "label": "section",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                },
+                {
+                  "children": [
+                    1,
+                    2
+                  ],
+                  "kind": "groups",
+                  "label": "inline",
+                  "parent": 0
+                },
+                {
+                  "children": [
+                    5,
+                    6
+                  ],
+                  "kind": "groups",
+                  "label": "inline",
+                  "parent": 0
+                },
+                {
+                  "children": [
+                    8
+                  ],
+                  "kind": "groups",
+                  "label": "section",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                }
+              ]
+            },
+            "semantic_reference_values": [
+              "#/texts/0",
+              "#/texts/1",
+              "#/texts/2",
+              "#/texts/3",
+              "#/texts/4",
+              "#/texts/5",
+              "#/texts/6",
+              "#/texts/7",
+              "#/texts/8",
+              "#/tables/0",
+              "#/groups/0",
+              "#/groups/1",
+              "#/groups/2",
+              "#/groups/3"
+            ],
+            "signatures": {
+              "content": "11802728d4ecc9a6dd6fd4828cd11bbd9757d8b730aeb387db51a70e2989683d",
+              "ordering": "12ab75e4bec45e6945b1828c0627dd061fd7b91285b2735818076ee2d73c649b",
+              "references": "8d7bee66f5b8a97137cc4f283f453f4dfd3d17f31ae675d0714dbbc4c33fd8fc",
+              "structure": "ebf156e77b2969f11e7a1e57610d674f118c35795d427660801091f1dcc1002a",
+              "tables": "73251198ec0aeaf1b2974f2ecfcc07a8e8b42a0d6b4ffd4993f50dcaef675056"
+            },
+            "table_count": 1,
+            "table_shapes": [
+              [
+                2,
+                2
+              ]
+            ],
+            "text_content_digest": "11802728d4ecc9a6dd6fd4828cd11bbd9757d8b730aeb387db51a70e2989683d",
+            "text_items": [
+              "Synthetic Local File",
+              "NCP current value",
+              "14.18%",
+              "CONTROL_SENTINEL",
+              "BOOKMARK_SENTINEL",
+              "FIELD_SENTINEL",
+              "LINK_SENTINEL",
+              "REVISION_SENTINEL",
+              "HEADER_SENTINEL"
+            ],
+            "unclassified_top_level_fields": []
+          },
+          "semantic_document": {
+            "body": {
+              "children": [
+                {
+                  "$ref": "#/groups/0"
+                },
+                {
+                  "$ref": "#/groups/3"
+                }
+              ],
+              "content_layer": "body",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/body"
+            },
+            "form_items": [],
+            "furniture": {
+              "children": [],
+              "content_layer": "furniture",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/furniture"
+            },
+            "groups": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/0"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "section",
+                "name": "header-0",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/0"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/1"
+                  },
+                  {
+                    "$ref": "#/texts/2"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "inline",
+                "name": "group",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "self_ref": "#/groups/1"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/5"
+                  },
+                  {
+                    "$ref": "#/texts/6"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "inline",
+                "name": "group",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "self_ref": "#/groups/2"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/8"
+                  }
+                ],
+                "content_layer": "furniture",
+                "label": "section",
+                "name": "page header",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/3"
+              }
+            ],
+            "key_value_items": [],
+            "name": "immutable-input",
+            "origin": {
+              "binary_hash": 4415788013952006274,
+              "filename": "immutable-input.docx",
+              "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            },
+            "pages": {},
+            "pictures": [],
+            "schema_name": "DoclingDocument",
+            "tables": [
+              {
+                "annotations": [],
+                "captions": [],
+                "children": [],
+                "content_layer": "body",
+                "data": {
+                  "grid": [
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "Metric"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 0,
+                        "text": "Value"
+                      }
+                    ],
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 1,
+                        "text": "NCP"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 1,
+                        "text": "6.08%"
+                      }
+                    ]
+                  ],
+                  "num_cols": 2,
+                  "num_rows": 2,
+                  "orientation": "rot_0",
+                  "table_cells": [
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 0,
+                      "text": "Metric"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 0,
+                      "text": "Value"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 1,
+                      "text": "NCP"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 1,
+                      "text": "6.08%"
+                    }
+                  ]
+                },
+                "footnotes": [],
+                "label": "table",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "references": [],
+                "self_ref": "#/tables/0"
+              }
+            ],
+            "texts": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/groups/1"
+                  },
+                  {
+                    "$ref": "#/tables/0"
+                  },
+                  {
+                    "$ref": "#/texts/3"
+                  },
+                  {
+                    "$ref": "#/texts/4"
+                  },
+                  {
+                    "$ref": "#/groups/2"
+                  },
+                  {
+                    "$ref": "#/texts/7"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "section_header",
+                "level": 1,
+                "orig": "Synthetic Local File",
+                "parent": {
+                  "$ref": "#/groups/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/0",
+                "text": "Synthetic Local File"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "NCP current value",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [],
+                "self_ref": "#/texts/1",
+                "text": "NCP current value"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": true,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "14.18%",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [],
+                "self_ref": "#/texts/2",
+                "text": "14.18%"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "CONTROL_SENTINEL",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/3",
+                "text": "CONTROL_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "BOOKMARK_SENTINEL",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/4",
+                "text": "BOOKMARK_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "FIELD_SENTINEL",
+                "parent": {
+                  "$ref": "#/groups/2"
+                },
+                "prov": [],
+                "self_ref": "#/texts/5",
+                "text": "FIELD_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "hyperlink": "https://example.invalid/synthetic",
+                "label": "text",
+                "orig": "LINK_SENTINEL",
+                "parent": {
+                  "$ref": "#/groups/2"
+                },
+                "prov": [],
+                "self_ref": "#/texts/6",
+                "text": "LINK_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "REVISION_SENTINEL",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/7",
+                "text": "REVISION_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "furniture",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "HEADER_SENTINEL",
+                "parent": {
+                  "$ref": "#/groups/3"
+                },
+                "prov": [],
+                "self_ref": "#/texts/8",
+                "text": "HEADER_SENTINEL"
+              }
+            ],
+            "version": "1.10.0"
+          }
+        },
+        {
+          "candidate_package": "docling-slim",
+          "candidate_version": "2.126.0",
+          "conversion_status": "PASS",
+          "errors": [],
+          "format": "DOCX",
+          "input_sha256": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882",
+          "observations": {
+            "collection_counts": {
+              "form_items": 0,
+              "groups": 4,
+              "key_value_items": 0,
+              "pictures": 0,
+              "tables": 1,
+              "texts": 9
+            },
+            "counts_by_kind": {
+              "inline": 2,
+              "section": 2,
+              "section_header": 1,
+              "table": 1,
+              "text": 8
+            },
+            "hierarchy": {
+              "body_children": [
+                10,
+                13
+              ],
+              "furniture_children": [],
+              "nodes": [
+                {
+                  "children": [
+                    11,
+                    9,
+                    3,
+                    4,
+                    12,
+                    7
+                  ],
+                  "kind": "texts",
+                  "label": "section_header",
+                  "parent": 10
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 11
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 11
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 0
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 0
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 12
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 12
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 0
+                },
+                {
+                  "children": [],
+                  "kind": "texts",
+                  "label": "text",
+                  "parent": 13
+                },
+                {
+                  "children": [],
+                  "kind": "tables",
+                  "label": "table",
+                  "parent": 0
+                },
+                {
+                  "children": [
+                    0
+                  ],
+                  "kind": "groups",
+                  "label": "section",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                },
+                {
+                  "children": [
+                    1,
+                    2
+                  ],
+                  "kind": "groups",
+                  "label": "inline",
+                  "parent": 0
+                },
+                {
+                  "children": [
+                    5,
+                    6
+                  ],
+                  "kind": "groups",
+                  "label": "inline",
+                  "parent": 0
+                },
+                {
+                  "children": [
+                    8
+                  ],
+                  "kind": "groups",
+                  "label": "section",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                }
+              ]
+            },
+            "semantic_reference_values": [
+              "#/texts/0",
+              "#/texts/1",
+              "#/texts/2",
+              "#/texts/3",
+              "#/texts/4",
+              "#/texts/5",
+              "#/texts/6",
+              "#/texts/7",
+              "#/texts/8",
+              "#/tables/0",
+              "#/groups/0",
+              "#/groups/1",
+              "#/groups/2",
+              "#/groups/3"
+            ],
+            "signatures": {
+              "content": "11802728d4ecc9a6dd6fd4828cd11bbd9757d8b730aeb387db51a70e2989683d",
+              "ordering": "12ab75e4bec45e6945b1828c0627dd061fd7b91285b2735818076ee2d73c649b",
+              "references": "8d7bee66f5b8a97137cc4f283f453f4dfd3d17f31ae675d0714dbbc4c33fd8fc",
+              "structure": "ebf156e77b2969f11e7a1e57610d674f118c35795d427660801091f1dcc1002a",
+              "tables": "73251198ec0aeaf1b2974f2ecfcc07a8e8b42a0d6b4ffd4993f50dcaef675056"
+            },
+            "table_count": 1,
+            "table_shapes": [
+              [
+                2,
+                2
+              ]
+            ],
+            "text_content_digest": "11802728d4ecc9a6dd6fd4828cd11bbd9757d8b730aeb387db51a70e2989683d",
+            "text_items": [
+              "Synthetic Local File",
+              "NCP current value",
+              "14.18%",
+              "CONTROL_SENTINEL",
+              "BOOKMARK_SENTINEL",
+              "FIELD_SENTINEL",
+              "LINK_SENTINEL",
+              "REVISION_SENTINEL",
+              "HEADER_SENTINEL"
+            ],
+            "unclassified_top_level_fields": []
+          },
+          "semantic_document": {
+            "body": {
+              "children": [
+                {
+                  "$ref": "#/groups/0"
+                },
+                {
+                  "$ref": "#/groups/3"
+                }
+              ],
+              "content_layer": "body",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/body"
+            },
+            "form_items": [],
+            "furniture": {
+              "children": [],
+              "content_layer": "furniture",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/furniture"
+            },
+            "groups": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/0"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "section",
+                "name": "header-0",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/0"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/1"
+                  },
+                  {
+                    "$ref": "#/texts/2"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "inline",
+                "name": "group",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "self_ref": "#/groups/1"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/5"
+                  },
+                  {
+                    "$ref": "#/texts/6"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "inline",
+                "name": "group",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "self_ref": "#/groups/2"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/texts/8"
+                  }
+                ],
+                "content_layer": "furniture",
+                "label": "section",
+                "name": "page header",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/3"
+              }
+            ],
+            "key_value_items": [],
+            "name": "immutable-input",
+            "origin": {
+              "binary_hash": 4415788013952006274,
+              "filename": "immutable-input.docx",
+              "mimetype": "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            },
+            "pages": {},
+            "pictures": [],
+            "schema_name": "DoclingDocument",
+            "tables": [
+              {
+                "annotations": [],
+                "captions": [],
+                "children": [],
+                "content_layer": "body",
+                "data": {
+                  "grid": [
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "Metric"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 0,
+                        "text": "Value"
+                      }
+                    ],
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 1,
+                        "text": "NCP"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 1,
+                        "text": "6.08%"
+                      }
+                    ]
+                  ],
+                  "num_cols": 2,
+                  "num_rows": 2,
+                  "orientation": "rot_0",
+                  "table_cells": [
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 0,
+                      "text": "Metric"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 0,
+                      "text": "Value"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 1,
+                      "text": "NCP"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 1,
+                      "text": "6.08%"
+                    }
+                  ]
+                },
+                "footnotes": [],
+                "label": "table",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "references": [],
+                "self_ref": "#/tables/0"
+              }
+            ],
+            "texts": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/groups/1"
+                  },
+                  {
+                    "$ref": "#/tables/0"
+                  },
+                  {
+                    "$ref": "#/texts/3"
+                  },
+                  {
+                    "$ref": "#/texts/4"
+                  },
+                  {
+                    "$ref": "#/groups/2"
+                  },
+                  {
+                    "$ref": "#/texts/7"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "section_header",
+                "level": 1,
+                "orig": "Synthetic Local File",
+                "parent": {
+                  "$ref": "#/groups/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/0",
+                "text": "Synthetic Local File"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "NCP current value",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [],
+                "self_ref": "#/texts/1",
+                "text": "NCP current value"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": true,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "14.18%",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [],
+                "self_ref": "#/texts/2",
+                "text": "14.18%"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "CONTROL_SENTINEL",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/3",
+                "text": "CONTROL_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "BOOKMARK_SENTINEL",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/4",
+                "text": "BOOKMARK_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "FIELD_SENTINEL",
+                "parent": {
+                  "$ref": "#/groups/2"
+                },
+                "prov": [],
+                "self_ref": "#/texts/5",
+                "text": "FIELD_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "hyperlink": "https://example.invalid/synthetic",
+                "label": "text",
+                "orig": "LINK_SENTINEL",
+                "parent": {
+                  "$ref": "#/groups/2"
+                },
+                "prov": [],
+                "self_ref": "#/texts/6",
+                "text": "LINK_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "body",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "REVISION_SENTINEL",
+                "parent": {
+                  "$ref": "#/texts/0"
+                },
+                "prov": [],
+                "self_ref": "#/texts/7",
+                "text": "REVISION_SENTINEL"
+              },
+              {
+                "children": [],
+                "content_layer": "furniture",
+                "formatting": {
+                  "bold": false,
+                  "italic": false,
+                  "script": "baseline",
+                  "strikethrough": false,
+                  "underline": false
+                },
+                "label": "text",
+                "orig": "HEADER_SENTINEL",
+                "parent": {
+                  "$ref": "#/groups/3"
+                },
+                "prov": [],
+                "self_ref": "#/texts/8",
+                "text": "HEADER_SENTINEL"
+              }
+            ],
+            "version": "1.10.0"
+          }
+        }
+      ]
+    },
+    {
+      "behavior_result": "PASS",
+      "case_id": "xlsx-basic",
+      "feature_profile": [
+        "multiple_sheets",
+        "formula_cached_value",
+        "defined_name",
+        "table",
+        "merged_cells"
+      ],
+      "format": "XLSX",
+      "input_sha256": "557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc",
+      "repeatability": {
+        "content": "PASS",
+        "ordering": "PASS",
+        "references": "PASS",
+        "structure": "PASS",
+        "tables": "PASS"
+      },
+      "run_count": 3,
+      "runs": [
+        {
+          "candidate_package": "docling-slim",
+          "candidate_version": "2.126.0",
+          "conversion_status": "PASS",
+          "errors": [],
+          "format": "XLSX",
+          "input_sha256": "557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc",
+          "observations": {
+            "collection_counts": {
+              "form_items": 0,
+              "groups": 2,
+              "key_value_items": 0,
+              "pictures": 0,
+              "tables": 2,
+              "texts": 0
+            },
+            "counts_by_kind": {
+              "sheet": 2,
+              "table": 2
+            },
+            "hierarchy": {
+              "body_children": [
+                2,
+                3
+              ],
+              "furniture_children": [],
+              "nodes": [
+                {
+                  "children": [],
+                  "kind": "tables",
+                  "label": "table",
+                  "parent": 2
+                },
+                {
+                  "children": [],
+                  "kind": "tables",
+                  "label": "table",
+                  "parent": 3
+                },
+                {
+                  "children": [
+                    0
+                  ],
+                  "kind": "groups",
+                  "label": "sheet",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                },
+                {
+                  "children": [
+                    1
+                  ],
+                  "kind": "groups",
+                  "label": "sheet",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                }
+              ]
+            },
+            "semantic_reference_values": [
+              "#/tables/0",
+              "#/tables/1",
+              "#/groups/0",
+              "#/groups/1"
+            ],
+            "signatures": {
+              "content": "5661a9dfe12daf2da9c8fc349766038f5ec35c9805fa8a44cea7552d3d506977",
+              "ordering": "2342d218afbe97e54c250374f9d775b693f14e216180e1f204028181f4ca7413",
+              "references": "6ab1476bf8facba83db20977c24f5802b1bff984ad06eaf5d3dfc9862a5af83c",
+              "structure": "af797ff58c886f3ff02746b10e16c661be75b8668395caf08d53a135e74e6469",
+              "tables": "cca8d12e8101df5b383bcad08d233905278860866350a1ee4863bd5c405109c6"
+            },
+            "table_count": 2,
+            "table_shapes": [
+              [
+                3,
+                2
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "text_content_digest": "5661a9dfe12daf2da9c8fc349766038f5ec35c9805fa8a44cea7552d3d506977",
+            "text_items": [],
+            "unclassified_top_level_fields": []
+          },
+          "semantic_document": {
+            "body": {
+              "children": [
+                {
+                  "$ref": "#/groups/0"
+                },
+                {
+                  "$ref": "#/groups/1"
+                }
+              ],
+              "content_layer": "body",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/body"
+            },
+            "form_items": [],
+            "furniture": {
+              "children": [],
+              "content_layer": "furniture",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/furniture"
+            },
+            "groups": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/tables/0"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "sheet",
+                "name": "Financial",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/0"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/tables/1"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "sheet",
+                "name": "Notes",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/1"
+              }
+            ],
+            "key_value_items": [],
+            "name": "immutable-input",
+            "origin": {
+              "binary_hash": 17368532412355947196,
+              "filename": "immutable-input.xlsx",
+              "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            },
+            "pages": {
+              "1": {
+                "page_no": 1,
+                "size": {
+                  "height": 3.0,
+                  "width": 2.0
+                }
+              },
+              "2": {
+                "page_no": 2,
+                "size": {
+                  "height": 1.0,
+                  "width": 2.0
+                }
+              }
+            },
+            "pictures": [],
+            "schema_name": "DoclingDocument",
+            "tables": [
+              {
+                "annotations": [],
+                "captions": [],
+                "children": [],
+                "content_layer": "body",
+                "data": {
+                  "grid": [
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "Metric"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 0,
+                        "text": "Value"
+                      }
+                    ],
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 1,
+                        "text": "NCP"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 1,
+                        "text": "0.0608"
+                      }
+                    ],
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 3,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 2,
+                        "text": "Prior NCP"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 3,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 2,
+                        "text": "0.1418"
+                      }
+                    ]
+                  ],
+                  "num_cols": 2,
+                  "num_rows": 3,
+                  "orientation": "rot_0",
+                  "table_cells": [
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 0,
+                      "text": "Metric"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 0,
+                      "text": "Value"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 1,
+                      "text": "NCP"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 1,
+                      "text": "0.0608"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 3,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 2,
+                      "text": "Prior NCP"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 3,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 2,
+                      "text": "0.1418"
+                    }
+                  ]
+                },
+                "footnotes": [],
+                "label": "table",
+                "parent": {
+                  "$ref": "#/groups/0"
+                },
+                "prov": [
+                  {
+                    "bbox": {
+                      "b": 3.0,
+                      "coord_origin": "TOPLEFT",
+                      "l": 0.0,
+                      "r": 2.0,
+                      "t": 0.0
+                    },
+                    "charspan": [
+                      0,
+                      0
+                    ],
+                    "page_no": 1
+                  }
+                ],
+                "references": [],
+                "self_ref": "#/tables/0"
+              },
+              {
+                "annotations": [],
+                "captions": [],
+                "children": [],
+                "content_layer": "body",
+                "data": {
+                  "grid": [
+                    [
+                      {
+                        "col_span": 2,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "NOTES_SENTINEL"
+                      },
+                      {
+                        "col_span": 2,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "NOTES_SENTINEL"
+                      }
+                    ]
+                  ],
+                  "num_cols": 2,
+                  "num_rows": 1,
+                  "orientation": "rot_0",
+                  "table_cells": [
+                    {
+                      "col_span": 2,
+                      "column_header": true,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 0,
+                      "text": "NOTES_SENTINEL"
+                    }
+                  ]
+                },
+                "footnotes": [],
+                "label": "table",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [
+                  {
+                    "bbox": {
+                      "b": 1.0,
+                      "coord_origin": "TOPLEFT",
+                      "l": 0.0,
+                      "r": 2.0,
+                      "t": 0.0
+                    },
+                    "charspan": [
+                      0,
+                      0
+                    ],
+                    "page_no": 2
+                  }
+                ],
+                "references": [],
+                "self_ref": "#/tables/1"
+              }
+            ],
+            "texts": [],
+            "version": "1.10.0"
+          }
+        },
+        {
+          "candidate_package": "docling-slim",
+          "candidate_version": "2.126.0",
+          "conversion_status": "PASS",
+          "errors": [],
+          "format": "XLSX",
+          "input_sha256": "557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc",
+          "observations": {
+            "collection_counts": {
+              "form_items": 0,
+              "groups": 2,
+              "key_value_items": 0,
+              "pictures": 0,
+              "tables": 2,
+              "texts": 0
+            },
+            "counts_by_kind": {
+              "sheet": 2,
+              "table": 2
+            },
+            "hierarchy": {
+              "body_children": [
+                2,
+                3
+              ],
+              "furniture_children": [],
+              "nodes": [
+                {
+                  "children": [],
+                  "kind": "tables",
+                  "label": "table",
+                  "parent": 2
+                },
+                {
+                  "children": [],
+                  "kind": "tables",
+                  "label": "table",
+                  "parent": 3
+                },
+                {
+                  "children": [
+                    0
+                  ],
+                  "kind": "groups",
+                  "label": "sheet",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                },
+                {
+                  "children": [
+                    1
+                  ],
+                  "kind": "groups",
+                  "label": "sheet",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                }
+              ]
+            },
+            "semantic_reference_values": [
+              "#/tables/0",
+              "#/tables/1",
+              "#/groups/0",
+              "#/groups/1"
+            ],
+            "signatures": {
+              "content": "5661a9dfe12daf2da9c8fc349766038f5ec35c9805fa8a44cea7552d3d506977",
+              "ordering": "2342d218afbe97e54c250374f9d775b693f14e216180e1f204028181f4ca7413",
+              "references": "6ab1476bf8facba83db20977c24f5802b1bff984ad06eaf5d3dfc9862a5af83c",
+              "structure": "af797ff58c886f3ff02746b10e16c661be75b8668395caf08d53a135e74e6469",
+              "tables": "cca8d12e8101df5b383bcad08d233905278860866350a1ee4863bd5c405109c6"
+            },
+            "table_count": 2,
+            "table_shapes": [
+              [
+                3,
+                2
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "text_content_digest": "5661a9dfe12daf2da9c8fc349766038f5ec35c9805fa8a44cea7552d3d506977",
+            "text_items": [],
+            "unclassified_top_level_fields": []
+          },
+          "semantic_document": {
+            "body": {
+              "children": [
+                {
+                  "$ref": "#/groups/0"
+                },
+                {
+                  "$ref": "#/groups/1"
+                }
+              ],
+              "content_layer": "body",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/body"
+            },
+            "form_items": [],
+            "furniture": {
+              "children": [],
+              "content_layer": "furniture",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/furniture"
+            },
+            "groups": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/tables/0"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "sheet",
+                "name": "Financial",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/0"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/tables/1"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "sheet",
+                "name": "Notes",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/1"
+              }
+            ],
+            "key_value_items": [],
+            "name": "immutable-input",
+            "origin": {
+              "binary_hash": 17368532412355947196,
+              "filename": "immutable-input.xlsx",
+              "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            },
+            "pages": {
+              "1": {
+                "page_no": 1,
+                "size": {
+                  "height": 3.0,
+                  "width": 2.0
+                }
+              },
+              "2": {
+                "page_no": 2,
+                "size": {
+                  "height": 1.0,
+                  "width": 2.0
+                }
+              }
+            },
+            "pictures": [],
+            "schema_name": "DoclingDocument",
+            "tables": [
+              {
+                "annotations": [],
+                "captions": [],
+                "children": [],
+                "content_layer": "body",
+                "data": {
+                  "grid": [
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "Metric"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 0,
+                        "text": "Value"
+                      }
+                    ],
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 1,
+                        "text": "NCP"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 1,
+                        "text": "0.0608"
+                      }
+                    ],
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 3,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 2,
+                        "text": "Prior NCP"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 3,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 2,
+                        "text": "0.1418"
+                      }
+                    ]
+                  ],
+                  "num_cols": 2,
+                  "num_rows": 3,
+                  "orientation": "rot_0",
+                  "table_cells": [
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 0,
+                      "text": "Metric"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 0,
+                      "text": "Value"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 1,
+                      "text": "NCP"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 1,
+                      "text": "0.0608"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 3,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 2,
+                      "text": "Prior NCP"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 3,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 2,
+                      "text": "0.1418"
+                    }
+                  ]
+                },
+                "footnotes": [],
+                "label": "table",
+                "parent": {
+                  "$ref": "#/groups/0"
+                },
+                "prov": [
+                  {
+                    "bbox": {
+                      "b": 3.0,
+                      "coord_origin": "TOPLEFT",
+                      "l": 0.0,
+                      "r": 2.0,
+                      "t": 0.0
+                    },
+                    "charspan": [
+                      0,
+                      0
+                    ],
+                    "page_no": 1
+                  }
+                ],
+                "references": [],
+                "self_ref": "#/tables/0"
+              },
+              {
+                "annotations": [],
+                "captions": [],
+                "children": [],
+                "content_layer": "body",
+                "data": {
+                  "grid": [
+                    [
+                      {
+                        "col_span": 2,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "NOTES_SENTINEL"
+                      },
+                      {
+                        "col_span": 2,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "NOTES_SENTINEL"
+                      }
+                    ]
+                  ],
+                  "num_cols": 2,
+                  "num_rows": 1,
+                  "orientation": "rot_0",
+                  "table_cells": [
+                    {
+                      "col_span": 2,
+                      "column_header": true,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 0,
+                      "text": "NOTES_SENTINEL"
+                    }
+                  ]
+                },
+                "footnotes": [],
+                "label": "table",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [
+                  {
+                    "bbox": {
+                      "b": 1.0,
+                      "coord_origin": "TOPLEFT",
+                      "l": 0.0,
+                      "r": 2.0,
+                      "t": 0.0
+                    },
+                    "charspan": [
+                      0,
+                      0
+                    ],
+                    "page_no": 2
+                  }
+                ],
+                "references": [],
+                "self_ref": "#/tables/1"
+              }
+            ],
+            "texts": [],
+            "version": "1.10.0"
+          }
+        },
+        {
+          "candidate_package": "docling-slim",
+          "candidate_version": "2.126.0",
+          "conversion_status": "PASS",
+          "errors": [],
+          "format": "XLSX",
+          "input_sha256": "557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc",
+          "observations": {
+            "collection_counts": {
+              "form_items": 0,
+              "groups": 2,
+              "key_value_items": 0,
+              "pictures": 0,
+              "tables": 2,
+              "texts": 0
+            },
+            "counts_by_kind": {
+              "sheet": 2,
+              "table": 2
+            },
+            "hierarchy": {
+              "body_children": [
+                2,
+                3
+              ],
+              "furniture_children": [],
+              "nodes": [
+                {
+                  "children": [],
+                  "kind": "tables",
+                  "label": "table",
+                  "parent": 2
+                },
+                {
+                  "children": [],
+                  "kind": "tables",
+                  "label": "table",
+                  "parent": 3
+                },
+                {
+                  "children": [
+                    0
+                  ],
+                  "kind": "groups",
+                  "label": "sheet",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                },
+                {
+                  "children": [
+                    1
+                  ],
+                  "kind": "groups",
+                  "label": "sheet",
+                  "parent": {
+                    "root_or_unresolved": "#/body"
+                  }
+                }
+              ]
+            },
+            "semantic_reference_values": [
+              "#/tables/0",
+              "#/tables/1",
+              "#/groups/0",
+              "#/groups/1"
+            ],
+            "signatures": {
+              "content": "5661a9dfe12daf2da9c8fc349766038f5ec35c9805fa8a44cea7552d3d506977",
+              "ordering": "2342d218afbe97e54c250374f9d775b693f14e216180e1f204028181f4ca7413",
+              "references": "6ab1476bf8facba83db20977c24f5802b1bff984ad06eaf5d3dfc9862a5af83c",
+              "structure": "af797ff58c886f3ff02746b10e16c661be75b8668395caf08d53a135e74e6469",
+              "tables": "cca8d12e8101df5b383bcad08d233905278860866350a1ee4863bd5c405109c6"
+            },
+            "table_count": 2,
+            "table_shapes": [
+              [
+                3,
+                2
+              ],
+              [
+                1,
+                2
+              ]
+            ],
+            "text_content_digest": "5661a9dfe12daf2da9c8fc349766038f5ec35c9805fa8a44cea7552d3d506977",
+            "text_items": [],
+            "unclassified_top_level_fields": []
+          },
+          "semantic_document": {
+            "body": {
+              "children": [
+                {
+                  "$ref": "#/groups/0"
+                },
+                {
+                  "$ref": "#/groups/1"
+                }
+              ],
+              "content_layer": "body",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/body"
+            },
+            "form_items": [],
+            "furniture": {
+              "children": [],
+              "content_layer": "furniture",
+              "label": "unspecified",
+              "name": "_root_",
+              "self_ref": "#/furniture"
+            },
+            "groups": [
+              {
+                "children": [
+                  {
+                    "$ref": "#/tables/0"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "sheet",
+                "name": "Financial",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/0"
+              },
+              {
+                "children": [
+                  {
+                    "$ref": "#/tables/1"
+                  }
+                ],
+                "content_layer": "body",
+                "label": "sheet",
+                "name": "Notes",
+                "parent": {
+                  "$ref": "#/body"
+                },
+                "self_ref": "#/groups/1"
+              }
+            ],
+            "key_value_items": [],
+            "name": "immutable-input",
+            "origin": {
+              "binary_hash": 17368532412355947196,
+              "filename": "immutable-input.xlsx",
+              "mimetype": "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            },
+            "pages": {
+              "1": {
+                "page_no": 1,
+                "size": {
+                  "height": 3.0,
+                  "width": 2.0
+                }
+              },
+              "2": {
+                "page_no": 2,
+                "size": {
+                  "height": 1.0,
+                  "width": 2.0
+                }
+              }
+            },
+            "pictures": [],
+            "schema_name": "DoclingDocument",
+            "tables": [
+              {
+                "annotations": [],
+                "captions": [],
+                "children": [],
+                "content_layer": "body",
+                "data": {
+                  "grid": [
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "Metric"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 0,
+                        "text": "Value"
+                      }
+                    ],
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 1,
+                        "text": "NCP"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 2,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 1,
+                        "text": "0.0608"
+                      }
+                    ],
+                    [
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 1,
+                        "end_row_offset_idx": 3,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 2,
+                        "text": "Prior NCP"
+                      },
+                      {
+                        "col_span": 1,
+                        "column_header": false,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 3,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 1,
+                        "start_row_offset_idx": 2,
+                        "text": "0.1418"
+                      }
+                    ]
+                  ],
+                  "num_cols": 2,
+                  "num_rows": 3,
+                  "orientation": "rot_0",
+                  "table_cells": [
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 0,
+                      "text": "Metric"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": true,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 0,
+                      "text": "Value"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 1,
+                      "text": "NCP"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 2,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 1,
+                      "text": "0.0608"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 1,
+                      "end_row_offset_idx": 3,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 2,
+                      "text": "Prior NCP"
+                    },
+                    {
+                      "col_span": 1,
+                      "column_header": false,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 3,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 1,
+                      "start_row_offset_idx": 2,
+                      "text": "0.1418"
+                    }
+                  ]
+                },
+                "footnotes": [],
+                "label": "table",
+                "parent": {
+                  "$ref": "#/groups/0"
+                },
+                "prov": [
+                  {
+                    "bbox": {
+                      "b": 3.0,
+                      "coord_origin": "TOPLEFT",
+                      "l": 0.0,
+                      "r": 2.0,
+                      "t": 0.0
+                    },
+                    "charspan": [
+                      0,
+                      0
+                    ],
+                    "page_no": 1
+                  }
+                ],
+                "references": [],
+                "self_ref": "#/tables/0"
+              },
+              {
+                "annotations": [],
+                "captions": [],
+                "children": [],
+                "content_layer": "body",
+                "data": {
+                  "grid": [
+                    [
+                      {
+                        "col_span": 2,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "NOTES_SENTINEL"
+                      },
+                      {
+                        "col_span": 2,
+                        "column_header": true,
+                        "end_col_offset_idx": 2,
+                        "end_row_offset_idx": 1,
+                        "fillable": false,
+                        "row_header": false,
+                        "row_section": false,
+                        "row_span": 1,
+                        "start_col_offset_idx": 0,
+                        "start_row_offset_idx": 0,
+                        "text": "NOTES_SENTINEL"
+                      }
+                    ]
+                  ],
+                  "num_cols": 2,
+                  "num_rows": 1,
+                  "orientation": "rot_0",
+                  "table_cells": [
+                    {
+                      "col_span": 2,
+                      "column_header": true,
+                      "end_col_offset_idx": 2,
+                      "end_row_offset_idx": 1,
+                      "fillable": false,
+                      "row_header": false,
+                      "row_section": false,
+                      "row_span": 1,
+                      "start_col_offset_idx": 0,
+                      "start_row_offset_idx": 0,
+                      "text": "NOTES_SENTINEL"
+                    }
+                  ]
+                },
+                "footnotes": [],
+                "label": "table",
+                "parent": {
+                  "$ref": "#/groups/1"
+                },
+                "prov": [
+                  {
+                    "bbox": {
+                      "b": 1.0,
+                      "coord_origin": "TOPLEFT",
+                      "l": 0.0,
+                      "r": 2.0,
+                      "t": 0.0
+                    },
+                    "charspan": [
+                      0,
+                      0
+                    ],
+                    "page_no": 2
+                  }
+                ],
+                "references": [],
+                "self_ref": "#/tables/1"
+              }
+            ],
+            "texts": [],
+            "version": "1.10.0"
+          }
+        }
+      ]
+    },
+    {
+      "behavior_result": "PASS",
+      "case_id": "malformed",
+      "feature_profile": [
+        "malformed_package"
+      ],
+      "format": "DOCX",
+      "input_sha256": "66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab",
+      "repeatability": {
+        "content": "NOT_EVALUATED",
+        "ordering": "NOT_EVALUATED",
+        "references": "NOT_EVALUATED",
+        "structure": "NOT_EVALUATED",
+        "tables": "NOT_EVALUATED"
+      },
+      "run_count": 3,
+      "runs": [
+        {
+          "candidate_package": "docling-slim",
+          "candidate_version": "2.126.0",
+          "conversion_status": "FAIL",
+          "errors": [
+            {
+              "error_code": "PERCEPTION_FAILED",
+              "exception_type": "ValueError",
+              "message": "Docling conversion failed; no successful perception output was produced"
+            }
+          ],
+          "format": "DOCX",
+          "input_sha256": "66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab",
+          "observations": null,
+          "semantic_document": null
+        },
+        {
+          "candidate_package": "docling-slim",
+          "candidate_version": "2.126.0",
+          "conversion_status": "FAIL",
+          "errors": [
+            {
+              "error_code": "PERCEPTION_FAILED",
+              "exception_type": "ValueError",
+              "message": "Docling conversion failed; no successful perception output was produced"
+            }
+          ],
+          "format": "DOCX",
+          "input_sha256": "66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab",
+          "observations": null,
+          "semantic_document": null
+        },
+        {
+          "candidate_package": "docling-slim",
+          "candidate_version": "2.126.0",
+          "conversion_status": "FAIL",
+          "errors": [
+            {
+              "error_code": "PERCEPTION_FAILED",
+              "exception_type": "ValueError",
+              "message": "Docling conversion failed; no successful perception output was produced"
+            }
+          ],
+          "format": "DOCX",
+          "input_sha256": "66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab",
+          "observations": null,
+          "semantic_document": null
+        }
+      ]
+    }
+  ],
+  "configuration": {
+    "api": "public declarative Office backend convert()",
+    "candidate": "docling-slim",
+    "candidate_version": "2.126.0",
+    "enable_local_fetch": false,
+    "enable_remote_fetch": false,
+    "native_identity_created": false,
+    "probe_version": "1.0.0",
+    "render_chart_images": false,
+    "supplement": "pypdfium2==5.13.0",
+    "xlsx_gap_tolerance": 0,
+    "xlsx_parse_charts": true,
+    "xlsx_treat_singleton_as_text": false
+  },
+  "configuration_ref": {
+    "media_type": "application/json",
+    "sha256": "65c0b66f66b80b5ad44571c87527d577bf83969347f6576683efa7adb6c05ab0",
+    "uri": "urn:foundation:evidence:sha256:65c0b66f66b80b5ad44571c87527d577bf83969347f6576683efa7adb6c05ab0"
+  },
+  "engine": "docling-slim",
+  "engine_version": "2.126.0",
+  "evaluation_version": "1.0.0",
+  "evidence_limitations": [
+    "Synthetic qualification evidence only; representative Local File corpus gate remains open.",
+    "Office-only extras require supplemental pypdfium2 in candidate 2.126.0.",
+    "Public declarative backends evaluated; high-level DocumentConverter is NOT_EVALUATED after its missing PDF dependency import.",
+    "Content preservation observations are not evidence sufficiency or native execution identity.",
+    "No production adapter, locator resolution, formula recalculation or replay qualification."
+  ],
+  "installed_packages": {
+    "PyYAML": "6.0.3",
+    "Pygments": "2.21.0",
+    "annotated-doc": "0.0.5",
+    "annotated-types": "0.8.0",
+    "attrs": "26.1.0",
+    "certifi": "2026.7.22",
+    "charset-normalizer": "3.5.1",
+    "colorama": "0.4.6",
+    "defusedxml": "0.7.1",
+    "doclang": "0.7.3",
+    "docling-core": "2.95.0",
+    "docling-slim": "2.126.0",
+    "et_xmlfile": "2.0.0",
+    "filetype": "1.2.0",
+    "idna": "3.19",
+    "iniconfig": "2.3.0",
+    "jsonref": "1.1.0",
+    "jsonschema": "4.26.0",
+    "jsonschema-path": "0.5.0",
+    "jsonschema-specifications": "2025.9.1",
+    "latex2mathml": "3.81.1",
+    "lazy-object-proxy": "1.12.0",
+    "lxml": "6.1.3",
+    "markdown-it-py": "4.2.0",
+    "mdurl": "0.1.2",
+    "numpy": "2.5.3",
+    "openapi-schema-validator": "0.9.0",
+    "openapi-spec-validator": "0.9.0",
+    "openpyxl": "3.1.5",
+    "packaging": "26.3",
+    "pandas": "3.0.5",
+    "pathable": "0.6.0",
+    "pillow": "12.3.0",
+    "pip": "25.0.1",
+    "pluggy": "1.6.0",
+    "pydantic": "2.13.5",
+    "pydantic-settings": "2.15.0",
+    "pydantic_core": "2.46.5",
+    "pypdfium2": "5.13.0",
+    "pytest": "9.1.1",
+    "python-dateutil": "2.9.0.post0",
+    "python-docx": "1.2.0",
+    "python-dotenv": "1.2.3",
+    "referencing": "0.37.0",
+    "requests": "2.34.2",
+    "rfc3339-validator": "0.1.4",
+    "rfc8785": "0.1.4",
+    "rich": "15.0.0",
+    "rpds-py": "2026.6.3",
+    "shellingham": "1.5.4",
+    "six": "1.17.0",
+    "tabulate": "0.10.0",
+    "tqdm": "4.70.0",
+    "typer": "0.26.8",
+    "typing-inspection": "0.4.4",
+    "typing_extensions": "4.16.0",
+    "tzdata": "2026.3",
+    "urllib3": "2.7.0"
+  },
+  "production_qualified": false,
+  "qualification_kind": "SYNTHETIC_ONLY",
+  "qualification_status": "PROVISIONAL_CONTINUE",
+  "reproducible_payload_sha256": "236dae3459fe6cd73d34077502879836aaefa8b7e173e78aa2965ff2d80655e0",
+  "timing_observations": {
+    "docx-basic": [
+      1.7725477000003593,
+      0.009784499999113905,
+      0.00948800000060146
+    ],
+    "docx-native-edge": [
+      0.016081800000392832,
+      0.0178064000001541,
+      0.016195000000152504
+    ],
+    "malformed": [
+      0.0015318999994633486,
+      0.0019557999994503916,
+      0.0015942999998515006
+    ],
+    "xlsx-basic": [
+      0.00812080000014248,
+      0.006348199999592907,
+      0.008020799999940209
+    ]
+  }
+}

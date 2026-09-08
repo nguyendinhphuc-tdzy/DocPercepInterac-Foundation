@@ -1,0 +1,1709 @@
+{
+  "audit_integration": "NOT_EVALUATED; caller-owned persistence and causal event emission deferred",
+  "cases": [
+    {
+      "artifacts": [
+        {
+          "canonical_utf8": "{\"candidate_engine\":\"OpenXmlSdk\",\"candidate_version\":\"3.5.1\",\"config\":{\"max_package_bytes\":33554432,\"max_part_bytes\":16777216,\"max_parts\":4096,\"max_uncompressed_bytes\":134217728,\"max_xml_elements\":500000,\"profile_version\":\"1.0.0\"},\"coverage\":\"all XML element names and relationships; no execution locators\",\"engine\":\"foundation-ooxml-preflight\",\"engine_version\":\"1.0.0\",\"qualification\":\"UNQUALIFIED\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"document_id\":\"document-docx-basic\",\"version_id\":\"version-docx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/package/2006/content-types}Default\":2,\"{http://schemas.openxmlformats.org/package/2006/content-types}Override\":2,\"{http://schemas.openxmlformats.org/package/2006/content-types}Types\":1},\"input_sha256\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"observation_type\":\"xml_inventory\",\"part\":\"[Content_Types].xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "c8fcfee5793870067669ca40280c3c2b65968bdb0ff9039ee29555e74bc612bb",
+            "uri": "urn:foundation:evidence:sha256:c8fcfee5793870067669ca40280c3c2b65968bdb0ff9039ee29555e74bc612bb"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"document_id\":\"document-docx-basic\",\"version_id\":\"version-docx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationship\":1,\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationships\":1},\"input_sha256\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"observation_type\":\"xml_inventory\",\"part\":\"_rels/.rels\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "a2e172b5dfdf7ba324be6bbf859a4e23667d51932b2896132b668dca4f5825b1",
+            "uri": "urn:foundation:evidence:sha256:a2e172b5dfdf7ba324be6bbf859a4e23667d51932b2896132b668dca4f5825b1"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"document_id\":\"document-docx-basic\",\"version_id\":\"version-docx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationship\":1,\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationships\":1},\"input_sha256\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"observation_type\":\"xml_inventory\",\"part\":\"word/_rels/document.xml.rels\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "ae2265d346c2a73dd8ddf4742a574d6fe8248ef8587de8aa604d125f8069efb8",
+            "uri": "urn:foundation:evidence:sha256:ae2265d346c2a73dd8ddf4742a574d6fe8248ef8587de8aa604d125f8069efb8"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"document_id\":\"document-docx-basic\",\"version_id\":\"version-docx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}b\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}body\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}document\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}gridCol\":2,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p\":6,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pPr\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pStyle\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pgSz\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r\":7,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}rPr\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}sectPr\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t\":7,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tbl\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tblGrid\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tblPr\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tc\":4,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tcPr\":4,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tr\":2},\"input_sha256\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"observation_type\":\"xml_inventory\",\"part\":\"word/document.xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "c4f087842e4da6f5328a575f5c02f7c0ad8b9c671a0a3c37167b851bf4d29f32",
+            "uri": "urn:foundation:evidence:sha256:c4f087842e4da6f5328a575f5c02f7c0ad8b9c671a0a3c37167b851bf4d29f32"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":6,\"document_version_ref\":{\"binary_hash\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"document_id\":\"document-docx-basic\",\"version_id\":\"version-docx-basic\"},\"input_sha256\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"observation_type\":\"paragraph\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "0deb9d21fc580c5041657a516dc7baa688748be2f632ee3d440c1da1f6264cd0",
+            "uri": "urn:foundation:evidence:sha256:0deb9d21fc580c5041657a516dc7baa688748be2f632ee3d440c1da1f6264cd0"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":7,\"document_version_ref\":{\"binary_hash\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"document_id\":\"document-docx-basic\",\"version_id\":\"version-docx-basic\"},\"input_sha256\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"observation_type\":\"run\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "17ee39ef24604d448887ff96dbcd6b47ce781b6a9de9bde5dbbecd1c5c9d8729",
+            "uri": "urn:foundation:evidence:sha256:17ee39ef24604d448887ff96dbcd6b47ce781b6a9de9bde5dbbecd1c5c9d8729"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"document_id\":\"document-docx-basic\",\"version_id\":\"version-docx-basic\"},\"input_sha256\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"observation_type\":\"table\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tbl\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "cec439313680803bcc1d2b3e233561ae58a252ca99dc709fae28775d9c1d6c58",
+            "uri": "urn:foundation:evidence:sha256:cec439313680803bcc1d2b3e233561ae58a252ca99dc709fae28775d9c1d6c58"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":4,\"document_version_ref\":{\"binary_hash\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"document_id\":\"document-docx-basic\",\"version_id\":\"version-docx-basic\"},\"input_sha256\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"observation_type\":\"table_cell\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tc\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "01fc5699188dd58eac4fa22649da16ab8e16786a96b042129c10408306eac22d",
+            "uri": "urn:foundation:evidence:sha256:01fc5699188dd58eac4fa22649da16ab8e16786a96b042129c10408306eac22d"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"document_id\":\"document-docx-basic\",\"version_id\":\"version-docx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}basedOn\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}name\":2,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}outlineLvl\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pPr\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}style\":2,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}styles\":1},\"input_sha256\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"observation_type\":\"xml_inventory\",\"part\":\"word/styles.xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "7770030a3aca64659a766de2415dc324701fc62a6d6eda50ddbd4e990696244c",
+            "uri": "urn:foundation:evidence:sha256:7770030a3aca64659a766de2415dc324701fc62a6d6eda50ddbd4e990696244c"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"document_id\":\"document-docx-basic\",\"version_id\":\"version-docx-basic\"},\"input_sha256\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"observation_type\":\"relationship\",\"part\":\"_rels/.rels\",\"relationships\":[{\"external\":false,\"part\":\"_rels/.rels\",\"type\":\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\"}]}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "670652c7400686605c719c52fb4e4e6028c666a4a48a7685bf506f79f06630ee",
+            "uri": "urn:foundation:evidence:sha256:670652c7400686605c719c52fb4e4e6028c666a4a48a7685bf506f79f06630ee"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"document_id\":\"document-docx-basic\",\"version_id\":\"version-docx-basic\"},\"input_sha256\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"observation_type\":\"relationship\",\"part\":\"word/_rels/document.xml.rels\",\"relationships\":[{\"external\":false,\"part\":\"word/_rels/document.xml.rels\",\"type\":\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\"}]}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "3fa21187fcb9471ef44fa8a837ac6afe2566a1243c4a9c518f6ec8767962097f",
+            "uri": "urn:foundation:evidence:sha256:3fa21187fcb9471ef44fa8a837ac6afe2566a1243c4a9c518f6ec8767962097f"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"candidate_policy\":\"OpenXmlSdk 3.5.1 is provisional; frozen DOCX operations only\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"conformance\":\"TRANSITIONAL\",\"detected_format\":\"DOCX\",\"document_version_ref\":{\"binary_hash\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"document_id\":\"document-docx-basic\",\"version_id\":\"version-docx-basic\"},\"input_sha256\":\"6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17\",\"inspected_xml_parts\":[\"[Content_Types].xml\",\"_rels/.rels\",\"word/_rels/document.xml.rels\",\"word/document.xml\",\"word/styles.xml\"],\"main_content_type\":\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\",\"main_part\":\"word/document.xml\",\"mutation_qualification\":false,\"namespace_classes\":[\"TRANSITIONAL\"],\"native_locators_created\":false,\"observation_type\":\"format_and_coverage\",\"package_parts\":[\"[Content_Types].xml\",\"_rels/.rels\",\"word/_rels/document.xml.rels\",\"word/document.xml\",\"word/styles.xml\"],\"schema_validation_performed\":false}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "af38f08d94315bbe23c636be591c5f4baa82100cd8b23ce3380be31af08356f6",
+            "uri": "urn:foundation:evidence:sha256:af38f08d94315bbe23c636be591c5f4baa82100cd8b23ce3380be31af08356f6"
+          }
+        }
+      ],
+      "assessment_history": [
+        {
+          "assessed_at": null,
+          "assessor": {
+            "actor_id": "synthetic-preflight",
+            "actor_type": "SYSTEM"
+          },
+          "capability_results": [],
+          "configuration_ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          },
+          "created_at": "2026-09-08T00:00:00Z",
+          "detected_conformance": "UNKNOWN",
+          "detected_format": null,
+          "document_version_ref": {
+            "binary_hash": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17",
+            "document_id": "document-docx-basic",
+            "version_id": "version-docx-basic"
+          },
+          "engine": "foundation-ooxml-preflight",
+          "engine_version": "1.0.0",
+          "error_codes": [],
+          "format_observation_refs": [],
+          "id": "preflight-docx-basic",
+          "native_structure_findings": [],
+          "object_type": "DocumentPreflightAssessment",
+          "protection_findings": [],
+          "revision": 1,
+          "schema_version": "0.1.0",
+          "status": "PENDING",
+          "task_id": "qualification-b1"
+        },
+        {
+          "assessed_at": null,
+          "assessor": {
+            "actor_id": "synthetic-preflight",
+            "actor_type": "SYSTEM"
+          },
+          "capability_results": [],
+          "configuration_ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          },
+          "created_at": "2026-09-08T00:00:01Z",
+          "detected_conformance": "UNKNOWN",
+          "detected_format": null,
+          "document_version_ref": {
+            "binary_hash": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17",
+            "document_id": "document-docx-basic",
+            "version_id": "version-docx-basic"
+          },
+          "engine": "foundation-ooxml-preflight",
+          "engine_version": "1.0.0",
+          "error_codes": [],
+          "format_observation_refs": [],
+          "id": "preflight-docx-basic",
+          "native_structure_findings": [],
+          "object_type": "DocumentPreflightAssessment",
+          "protection_findings": [],
+          "revision": 2,
+          "schema_version": "0.1.0",
+          "status": "ASSESSING",
+          "task_id": "qualification-b1"
+        },
+        {
+          "assessed_at": "2026-09-08T00:00:02Z",
+          "assessor": {
+            "actor_id": "synthetic-preflight",
+            "actor_type": "SYSTEM"
+          },
+          "capability_results": [
+            {
+              "capability_result_id": "replace_run_text",
+              "conformance": "TRANSITIONAL",
+              "document_version_ref": {
+                "binary_hash": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17",
+                "document_id": "document-docx-basic",
+                "version_id": "version-docx-basic"
+              },
+              "engine": "OpenXmlSdk",
+              "engine_version": "3.5.1",
+              "native_locator_refs": [],
+              "native_structure": "DOCX_RUN",
+              "operation": "REPLACE_RUN_TEXT",
+              "qualification_evidence_refs": [],
+              "reason": "Replay qualification and exact native locator remain open",
+              "status": "UNKNOWN"
+            },
+            {
+              "capability_result_id": "replace_sdt_text",
+              "conformance": "TRANSITIONAL",
+              "document_version_ref": {
+                "binary_hash": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17",
+                "document_id": "document-docx-basic",
+                "version_id": "version-docx-basic"
+              },
+              "engine": "OpenXmlSdk",
+              "engine_version": "3.5.1",
+              "native_locator_refs": [],
+              "native_structure": "DOCX_CONTENT_CONTROL",
+              "operation": "REPLACE_SDT_TEXT",
+              "qualification_evidence_refs": [],
+              "reason": "Structure absent",
+              "status": "UNSUPPORTED"
+            },
+            {
+              "capability_result_id": "replace_simple_table_cell_text",
+              "conformance": "TRANSITIONAL",
+              "document_version_ref": {
+                "binary_hash": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17",
+                "document_id": "document-docx-basic",
+                "version_id": "version-docx-basic"
+              },
+              "engine": "OpenXmlSdk",
+              "engine_version": "3.5.1",
+              "native_locator_refs": [],
+              "native_structure": "DOCX_TABLE_CELL",
+              "operation": "REPLACE_SIMPLE_TABLE_CELL_TEXT",
+              "qualification_evidence_refs": [],
+              "reason": "Replay qualification and exact native locator remain open",
+              "status": "UNKNOWN"
+            }
+          ],
+          "configuration_ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          },
+          "created_at": "2026-09-08T00:00:02Z",
+          "detected_conformance": "TRANSITIONAL",
+          "detected_format": "DOCX",
+          "document_version_ref": {
+            "binary_hash": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17",
+            "document_id": "document-docx-basic",
+            "version_id": "version-docx-basic"
+          },
+          "engine": "foundation-ooxml-preflight",
+          "engine_version": "1.0.0",
+          "error_codes": [
+            "CAPABILITY_UNKNOWN",
+            "EXECUTION_UNSUPPORTED"
+          ],
+          "format_observation_refs": [
+            {
+              "media_type": "application/json",
+              "sha256": "af38f08d94315bbe23c636be591c5f4baa82100cd8b23ce3380be31af08356f6",
+              "uri": "urn:foundation:evidence:sha256:af38f08d94315bbe23c636be591c5f4baa82100cd8b23ce3380be31af08356f6"
+            }
+          ],
+          "id": "preflight-docx-basic",
+          "native_structure_findings": [
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-c8fcfee5793870067669ca40280c3c2b65968bdb0ff9039ee29555e74bc612bb",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "c8fcfee5793870067669ca40280c3c2b65968bdb0ff9039ee29555e74bc612bb",
+                "uri": "urn:foundation:evidence:sha256:c8fcfee5793870067669ca40280c3c2b65968bdb0ff9039ee29555e74bc612bb"
+              },
+              "part_uri": "/[Content_Types].xml"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-a2e172b5dfdf7ba324be6bbf859a4e23667d51932b2896132b668dca4f5825b1",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "a2e172b5dfdf7ba324be6bbf859a4e23667d51932b2896132b668dca4f5825b1",
+                "uri": "urn:foundation:evidence:sha256:a2e172b5dfdf7ba324be6bbf859a4e23667d51932b2896132b668dca4f5825b1"
+              },
+              "part_uri": "/_rels/.rels"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-ae2265d346c2a73dd8ddf4742a574d6fe8248ef8587de8aa604d125f8069efb8",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "ae2265d346c2a73dd8ddf4742a574d6fe8248ef8587de8aa604d125f8069efb8",
+                "uri": "urn:foundation:evidence:sha256:ae2265d346c2a73dd8ddf4742a574d6fe8248ef8587de8aa604d125f8069efb8"
+              },
+              "part_uri": "/word/_rels/document.xml.rels"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-c4f087842e4da6f5328a575f5c02f7c0ad8b9c671a0a3c37167b851bf4d29f32",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "c4f087842e4da6f5328a575f5c02f7c0ad8b9c671a0a3c37167b851bf4d29f32",
+                "uri": "urn:foundation:evidence:sha256:c4f087842e4da6f5328a575f5c02f7c0ad8b9c671a0a3c37167b851bf4d29f32"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "paragraph observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-0deb9d21fc580c5041657a516dc7baa688748be2f632ee3d440c1da1f6264cd0",
+              "native_locator_refs": [],
+              "native_object_type": "paragraph",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "0deb9d21fc580c5041657a516dc7baa688748be2f632ee3d440c1da1f6264cd0",
+                "uri": "urn:foundation:evidence:sha256:0deb9d21fc580c5041657a516dc7baa688748be2f632ee3d440c1da1f6264cd0"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "run observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-17ee39ef24604d448887ff96dbcd6b47ce781b6a9de9bde5dbbecd1c5c9d8729",
+              "native_locator_refs": [],
+              "native_object_type": "run",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "17ee39ef24604d448887ff96dbcd6b47ce781b6a9de9bde5dbbecd1c5c9d8729",
+                "uri": "urn:foundation:evidence:sha256:17ee39ef24604d448887ff96dbcd6b47ce781b6a9de9bde5dbbecd1c5c9d8729"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "table observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-cec439313680803bcc1d2b3e233561ae58a252ca99dc709fae28775d9c1d6c58",
+              "native_locator_refs": [],
+              "native_object_type": "table",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "cec439313680803bcc1d2b3e233561ae58a252ca99dc709fae28775d9c1d6c58",
+                "uri": "urn:foundation:evidence:sha256:cec439313680803bcc1d2b3e233561ae58a252ca99dc709fae28775d9c1d6c58"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "table_cell observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-01fc5699188dd58eac4fa22649da16ab8e16786a96b042129c10408306eac22d",
+              "native_locator_refs": [],
+              "native_object_type": "table_cell",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "01fc5699188dd58eac4fa22649da16ab8e16786a96b042129c10408306eac22d",
+                "uri": "urn:foundation:evidence:sha256:01fc5699188dd58eac4fa22649da16ab8e16786a96b042129c10408306eac22d"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-7770030a3aca64659a766de2415dc324701fc62a6d6eda50ddbd4e990696244c",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "7770030a3aca64659a766de2415dc324701fc62a6d6eda50ddbd4e990696244c",
+                "uri": "urn:foundation:evidence:sha256:7770030a3aca64659a766de2415dc324701fc62a6d6eda50ddbd4e990696244c"
+              },
+              "part_uri": "/word/styles.xml"
+            },
+            {
+              "description": "relationship observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-670652c7400686605c719c52fb4e4e6028c666a4a48a7685bf506f79f06630ee",
+              "native_locator_refs": [],
+              "native_object_type": "relationship",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "670652c7400686605c719c52fb4e4e6028c666a4a48a7685bf506f79f06630ee",
+                "uri": "urn:foundation:evidence:sha256:670652c7400686605c719c52fb4e4e6028c666a4a48a7685bf506f79f06630ee"
+              },
+              "part_uri": "/_rels/.rels"
+            },
+            {
+              "description": "relationship observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-3fa21187fcb9471ef44fa8a837ac6afe2566a1243c4a9c518f6ec8767962097f",
+              "native_locator_refs": [],
+              "native_object_type": "relationship",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "3fa21187fcb9471ef44fa8a837ac6afe2566a1243c4a9c518f6ec8767962097f",
+                "uri": "urn:foundation:evidence:sha256:3fa21187fcb9471ef44fa8a837ac6afe2566a1243c4a9c518f6ec8767962097f"
+              },
+              "part_uri": "/word/_rels/document.xml.rels"
+            }
+          ],
+          "object_type": "DocumentPreflightAssessment",
+          "protection_findings": [],
+          "revision": 3,
+          "schema_version": "0.1.0",
+          "status": "COMPLETED",
+          "task_id": "qualification-b1"
+        }
+      ],
+      "case_id": "docx-basic",
+      "document": {
+        "binary_hash": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17",
+        "byte_length": 2715,
+        "content_ref": {
+          "media_type": "application/octet-stream",
+          "sha256": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17",
+          "uri": "urn:qualification:sha256:6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17"
+        },
+        "created_at": "2026-09-08T00:00:00Z",
+        "derived_from": null,
+        "document_id": "document-docx-basic",
+        "id": "version-docx-basic",
+        "object_type": "DocumentVersion",
+        "revision": 1,
+        "schema_version": "0.1.0",
+        "task_id": "qualification-b1"
+      },
+      "input_sha256": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17"
+    },
+    {
+      "artifacts": [
+        {
+          "canonical_utf8": "{\"candidate_engine\":\"OpenXmlSdk\",\"candidate_version\":\"3.5.1\",\"config\":{\"max_package_bytes\":33554432,\"max_part_bytes\":16777216,\"max_parts\":4096,\"max_uncompressed_bytes\":134217728,\"max_xml_elements\":500000,\"profile_version\":\"1.0.0\"},\"coverage\":\"all XML element names and relationships; no execution locators\",\"engine\":\"foundation-ooxml-preflight\",\"engine_version\":\"1.0.0\",\"qualification\":\"UNQUALIFIED\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/package/2006/content-types}Default\":2,\"{http://schemas.openxmlformats.org/package/2006/content-types}Override\":3,\"{http://schemas.openxmlformats.org/package/2006/content-types}Types\":1},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"xml_inventory\",\"part\":\"[Content_Types].xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "66183d7a24c4017374c30b903b06e0c6b32a3fe2bb65adbfea51a4cbb9db87e3",
+            "uri": "urn:foundation:evidence:sha256:66183d7a24c4017374c30b903b06e0c6b32a3fe2bb65adbfea51a4cbb9db87e3"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationship\":1,\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationships\":1},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"xml_inventory\",\"part\":\"_rels/.rels\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "43e08c171ed5ae0265365dcb66f8a0d94a617d8b310a23654969f05211831a5a",
+            "uri": "urn:foundation:evidence:sha256:43e08c171ed5ae0265365dcb66f8a0d94a617d8b310a23654969f05211831a5a"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationship\":3,\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationships\":1},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"xml_inventory\",\"part\":\"word/_rels/document.xml.rels\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "8af4e75a38782d682795d98876ae99e8d3237a5fde72f462ee59a2b981f43405",
+            "uri": "urn:foundation:evidence:sha256:8af4e75a38782d682795d98876ae99e8d3237a5fde72f462ee59a2b981f43405"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}b\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}body\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkEnd\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkStart\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}document\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}fldSimple\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}gridCol\":2,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}headerReference\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}hyperlink\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}id\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ins\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}lock\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p\":10,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pPr\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pStyle\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pgSz\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r\":12,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}rPr\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}sdt\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}sdtContent\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}sdtPr\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}sectPr\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t\":12,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tag\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tbl\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tblGrid\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tblPr\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tc\":4,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tcPr\":4,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tr\":2},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"xml_inventory\",\"part\":\"word/document.xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "aea5d115cd7d2fe94ba43f6772ff70634f89c24be7bcb3f59deb7f94c1986048",
+            "uri": "urn:foundation:evidence:sha256:aea5d115cd7d2fe94ba43f6772ff70634f89c24be7bcb3f59deb7f94c1986048"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"bookmark\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}bookmarkStart\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "f03c1293b8d441aaa4475e25f3c4e5f69df4b394bfc6e51cc04a125dc330e3f3",
+            "uri": "urn:foundation:evidence:sha256:f03c1293b8d441aaa4475e25f3c4e5f69df4b394bfc6e51cc04a125dc330e3f3"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"field\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}fldSimple\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "ac4b05c011b73b3857b970a70aa0565b8339452fb64f9146d1dca65dbb235b9d",
+            "uri": "urn:foundation:evidence:sha256:ac4b05c011b73b3857b970a70aa0565b8339452fb64f9146d1dca65dbb235b9d"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"hyperlink\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}hyperlink\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "af1e3087729bb86d5672ecf31f18d9adad99fe6dfeb62e04d700855407d85136",
+            "uri": "urn:foundation:evidence:sha256:af1e3087729bb86d5672ecf31f18d9adad99fe6dfeb62e04d700855407d85136"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"revision\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}ins\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "077431cddf48d37dec76e3f63c8db92ba4e1fbb0d79bddce0ea738a01176c27b",
+            "uri": "urn:foundation:evidence:sha256:077431cddf48d37dec76e3f63c8db92ba4e1fbb0d79bddce0ea738a01176c27b"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":10,\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"paragraph\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "e761508348d0f59627af6723addcfe09449d5ccff79b072962fe249932ca3d59",
+            "uri": "urn:foundation:evidence:sha256:e761508348d0f59627af6723addcfe09449d5ccff79b072962fe249932ca3d59"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":12,\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"run\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "756a26906cc72275442e1df1a34931b8ccf935527ce5c1ffc3813455a953f0ef",
+            "uri": "urn:foundation:evidence:sha256:756a26906cc72275442e1df1a34931b8ccf935527ce5c1ffc3813455a953f0ef"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"content_control\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}sdt\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "8782abd39503b14f8a5f7eda5d0a67e8f1ee9a62b7723702862a3e9a5d31a339",
+            "uri": "urn:foundation:evidence:sha256:8782abd39503b14f8a5f7eda5d0a67e8f1ee9a62b7723702862a3e9a5d31a339"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"table\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tbl\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "2da163a901719feab384d4ee124497c1a5115d998b7e20b41d8c731ede93531a",
+            "uri": "urn:foundation:evidence:sha256:2da163a901719feab384d4ee124497c1a5115d998b7e20b41d8c731ede93531a"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":4,\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"table_cell\",\"part\":\"word/document.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}tc\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "960f1006fade10ada117b700d4d2e158fc5b7c9da06436419e635f1d730f7c44",
+            "uri": "urn:foundation:evidence:sha256:960f1006fade10ada117b700d4d2e158fc5b7c9da06436419e635f1d730f7c44"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"lock\":\"sdtContentLocked\",\"observation_type\":\"content_control_lock\",\"part\":\"word/document.xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "e1c79e77121d8f354ea714a3563892f3805c3198412902fc7cfa3ab66a83a707",
+            "uri": "urn:foundation:evidence:sha256:e1c79e77121d8f354ea714a3563892f3805c3198412902fc7cfa3ab66a83a707"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}hdr\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}t\":1},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"xml_inventory\",\"part\":\"word/header1.xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "7453e3740384a923e8a6e1a5a9ff489f2a0540cedb688bc4b7d8fabbb09c9329",
+            "uri": "urn:foundation:evidence:sha256:7453e3740384a923e8a6e1a5a9ff489f2a0540cedb688bc4b7d8fabbb09c9329"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"header\",\"part\":\"word/header1.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}hdr\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "ae2d23ff157ff4113aeedd01208c91409c9aaf162060463898394686137cacff",
+            "uri": "urn:foundation:evidence:sha256:ae2d23ff157ff4113aeedd01208c91409c9aaf162060463898394686137cacff"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"paragraph\",\"part\":\"word/header1.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}p\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "8259ff556ee2f9db8c11bd73f1bf443c8d13d83624be86f05348278d76601448",
+            "uri": "urn:foundation:evidence:sha256:8259ff556ee2f9db8c11bd73f1bf443c8d13d83624be86f05348278d76601448"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"run\",\"part\":\"word/header1.xml\",\"qname\":\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}r\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "2d89d66b3c8b77ac8d6e4641d982028245191cb1e13c5e05b994d97670b9e569",
+            "uri": "urn:foundation:evidence:sha256:2d89d66b3c8b77ac8d6e4641d982028245191cb1e13c5e05b994d97670b9e569"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}basedOn\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}name\":2,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}outlineLvl\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}pPr\":1,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}style\":2,\"{http://schemas.openxmlformats.org/wordprocessingml/2006/main}styles\":1},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"xml_inventory\",\"part\":\"word/styles.xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "d51bbf9a71f527278688aa7a01380c90b5e83d6a6b1af52bf5bc9e7806bdb000",
+            "uri": "urn:foundation:evidence:sha256:d51bbf9a71f527278688aa7a01380c90b5e83d6a6b1af52bf5bc9e7806bdb000"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"relationship\",\"part\":\"_rels/.rels\",\"relationships\":[{\"external\":false,\"part\":\"_rels/.rels\",\"type\":\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\"}]}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "7f9299b59cad8725d3581feaf371d21540e295a41b520a3c3b8b0940398c4fda",
+            "uri": "urn:foundation:evidence:sha256:7f9299b59cad8725d3581feaf371d21540e295a41b520a3c3b8b0940398c4fda"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"observation_type\":\"relationship\",\"part\":\"word/_rels/document.xml.rels\",\"relationships\":[{\"external\":false,\"part\":\"word/_rels/document.xml.rels\",\"type\":\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\"},{\"external\":true,\"part\":\"word/_rels/document.xml.rels\",\"type\":\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\"},{\"external\":false,\"part\":\"word/_rels/document.xml.rels\",\"type\":\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/header\"}]}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "b61f50cc18f20022d31c5d065d0602d38a12acfdc7211776c518f588cf91ef4c",
+            "uri": "urn:foundation:evidence:sha256:b61f50cc18f20022d31c5d065d0602d38a12acfdc7211776c518f588cf91ef4c"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"candidate_policy\":\"OpenXmlSdk 3.5.1 is provisional; frozen DOCX operations only\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"conformance\":\"TRANSITIONAL\",\"detected_format\":\"DOCX\",\"document_version_ref\":{\"binary_hash\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"document_id\":\"document-docx-native-edge\",\"version_id\":\"version-docx-native-edge\"},\"input_sha256\":\"4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882\",\"inspected_xml_parts\":[\"[Content_Types].xml\",\"_rels/.rels\",\"word/_rels/document.xml.rels\",\"word/document.xml\",\"word/header1.xml\",\"word/styles.xml\"],\"main_content_type\":\"application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml\",\"main_part\":\"word/document.xml\",\"mutation_qualification\":false,\"namespace_classes\":[\"TRANSITIONAL\"],\"native_locators_created\":false,\"observation_type\":\"format_and_coverage\",\"package_parts\":[\"[Content_Types].xml\",\"_rels/.rels\",\"word/_rels/document.xml.rels\",\"word/document.xml\",\"word/header1.xml\",\"word/styles.xml\"],\"schema_validation_performed\":false}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "289841ab433f72e7072edff1f42cd384a4e71ee800694dadb515439b60909594",
+            "uri": "urn:foundation:evidence:sha256:289841ab433f72e7072edff1f42cd384a4e71ee800694dadb515439b60909594"
+          }
+        }
+      ],
+      "assessment_history": [
+        {
+          "assessed_at": null,
+          "assessor": {
+            "actor_id": "synthetic-preflight",
+            "actor_type": "SYSTEM"
+          },
+          "capability_results": [],
+          "configuration_ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          },
+          "created_at": "2026-09-08T00:00:00Z",
+          "detected_conformance": "UNKNOWN",
+          "detected_format": null,
+          "document_version_ref": {
+            "binary_hash": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882",
+            "document_id": "document-docx-native-edge",
+            "version_id": "version-docx-native-edge"
+          },
+          "engine": "foundation-ooxml-preflight",
+          "engine_version": "1.0.0",
+          "error_codes": [],
+          "format_observation_refs": [],
+          "id": "preflight-docx-native-edge",
+          "native_structure_findings": [],
+          "object_type": "DocumentPreflightAssessment",
+          "protection_findings": [],
+          "revision": 1,
+          "schema_version": "0.1.0",
+          "status": "PENDING",
+          "task_id": "qualification-b1"
+        },
+        {
+          "assessed_at": null,
+          "assessor": {
+            "actor_id": "synthetic-preflight",
+            "actor_type": "SYSTEM"
+          },
+          "capability_results": [],
+          "configuration_ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          },
+          "created_at": "2026-09-08T00:00:01Z",
+          "detected_conformance": "UNKNOWN",
+          "detected_format": null,
+          "document_version_ref": {
+            "binary_hash": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882",
+            "document_id": "document-docx-native-edge",
+            "version_id": "version-docx-native-edge"
+          },
+          "engine": "foundation-ooxml-preflight",
+          "engine_version": "1.0.0",
+          "error_codes": [],
+          "format_observation_refs": [],
+          "id": "preflight-docx-native-edge",
+          "native_structure_findings": [],
+          "object_type": "DocumentPreflightAssessment",
+          "protection_findings": [],
+          "revision": 2,
+          "schema_version": "0.1.0",
+          "status": "ASSESSING",
+          "task_id": "qualification-b1"
+        },
+        {
+          "assessed_at": "2026-09-08T00:00:02Z",
+          "assessor": {
+            "actor_id": "synthetic-preflight",
+            "actor_type": "SYSTEM"
+          },
+          "capability_results": [
+            {
+              "capability_result_id": "replace_run_text",
+              "conformance": "TRANSITIONAL",
+              "document_version_ref": {
+                "binary_hash": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882",
+                "document_id": "document-docx-native-edge",
+                "version_id": "version-docx-native-edge"
+              },
+              "engine": "OpenXmlSdk",
+              "engine_version": "3.5.1",
+              "native_locator_refs": [],
+              "native_structure": "DOCX_RUN",
+              "operation": "REPLACE_RUN_TEXT",
+              "qualification_evidence_refs": [],
+              "reason": "Replay qualification and exact native locator remain open",
+              "status": "UNKNOWN"
+            },
+            {
+              "capability_result_id": "replace_sdt_text",
+              "conformance": "TRANSITIONAL",
+              "document_version_ref": {
+                "binary_hash": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882",
+                "document_id": "document-docx-native-edge",
+                "version_id": "version-docx-native-edge"
+              },
+              "engine": "OpenXmlSdk",
+              "engine_version": "3.5.1",
+              "native_locator_refs": [],
+              "native_structure": "DOCX_CONTENT_CONTROL",
+              "operation": "REPLACE_SDT_TEXT",
+              "qualification_evidence_refs": [],
+              "reason": "Replay qualification and exact native locator remain open",
+              "status": "UNKNOWN"
+            },
+            {
+              "capability_result_id": "replace_simple_table_cell_text",
+              "conformance": "TRANSITIONAL",
+              "document_version_ref": {
+                "binary_hash": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882",
+                "document_id": "document-docx-native-edge",
+                "version_id": "version-docx-native-edge"
+              },
+              "engine": "OpenXmlSdk",
+              "engine_version": "3.5.1",
+              "native_locator_refs": [],
+              "native_structure": "DOCX_TABLE_CELL",
+              "operation": "REPLACE_SIMPLE_TABLE_CELL_TEXT",
+              "qualification_evidence_refs": [],
+              "reason": "Replay qualification and exact native locator remain open",
+              "status": "UNKNOWN"
+            }
+          ],
+          "configuration_ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          },
+          "created_at": "2026-09-08T00:00:02Z",
+          "detected_conformance": "TRANSITIONAL",
+          "detected_format": "DOCX",
+          "document_version_ref": {
+            "binary_hash": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882",
+            "document_id": "document-docx-native-edge",
+            "version_id": "version-docx-native-edge"
+          },
+          "engine": "foundation-ooxml-preflight",
+          "engine_version": "1.0.0",
+          "error_codes": [
+            "CAPABILITY_UNKNOWN"
+          ],
+          "format_observation_refs": [
+            {
+              "media_type": "application/json",
+              "sha256": "289841ab433f72e7072edff1f42cd384a4e71ee800694dadb515439b60909594",
+              "uri": "urn:foundation:evidence:sha256:289841ab433f72e7072edff1f42cd384a4e71ee800694dadb515439b60909594"
+            }
+          ],
+          "id": "preflight-docx-native-edge",
+          "native_structure_findings": [
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-66183d7a24c4017374c30b903b06e0c6b32a3fe2bb65adbfea51a4cbb9db87e3",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "66183d7a24c4017374c30b903b06e0c6b32a3fe2bb65adbfea51a4cbb9db87e3",
+                "uri": "urn:foundation:evidence:sha256:66183d7a24c4017374c30b903b06e0c6b32a3fe2bb65adbfea51a4cbb9db87e3"
+              },
+              "part_uri": "/[Content_Types].xml"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-43e08c171ed5ae0265365dcb66f8a0d94a617d8b310a23654969f05211831a5a",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "43e08c171ed5ae0265365dcb66f8a0d94a617d8b310a23654969f05211831a5a",
+                "uri": "urn:foundation:evidence:sha256:43e08c171ed5ae0265365dcb66f8a0d94a617d8b310a23654969f05211831a5a"
+              },
+              "part_uri": "/_rels/.rels"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-8af4e75a38782d682795d98876ae99e8d3237a5fde72f462ee59a2b981f43405",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "8af4e75a38782d682795d98876ae99e8d3237a5fde72f462ee59a2b981f43405",
+                "uri": "urn:foundation:evidence:sha256:8af4e75a38782d682795d98876ae99e8d3237a5fde72f462ee59a2b981f43405"
+              },
+              "part_uri": "/word/_rels/document.xml.rels"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-aea5d115cd7d2fe94ba43f6772ff70634f89c24be7bcb3f59deb7f94c1986048",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "aea5d115cd7d2fe94ba43f6772ff70634f89c24be7bcb3f59deb7f94c1986048",
+                "uri": "urn:foundation:evidence:sha256:aea5d115cd7d2fe94ba43f6772ff70634f89c24be7bcb3f59deb7f94c1986048"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "bookmark observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-f03c1293b8d441aaa4475e25f3c4e5f69df4b394bfc6e51cc04a125dc330e3f3",
+              "native_locator_refs": [],
+              "native_object_type": "bookmark",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "f03c1293b8d441aaa4475e25f3c4e5f69df4b394bfc6e51cc04a125dc330e3f3",
+                "uri": "urn:foundation:evidence:sha256:f03c1293b8d441aaa4475e25f3c4e5f69df4b394bfc6e51cc04a125dc330e3f3"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "field observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-ac4b05c011b73b3857b970a70aa0565b8339452fb64f9146d1dca65dbb235b9d",
+              "native_locator_refs": [],
+              "native_object_type": "field",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "ac4b05c011b73b3857b970a70aa0565b8339452fb64f9146d1dca65dbb235b9d",
+                "uri": "urn:foundation:evidence:sha256:ac4b05c011b73b3857b970a70aa0565b8339452fb64f9146d1dca65dbb235b9d"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "hyperlink observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-af1e3087729bb86d5672ecf31f18d9adad99fe6dfeb62e04d700855407d85136",
+              "native_locator_refs": [],
+              "native_object_type": "hyperlink",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "af1e3087729bb86d5672ecf31f18d9adad99fe6dfeb62e04d700855407d85136",
+                "uri": "urn:foundation:evidence:sha256:af1e3087729bb86d5672ecf31f18d9adad99fe6dfeb62e04d700855407d85136"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "revision observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-077431cddf48d37dec76e3f63c8db92ba4e1fbb0d79bddce0ea738a01176c27b",
+              "native_locator_refs": [],
+              "native_object_type": "revision",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "077431cddf48d37dec76e3f63c8db92ba4e1fbb0d79bddce0ea738a01176c27b",
+                "uri": "urn:foundation:evidence:sha256:077431cddf48d37dec76e3f63c8db92ba4e1fbb0d79bddce0ea738a01176c27b"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "paragraph observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-e761508348d0f59627af6723addcfe09449d5ccff79b072962fe249932ca3d59",
+              "native_locator_refs": [],
+              "native_object_type": "paragraph",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "e761508348d0f59627af6723addcfe09449d5ccff79b072962fe249932ca3d59",
+                "uri": "urn:foundation:evidence:sha256:e761508348d0f59627af6723addcfe09449d5ccff79b072962fe249932ca3d59"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "run observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-756a26906cc72275442e1df1a34931b8ccf935527ce5c1ffc3813455a953f0ef",
+              "native_locator_refs": [],
+              "native_object_type": "run",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "756a26906cc72275442e1df1a34931b8ccf935527ce5c1ffc3813455a953f0ef",
+                "uri": "urn:foundation:evidence:sha256:756a26906cc72275442e1df1a34931b8ccf935527ce5c1ffc3813455a953f0ef"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "content_control observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-8782abd39503b14f8a5f7eda5d0a67e8f1ee9a62b7723702862a3e9a5d31a339",
+              "native_locator_refs": [],
+              "native_object_type": "content_control",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "8782abd39503b14f8a5f7eda5d0a67e8f1ee9a62b7723702862a3e9a5d31a339",
+                "uri": "urn:foundation:evidence:sha256:8782abd39503b14f8a5f7eda5d0a67e8f1ee9a62b7723702862a3e9a5d31a339"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "table observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-2da163a901719feab384d4ee124497c1a5115d998b7e20b41d8c731ede93531a",
+              "native_locator_refs": [],
+              "native_object_type": "table",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "2da163a901719feab384d4ee124497c1a5115d998b7e20b41d8c731ede93531a",
+                "uri": "urn:foundation:evidence:sha256:2da163a901719feab384d4ee124497c1a5115d998b7e20b41d8c731ede93531a"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "table_cell observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-960f1006fade10ada117b700d4d2e158fc5b7c9da06436419e635f1d730f7c44",
+              "native_locator_refs": [],
+              "native_object_type": "table_cell",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "960f1006fade10ada117b700d4d2e158fc5b7c9da06436419e635f1d730f7c44",
+                "uri": "urn:foundation:evidence:sha256:960f1006fade10ada117b700d4d2e158fc5b7c9da06436419e635f1d730f7c44"
+              },
+              "part_uri": "/word/document.xml"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-7453e3740384a923e8a6e1a5a9ff489f2a0540cedb688bc4b7d8fabbb09c9329",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "7453e3740384a923e8a6e1a5a9ff489f2a0540cedb688bc4b7d8fabbb09c9329",
+                "uri": "urn:foundation:evidence:sha256:7453e3740384a923e8a6e1a5a9ff489f2a0540cedb688bc4b7d8fabbb09c9329"
+              },
+              "part_uri": "/word/header1.xml"
+            },
+            {
+              "description": "header observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-ae2d23ff157ff4113aeedd01208c91409c9aaf162060463898394686137cacff",
+              "native_locator_refs": [],
+              "native_object_type": "header",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "ae2d23ff157ff4113aeedd01208c91409c9aaf162060463898394686137cacff",
+                "uri": "urn:foundation:evidence:sha256:ae2d23ff157ff4113aeedd01208c91409c9aaf162060463898394686137cacff"
+              },
+              "part_uri": "/word/header1.xml"
+            },
+            {
+              "description": "paragraph observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-8259ff556ee2f9db8c11bd73f1bf443c8d13d83624be86f05348278d76601448",
+              "native_locator_refs": [],
+              "native_object_type": "paragraph",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "8259ff556ee2f9db8c11bd73f1bf443c8d13d83624be86f05348278d76601448",
+                "uri": "urn:foundation:evidence:sha256:8259ff556ee2f9db8c11bd73f1bf443c8d13d83624be86f05348278d76601448"
+              },
+              "part_uri": "/word/header1.xml"
+            },
+            {
+              "description": "run observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-2d89d66b3c8b77ac8d6e4641d982028245191cb1e13c5e05b994d97670b9e569",
+              "native_locator_refs": [],
+              "native_object_type": "run",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "2d89d66b3c8b77ac8d6e4641d982028245191cb1e13c5e05b994d97670b9e569",
+                "uri": "urn:foundation:evidence:sha256:2d89d66b3c8b77ac8d6e4641d982028245191cb1e13c5e05b994d97670b9e569"
+              },
+              "part_uri": "/word/header1.xml"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-d51bbf9a71f527278688aa7a01380c90b5e83d6a6b1af52bf5bc9e7806bdb000",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "d51bbf9a71f527278688aa7a01380c90b5e83d6a6b1af52bf5bc9e7806bdb000",
+                "uri": "urn:foundation:evidence:sha256:d51bbf9a71f527278688aa7a01380c90b5e83d6a6b1af52bf5bc9e7806bdb000"
+              },
+              "part_uri": "/word/styles.xml"
+            },
+            {
+              "description": "relationship observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-7f9299b59cad8725d3581feaf371d21540e295a41b520a3c3b8b0940398c4fda",
+              "native_locator_refs": [],
+              "native_object_type": "relationship",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "7f9299b59cad8725d3581feaf371d21540e295a41b520a3c3b8b0940398c4fda",
+                "uri": "urn:foundation:evidence:sha256:7f9299b59cad8725d3581feaf371d21540e295a41b520a3c3b8b0940398c4fda"
+              },
+              "part_uri": "/_rels/.rels"
+            },
+            {
+              "description": "relationship observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-b61f50cc18f20022d31c5d065d0602d38a12acfdc7211776c518f588cf91ef4c",
+              "native_locator_refs": [],
+              "native_object_type": "relationship",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "b61f50cc18f20022d31c5d065d0602d38a12acfdc7211776c518f588cf91ef4c",
+                "uri": "urn:foundation:evidence:sha256:b61f50cc18f20022d31c5d065d0602d38a12acfdc7211776c518f588cf91ef4c"
+              },
+              "part_uri": "/word/_rels/document.xml.rels"
+            }
+          ],
+          "object_type": "DocumentPreflightAssessment",
+          "protection_findings": [
+            {
+              "description": "content_control_lock observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-e1c79e77121d8f354ea714a3563892f3805c3198412902fc7cfa3ab66a83a707",
+              "native_locator_refs": [],
+              "native_object_type": "content_control_lock",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "e1c79e77121d8f354ea714a3563892f3805c3198412902fc7cfa3ab66a83a707",
+                "uri": "urn:foundation:evidence:sha256:e1c79e77121d8f354ea714a3563892f3805c3198412902fc7cfa3ab66a83a707"
+              },
+              "part_uri": "/word/document.xml"
+            }
+          ],
+          "revision": 3,
+          "schema_version": "0.1.0",
+          "status": "COMPLETED",
+          "task_id": "qualification-b1"
+        }
+      ],
+      "case_id": "docx-native-edge",
+      "document": {
+        "binary_hash": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882",
+        "byte_length": 4057,
+        "content_ref": {
+          "media_type": "application/octet-stream",
+          "sha256": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882",
+          "uri": "urn:qualification:sha256:4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882"
+        },
+        "created_at": "2026-09-08T00:00:00Z",
+        "derived_from": null,
+        "document_id": "document-docx-native-edge",
+        "id": "version-docx-native-edge",
+        "object_type": "DocumentVersion",
+        "revision": 1,
+        "schema_version": "0.1.0",
+        "task_id": "qualification-b1"
+      },
+      "input_sha256": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882"
+    },
+    {
+      "artifacts": [
+        {
+          "canonical_utf8": "{\"candidate_engine\":\"OpenXmlSdk\",\"candidate_version\":\"3.5.1\",\"config\":{\"max_package_bytes\":33554432,\"max_part_bytes\":16777216,\"max_parts\":4096,\"max_uncompressed_bytes\":134217728,\"max_xml_elements\":500000,\"profile_version\":\"1.0.0\"},\"coverage\":\"all XML element names and relationships; no execution locators\",\"engine\":\"foundation-ooxml-preflight\",\"engine_version\":\"1.0.0\",\"qualification\":\"UNQUALIFIED\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/package/2006/content-types}Default\":2,\"{http://schemas.openxmlformats.org/package/2006/content-types}Override\":4,\"{http://schemas.openxmlformats.org/package/2006/content-types}Types\":1},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"xml_inventory\",\"part\":\"[Content_Types].xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "af60d893908e77d1a39eada2858ac4f9ced7b8bc037c970c06e137aa014bca3e",
+            "uri": "urn:foundation:evidence:sha256:af60d893908e77d1a39eada2858ac4f9ced7b8bc037c970c06e137aa014bca3e"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationship\":1,\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationships\":1},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"xml_inventory\",\"part\":\"_rels/.rels\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "7caf91d73b657e5084561c921f7c8be37a3c841cee9e5e6e422b3f32c5535e27",
+            "uri": "urn:foundation:evidence:sha256:7caf91d73b657e5084561c921f7c8be37a3c841cee9e5e6e422b3f32c5535e27"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationship\":2,\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationships\":1},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"xml_inventory\",\"part\":\"xl/_rels/workbook.xml.rels\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "4466757c862d5f0284ad7aff2853b0f8b3af94f1a968362f93397038bad3cf01",
+            "uri": "urn:foundation:evidence:sha256:4466757c862d5f0284ad7aff2853b0f8b3af94f1a968362f93397038bad3cf01"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}autoFilter\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}table\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}tableColumn\":2,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}tableColumns\":1},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"xml_inventory\",\"part\":\"xl/tables/table1.xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "7801b00533b6ff901d57a73f0f93c52f6de7cc01f021efaf32eeb4d233d20e4e",
+            "uri": "urn:foundation:evidence:sha256:7801b00533b6ff901d57a73f0f93c52f6de7cc01f021efaf32eeb4d233d20e4e"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"table\",\"part\":\"xl/tables/table1.xml\",\"qname\":\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}table\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "257dd222c4511fd006eb0e027bf3b320569743217dcbf7a6a229bcdca9b979a2",
+            "uri": "urn:foundation:evidence:sha256:257dd222c4511fd006eb0e027bf3b320569743217dcbf7a6a229bcdca9b979a2"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}definedName\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}definedNames\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}sheet\":2,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}sheets\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}workbook\":1},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"xml_inventory\",\"part\":\"xl/workbook.xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "78ff407025427323640b2a3486f8baa6d759a81212077537fb1a1ef14319cbfe",
+            "uri": "urn:foundation:evidence:sha256:78ff407025427323640b2a3486f8baa6d759a81212077537fb1a1ef14319cbfe"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"defined_name\",\"part\":\"xl/workbook.xml\",\"qname\":\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}definedName\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "eb33c9bb77b74e12caccd2f801bfa74c86acee0376ede783dc552e4459e79a89",
+            "uri": "urn:foundation:evidence:sha256:eb33c9bb77b74e12caccd2f801bfa74c86acee0376ede783dc552e4459e79a89"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":2,\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"worksheet\",\"part\":\"xl/workbook.xml\",\"qname\":\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}sheet\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "aee9fbbdfa8136d3eebf5efc8494ae9e982e1ae86f06267dab4c4ecd741fcfdc",
+            "uri": "urn:foundation:evidence:sha256:aee9fbbdfa8136d3eebf5efc8494ae9e982e1ae86f06267dab4c4ecd741fcfdc"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationship\":1,\"{http://schemas.openxmlformats.org/package/2006/relationships}Relationships\":1},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"xml_inventory\",\"part\":\"xl/worksheets/_rels/sheet1.xml.rels\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "5013668a22d198a1c7b7d0e11d6e9d72c38fbdaaff914bdf48fe04dc2b1a4121",
+            "uri": "urn:foundation:evidence:sha256:5013668a22d198a1c7b7d0e11d6e9d72c38fbdaaff914bdf48fe04dc2b1a4121"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}c\":6,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}dimension\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}f\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}is\":4,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}row\":3,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}sheetData\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}t\":4,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}tablePart\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}tableParts\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}v\":2,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}worksheet\":1},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"xml_inventory\",\"part\":\"xl/worksheets/sheet1.xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "1b4cded270726d673583351b3cf7c4e1a8441b8c69c645441206bfdb03db7321",
+            "uri": "urn:foundation:evidence:sha256:1b4cded270726d673583351b3cf7c4e1a8441b8c69c645441206bfdb03db7321"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":6,\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"cell\",\"part\":\"xl/worksheets/sheet1.xml\",\"qname\":\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}c\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "0a832c2d99827002d8b3ab57886a772ca063cdca5bb27c631d63f3e234156fda",
+            "uri": "urn:foundation:evidence:sha256:0a832c2d99827002d8b3ab57886a772ca063cdca5bb27c631d63f3e234156fda"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"formula\",\"part\":\"xl/worksheets/sheet1.xml\",\"qname\":\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}f\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "909c3de48eafe6e279ac2ddd697f6549586386bb1e823cd9d6d4a368fb6e8c6e",
+            "uri": "urn:foundation:evidence:sha256:909c3de48eafe6e279ac2ddd697f6549586386bb1e823cd9d6d4a368fb6e8c6e"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"element_counts\":{\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}c\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}dimension\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}is\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}mergeCell\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}mergeCells\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}row\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}sheetData\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}t\":1,\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}worksheet\":1},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"xml_inventory\",\"part\":\"xl/worksheets/sheet2.xml\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "9c2817a936d2d901c4aed80a0197313eeb5539ec1247f6b21de4a1adead1c770",
+            "uri": "urn:foundation:evidence:sha256:9c2817a936d2d901c4aed80a0197313eeb5539ec1247f6b21de4a1adead1c770"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"cell\",\"part\":\"xl/worksheets/sheet2.xml\",\"qname\":\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}c\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "8aa6e410f9435af7b23c3bf5ea3d01d3242f9fb02cb6ffbb16f7a4506cd3d60c",
+            "uri": "urn:foundation:evidence:sha256:8aa6e410f9435af7b23c3bf5ea3d01d3242f9fb02cb6ffbb16f7a4506cd3d60c"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"count\":1,\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"merged_cells\",\"part\":\"xl/worksheets/sheet2.xml\",\"qname\":\"{http://schemas.openxmlformats.org/spreadsheetml/2006/main}mergeCell\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "0faff02a80956fa7360613d20488a5eea37a7e9b458a0638079c060adc1ef589",
+            "uri": "urn:foundation:evidence:sha256:0faff02a80956fa7360613d20488a5eea37a7e9b458a0638079c060adc1ef589"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"relationship\",\"part\":\"_rels/.rels\",\"relationships\":[{\"external\":false,\"part\":\"_rels/.rels\",\"type\":\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\"}]}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "6327d430ea53f38495c8cd2313caa616e4a247564daa6de301b34e2f46f09fd9",
+            "uri": "urn:foundation:evidence:sha256:6327d430ea53f38495c8cd2313caa616e4a247564daa6de301b34e2f46f09fd9"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"relationship\",\"part\":\"xl/_rels/workbook.xml.rels\",\"relationships\":[{\"external\":false,\"part\":\"xl/_rels/workbook.xml.rels\",\"type\":\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\"},{\"external\":false,\"part\":\"xl/_rels/workbook.xml.rels\",\"type\":\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/worksheet\"}]}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "e56a1cf5cc7e93dd4a1b70810c3e8e0fb9edabf849fd368dc8ffb7d30b2ee3b1",
+            "uri": "urn:foundation:evidence:sha256:e56a1cf5cc7e93dd4a1b70810c3e8e0fb9edabf849fd368dc8ffb7d30b2ee3b1"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"observation_type\":\"relationship\",\"part\":\"xl/worksheets/_rels/sheet1.xml.rels\",\"relationships\":[{\"external\":false,\"part\":\"xl/worksheets/_rels/sheet1.xml.rels\",\"type\":\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/table\"}]}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "574166189015f576afd7417d9284926f1dc85fb9595f9f8ffcacf60d01a14765",
+            "uri": "urn:foundation:evidence:sha256:574166189015f576afd7417d9284926f1dc85fb9595f9f8ffcacf60d01a14765"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"candidate_policy\":\"OpenXmlSdk 3.5.1 is provisional; frozen DOCX operations only\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"conformance\":\"TRANSITIONAL\",\"detected_format\":\"XLSX\",\"document_version_ref\":{\"binary_hash\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"document_id\":\"document-xlsx-basic\",\"version_id\":\"version-xlsx-basic\"},\"input_sha256\":\"557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc\",\"inspected_xml_parts\":[\"[Content_Types].xml\",\"_rels/.rels\",\"xl/_rels/workbook.xml.rels\",\"xl/tables/table1.xml\",\"xl/workbook.xml\",\"xl/worksheets/_rels/sheet1.xml.rels\",\"xl/worksheets/sheet1.xml\",\"xl/worksheets/sheet2.xml\"],\"main_content_type\":\"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml\",\"main_part\":\"xl/workbook.xml\",\"mutation_qualification\":false,\"namespace_classes\":[\"TRANSITIONAL\"],\"native_locators_created\":false,\"observation_type\":\"format_and_coverage\",\"package_parts\":[\"[Content_Types].xml\",\"_rels/.rels\",\"xl/_rels/workbook.xml.rels\",\"xl/tables/table1.xml\",\"xl/workbook.xml\",\"xl/worksheets/_rels/sheet1.xml.rels\",\"xl/worksheets/sheet1.xml\",\"xl/worksheets/sheet2.xml\"],\"schema_validation_performed\":false}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "676d00ac979aa9607eeec6e5d14d90d9dbb50d77bb53ab5beb4b369a4a5b138d",
+            "uri": "urn:foundation:evidence:sha256:676d00ac979aa9607eeec6e5d14d90d9dbb50d77bb53ab5beb4b369a4a5b138d"
+          }
+        }
+      ],
+      "assessment_history": [
+        {
+          "assessed_at": null,
+          "assessor": {
+            "actor_id": "synthetic-preflight",
+            "actor_type": "SYSTEM"
+          },
+          "capability_results": [],
+          "configuration_ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          },
+          "created_at": "2026-09-08T00:00:00Z",
+          "detected_conformance": "UNKNOWN",
+          "detected_format": null,
+          "document_version_ref": {
+            "binary_hash": "557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc",
+            "document_id": "document-xlsx-basic",
+            "version_id": "version-xlsx-basic"
+          },
+          "engine": "foundation-ooxml-preflight",
+          "engine_version": "1.0.0",
+          "error_codes": [],
+          "format_observation_refs": [],
+          "id": "preflight-xlsx-basic",
+          "native_structure_findings": [],
+          "object_type": "DocumentPreflightAssessment",
+          "protection_findings": [],
+          "revision": 1,
+          "schema_version": "0.1.0",
+          "status": "PENDING",
+          "task_id": "qualification-b1"
+        },
+        {
+          "assessed_at": null,
+          "assessor": {
+            "actor_id": "synthetic-preflight",
+            "actor_type": "SYSTEM"
+          },
+          "capability_results": [],
+          "configuration_ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          },
+          "created_at": "2026-09-08T00:00:01Z",
+          "detected_conformance": "UNKNOWN",
+          "detected_format": null,
+          "document_version_ref": {
+            "binary_hash": "557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc",
+            "document_id": "document-xlsx-basic",
+            "version_id": "version-xlsx-basic"
+          },
+          "engine": "foundation-ooxml-preflight",
+          "engine_version": "1.0.0",
+          "error_codes": [],
+          "format_observation_refs": [],
+          "id": "preflight-xlsx-basic",
+          "native_structure_findings": [],
+          "object_type": "DocumentPreflightAssessment",
+          "protection_findings": [],
+          "revision": 2,
+          "schema_version": "0.1.0",
+          "status": "ASSESSING",
+          "task_id": "qualification-b1"
+        },
+        {
+          "assessed_at": "2026-09-08T00:00:02Z",
+          "assessor": {
+            "actor_id": "synthetic-preflight",
+            "actor_type": "SYSTEM"
+          },
+          "capability_results": [],
+          "configuration_ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          },
+          "created_at": "2026-09-08T00:00:02Z",
+          "detected_conformance": "TRANSITIONAL",
+          "detected_format": "XLSX",
+          "document_version_ref": {
+            "binary_hash": "557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc",
+            "document_id": "document-xlsx-basic",
+            "version_id": "version-xlsx-basic"
+          },
+          "engine": "foundation-ooxml-preflight",
+          "engine_version": "1.0.0",
+          "error_codes": [
+            "EXECUTION_UNSUPPORTED"
+          ],
+          "format_observation_refs": [
+            {
+              "media_type": "application/json",
+              "sha256": "676d00ac979aa9607eeec6e5d14d90d9dbb50d77bb53ab5beb4b369a4a5b138d",
+              "uri": "urn:foundation:evidence:sha256:676d00ac979aa9607eeec6e5d14d90d9dbb50d77bb53ab5beb4b369a4a5b138d"
+            }
+          ],
+          "id": "preflight-xlsx-basic",
+          "native_structure_findings": [
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-af60d893908e77d1a39eada2858ac4f9ced7b8bc037c970c06e137aa014bca3e",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "af60d893908e77d1a39eada2858ac4f9ced7b8bc037c970c06e137aa014bca3e",
+                "uri": "urn:foundation:evidence:sha256:af60d893908e77d1a39eada2858ac4f9ced7b8bc037c970c06e137aa014bca3e"
+              },
+              "part_uri": "/[Content_Types].xml"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-7caf91d73b657e5084561c921f7c8be37a3c841cee9e5e6e422b3f32c5535e27",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "7caf91d73b657e5084561c921f7c8be37a3c841cee9e5e6e422b3f32c5535e27",
+                "uri": "urn:foundation:evidence:sha256:7caf91d73b657e5084561c921f7c8be37a3c841cee9e5e6e422b3f32c5535e27"
+              },
+              "part_uri": "/_rels/.rels"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-4466757c862d5f0284ad7aff2853b0f8b3af94f1a968362f93397038bad3cf01",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "4466757c862d5f0284ad7aff2853b0f8b3af94f1a968362f93397038bad3cf01",
+                "uri": "urn:foundation:evidence:sha256:4466757c862d5f0284ad7aff2853b0f8b3af94f1a968362f93397038bad3cf01"
+              },
+              "part_uri": "/xl/_rels/workbook.xml.rels"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-7801b00533b6ff901d57a73f0f93c52f6de7cc01f021efaf32eeb4d233d20e4e",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "7801b00533b6ff901d57a73f0f93c52f6de7cc01f021efaf32eeb4d233d20e4e",
+                "uri": "urn:foundation:evidence:sha256:7801b00533b6ff901d57a73f0f93c52f6de7cc01f021efaf32eeb4d233d20e4e"
+              },
+              "part_uri": "/xl/tables/table1.xml"
+            },
+            {
+              "description": "table observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-257dd222c4511fd006eb0e027bf3b320569743217dcbf7a6a229bcdca9b979a2",
+              "native_locator_refs": [],
+              "native_object_type": "table",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "257dd222c4511fd006eb0e027bf3b320569743217dcbf7a6a229bcdca9b979a2",
+                "uri": "urn:foundation:evidence:sha256:257dd222c4511fd006eb0e027bf3b320569743217dcbf7a6a229bcdca9b979a2"
+              },
+              "part_uri": "/xl/tables/table1.xml"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-78ff407025427323640b2a3486f8baa6d759a81212077537fb1a1ef14319cbfe",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "78ff407025427323640b2a3486f8baa6d759a81212077537fb1a1ef14319cbfe",
+                "uri": "urn:foundation:evidence:sha256:78ff407025427323640b2a3486f8baa6d759a81212077537fb1a1ef14319cbfe"
+              },
+              "part_uri": "/xl/workbook.xml"
+            },
+            {
+              "description": "defined_name observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-eb33c9bb77b74e12caccd2f801bfa74c86acee0376ede783dc552e4459e79a89",
+              "native_locator_refs": [],
+              "native_object_type": "defined_name",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "eb33c9bb77b74e12caccd2f801bfa74c86acee0376ede783dc552e4459e79a89",
+                "uri": "urn:foundation:evidence:sha256:eb33c9bb77b74e12caccd2f801bfa74c86acee0376ede783dc552e4459e79a89"
+              },
+              "part_uri": "/xl/workbook.xml"
+            },
+            {
+              "description": "worksheet observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-aee9fbbdfa8136d3eebf5efc8494ae9e982e1ae86f06267dab4c4ecd741fcfdc",
+              "native_locator_refs": [],
+              "native_object_type": "worksheet",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "aee9fbbdfa8136d3eebf5efc8494ae9e982e1ae86f06267dab4c4ecd741fcfdc",
+                "uri": "urn:foundation:evidence:sha256:aee9fbbdfa8136d3eebf5efc8494ae9e982e1ae86f06267dab4c4ecd741fcfdc"
+              },
+              "part_uri": "/xl/workbook.xml"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-5013668a22d198a1c7b7d0e11d6e9d72c38fbdaaff914bdf48fe04dc2b1a4121",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "5013668a22d198a1c7b7d0e11d6e9d72c38fbdaaff914bdf48fe04dc2b1a4121",
+                "uri": "urn:foundation:evidence:sha256:5013668a22d198a1c7b7d0e11d6e9d72c38fbdaaff914bdf48fe04dc2b1a4121"
+              },
+              "part_uri": "/xl/worksheets/_rels/sheet1.xml.rels"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-1b4cded270726d673583351b3cf7c4e1a8441b8c69c645441206bfdb03db7321",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "1b4cded270726d673583351b3cf7c4e1a8441b8c69c645441206bfdb03db7321",
+                "uri": "urn:foundation:evidence:sha256:1b4cded270726d673583351b3cf7c4e1a8441b8c69c645441206bfdb03db7321"
+              },
+              "part_uri": "/xl/worksheets/sheet1.xml"
+            },
+            {
+              "description": "cell observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-0a832c2d99827002d8b3ab57886a772ca063cdca5bb27c631d63f3e234156fda",
+              "native_locator_refs": [],
+              "native_object_type": "cell",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "0a832c2d99827002d8b3ab57886a772ca063cdca5bb27c631d63f3e234156fda",
+                "uri": "urn:foundation:evidence:sha256:0a832c2d99827002d8b3ab57886a772ca063cdca5bb27c631d63f3e234156fda"
+              },
+              "part_uri": "/xl/worksheets/sheet1.xml"
+            },
+            {
+              "description": "formula observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-909c3de48eafe6e279ac2ddd697f6549586386bb1e823cd9d6d4a368fb6e8c6e",
+              "native_locator_refs": [],
+              "native_object_type": "formula",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "909c3de48eafe6e279ac2ddd697f6549586386bb1e823cd9d6d4a368fb6e8c6e",
+                "uri": "urn:foundation:evidence:sha256:909c3de48eafe6e279ac2ddd697f6549586386bb1e823cd9d6d4a368fb6e8c6e"
+              },
+              "part_uri": "/xl/worksheets/sheet1.xml"
+            },
+            {
+              "description": "xml_inventory observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-9c2817a936d2d901c4aed80a0197313eeb5539ec1247f6b21de4a1adead1c770",
+              "native_locator_refs": [],
+              "native_object_type": "xml_inventory",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "9c2817a936d2d901c4aed80a0197313eeb5539ec1247f6b21de4a1adead1c770",
+                "uri": "urn:foundation:evidence:sha256:9c2817a936d2d901c4aed80a0197313eeb5539ec1247f6b21de4a1adead1c770"
+              },
+              "part_uri": "/xl/worksheets/sheet2.xml"
+            },
+            {
+              "description": "cell observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-8aa6e410f9435af7b23c3bf5ea3d01d3242f9fb02cb6ffbb16f7a4506cd3d60c",
+              "native_locator_refs": [],
+              "native_object_type": "cell",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "8aa6e410f9435af7b23c3bf5ea3d01d3242f9fb02cb6ffbb16f7a4506cd3d60c",
+                "uri": "urn:foundation:evidence:sha256:8aa6e410f9435af7b23c3bf5ea3d01d3242f9fb02cb6ffbb16f7a4506cd3d60c"
+              },
+              "part_uri": "/xl/worksheets/sheet2.xml"
+            },
+            {
+              "description": "merged_cells observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-0faff02a80956fa7360613d20488a5eea37a7e9b458a0638079c060adc1ef589",
+              "native_locator_refs": [],
+              "native_object_type": "merged_cells",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "0faff02a80956fa7360613d20488a5eea37a7e9b458a0638079c060adc1ef589",
+                "uri": "urn:foundation:evidence:sha256:0faff02a80956fa7360613d20488a5eea37a7e9b458a0638079c060adc1ef589"
+              },
+              "part_uri": "/xl/worksheets/sheet2.xml"
+            },
+            {
+              "description": "relationship observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-6327d430ea53f38495c8cd2313caa616e4a247564daa6de301b34e2f46f09fd9",
+              "native_locator_refs": [],
+              "native_object_type": "relationship",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "6327d430ea53f38495c8cd2313caa616e4a247564daa6de301b34e2f46f09fd9",
+                "uri": "urn:foundation:evidence:sha256:6327d430ea53f38495c8cd2313caa616e4a247564daa6de301b34e2f46f09fd9"
+              },
+              "part_uri": "/_rels/.rels"
+            },
+            {
+              "description": "relationship observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-e56a1cf5cc7e93dd4a1b70810c3e8e0fb9edabf849fd368dc8ffb7d30b2ee3b1",
+              "native_locator_refs": [],
+              "native_object_type": "relationship",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "e56a1cf5cc7e93dd4a1b70810c3e8e0fb9edabf849fd368dc8ffb7d30b2ee3b1",
+                "uri": "urn:foundation:evidence:sha256:e56a1cf5cc7e93dd4a1b70810c3e8e0fb9edabf849fd368dc8ffb7d30b2ee3b1"
+              },
+              "part_uri": "/xl/_rels/workbook.xml.rels"
+            },
+            {
+              "description": "relationship observed in package part; inspection is not native execution identity",
+              "finding_id": "finding-574166189015f576afd7417d9284926f1dc85fb9595f9f8ffcacf60d01a14765",
+              "native_locator_refs": [],
+              "native_object_type": "relationship",
+              "observation_ref": {
+                "media_type": "application/json",
+                "sha256": "574166189015f576afd7417d9284926f1dc85fb9595f9f8ffcacf60d01a14765",
+                "uri": "urn:foundation:evidence:sha256:574166189015f576afd7417d9284926f1dc85fb9595f9f8ffcacf60d01a14765"
+              },
+              "part_uri": "/xl/worksheets/_rels/sheet1.xml.rels"
+            }
+          ],
+          "object_type": "DocumentPreflightAssessment",
+          "protection_findings": [],
+          "revision": 3,
+          "schema_version": "0.1.0",
+          "status": "COMPLETED",
+          "task_id": "qualification-b1"
+        }
+      ],
+      "case_id": "xlsx-basic",
+      "document": {
+        "binary_hash": "557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc",
+        "byte_length": 4136,
+        "content_ref": {
+          "media_type": "application/octet-stream",
+          "sha256": "557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc",
+          "uri": "urn:qualification:sha256:557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc"
+        },
+        "created_at": "2026-09-08T00:00:00Z",
+        "derived_from": null,
+        "document_id": "document-xlsx-basic",
+        "id": "version-xlsx-basic",
+        "object_type": "DocumentVersion",
+        "revision": 1,
+        "schema_version": "0.1.0",
+        "task_id": "qualification-b1"
+      },
+      "input_sha256": "557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc"
+    },
+    {
+      "artifacts": [
+        {
+          "canonical_utf8": "{\"candidate_engine\":\"OpenXmlSdk\",\"candidate_version\":\"3.5.1\",\"config\":{\"max_package_bytes\":33554432,\"max_part_bytes\":16777216,\"max_parts\":4096,\"max_uncompressed_bytes\":134217728,\"max_xml_elements\":500000,\"profile_version\":\"1.0.0\"},\"coverage\":\"all XML element names and relationships; no execution locators\",\"engine\":\"foundation-ooxml-preflight\",\"engine_version\":\"1.0.0\",\"qualification\":\"UNQUALIFIED\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          }
+        },
+        {
+          "canonical_utf8": "{\"assessor\":\"foundation-ooxml-preflight\",\"assessor_version\":\"1.0.0\",\"configuration_ref\":{\"media_type\":\"application/json\",\"sha256\":\"0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\",\"uri\":\"urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64\"},\"document_version_ref\":{\"binary_hash\":\"66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab\",\"document_id\":\"document-malformed\",\"version_id\":\"version-malformed\"},\"error_code\":\"CORRUPTED_DOCUMENT\",\"input_sha256\":\"66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab\",\"observation_type\":\"inspection_failure\",\"reason\":\"Unreadable ZIP structure or CRC\"}",
+          "ref": {
+            "media_type": "application/json",
+            "sha256": "a5c883f0750c88f4b6b6facce8ea5e0bbe714eb9aef60ddc0d2168ed6bdeb5bc",
+            "uri": "urn:foundation:evidence:sha256:a5c883f0750c88f4b6b6facce8ea5e0bbe714eb9aef60ddc0d2168ed6bdeb5bc"
+          }
+        }
+      ],
+      "assessment_history": [
+        {
+          "assessed_at": null,
+          "assessor": {
+            "actor_id": "synthetic-preflight",
+            "actor_type": "SYSTEM"
+          },
+          "capability_results": [],
+          "configuration_ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          },
+          "created_at": "2026-09-08T00:00:00Z",
+          "detected_conformance": "UNKNOWN",
+          "detected_format": null,
+          "document_version_ref": {
+            "binary_hash": "66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab",
+            "document_id": "document-malformed",
+            "version_id": "version-malformed"
+          },
+          "engine": "foundation-ooxml-preflight",
+          "engine_version": "1.0.0",
+          "error_codes": [],
+          "format_observation_refs": [],
+          "id": "preflight-malformed",
+          "native_structure_findings": [],
+          "object_type": "DocumentPreflightAssessment",
+          "protection_findings": [],
+          "revision": 1,
+          "schema_version": "0.1.0",
+          "status": "PENDING",
+          "task_id": "qualification-b1"
+        },
+        {
+          "assessed_at": null,
+          "assessor": {
+            "actor_id": "synthetic-preflight",
+            "actor_type": "SYSTEM"
+          },
+          "capability_results": [],
+          "configuration_ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          },
+          "created_at": "2026-09-08T00:00:01Z",
+          "detected_conformance": "UNKNOWN",
+          "detected_format": null,
+          "document_version_ref": {
+            "binary_hash": "66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab",
+            "document_id": "document-malformed",
+            "version_id": "version-malformed"
+          },
+          "engine": "foundation-ooxml-preflight",
+          "engine_version": "1.0.0",
+          "error_codes": [],
+          "format_observation_refs": [],
+          "id": "preflight-malformed",
+          "native_structure_findings": [],
+          "object_type": "DocumentPreflightAssessment",
+          "protection_findings": [],
+          "revision": 2,
+          "schema_version": "0.1.0",
+          "status": "ASSESSING",
+          "task_id": "qualification-b1"
+        },
+        {
+          "assessed_at": "2026-09-08T00:00:02Z",
+          "assessor": {
+            "actor_id": "synthetic-preflight",
+            "actor_type": "SYSTEM"
+          },
+          "capability_results": [],
+          "configuration_ref": {
+            "media_type": "application/json",
+            "sha256": "0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64",
+            "uri": "urn:foundation:evidence:sha256:0111a87f9f5f2c4f07ad75b071615bd17417d3e4d4029223011152dda4434b64"
+          },
+          "created_at": "2026-09-08T00:00:02Z",
+          "detected_conformance": "UNKNOWN",
+          "detected_format": null,
+          "document_version_ref": {
+            "binary_hash": "66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab",
+            "document_id": "document-malformed",
+            "version_id": "version-malformed"
+          },
+          "engine": "foundation-ooxml-preflight",
+          "engine_version": "1.0.0",
+          "error_codes": [
+            "CORRUPTED_DOCUMENT"
+          ],
+          "format_observation_refs": [
+            {
+              "media_type": "application/json",
+              "sha256": "a5c883f0750c88f4b6b6facce8ea5e0bbe714eb9aef60ddc0d2168ed6bdeb5bc",
+              "uri": "urn:foundation:evidence:sha256:a5c883f0750c88f4b6b6facce8ea5e0bbe714eb9aef60ddc0d2168ed6bdeb5bc"
+            }
+          ],
+          "id": "preflight-malformed",
+          "native_structure_findings": [],
+          "object_type": "DocumentPreflightAssessment",
+          "protection_findings": [],
+          "revision": 3,
+          "schema_version": "0.1.0",
+          "status": "FAILED",
+          "task_id": "qualification-b1"
+        }
+      ],
+      "case_id": "malformed",
+      "document": {
+        "binary_hash": "66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab",
+        "byte_length": 31,
+        "content_ref": {
+          "media_type": "application/octet-stream",
+          "sha256": "66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab",
+          "uri": "urn:qualification:sha256:66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab"
+        },
+        "created_at": "2026-09-08T00:00:00Z",
+        "derived_from": null,
+        "document_id": "document-malformed",
+        "id": "version-malformed",
+        "object_type": "DocumentVersion",
+        "revision": 1,
+        "schema_version": "0.1.0",
+        "task_id": "qualification-b1"
+      },
+      "input_sha256": "66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab"
+    }
+  ],
+  "evaluation_version": "1.0.0",
+  "production_qualified": false,
+  "qualification_kind": "SYNTHETIC_ONLY"
+}

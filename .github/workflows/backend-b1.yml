@@ -1,0 +1,69 @@
+name: Foundation Backend B1
+
+on:
+  pull_request:
+    branches: [master]
+    paths:
+      - 'foundation/**'
+      - 'tests/backend/b1/**'
+      - 'tests/golden/**'
+      - 'tools/backend/**'
+      - 'tools/b1/**'
+      - 'docs/backend/**'
+      - 'docs/PROJECT_PHASE.md'
+      - '.github/workflows/backend-b1.yml'
+  push:
+    branches: ['build/backend-b1-*']
+    paths:
+      - 'foundation/**'
+      - 'tests/backend/b1/**'
+      - 'tests/golden/**'
+      - 'tools/backend/**'
+      - 'tools/b1/**'
+      - 'docs/backend/**'
+      - 'docs/PROJECT_PHASE.md'
+      - '.github/workflows/backend-b1.yml'
+
+jobs:
+  qualification:
+    name: Foundation Backend B1 qualification
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    env:
+      FOUNDATION_B1_REQUIRE_DOCLING: '1'
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: '3.12'
+      - name: Install B0 tooling
+        run: python -m pip install --disable-pip-version-check -r tools/backend/requirements.txt
+      - name: Install isolated B1 spike profile
+        run: python -m pip install --disable-pip-version-check -r tools/backend/requirements-b1-docling-spike.txt
+      - name: Verify exact candidate and dependency consistency
+        run: |
+          python -c "from foundation.evaluation.perception.docling_probe import installed_candidate; print(installed_candidate())"
+          python -m pip check
+      - name: Validate frozen contract
+        run: python tools/contracts/validate_contract_fixtures.py --report contract-validation-report.json
+      - name: Contract regression tests
+        run: python -m unittest discover -s tests/contracts -v
+      - name: B0 and B1 backend tests
+        run: python -m pytest tests/backend -q
+      - name: Golden and perception qualification tests
+        run: python -m pytest tests/golden -q
+      - name: Generate preflight evidence
+        run: python tools/b1/preflight_probe.py --report .b1-ci-reports/preflight.json
+      - name: Run three conversions per corpus case
+        run: python tools/b1/docling_probe.py --report .b1-ci-reports/docling-qualification.json
+      - name: Compile B1 boundaries
+        run: python -m compileall -q foundation/adapters/preflight foundation/evaluation/perception foundation/ports tools/b1 tests/backend/b1 tests/golden/b1
+      - name: Upload qualification evidence
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: foundation-b1-qualification
+          path: |
+            .b1-ci-reports/*.json
+            contract-validation-report.json
+          if-no-files-found: error

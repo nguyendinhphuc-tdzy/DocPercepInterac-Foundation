@@ -1,0 +1,62 @@
+{
+  "cases": [
+    {
+      "case_id": "docx-basic",
+      "expected_conversion": "PASS",
+      "feature_profile": [
+        "headings",
+        "paragraphs",
+        "multiple_runs",
+        "table"
+      ],
+      "format": "DOCX",
+      "input_path": "docx-basic.docx",
+      "input_sha256": "6f7992a5e7e5d7ec0fa0dbc07582010689f6c4cf182dbf17a725f84114418d17"
+    },
+    {
+      "case_id": "docx-native-edge",
+      "expected_conversion": "PASS",
+      "feature_profile": [
+        "content_control",
+        "bookmark",
+        "field",
+        "hyperlink",
+        "revision",
+        "header",
+        "table"
+      ],
+      "format": "DOCX",
+      "input_path": "docx-native-edge.docx",
+      "input_sha256": "4d3c2217e17ead4a5cf84427c4dcd1596d8659211928e4003d4807cd87097882"
+    },
+    {
+      "case_id": "xlsx-basic",
+      "expected_conversion": "PASS",
+      "feature_profile": [
+        "multiple_sheets",
+        "formula_cached_value",
+        "defined_name",
+        "table",
+        "merged_cells"
+      ],
+      "format": "XLSX",
+      "input_path": "xlsx-basic.xlsx",
+      "input_sha256": "557800163587088d774863c814dbb988a7d2f0b7dd67cd2df1096c34e455aabc"
+    },
+    {
+      "case_id": "malformed",
+      "expected_conversion": "FAIL",
+      "feature_profile": [
+        "malformed_package"
+      ],
+      "format": "DOCX",
+      "input_path": "malformed.docx",
+      "input_sha256": "66273ca1bf690574cdd18c04d3a7101436a8302db2ff371ced6dedb693a3f7ab"
+    }
+  ],
+  "engine": "docling-slim",
+  "engine_version": "2.126.0",
+  "evaluation_version": "1.0.0",
+  "qualification_kind": "SYNTHETIC_ONLY",
+  "run_count": 3
+}
