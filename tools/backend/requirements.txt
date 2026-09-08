@@ -1,0 +1,3 @@
+# Reproducible B0 backend test tooling. Contract pins are shared with CI.
+-r ../contracts/requirements.txt
+pytest==9.1.1

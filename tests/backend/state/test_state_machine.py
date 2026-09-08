@@ -24,6 +24,7 @@ from foundation.governance.state import (
     StateTransitionEngine,
     StateTransitionError,
     TransitionContext,
+    TransitionGuardRegistry,
 )
 
 
@@ -139,7 +140,8 @@ def test_transition_table_is_exact():
 
 
 def test_every_allowed_and_undefined_edge(scenarios):
-    engine = StateTransitionEngine()
+    guard = AllowGuard()
+    engine = StateTransitionEngine(TransitionGuardRegistry.for_testing(guard))
     for object_type, by_source in EXPECTED.items():
         sample = _samples(scenarios)[object_type]
         enum_type = type(sample.status)
@@ -152,25 +154,35 @@ def test_every_allowed_and_undefined_edge(scenarios):
                     record = record.model_copy(update={"outcome": outcome})
                 audit = CaptureAudit()
                 if target in allowed:
-                    decision = engine.transition(record, target, _context(record), AllowGuard(), audit)
+                    decision = engine.transition(record, target, _context(record), guard, audit)
                     assert decision.next_record.status is target
                     assert decision.next_record.revision == record.revision + 1
                     assert record.status is source
                     assert audit.decisions == [decision]
                 else:
                     with pytest.raises(StateTransitionError, match="INVALID_STATE_TRANSITION"):
-                        engine.transition(record, target, _context(record), AllowGuard(), audit)
+                        engine.transition(record, target, _context(record), guard, audit)
                     assert not audit.decisions
 
 
 def test_guard_and_revision_fail_closed(scenarios):
     record = _samples(scenarios)[ObjectType.FOUNDATION_TASK].model_copy(update={"status": TaskStatus.AWAITING_REVIEW})
-    engine = StateTransitionEngine()
+    deny = DenyGuard()
+    engine = StateTransitionEngine(TransitionGuardRegistry.for_testing(deny))
     with pytest.raises(StateTransitionError, match="required evidence unavailable"):
-        engine.transition(record, TaskStatus.READY_FOR_EXECUTION, _context(record), DenyGuard(), CaptureAudit())
+        engine.transition(record, TaskStatus.READY_FOR_EXECUTION, _context(record), deny, CaptureAudit())
     bad = _context(record).model_copy(update={"expected_revision": record.revision + 1})
     with pytest.raises(StateTransitionError, match="revision"):
-        engine.transition(record, TaskStatus.BLOCKED, bad, AllowGuard(), CaptureAudit())
+        engine.transition(record, TaskStatus.BLOCKED, bad, deny, CaptureAudit())
+
+
+def test_unregistered_caller_guard_cannot_bypass_guard_registry(scenarios):
+    record = _samples(scenarios)[ObjectType.FOUNDATION_TASK]
+    registered = AllowGuard()
+    caller = AllowGuard()
+    engine = StateTransitionEngine(TransitionGuardRegistry.for_testing(registered))
+    with pytest.raises(StateTransitionError, match="registered transition guard"):
+        engine.transition(record, TaskStatus.ANALYZING, _context(record), caller, CaptureAudit())
 
 
 def test_source_assessment_status_and_outcome_are_separate(scenarios):
@@ -178,23 +190,26 @@ def test_source_assessment_status_and_outcome_are_separate(scenarios):
         update={"status": SourceAssessmentStatus.ASSESSING, "outcome": None}
     )
     with pytest.raises(StateTransitionError, match="outcome"):
-        StateTransitionEngine().transition(record, SourceAssessmentStatus.COMPLETED, _context(record), AllowGuard(), CaptureAudit())
+        guard = AllowGuard()
+        StateTransitionEngine(TransitionGuardRegistry.for_testing(guard)).transition(record, SourceAssessmentStatus.COMPLETED, _context(record), guard, CaptureAudit())
 
 
 def test_duplicate_request_returns_prior_decision_without_new_event(scenarios):
     record = _samples(scenarios)[ObjectType.APPROVED_CHANGE_SET]
     audit = CaptureAudit()
-    engine = StateTransitionEngine()
-    first = engine.transition(record, ApprovedChangeSetStatus.INVALIDATED, _context(record, "same-request"), AllowGuard(), audit)
-    duplicate = engine.transition(record, ApprovedChangeSetStatus.INVALIDATED, _context(record, "same-request"), AllowGuard(), audit, prior_decision=first)
+    guard = AllowGuard()
+    engine = StateTransitionEngine(TransitionGuardRegistry.for_testing(guard))
+    first = engine.transition(record, ApprovedChangeSetStatus.INVALIDATED, _context(record, "same-request"), guard, audit)
+    duplicate = engine.transition(record, ApprovedChangeSetStatus.INVALIDATED, _context(record, "same-request"), guard, audit, prior_decision=first)
     assert duplicate is first
     assert audit.decisions == [first]
 
 
 def test_scenario_02_partial_task_path_remains_blocked(scenarios):
     task = _samples(scenarios)[ObjectType.FOUNDATION_TASK].model_copy(update={"status": TaskStatus.AWAITING_REVIEW})
-    engine = StateTransitionEngine()
+    guard = AllowGuard()
+    engine = StateTransitionEngine(TransitionGuardRegistry.for_testing(guard))
     for target in [TaskStatus.BLOCKED, TaskStatus.READY_FOR_EXECUTION, TaskStatus.EXECUTING, TaskStatus.VALIDATING, TaskStatus.BLOCKED]:
-        task = engine.transition(task, target, _context(task, f"partial-{target.value}"), AllowGuard(), CaptureAudit()).next_record
+        task = engine.transition(task, target, _context(task, f"partial-{target.value}"), guard, CaptureAudit()).next_record
     assert task.status is TaskStatus.BLOCKED
     assert task.release_status.value == "WITHHELD"

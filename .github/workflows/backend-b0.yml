@@ -1,0 +1,67 @@
+name: Foundation Backend B0
+
+on:
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'foundation/**'
+      - 'tests/backend/**'
+      - 'tests/golden/**'
+      - 'docs/backend/**'
+      - 'tools/contracts/**'
+      - 'tools/backend/**'
+      - 'contract-validation-report.json'
+      - '.github/workflows/backend-b0.yml'
+  push:
+    paths:
+      - 'foundation/**'
+      - 'tests/backend/**'
+      - 'tests/golden/**'
+      - 'docs/backend/**'
+      - 'tools/contracts/**'
+      - 'tools/backend/**'
+      - '.github/workflows/backend-b0.yml'
+
+jobs:
+  backend-b0:
+    name: Foundation Backend B0 checks
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install pinned B0 tooling
+        run: python -m pip install --disable-pip-version-check -r tools/backend/requirements.txt
+
+      - name: Validate frozen contract fixtures
+        run: python tools/contracts/validate_contract_fixtures.py --report contract-validation-report.json
+
+      - name: Run contract tests
+        run: python -m unittest discover -s tests/contracts -v
+
+      - name: Run backend tests
+        run: python -m pytest tests/backend -q
+
+      - name: Run Golden Corpus harness tests
+        run: python -m pytest tests/golden -q
+
+      - name: Compile Foundation v2 modules
+        run: >-
+          python -m compileall -q
+          foundation/domain foundation/governance foundation/audit foundation/ports
+          foundation/evaluation tests/backend tests/golden
+
+      - name: Upload contract validation report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: foundation-backend-b0-contract-report
+          path: contract-validation-report.json
+          if-no-files-found: error
