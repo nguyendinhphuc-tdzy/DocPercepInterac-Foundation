@@ -106,10 +106,14 @@ def review_valid(case):
     if set(review['feature_evidence']) != set(case['expected_feature_profile']):
         return False
     for feature, evidence in review['feature_evidence'].items():
-        if evidence['status'] != 'NOT_EVALUATED' and evidence['evidence_basis'] in ('AUTOMATED', 'BOTH'):
+        basis = evidence['evidence_basis']
+        status = evidence['status']
+        if basis == 'AUTOMATED' and status != 'NOT_EVALUATED':
+            return False  # Automation contributes observation support only, not fidelity authority.
+        if basis == 'BOTH' and status != 'NOT_EVALUATED':
             if not any(check['feature'] == feature and any(check[k] in ('OBSERVED', 'NOT_OBSERVED')
                        for k in ('native_presence', 'semantic_presence')) for check in case['feature_checks']):
-                return False  # An asserted automated basis must have an actual observation.
+                return False  # An asserted BOTH basis must have an actual presence observation.
     return not any(loss['critical_semantic_loss'] and (
         loss['classification'] != 'SEMANTIC_REQUIRED' or loss['recoverable_by_native_identity'])
         for loss in review['losses'])

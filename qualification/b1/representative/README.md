@@ -92,8 +92,13 @@ NARRATIVE/TABLES example scope. Adjust it privately for the actual declared scop
 
 Feature statuses are closed: PASS, PARTIAL, FAIL, UNSUPPORTED, NOT_EVALUATED.
 Basis is AUTOMATED, HUMAN or BOTH. HUMAN means the reviewer actually compared
-private source and output; automation need not implement the feature. Evaluated
-AUTOMATED/BOTH entries must have an existing automated presence observation.
+private source and output; automation need not implement the feature. AUTOMATED
+currently means presence/structural observation only; it is NOT independent
+fidelity authority. An AUTOMATED basis may only record NOT_EVALUATED for fidelity
+status until an automated fidelity mechanism is separately qualified. No such
+mechanism exists in B1.2R today. BOTH means human fidelity judgment supported
+by an actual automated presence observation (OBSERVED or NOT_OBSERVED);
+NOT_EVALUATED alone is not sufficient automated support for a BOTH claim.
 Presence is not fidelity. A FAIL result supplies evaluated coverage but fails
 quality. Public feature evidence is projected only from valid bound reviews;
 private notes, identifiers and hashes are never included.

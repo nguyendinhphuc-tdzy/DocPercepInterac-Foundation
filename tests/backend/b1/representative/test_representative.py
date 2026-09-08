@@ -346,16 +346,21 @@ def test_scope_digest_and_feature_evidence_do_not_leak_private_fields():
         assert private not in encoded
 
 
-@pytest.mark.parametrize('basis', ['AUTOMATED', 'BOTH'])
-def test_automated_evidence_basis_requires_an_observation(basis):
+def test_automated_evidence_basis_requires_an_observation():
+    # BOTH requires an actual observation; AUTOMATED cannot assert non-NOT_EVALUATED fidelity
     full = with_profiles(['CHARTS']); c = full['cases'][0]
-    c['review']['feature_evidence']['CHARTS']['evidence_basis'] = basis
+    c['review']['feature_evidence']['CHARTS']['evidence_basis'] = 'BOTH'
     c['feature_checks'] = [{'feature': 'CHARTS', 'native_presence': 'NOT_EVALUATED', 'semantic_presence': 'NOT_EVALUATED'}]
     assert not rep.review_valid(c)
     assert 'CHARTS' in rep.sanitize(full)['unevaluated_profiles']
     c['feature_checks'][0]['native_presence'] = 'NOT_OBSERVED'
     assert rep.review_valid(c)
     assert rep.evaluated_profiles(full['cases']) == {'CHARTS'}
+
+    # AUTOMATED with non-NOT_EVALUATED is invalid regardless of presence observation
+    c['review']['feature_evidence']['CHARTS']['evidence_basis'] = 'AUTOMATED'
+    assert not rep.review_valid(c)
+    assert 'CHARTS' in rep.sanitize(full)['unevaluated_profiles']
 
 
 @pytest.mark.parametrize('digest', ['', 'A' * 64, 'a' * 63])
@@ -379,3 +384,119 @@ def test_failed_quality_remains_covered_for_critical_loss_decision():
         c['review']['dimensions']['CONTENT_FIDELITY'] = 'FAIL'
     assert rep.evaluated_profiles(full['cases']) == {'NARRATIVE'}
     assert rep.decide(full) == 'RECONSIDER_DOCLING_BASELINE'
+
+
+@pytest.mark.parametrize('status', ['PASS', 'FAIL', 'PARTIAL', 'UNSUPPORTED'])
+def test_cases_1_to_4_automated_basis_cannot_assert_evaluated_fidelity(status):
+    # Case 1: PASS/AUTOMATED/OBSERVED -> invalid
+    # Case 2: FAIL/AUTOMATED/OBSERVED -> invalid
+    # Case 3: PARTIAL/AUTOMATED -> invalid
+    # Case 4: UNSUPPORTED/AUTOMATED -> invalid
+    full = with_profiles(['CHARTS']); c = full['cases'][0]
+    c['review']['feature_evidence']['CHARTS'] = {'status': status, 'evidence_basis': 'AUTOMATED'}
+    c['feature_checks'] = [{'feature': 'CHARTS', 'native_presence': 'OBSERVED', 'semantic_presence': 'NOT_EVALUATED'}]
+    assert not rep.review_valid(c)
+    assert 'CHARTS' in rep.sanitize(full)['unevaluated_profiles']
+    assert rep.decide(full) == 'INSUFFICIENT_EVIDENCE'
+
+
+def test_case_5_automated_not_evaluated_retains_validity_without_coverage():
+    # Case 5: status = NOT_EVALUATED, basis = AUTOMATED
+    full = with_profiles(['CHARTS']); c = full['cases'][0]
+    c['review']['feature_evidence']['CHARTS'] = {'status': 'NOT_EVALUATED', 'evidence_basis': 'AUTOMATED'}
+    c['feature_checks'] = [{'feature': 'CHARTS', 'native_presence': 'OBSERVED', 'semantic_presence': 'NOT_EVALUATED'}]
+    assert rep.review_valid(c)
+    assert 'CHARTS' not in rep.evaluated_profiles(full['cases'])
+    assert 'CHARTS' in rep.sanitize(full)['unevaluated_profiles']
+    assert rep.decide(full) == 'INSUFFICIENT_EVIDENCE'
+
+
+def test_case_6_human_basis_valid_without_automated_presence():
+    # Case 6: status = PASS, basis = HUMAN, automated presence = NOT_EVALUATED
+    full = with_profiles(['CHARTS']); c = full['cases'][0]
+    c['review']['feature_evidence']['CHARTS'] = {'status': 'PASS', 'evidence_basis': 'HUMAN'}
+    c['feature_checks'] = [{'feature': 'CHARTS', 'native_presence': 'NOT_EVALUATED', 'semantic_presence': 'NOT_EVALUATED'}]
+    assert rep.review_valid(c)
+    assert rep.evaluated_profiles(full['cases']) == {'CHARTS'}
+    assert 'CHARTS' not in rep.sanitize(full)['unevaluated_profiles']
+    assert rep.decide(full) == 'PROVISIONAL_CONTINUE_TO_B1_2B'
+
+
+@pytest.mark.parametrize('presence', ['OBSERVED', 'NOT_OBSERVED'])
+def test_cases_7_and_8_both_basis_valid_with_explicit_presence_observation(presence):
+    # Case 7: status = PASS, basis = BOTH, automated presence = OBSERVED
+    # Case 8: status = PASS, basis = BOTH, automated presence = NOT_OBSERVED
+    full = with_profiles(['CHARTS']); c = full['cases'][0]
+    c['review']['feature_evidence']['CHARTS'] = {'status': 'PASS', 'evidence_basis': 'BOTH'}
+    c['feature_checks'] = [{'feature': 'CHARTS', 'native_presence': presence, 'semantic_presence': 'NOT_EVALUATED'}]
+    assert rep.review_valid(c)
+    assert rep.evaluated_profiles(full['cases']) == {'CHARTS'}
+    assert 'CHARTS' not in rep.sanitize(full)['unevaluated_profiles']
+    assert rep.decide(full) == 'PROVISIONAL_CONTINUE_TO_B1_2B'
+
+
+def test_case_9_both_basis_invalid_with_only_not_evaluated_presence():
+    # Case 9: status = PASS, basis = BOTH, automated presence = NOT_EVALUATED only
+    full = with_profiles(['CHARTS']); c = full['cases'][0]
+    c['review']['feature_evidence']['CHARTS'] = {'status': 'PASS', 'evidence_basis': 'BOTH'}
+    c['feature_checks'] = [{'feature': 'CHARTS', 'native_presence': 'NOT_EVALUATED', 'semantic_presence': 'NOT_EVALUATED'}]
+    assert not rep.review_valid(c)
+    assert 'CHARTS' in rep.sanitize(full)['unevaluated_profiles']
+    assert rep.decide(full) == 'INSUFFICIENT_EVIDENCE'
+
+
+def test_cases_10_and_11_presence_does_not_imply_fidelity():
+    # Case 10: OBSERVED must NOT automatically imply PASS (human can judge FAIL)
+    full = with_profiles(['TABLES']); c = full['cases'][0]
+    c['feature_checks'] = [{'feature': 'TABLES', 'native_presence': 'OBSERVED', 'semantic_presence': 'OBSERVED'}]
+    c['review']['feature_evidence']['TABLES'] = {'status': 'FAIL', 'evidence_basis': 'BOTH'}
+    c['review']['dimensions']['TABLE_FIDELITY'] = 'FAIL'
+    assert rep.review_valid(c)
+    assert rep.evaluated_profiles(full['cases']) == {'TABLES'}
+    assert rep.decide(full) == 'INSUFFICIENT_EVIDENCE'
+
+    # Case 11: NOT_OBSERVED must NOT automatically imply FAIL (human can judge PASS when absence is expected/correct)
+    full2 = with_profiles(['CHARTS']); c2 = full2['cases'][0]
+    c2['feature_checks'] = [{'feature': 'CHARTS', 'native_presence': 'NOT_OBSERVED', 'semantic_presence': 'NOT_OBSERVED'}]
+    c2['review']['feature_evidence']['CHARTS'] = {'status': 'PASS', 'evidence_basis': 'BOTH'}
+    assert rep.review_valid(c2)
+    assert rep.evaluated_profiles(full2['cases']) == {'CHARTS'}
+    assert rep.decide(full2) == 'PROVISIONAL_CONTINUE_TO_B1_2B'
+
+
+def test_case_12_existing_human_only_charts_evidence_persists():
+    # Case 12: existing HUMAN-only CHARTS evidence continues to work
+    full = with_profiles(['CHARTS']); c = full['cases'][0]
+    c['review']['feature_evidence']['CHARTS'] = {'status': 'PASS', 'evidence_basis': 'HUMAN'}
+    c['feature_checks'] = [{'feature': 'CHARTS', 'native_presence': 'NOT_EVALUATED', 'semantic_presence': 'NOT_EVALUATED'}]
+    assert rep.review_valid(c)
+    assert rep.evaluated_profiles(full['cases']) == {'CHARTS'}
+    assert rep.decide(full) == 'PROVISIONAL_CONTINUE_TO_B1_2B'
+
+
+def test_case_13_existing_coverage_digest_behavior_unchanged():
+    # Case 13: coverage_scope_digest behavior remains unchanged
+    m = manifest()
+    d1 = rep.coverage_scope_digest(m)
+    assert len(d1) == 64 and all(ch in '0123456789abcdef' for ch in d1)
+
+
+def test_case_14_existing_not_applicable_behavior_unchanged():
+    # Case 14: existing NOT_APPLICABLE behavior remains unchanged
+    full = with_profiles(['NARRATIVE']); c = full['cases'][0]
+    assert c['review']['dimensions']['TABLE_FIDELITY'] == 'NOT_APPLICABLE'
+    assert rep.review_valid(c)
+    c['review']['dimensions']['TABLE_FIDELITY'] = 'PASS'
+    assert not rep.review_valid(c)
+
+
+def test_case_15_sanitizer_exposes_only_closed_values_without_leakage():
+    # Case 15: public sanitizer exposes only closed values and leaks no private details
+    full = with_profiles(['CHARTS']); c = full['cases'][0]
+    c['review']['notes'] = 'SECRET_SME_OBSERVATION'
+    c['review']['feature_evidence']['CHARTS'] = {'status': 'NOT_EVALUATED', 'evidence_basis': 'AUTOMATED'}
+    public = rep.sanitize(full)
+    assert public['cases'][0]['feature_evidence']['CHARTS'] == {'status': 'NOT_EVALUATED', 'evidence_basis': 'AUTOMATED'}
+    raw = json.dumps(public)
+    assert 'SECRET_SME_OBSERVATION' not in raw
+    assert c['input_sha256'] not in raw

@@ -120,8 +120,13 @@ Every declared feature must appear exactly once in `review.feature_evidence`,
 with no undeclared keys. Each entry has status PASS, PARTIAL, FAIL, UNSUPPORTED
 or NOT_EVALUATED and evidence_basis AUTOMATED, HUMAN or BOTH. A human's bound
 review may record evaluated fidelity even when automation is NOT_EVALUATED.
-AUTOMATED/BOTH claims for evaluated features require an actual existing presence
-observation. Presence alone never supplies fidelity. Missing/stale/invalid
+AUTOMATED currently means presence/structural observation only; it is not
+independent fidelity authority. An AUTOMATED basis may only record NOT_EVALUATED
+for fidelity status until an automated fidelity mechanism is separately qualified;
+no such mechanism exists in B1.2R today. BOTH means human fidelity judgment
+supported by an actual automated presence observation (OBSERVED or NOT_OBSERVED);
+NOT_EVALUATED alone is not sufficient automated support for a BOTH claim.
+Presence alone never supplies fidelity. Missing/stale/invalid
 feature review grants no evaluated coverage; explicit NOT_EVALUATED remains an
 honest unevaluated result even in an otherwise valid review.
 

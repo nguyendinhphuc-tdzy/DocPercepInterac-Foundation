@@ -93,17 +93,18 @@ Local Python: `.venv/b1/Scripts/python.exe`, with
 | --- | --- |
 | `python tools/contracts/validate_contract_fixtures.py --report contract-validation-report.json` | OpenAPI PASS; 8/8 frozen scenarios PASS |
 | `python -m unittest discover -s tests/contracts -v` | 23 passed |
-| `python -m pytest tests/backend -q` | 194 passed; zero skipped |
+| `python -m pytest tests/backend -q` | 207 passed; zero skipped |
 | `python -m pytest tests/golden -q` | 5 passed; zero skipped |
-| `python -m pytest tests/backend/b1/representative tests/backend/b1/privacy -q` | 70 passed; zero skipped |
+| `python -m pytest tests/backend/b1/representative tests/backend/b1/privacy -q` | 83 passed; zero skipped |
 | `python -m pip check` | No broken requirements |
 | `python tools/b1/verify_private_corpus_boundary.py` | PASS |
 | `python -m compileall -q foundation/evaluation/perception/representative.py tools/b1/representative_probe.py tools/b1/verify_private_corpus_boundary.py tests/backend/b1/representative tests/backend/b1/privacy` | PASS |
 | `git diff --check` | PASS |
 
 The accepted pre-representative backend baseline has 124 tests. The original
-34 representative/privacy tests plus 36 micro-hardening regressions bring the
-backend total to 194. All five Golden tests remain unchanged and pass. There are no reduced
+34 representative/privacy tests plus 36 micro-hardening regressions and 13
+evidence-authority hardening regressions bring the backend total to 207. All
+five Golden tests remain unchanged and pass. There are no reduced
 pass counts or skipped B1 Docling cases. Frozen contract/fixtures, ADRs, accepted
 preflight/probe logic, domain/governance code and dependency pins have no diff.
 
@@ -181,6 +182,37 @@ Old 1.0.0 reviews require explicit migration and renewed binding, not automatic
 promotion. Historical private evidence is preserved. No real corpus was run.
 The regenerated CLI output remains CORPUS_NOT_PROVIDED / INSUFFICIENT_EVIDENCE,
 zero cases, with all 23 profile categories unevaluated.
+
+## Evidence-authority hardening (1.1.0)
+
+A fourth correctness gap was found: `review_valid()` permitted an evidence record
+with `evidence_basis = AUTOMATED` and `status = PASS` (or FAIL/PARTIAL/UNSUPPORTED)
+when at least one automated presence observation existed. This created an authority
+inconsistency because automated presence observation does not establish fidelity.
+
+The corrected authority model for current B1.2R:
+
+| Basis | Fidelity authority | Automated observation required |
+| --- | --- | --- |
+| HUMAN | Human reviewer owns the fidelity judgment | Not required |
+| BOTH | Human reviewer owns the fidelity judgment | At least one OBSERVED or NOT_OBSERVED (NOT_EVALUATED alone is insufficient) |
+| AUTOMATED | May only record NOT_EVALUATED | N/A — no evaluated fidelity claim is permitted |
+
+AUTOMATED currently means presence/structural observation support only. It is not
+independent fidelity authority. No automated fidelity mechanism exists in B1.2R
+today. The system does not claim such a mechanism exists or is planned.
+
+OBSERVED does not automatically imply PASS. NOT_OBSERVED does not automatically
+imply FAIL. Presence and fidelity remain separate concepts. These observations
+may support human investigation but are not final fidelity judgments.
+
+`AUTOMATED + NOT_EVALUATED` remains acceptable because it grants no evaluated
+coverage and no qualification authority. `evaluated_profiles()` continues to
+exclude features with `status = NOT_EVALUATED`.
+
+This hardening does not change the evaluation schema version (remains 1.1.0),
+decision outcomes, coverage digest behavior, NOT_APPLICABLE rules or any
+previously hardened validation boundary.
 
 ## Remaining risks and next decision
 
