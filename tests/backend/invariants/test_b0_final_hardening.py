@@ -46,6 +46,18 @@ def _replace(records, replacement):
     )
 
 
+def _remove(records, object_type, object_id, revision=None):
+    return tuple(
+        item
+        for item in records
+        if not (
+            item.object_type is object_type
+            and item.id == object_id
+            and (revision is None or item.revision == revision)
+        )
+    )
+
+
 def _context(records):
     observations = tuple(
         LocatorResolutionObservation(
@@ -145,6 +157,53 @@ def test_non_blocking_requirement_may_be_absent(scenarios):
     assert _engine_result(scenarios["C2-01"], "FND-INV-SRC-001", records).passed
 
 
+def test_missing_definition_source_requirement_ref_fails_closed(scenarios):
+    records = scenarios["C2-01"]["records"]
+    records = _remove(records, ObjectType.SOURCE_REQUIREMENT, "ncp-requirement-c2-01")
+    checked = _engine_result(scenarios["C2-01"], "FND-INV-SRC-001", records)
+    assert checked.error_code is ErrorCode.REFERENCE_NOT_FOUND
+
+
+def test_unresolved_applicable_region_definition_ref_fails_closed(scenarios):
+    records = scenarios["C2-01"]["records"]
+    definition = _record(records, ObjectType.TARGET_CONTRACT_DEFINITION, "target-contract-c2-01")
+    definition = definition.model_copy(update={
+        "target_region_definition_refs": [
+            Ref(
+                object_type=ObjectType.TARGET_REGION_DEFINITION,
+                object_id="missing-region-definition-c2-01",
+                revision=1,
+            )
+        ]
+    })
+    checked = _engine_result(
+        scenarios["C2-01"],
+        "FND-INV-SRC-001",
+        _replace(records, definition),
+    )
+    assert checked.error_code is ErrorCode.REFERENCE_NOT_FOUND
+
+
+def test_unresolved_applicable_business_rule_ref_fails_closed(scenarios):
+    records = scenarios["C2-01"]["records"]
+    rule_pack = _record(records, ObjectType.RULE_PACK, "rule-pack-c2-01")
+    rule_pack = rule_pack.model_copy(update={
+        "business_rule_refs": [
+            Ref(
+                object_type=ObjectType.BUSINESS_RULE,
+                object_id="missing-business-rule-c2-01",
+                revision=1,
+            )
+        ]
+    })
+    checked = _engine_result(
+        scenarios["C2-01"],
+        "FND-INV-SRC-001",
+        _replace(records, rule_pack),
+    )
+    assert checked.error_code is ErrorCode.REFERENCE_NOT_FOUND
+
+
 def test_c2_02_benchmark_block_remains_partial_and_withheld(scenarios):
     records = scenarios["C2-02"]["records"]
     result = _engine_result(scenarios["C2-02"], "FND-INV-REL-001")
@@ -179,6 +238,34 @@ def test_capability_result_wrong_document_version_fails(scenarios):
     })
     preflight = preflight.model_copy(update={"capability_results": [result]})
     checked = _engine_result(scenarios["C2-01"], "FND-INV-CAP-001", _replace(records, preflight))
+    assert checked.error_code is ErrorCode.EXECUTION_UNSUPPORTED
+
+
+def test_capability_locator_from_other_document_version_in_same_task_fails(scenarios):
+    records = scenarios["C2-01"]["records"]
+    target_version = _record(records, ObjectType.DOCUMENT_VERSION, "target-version-c2-01")
+    other_hash = "f" * 64
+    other_version = target_version.model_copy(update={
+        "id": "other-target-version-c2-01",
+        "document_id": "other-target-document-c2-01",
+        "binary_hash": other_hash,
+        "content_ref": target_version.content_ref.model_copy(update={
+            "uri": "urn:foundation:test:c2-01:other-target-binary",
+            "sha256": other_hash,
+        }),
+    })
+    other_ref = DocumentVersionRef(
+        document_id=other_version.document_id,
+        version_id=other_version.id,
+        binary_hash=other_version.binary_hash,
+    )
+    locator = _record(records, ObjectType.NATIVE_LOCATOR, "ncp-locator-c2-01")
+    locator = locator.model_copy(update={"document_version_ref": other_ref})
+    checked = _engine_result(
+        scenarios["C2-01"],
+        "FND-INV-CAP-001",
+        _replace(records, locator) + (other_version,),
+    )
     assert checked.error_code is ErrorCode.EXECUTION_UNSUPPORTED
 
 
@@ -308,7 +395,7 @@ def test_task_b_cannot_use_task_a_source_or_review(scenarios):
     change_set = _change_set(records).model_copy(update={"task_id": "task-b"})
     mutated = _replace(records, change_set)
     assert _engine_result(scenarios["C2-01"], "FND-INV-SRC-001", mutated).error_code is ErrorCode.SOURCE_MISSING
-    assert _engine_result(scenarios["C2-01"], "FND-INV-AUTH-001", mutated).error_code is ErrorCode.APPROVAL_REQUIRED
+    assert _engine_result(scenarios["C2-01"], "FND-INV-AUTH-001", mutated).error_code is ErrorCode.REFERENCE_NOT_FOUND
 
 
 def test_locator_from_another_task_cannot_authorize_local_change(scenarios):
@@ -316,6 +403,90 @@ def test_locator_from_another_task_cannot_authorize_local_change(scenarios):
     locator = _record(records, ObjectType.NATIVE_LOCATOR, "ncp-locator-c2-01").model_copy(update={"task_id": "task-b"})
     checked = _engine_result(scenarios["C2-01"], "FND-INV-LOC-001", _replace(records, locator))
     assert checked.error_code is ErrorCode.LOCATOR_NOT_FOUND
+
+
+def test_foreign_target_contract_instance_cannot_authorize_change(scenarios):
+    records = scenarios["C2-01"]["records"]
+    instance = _record(records, ObjectType.TARGET_CONTRACT_INSTANCE, "target-instance-c2-01", revision=2)
+    instance = instance.model_copy(update={"task_id": "task-b"})
+    checked = _engine_result(
+        scenarios["C2-01"],
+        "FND-INV-AUTH-001",
+        _replace(records, instance),
+    )
+    assert checked.error_code is ErrorCode.REFERENCE_NOT_FOUND
+
+
+def test_foreign_target_document_version_cannot_authorize_change(scenarios):
+    records = scenarios["C2-01"]["records"]
+    version = _record(records, ObjectType.DOCUMENT_VERSION, "target-version-c2-01")
+    version = version.model_copy(update={"task_id": "task-b"})
+    checked = _engine_result(
+        scenarios["C2-01"],
+        "FND-INV-AUTH-001",
+        _replace(records, version),
+    )
+    assert checked.error_code is ErrorCode.REFERENCE_NOT_FOUND
+
+
+def test_target_instance_definition_must_match_authorization(scenarios):
+    records = scenarios["C2-01"]["records"]
+    instance = _record(
+        records,
+        ObjectType.TARGET_CONTRACT_INSTANCE,
+        "target-instance-c2-01",
+        revision=2,
+    )
+    instance = instance.model_copy(update={
+        "definition_ref": Ref(
+            object_type=ObjectType.TARGET_CONTRACT_DEFINITION,
+            object_id="other-target-contract-c2-01",
+            revision=1,
+        )
+    })
+    checked = _engine_result(
+        scenarios["C2-01"],
+        "FND-INV-AUTH-001",
+        _replace(records, instance),
+    )
+    assert checked.error_code is ErrorCode.APPROVAL_CONTENT_MISMATCH
+
+
+def test_target_instance_document_must_match_authorization(scenarios):
+    records = scenarios["C2-01"]["records"]
+    instance = _record(
+        records,
+        ObjectType.TARGET_CONTRACT_INSTANCE,
+        "target-instance-c2-01",
+        revision=2,
+    )
+    source_version = _record(records, ObjectType.DOCUMENT_VERSION, "source-version-c2-01")
+    source_ref = DocumentVersionRef(
+        document_id=source_version.document_id,
+        version_id=source_version.id,
+        binary_hash=source_version.binary_hash,
+    )
+    instance = instance.model_copy(update={"target_document_version_ref": source_ref})
+    checked = _engine_result(
+        scenarios["C2-01"],
+        "FND-INV-AUTH-001",
+        _replace(records, instance),
+    )
+    assert checked.error_code is ErrorCode.APPROVAL_CONTENT_MISMATCH
+
+
+def test_same_business_target_does_not_authorize_foreign_instance_and_document(scenarios):
+    records = scenarios["C2-01"]["records"]
+    change_set = _change_set(records)
+    assert change_set.authorization.approved_changes[0].business_target_id == (
+        "VN_LOCAL_FILE.FINANCIAL.NCP_CURRENT_YEAR"
+    )
+    instance = _record(records, ObjectType.TARGET_CONTRACT_INSTANCE, "target-instance-c2-01", revision=2)
+    version = _record(records, ObjectType.DOCUMENT_VERSION, "target-version-c2-01")
+    mutated = _replace(records, instance.model_copy(update={"task_id": "task-b"}))
+    mutated = _replace(mutated, version.model_copy(update={"task_id": "task-b"}))
+    checked = _engine_result(scenarios["C2-01"], "FND-INV-AUTH-001", mutated)
+    assert checked.error_code is ErrorCode.REFERENCE_NOT_FOUND
 
 
 def test_all_frozen_scenarios_produce_structured_invariant_results(scenarios):

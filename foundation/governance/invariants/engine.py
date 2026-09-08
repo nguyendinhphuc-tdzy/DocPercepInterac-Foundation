@@ -31,10 +31,12 @@ from foundation.domain import (
     ReviewOutcome,
     RuleEvaluation,
     BusinessRule,
+    SourceRequirement,
     SourceAssessment,
     SourceAssessmentStatus,
     SourceSufficiencyOutcome,
     TargetContractDefinition,
+    TargetContractInstance,
     TargetRegion,
     TargetRegionDefinition,
     TargetVerificationStatus,
@@ -246,6 +248,8 @@ def _capability(context: InvariantContext) -> InvariantResult:
                     result is not None
                     and result.status is CapabilityStatus.SUPPORTED
                     and assessment.status is DocumentPreflightStatus.COMPLETED
+                    and assessment.document_version_ref
+                    == change_set.authorization.target_document_version_ref
                     and result.document_version_ref == change_set.authorization.target_document_version_ref
                     and result.document_version_ref == assessment.document_version_ref
                     and result.operation is change.operation
@@ -256,6 +260,8 @@ def _capability(context: InvariantContext) -> InvariantResult:
                     and bool(result.qualification_evidence_refs)
                     and change.native_locator_ref in result.native_locator_refs
                     and isinstance(locator, NativeLocator)
+                    and locator.document_version_ref
+                    == change_set.authorization.target_document_version_ref
                     and result.native_structure is locator.locator_type
                 )
                 if not exact:
@@ -299,7 +305,7 @@ def _source_requirement_refs(
     graph: GovernanceGraph,
     change_set: ApprovedChangeSet,
     business_target_id: str,
-) -> tuple[Ref, ...] | None:
+) -> tuple[tuple[Ref, SourceRequirement], ...] | None:
     definition = graph.resolve(change_set.authorization.target_contract_definition_ref)
     rule_pack = graph.resolve(change_set.authorization.rule_pack_ref)
     if not isinstance(definition, TargetContractDefinition) or not isinstance(rule_pack, RulePack):
@@ -307,7 +313,9 @@ def _source_requirement_refs(
     candidates: list[Ref] = list(definition.source_requirement_refs)
     for region_definition_ref in definition.target_region_definition_refs:
         region_definition = graph.resolve(region_definition_ref)
-        if isinstance(region_definition, TargetRegionDefinition) and region_definition.business_target_id == business_target_id:
+        if not isinstance(region_definition, TargetRegionDefinition):
+            return None
+        if region_definition.business_target_id == business_target_id:
             candidates.extend(region_definition.source_requirement_refs)
     for region in graph.of_type(ObjectType.TARGET_REGION):
         if (
@@ -319,12 +327,20 @@ def _source_requirement_refs(
             candidates.extend(region.source_requirement_refs)
     for rule_ref in rule_pack.business_rule_refs:
         rule = graph.resolve(rule_ref)
-        if isinstance(rule, BusinessRule) and business_target_id in rule.business_target_ids:
+        if not isinstance(rule, BusinessRule):
+            return None
+        if business_target_id in rule.business_target_ids:
             candidates.extend(rule.source_requirement_refs)
     unique: dict[tuple[ObjectType, str, int], Ref] = {
         (item.object_type, item.object_id, item.revision): item for item in candidates
     }
-    return tuple(unique.values())
+    resolved: list[tuple[Ref, SourceRequirement]] = []
+    for requirement_ref in unique.values():
+        requirement = graph.resolve(requirement_ref)
+        if not isinstance(requirement, SourceRequirement):
+            return None
+        resolved.append((requirement_ref, requirement))
+    return tuple(resolved)
 
 
 def _source_failure_for_outcome(outcome: SourceSufficiencyOutcome | None) -> ErrorCode:
@@ -351,11 +367,12 @@ def _sources(context: InvariantContext) -> InvariantResult:
                     "pinned target and rule context cannot derive source requirements",
                     (change_set,),
                 )
-            requirements = []
-            for requirement_ref in requirement_refs:
-                requirement = graph.resolve(requirement_ref)
-                if requirement is not None and requirement.business_target_id == change.business_target_id and requirement.blocking:
-                    requirements.append((requirement_ref, requirement))
+            requirements = [
+                (requirement_ref, requirement)
+                for requirement_ref, requirement in requirement_refs
+                if requirement.business_target_id == change.business_target_id
+                and requirement.blocking
+            ]
             for requirement_ref, _requirement in requirements:
                 selected = []
                 for reference in change_set.authorization.source_assessment_refs:
@@ -487,6 +504,40 @@ def _proposal_authority(context: InvariantContext) -> InvariantResult:
         if not isinstance(change_set, ApprovedChangeSet):
             continue
         authorization = change_set.authorization
+        target_instance = graph.resolve(
+            authorization.target_contract_instance_ref,
+            change_set.task_id,
+        )
+        if not isinstance(target_instance, TargetContractInstance):
+            return _fail(
+                "FND-INV-AUTH-001",
+                ErrorCode.REFERENCE_NOT_FOUND,
+                "authorization target contract instance is unresolved or cross-task",
+                (change_set,),
+            )
+        target_document = graph.resolve_document(
+            authorization.target_document_version_ref,
+            change_set.task_id,
+        )
+        if not isinstance(target_document, DocumentVersion):
+            return _fail(
+                "FND-INV-AUTH-001",
+                ErrorCode.REFERENCE_NOT_FOUND,
+                "authorization target DocumentVersion is unresolved or cross-task",
+                (change_set,),
+            )
+        if (
+            target_instance.definition_ref
+            != authorization.target_contract_definition_ref
+            or target_instance.target_document_version_ref
+            != authorization.target_document_version_ref
+        ):
+            return _fail(
+                "FND-INV-AUTH-001",
+                ErrorCode.APPROVAL_CONTENT_MISMATCH,
+                "authorization target instance does not bind the sealed definition and document version",
+                (change_set, target_instance),
+            )
         for change in authorization.approved_changes:
             decision = graph.resolve(change.review_decision_ref, change_set.task_id)
             if not isinstance(decision, ReviewDecision):
