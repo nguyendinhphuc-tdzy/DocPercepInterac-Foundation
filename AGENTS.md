@@ -21,13 +21,13 @@ The system must determine:
 
 When documents conflict, use this precedence:
 
-1. docs/CURRENT\_BASELINE.md
-2. latest approved ADRs under docs/adr/
-3. Foundation Implementation Plan dated 2026-09-07
-4. consolidated research dated 2026-09-07
-5. current contracts under docs/contracts/
-6. current code
-7. historical build plans and STATUS files
+1. docs/CURRENT_BASELINE.md
+2. accepted ADRs under docs/adr/
+3. Frozen Foundation Contract v0.1 under docs/contracts/
+4. current implementation plan / docs/PROJECT_PHASE.md
+5. current supporting research
+6. current implementation code
+7. historical / superseded documents
 
 Historical files may contain superseded decisions.
 
@@ -94,37 +94,20 @@ Always:
 
 Never claim success solely because the file opens.
 
-
-
-FOUNDATION CONTRACT FREEZE
-
-
+## Foundation Contract Freeze
 
 Foundation Contract v0.1.0 is frozen.
 
-
-
-Implementation must conform to:
-
-docs/contracts/
-
-
+Implementation must conform to `docs/contracts/`.
 
 Do not modify frozen contract semantics to make implementation easier.
 
-
-
 If implementation evidence reveals a contract problem:
 
-1\. stop;
-
-2\. classify the issue;
-
-3\. show evidence;
-
-4\. assess impact;
-
-5\. propose a versioned contract change;
-
-6\. do not silently update the contract.
+1. stop;
+2. classify the issue;
+3. show evidence;
+4. assess impact;
+5. propose a versioned contract change;
+6. do not silently update the contract.
 

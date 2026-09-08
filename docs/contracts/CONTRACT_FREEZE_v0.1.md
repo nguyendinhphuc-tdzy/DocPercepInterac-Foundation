@@ -20,6 +20,24 @@ Foundation v2
 
 8b6f6bba0e588ee0a7202ff98beb01259ffa25e6
 
+## Freeze Confirmation
+
+Formal Freeze Commit:
+7018d45793fbd89e9ba9e4b5b37ee192d3f82dd1
+
+Freeze Confirmation Workflow:
+Foundation contract validation
+
+Freeze Confirmation Run:
+34181769060
+
+Result:
+PASS
+
+The Validated Baseline Commit identifies the exact technical contract baseline
+that passed the validation gates below. The Formal Freeze Commit records the
+separate governance action that declared that validated baseline frozen.
+
 ## Validation Evidence
 
 GitHub Actions Workflow:
