@@ -1,6 +1,7 @@
 # B1.2R Representative Local File Corpus Plan
 
 Architecture: Foundation v2. Frozen contract: 0.1.0, unchanged.
+Non-contract representative evaluation schema: 1.1.0.
 Accepted B1 baseline: `14d9121848c3abca447d6f910cdb5f032ef45b97` (PR #5).
 Work branch: `qualification/backend-b1-representative`.
 
@@ -51,9 +52,13 @@ in the private coverage review. No business acceptance threshold is invented.
 | XLSX native structures | Tables, names, merges, hidden rows/columns and protection |
 | XLSX visual structures | Charts, images, drawings and their business relevance |
 
-Absent profiles stay NOT_EVALUATED. `required_profiles` defines the intended
-scope before evaluation; a completed private coverage review is necessary for
-any forward recommendation. Approval for evaluation is distinct from fidelity
+Absent profiles stay NOT_EVALUATED. `required_profiles` defines intended scope,
+not evidence. A required profile is evaluated only when an EVALUATED case has a
+valid, current, bound review and explicit feature evidence other than
+NOT_EVALUATED. FAIL, PARTIAL and UNSUPPORTED mean evaluated coverage with adverse
+quality; they cannot create a forward recommendation merely by closing coverage.
+A completed scope-bound private coverage review is also necessary.
+Approval for evaluation is distinct from fidelity
 review and never authorizes mutation. Synthetic test inputs are not corpus cases.
 
 ## 6. Privacy model
@@ -103,9 +108,24 @@ records reviewer identity, timestamp, exact input SHA-256 and observation digest
 The digest pins engine/configuration and stable observations, excluding elapsed
 time. A changed input or observation invalidates review reuse.
 
-All seven human dimensions must be evaluated. Status vocabulary is PASS,
-PARTIAL, FAIL, UNSUPPORTED, NOT_EVALUATED and REVIEW_REQUIRED. The latter two
-prevent completion. Narrative notes and loss descriptions remain private.
+All seven human dimensions must have truthful statuses. Status vocabulary is
+PASS, PARTIAL, FAIL, UNSUPPORTED, NOT_EVALUATED, REVIEW_REQUIRED and NOT_APPLICABLE.
+TABLE_FIDELITY is applicable exactly when TABLES is declared for the case. When
+TABLES is absent it must be NOT_APPLICABLE; even PASS is rejected. All other
+dimensions remain applicable. An applicable dimension cannot be NOT_EVALUATED,
+REVIEW_REQUIRED or NOT_APPLICABLE in a valid completed review. Qualification
+quality checks evaluate only applicable dimensions.
+
+Every declared feature must appear exactly once in `review.feature_evidence`,
+with no undeclared keys. Each entry has status PASS, PARTIAL, FAIL, UNSUPPORTED
+or NOT_EVALUATED and evidence_basis AUTOMATED, HUMAN or BOTH. A human's bound
+review may record evaluated fidelity even when automation is NOT_EVALUATED.
+AUTOMATED/BOTH claims for evaluated features require an actual existing presence
+observation. Presence alone never supplies fidelity. Missing/stale/invalid
+feature review grants no evaluated coverage; explicit NOT_EVALUATED remains an
+honest unevaluated result even in an otherwise valid review.
+
+Narrative notes and loss descriptions remain private.
 Classifications are SEMANTIC_REQUIRED, NATIVE_REQUIRED, OPTIONAL or UNKNOWN.
 
 CRITICAL_SEMANTIC_LOSS requires reviewer evidence that business-required meaning
@@ -129,7 +149,23 @@ Python diagnostic output is captured privately; logging and native stdout/stderr
 are suppressed during the serial engine call. Do not use this global output
 suppression in a concurrent application server.
 
-The JSON manifest is a non-contract evaluation schema. Frozen models are reused
+The JSON manifest is non-contract evaluation schema 1.1.0. The scope digest hashes
+compact, sorted-key UTF-8 JSON with SHA-256 lowercase hex. It includes only
+evaluation_version, sorted required_profiles and cases sorted by case_id, each
+with case_id, format, document_role and sorted expected_feature_profile.
+Ordering changes do not affect it. It excludes paths, input hashes, reviewer
+identity/notes and source content. Case reviews still bind actual input hashes
+and observation digests separately.
+
+Completed coverage review must contain `scope_digest` matching the current scope.
+Changing required profiles, selection, IDs, formats, roles or expected profiles
+invalidates the old approval. Result scope must also match reviewed scope. The
+helper never updates a review or silently replaces an approved digest. Reviewers
+must approve a new digest after scope changes. This digest is not published in
+the public summary. Public `unevaluated_profiles` uses actual feature-review
+coverage, preserving failed quality as evaluated but unqualified evidence.
+
+Frozen models are reused
 for DocumentVersion and DocumentPreflightAssessment, without new fields. Public
 CI tests only synthetic harness inputs and never invokes private evaluation.
 
@@ -138,8 +174,9 @@ CI tests only synthetic harness inputs and never invokes private evaluation.
 No weighted score or confidence threshold is used.
 
 - INSUFFICIENT_EVIDENCE: absent corpus, incomplete/stale reviews, incomplete
-  coverage, changed input, unresolved critical loss, unknown/semantic-required
-  losses, failed conversion or unresolved repeatability differences.
+  feature evidence, stale scope approval, incomplete coverage, changed input,
+  unresolved critical loss, unknown/semantic-required losses, adverse feature
+  quality, failed conversion or unresolved repeatability differences.
 - RECONSIDER_DOCLING_BASELINE: complete bound reviews establish critical semantic
   losses on at least two distinct input hashes. Two IDs for one binary do not
   prove repeated representative failures. This is a conservative operational
@@ -147,7 +184,8 @@ No weighted score or confidence threshold is used.
 - PROVISIONAL_COORDINATE_B1_2B_AND_B1_3: successful stable perception, complete
   coverage/reviews and adequate semantic dimensions, with classified native gaps.
 - PROVISIONAL_CONTINUE_TO_B1_2B: successful stable perception, complete
-  coverage/reviews, PASS fidelity dimensions and no unresolved material gaps.
+  scope-bound coverage/reviews, PASS feature quality and applicable fidelity
+  dimensions, and no unresolved material gaps.
 
 These are recommendations for a later explicit decision. They do not promote
 the engine or start deferred implementation. A changed recommendation does not
@@ -169,3 +207,10 @@ approved private manifest, run read-only evaluation, complete the private SME
 reviews and coverage rationale, rerun into a new private report path, and review
 the sanitized summary before public publication. Until then the corpus status is
 CORPUS_NOT_PROVIDED and the decision remains INSUFFICIENT_EVIDENCE.
+
+Evaluation 1.0.0 manifests/reviews are not accepted as 1.1.0 evidence. Migration
+requires explicit feature evidence, truthful applicability, a freshly approved
+scope digest and case reviews bound to the new evaluation observation digest.
+Do not relabel an old completed review automatically. Historical private reports
+remain unchanged. Foundation Contract v0.1.0 and the B1.2A evaluation profile are
+unaffected by this non-contract schema change.

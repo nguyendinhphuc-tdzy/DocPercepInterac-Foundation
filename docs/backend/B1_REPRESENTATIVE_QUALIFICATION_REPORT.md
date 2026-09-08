@@ -3,6 +3,8 @@
 Date: 2026-09-08. Branch: `qualification/backend-b1-representative`.
 Starting/accepted B1 commit: `14d9121848c3abca447d6f910cdb5f032ef45b97`.
 The accepted commit and inspected origin/master are ancestors of this work.
+Micro-hardening starting SHA: `cfbecb869b5175359fd94bebc605b509a6b95841`.
+Non-contract representative evaluation schema: **1.1.0**.
 
 ## Current evidence outcome
 
@@ -54,6 +56,8 @@ orchestration or authenticated approval service.
 
 ## Privacy and evidence locations
 
+The evidence-model micro-hardening preserves all privacy and read-only boundaries.
+
 The external corpus directory must be explicitly configured and remain outside
 the repository. Local metadata is confined to the exact ignored
 `.foundation-private/` directory. The CLI checks Git ignores/index boundaries,
@@ -89,16 +93,17 @@ Local Python: `.venv/b1/Scripts/python.exe`, with
 | --- | --- |
 | `python tools/contracts/validate_contract_fixtures.py --report contract-validation-report.json` | OpenAPI PASS; 8/8 frozen scenarios PASS |
 | `python -m unittest discover -s tests/contracts -v` | 23 passed |
-| `python -m pytest tests/backend -q` | 158 passed; zero skipped |
+| `python -m pytest tests/backend -q` | 194 passed; zero skipped |
 | `python -m pytest tests/golden -q` | 5 passed; zero skipped |
-| `python -m pytest tests/backend/b1/representative tests/backend/b1/privacy -q` | 34 passed; zero skipped |
+| `python -m pytest tests/backend/b1/representative tests/backend/b1/privacy -q` | 70 passed; zero skipped |
 | `python -m pip check` | No broken requirements |
 | `python tools/b1/verify_private_corpus_boundary.py` | PASS |
 | `python -m compileall -q foundation/evaluation/perception/representative.py tools/b1/representative_probe.py tools/b1/verify_private_corpus_boundary.py tests/backend/b1/representative tests/backend/b1/privacy` | PASS |
 | `git diff --check` | PASS |
 
-The accepted backend baseline has 124 tests; 34 new harness/privacy tests bring
-it to 158. All five Golden tests remain unchanged and pass. There are no reduced
+The accepted pre-representative backend baseline has 124 tests. The original
+34 representative/privacy tests plus 36 micro-hardening regressions bring the
+backend total to 194. All five Golden tests remain unchanged and pass. There are no reduced
 pass counts or skipped B1 Docling cases. Frozen contract/fixtures, ADRs, accepted
 preflight/probe logic, domain/governance code and dependency pins have no diff.
 
@@ -109,6 +114,12 @@ boundaries, private report preservation and forced-staging detection. The actual
 absence result was generated through the documented CLI rather than hand-filled.
 
 ## Files and CI scope
+
+The inventory below describes the original harness. This micro-hardening changes
+only the representative evaluation module, manifest schema, corpus/review
+templates, safe absent-corpus summary, representative tests, corpus plan, this
+report and the representative README. Workflow, privacy guard, CLI, preflight,
+Docling probe and dependency files are unchanged in this pass.
 
 Created: this report and the representative corpus plan; public README, manifest
 schema, inert corpus/review examples and absent-corpus JSON summary; representative
@@ -121,6 +132,55 @@ The B1 workflow still installs the exact candidate and runs all accepted checks.
 Its upload paths still contain only the three accepted synthetic/contract reports.
 Public CI never requests a private corpus or executes the representative CLI.
 The B0 and frozen-contract workflows are unchanged.
+
+## Evidence-model micro-hardening (1.1.0)
+
+Independent audit found three correctness gaps in 1.0.0: declared profiles were
+treated as evaluated evidence, reviewers lacked truthful dimension applicability,
+and completed coverage reviews did not bind the selected scope. All three are
+corrected without changing Foundation Contract v0.1.0 or the accepted B1 engines.
+
+Every declared profile now requires an entry in the bound case review's closed
+`feature_evidence` map: status PASS/PARTIAL/FAIL/UNSUPPORTED/NOT_EVALUATED and
+evidence_basis AUTOMATED/HUMAN/BOTH. A profile is evaluated only through an
+EVALUATED case with a current valid review and explicit status other than
+NOT_EVALUATED. Human-only evidence may evaluate a feature whose automated support
+is NOT_EVALUATED. Claimed automated evidence needs an actual observation;
+automated presence alone never proves fidelity.
+
+Coverage and quality remain separate: reviewed FAIL counts as evaluated coverage
+but cannot authorize a forward qualification recommendation. Repeated critical
+semantic failures still yield RECONSIDER_DOCLING_BASELINE under the existing
+bound-review and distinct-input rules. Native-only loss remains conservative.
+The public unevaluated-profile list now uses actual feature-review coverage,
+not declarations. Public feature evidence exposes only its closed status/basis.
+
+TABLE_FIDELITY is applicable exactly when TABLES is declared. Without TABLES,
+it must be NOT_APPLICABLE; a placeholder PASS is invalid. All other dimensions
+remain applicable. Applicable dimensions reject NOT_APPLICABLE, NOT_EVALUATED
+and REVIEW_REQUIRED in a completed review. Quality checks skip only the
+deterministically non-applicable table dimension.
+
+Coverage review requires a lowercase SHA-256 scope_digest over compact sorted-key
+UTF-8 JSON: evaluation_version, sorted required_profiles and cases sorted by
+case_id, each containing case_id, format, document_role and sorted expected
+profiles. Scope edits invalidate the existing digest; order-only changes do not.
+Private paths, content, reviewer notes and input hashes are excluded. Actual
+binary/observation binding remains in case review. Result case scope must match
+the approved selection, and no approved digest is silently rewritten.
+
+Regression coverage includes missing/unevaluated feature evidence, human-only
+charts, failed quality with evaluated coverage, invalid applicability, every
+scope-binding field, irrelevant ordering, stale review, invalid enums/digests,
+private-field exclusion and explicit schema migration. Original privacy and
+read-only tests remain intact; existing test helpers changed only to supply the
+new truthful 1.1.0 review/scope fields.
+
+Manifest, review template, output and docs consistently use evaluation 1.1.0.
+Old 1.0.0 reviews require explicit migration and renewed binding, not automatic
+promotion. Historical private evidence is preserved. No real corpus was run.
+The regenerated CLI output remains CORPUS_NOT_PROVIDED / INSUFFICIENT_EVIDENCE,
+zero cases, with all 23 profile categories unevaluated.
 
 ## Remaining risks and next decision
 

@@ -25,6 +25,7 @@ ROOT = Path(__file__).resolve().parents[3]
 SPEC = ROOT / 'qualification/b1/representative'
 CORPUS_ENV = 'FOUNDATION_B1_PRIVATE_CORPUS_DIR'
 SCHEMA = json.loads((SPEC / 'corpus.schema.json').read_text(encoding='utf-8'))
+EVALUATION_VERSION = SCHEMA['properties']['evaluation_version']['const']
 FEATURES = tuple(SCHEMA['$defs']['Feature']['enum'])
 REVIEW_DIMENSIONS = tuple(SCHEMA['$defs']['ReviewDimension']['enum'])
 REPEATABILITY = ('conversion', 'content', 'structure', 'tables', 'ordering', 'references')
@@ -86,6 +87,10 @@ def private_path(path, repo=ROOT):
     return resolved
 
 
+def dimension_applicable(case, dimension):
+    return dimension != 'TABLE_FIDELITY' or 'TABLES' in case['expected_feature_profile']
+
+
 def review_valid(case):
     review = case.get('review')
     if not Draft202012Validator(SCHEMA['$defs']['Review'], format_checker=FormatChecker()).is_valid(review):
@@ -94,11 +99,53 @@ def review_valid(case):
             or review['input_sha256'] != case.get('input_sha256')
             or review['observation_digest'] != case.get('observation_digest')):
         return False
-    if any(v in ('NOT_EVALUATED', 'REVIEW_REQUIRED') for v in review['dimensions'].values()):
+    if any((value in ('NOT_EVALUATED', 'REVIEW_REQUIRED', 'NOT_APPLICABLE')
+            if dimension_applicable(case, dimension) else value != 'NOT_APPLICABLE')
+           for dimension, value in review['dimensions'].items()):
         return False
+    if set(review['feature_evidence']) != set(case['expected_feature_profile']):
+        return False
+    for feature, evidence in review['feature_evidence'].items():
+        if evidence['status'] != 'NOT_EVALUATED' and evidence['evidence_basis'] in ('AUTOMATED', 'BOTH'):
+            if not any(check['feature'] == feature and any(check[k] in ('OBSERVED', 'NOT_OBSERVED')
+                       for k in ('native_presence', 'semantic_presence')) for check in case['feature_checks']):
+                return False  # An asserted automated basis must have an actual observation.
     return not any(loss['critical_semantic_loss'] and (
         loss['classification'] != 'SEMANTIC_REQUIRED' or loss['recoverable_by_native_identity'])
         for loss in review['losses'])
+
+
+def coverage_scope_digest(manifest):
+    """SHA-256 of sorted compact UTF-8 JSON scope, with no private input metadata.
+
+    Array ordering is not semantic here. Duplicate identities remain a schema/
+    manifest error, not an opportunity to normalize away an invalid scope.
+    This helper computes a candidate digest; it never updates coverage approval.
+    """
+    scope = {'evaluation_version': manifest['evaluation_version'],
+        'required_profiles': sorted(manifest['required_profiles']),
+        'cases': sorted(({'case_id': c['case_id'], 'format': c['format'],
+            'document_role': c['document_role'], 'expected_feature_profile': sorted(c['expected_feature_profile'])}
+            for c in manifest['cases']), key=lambda c: c['case_id'])}
+    return probe.digest(scope)
+
+
+def coverage_review_valid(manifest):
+    try:
+        validate_manifest(manifest)
+    except QualificationError:
+        return False
+    review = manifest['coverage_review']
+    return (review['status'] == 'COMPLETED' and bool(review['reviewer_id'].strip())
+            and bool(review['rationale'].strip())
+            and review['scope_digest'] == coverage_scope_digest(manifest))
+
+
+def evaluated_profiles(cases):
+    """Evaluation coverage includes failed quality; declaration alone grants none."""
+    return {feature for case in cases if case['evaluation_status'] == 'EVALUATED' and review_valid(case)
+            for feature, evidence in case['review']['feature_evidence'].items()
+            if evidence['status'] != 'NOT_EVALUATED'}
 
 
 def decide(full):
@@ -106,11 +153,13 @@ def decide(full):
     cases = full['cases']
     if full['corpus_status'] != 'AVAILABLE' or not cases:
         return 'INSUFFICIENT_EVIDENCE'
-    coverage = full['manifest']['coverage_review']
-    if coverage['status'] != 'COMPLETED' or not coverage['reviewer_id'].strip() or not coverage['rationale'].strip():
+    manifest = full['manifest']
+    if not coverage_review_valid(manifest):
         return 'INSUFFICIENT_EVIDENCE'
-    covered = {p for c in cases if c['evaluation_status'] == 'EVALUATED' for p in c['expected_feature_profile']}
-    if not set(full['manifest']['required_profiles']) <= covered:
+    # Result records must describe exactly the reviewed selection as well.
+    if coverage_scope_digest({**manifest, 'cases': cases}) != coverage_scope_digest(manifest):
+        return 'INSUFFICIENT_EVIDENCE'
+    if not set(manifest['required_profiles']) <= evaluated_profiles(cases):
         return 'INSUFFICIENT_EVIDENCE'
     if any(not review_valid(c) or not c['input_unchanged'] or c['evaluation_status'] != 'EVALUATED' for c in cases):
         return 'INSUFFICIENT_EVIDENCE'
@@ -121,11 +170,14 @@ def decide(full):
         return 'RECONSIDER_DOCLING_BASELINE'
     if critical_cases or any(not c['conversion_success'] or any(v != 'PASS' for v in c['repeatability'].values()) for c in cases):
         return 'INSUFFICIENT_EVIDENCE'
+    if any(e['status'] != 'PASS' for c in cases for e in c['review']['feature_evidence'].values()):
+        return 'INSUFFICIENT_EVIDENCE'  # EVALUATED coverage is not passing quality.
     losses = [loss for c in cases for loss in c['review']['losses']]
     if any(l['classification'] in ('UNKNOWN', 'SEMANTIC_REQUIRED') for l in losses):
         return 'INSUFFICIENT_EVIDENCE'
     if any(c['review']['dimensions'][d] != 'PASS' for c in cases for d in
-           ('CONTENT_FIDELITY', 'STRUCTURE_FIDELITY', 'TABLE_FIDELITY', 'BUSINESS_RELEVANT_STRUCTURE', 'SEMANTIC_LOSS', 'FAILURE_TRANSPARENCY')):
+           ('CONTENT_FIDELITY', 'STRUCTURE_FIDELITY', 'TABLE_FIDELITY', 'BUSINESS_RELEVANT_STRUCTURE', 'SEMANTIC_LOSS', 'FAILURE_TRANSPARENCY')
+           if dimension_applicable(c, d)):
         return 'INSUFFICIENT_EVIDENCE'
     if any(l['classification'] == 'NATIVE_REQUIRED' for l in losses):
         return 'PROVISIONAL_COORDINATE_B1_2B_AND_B1_3'
@@ -215,7 +267,7 @@ def evaluate_case(case, path):
             value['post_input_sha256'] = None
         if not value['input_unchanged']:
             value['evaluation_status'] = 'FAILED'
-    stable = {'input_sha256': input_hash, 'configuration': probe.CONFIGURATION,
+    stable = {'evaluation_version': EVALUATION_VERSION, 'input_sha256': input_hash, 'configuration': probe.CONFIGURATION,
         'preflight_engine': adapter.engine, 'preflight_version': adapter.version,
         'preflight_configuration': adapter.configuration.ref.model_dump(mode='json'),
         'preflight_status': value['preflight']['assessment']['status'] if value['preflight'] else None,
@@ -229,7 +281,7 @@ def evaluate_case(case, path):
 def evaluate(manifest, repo=ROOT):
     root = corpus_root(repo)
     if root is None:
-        return {'corpus_status': 'CORPUS_NOT_PROVIDED', 'cases': [], 'manifest': None}
+        return {'evaluation_version': EVALUATION_VERSION, 'corpus_status': 'CORPUS_NOT_PROVIDED', 'cases': [], 'manifest': None}
     validate_manifest(manifest)
     paths = []
     for case in manifest['cases']:
@@ -245,7 +297,7 @@ def evaluate(manifest, repo=ROOT):
                 'feature_checks': [], 'limitations': ['REVIEW_REQUIRED']})
         else:
             results.append(evaluate_case(case, path))
-    return {'corpus_status': 'AVAILABLE', 'cases': results, 'manifest': manifest}
+    return {'evaluation_version': EVALUATION_VERSION, 'corpus_status': 'AVAILABLE', 'cases': results, 'manifest': manifest}
 
 
 def sanitize(full):
@@ -274,11 +326,13 @@ def sanitize(full):
             'input_integrity': 'PASS' if case['input_unchanged'] is True else 'NOT_CONFIRMED',
             'review_status': 'COMPLETED' if valid else 'REVIEW_REQUIRED',
             'review_dimensions': {d: case['review']['dimensions'][d] if valid else 'REVIEW_REQUIRED' for d in REVIEW_DIMENSIONS},
+            'feature_evidence': {feature: {'status': evidence['status'], 'evidence_basis': evidence['evidence_basis']}
+                for feature, evidence in sorted(case['review']['feature_evidence'].items())} if valid else {},
             'loss_classifications': sorted({l['classification'] for l in case['review']['losses']}) if valid else ['UNKNOWN'],
             'critical_semantic_loss': any(l['critical_semantic_loss'] for l in case['review']['losses']) if valid else None,
             'automated_feature_presence': checks})
-    return {'evaluation_version': '1.0.0', 'evidence_kind': 'REPRESENTATIVE_QUALIFICATION',
+    return {'evaluation_version': EVALUATION_VERSION, 'evidence_kind': 'REPRESENTATIVE_QUALIFICATION',
         'corpus_status': full['corpus_status'], 'decision': decide(full),
         'docling_qualification_status': 'PROVISIONAL_CONTINUE', 'engine': probe.CANDIDATE,
         'engine_version': probe.VERSION, 'production_qualified': False,
-        'cases': cases, 'unevaluated_profiles': sorted(set(FEATURES) - {p for c in cases for p in c['feature_profile'] if c['evaluation_status'] == 'EVALUATED'})}
+        'cases': cases, 'unevaluated_profiles': sorted(set(FEATURES) - evaluated_profiles(full['cases']))}

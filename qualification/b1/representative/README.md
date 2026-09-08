@@ -1,6 +1,7 @@
 # Representative B1 qualification — public specification only
 
-`corpus.schema.json` is a closed Draft 2020-12 evaluation manifest schema, not a
+`corpus.schema.json` is evaluation version **1.1.0**, a closed Draft 2020-12
+evaluation manifest schema, not a
 Foundation domain contract. `corpus.example.json` and `review.example.json` are
 inert templates containing no actual corpus values. Never fill them with private
 information in this directory. The only versioned binaries remain synthetic.
@@ -46,8 +47,13 @@ nonzero exit; no exception text or input filename is printed.
    case's optional `review` field. Bind the exact input_sha256 and
    observation_digest from that case's full report. Record actual reviewer/time,
    dimensions and loss descriptions. No raw excerpt is required in public output.
-5. Complete coverage_review with reviewer identity and rationale for the selected
-   scope. Unrepresented required profiles block a forward recommendation.
+5. Complete coverage_review with reviewer identity, rationale and scope_digest
+   for the selected scope. Compute the candidate scope digest locally using
+   `coverage_scope_digest(manifest)` from
+   `foundation.evaluation.perception.representative`; copy it only when the
+   reviewer approves that exact scope. The helper does not update approval.
+   Required profiles without valid feature-level evidence block a forward
+   recommendation even if their names are declared in the manifest.
 6. Rerun into a new private path. The stable observation digest excludes elapsed
    time; changed evidence cannot reuse a completed review. Review the allowlisted
    public summary before staging it.
@@ -55,7 +61,11 @@ nonzero exit; no exception text or input filename is printed.
 Human dimensions: CONTENT_FIDELITY, STRUCTURE_FIDELITY, TABLE_FIDELITY,
 BUSINESS_RELEVANT_STRUCTURE, SEMANTIC_LOSS, NATIVE_IDENTITY_LOSS and
 FAILURE_TRANSPARENCY. Values: PASS, PARTIAL, FAIL, UNSUPPORTED, NOT_EVALUATED,
-REVIEW_REQUIRED. Loss classes: SEMANTIC_REQUIRED, NATIVE_REQUIRED, OPTIONAL,
+REVIEW_REQUIRED, NOT_APPLICABLE. TABLE_FIDELITY is applicable exactly when TABLES
+is in expected_feature_profile. Otherwise it must be NOT_APPLICABLE, never a
+placeholder PASS. All other dimensions remain applicable. Applicable dimensions
+cannot be NOT_APPLICABLE, NOT_EVALUATED or REVIEW_REQUIRED in a completed review.
+Loss classes: SEMANTIC_REQUIRED, NATIVE_REQUIRED, OPTIONAL,
 UNKNOWN. A critical loss must be semantic-required and not recoverable through
 Native Identity. Reviews are local SME evidence, not authenticated authorization.
 
@@ -64,6 +74,52 @@ They do not establish fidelity. Case execution values: EVALUATED, FAILED,
 NOT_EVALUATED. Repeatability compares conversion, content, structure, tables,
 ordering and references separately: PASS, OBSERVED_LIMITATION, NOT_EVALUATED.
 All values describe qualification observations, never native execution support.
+
+## Feature evidence and scope binding (1.1.0)
+
+Every declared profile must have a corresponding `review.feature_evidence` entry;
+undeclared keys are rejected. The inert review template corresponds to the
+NARRATIVE/TABLES example scope. Adjust it privately for the actual declared scope.
+
+```json
+{
+  "CHARTS": {
+    "status": "NOT_EVALUATED",
+    "evidence_basis": "HUMAN"
+  }
+}
+```
+
+Feature statuses are closed: PASS, PARTIAL, FAIL, UNSUPPORTED, NOT_EVALUATED.
+Basis is AUTOMATED, HUMAN or BOTH. HUMAN means the reviewer actually compared
+private source and output; automation need not implement the feature. Evaluated
+AUTOMATED/BOTH entries must have an existing automated presence observation.
+Presence is not fidelity. A FAIL result supplies evaluated coverage but fails
+quality. Public feature evidence is projected only from valid bound reviews;
+private notes, identifiers and hashes are never included.
+
+Coverage uses EVALUATED cases with current valid reviews and feature statuses
+other than NOT_EVALUATED. `unevaluated_profiles` uses the same rule across the
+feature vocabulary; declarations alone cannot remove profiles from that list.
+All declared feature qualities must PASS for a forward recommendation; unresolved
+PARTIAL, FAIL, UNSUPPORTED or NOT_EVALUATED results remain conservative blockers.
+
+`coverage_review.scope_digest` is SHA-256 lowercase hex over compact sorted-key
+UTF-8 JSON containing evaluation_version, sorted required_profiles, and cases
+sorted by case_id. Each case includes only case_id, format, document_role and
+sorted expected_feature_profile. Array ordering has no scope meaning. Paths,
+filenames, reviewer notes, actual input hashes and source text are excluded.
+Input and observation integrity remain separate case-review bindings.
+
+Changing any included field requires renewed scope review. An old approved
+digest is never recalculated automatically, and result case scope must match
+the reviewed manifest scope. The public summary does not expose this digest.
+
+Migration from 1.0.0 is explicit: use the 1.1.0 manifest/review templates, populate
+feature evidence, apply the dimension rules, approve the scope digest and bind
+the case review to the new evaluation observation digest. Preserve old private
+reports. This does not change Foundation Contract v0.1.0, Docling's version or
+the accepted synthetic B1.2A evaluation schema.
 
 ## Engineering tests and public CI
 

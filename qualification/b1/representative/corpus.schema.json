@@ -11,7 +11,7 @@
   ],
   "properties": {
     "evaluation_version": {
-      "const": "1.0.0"
+      "const": "1.1.0"
     },
     "required_profiles": {
       "type": "array",
@@ -27,7 +27,8 @@
       "required": [
         "status",
         "reviewer_id",
-        "rationale"
+        "rationale",
+        "scope_digest"
       ],
       "properties": {
         "status": {
@@ -42,6 +43,10 @@
         },
         "rationale": {
           "type": "string"
+        },
+        "scope_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
         }
       }
     },
@@ -120,7 +125,9 @@
         "observation_digest",
         "dimensions",
         "notes",
-        "losses"
+        "losses",
+        "evaluation_version",
+        "feature_evidence"
       ],
       "properties": {
         "status": {
@@ -166,7 +173,8 @@
                 "FAIL",
                 "UNSUPPORTED",
                 "NOT_EVALUATED",
-                "REVIEW_REQUIRED"
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
               ]
             },
             "STRUCTURE_FIDELITY": {
@@ -177,7 +185,8 @@
                 "FAIL",
                 "UNSUPPORTED",
                 "NOT_EVALUATED",
-                "REVIEW_REQUIRED"
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
               ]
             },
             "TABLE_FIDELITY": {
@@ -188,7 +197,8 @@
                 "FAIL",
                 "UNSUPPORTED",
                 "NOT_EVALUATED",
-                "REVIEW_REQUIRED"
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
               ]
             },
             "BUSINESS_RELEVANT_STRUCTURE": {
@@ -199,7 +209,8 @@
                 "FAIL",
                 "UNSUPPORTED",
                 "NOT_EVALUATED",
-                "REVIEW_REQUIRED"
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
               ]
             },
             "SEMANTIC_LOSS": {
@@ -210,7 +221,8 @@
                 "FAIL",
                 "UNSUPPORTED",
                 "NOT_EVALUATED",
-                "REVIEW_REQUIRED"
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
               ]
             },
             "NATIVE_IDENTITY_LOSS": {
@@ -221,7 +233,8 @@
                 "FAIL",
                 "UNSUPPORTED",
                 "NOT_EVALUATED",
-                "REVIEW_REQUIRED"
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
               ]
             },
             "FAILURE_TRANSPARENCY": {
@@ -232,7 +245,8 @@
                 "FAIL",
                 "UNSUPPORTED",
                 "NOT_EVALUATED",
-                "REVIEW_REQUIRED"
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
               ]
             }
           }
@@ -270,6 +284,67 @@
               "description": {
                 "type": "string",
                 "minLength": 1
+              }
+            }
+          }
+        },
+        "evaluation_version": {
+          "const": "1.1.0"
+        },
+        "feature_evidence": {
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "NARRATIVE",
+              "HEADINGS",
+              "TABLES",
+              "HEADERS",
+              "FOOTERS",
+              "HYPERLINKS",
+              "FIELDS",
+              "BOOKMARKS",
+              "CONTENT_CONTROLS",
+              "IMAGES",
+              "DRAWINGS",
+              "ORGANISATION_CHARTS",
+              "REPEATED_SECTIONS",
+              "MULTIPLE_SHEETS",
+              "CELLS",
+              "FORMULAS",
+              "CACHED_VALUES",
+              "DEFINED_NAMES",
+              "MERGED_RANGES",
+              "HIDDEN_ROWS_COLUMNS",
+              "PROTECTION",
+              "CHARTS",
+              "CROSS_SHEET_CONTEXT"
+            ]
+          },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "evidence_basis"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "PASS",
+                  "PARTIAL",
+                  "FAIL",
+                  "UNSUPPORTED",
+                  "NOT_EVALUATED"
+                ]
+              },
+              "evidence_basis": {
+                "type": "string",
+                "enum": [
+                  "AUTOMATED",
+                  "HUMAN",
+                  "BOTH"
+                ]
               }
             }
           }
