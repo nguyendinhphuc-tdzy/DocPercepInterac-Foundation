@@ -1,10 +1,15 @@
-# Document Perception — Layer 1 + Layer 2 (Detect/Parse/See/Locate)
+# Dependency artifact for Foundation and its prototype/reference integrations.
+# This file is not architecture authority. The architecture authority is
+# docs/CURRENT_BASELINE.md, followed by accepted ADRs and the frozen contract.
+# Legacy dependencies may remain for prototype/reference compatibility.
+# Docling-slim is the provisional semantic perception candidate for later B1
+# qualification; it is intentionally not added by this B0 hardening task.
+# Presence of python-docx or openpyxl does not qualify either library as a
+# universal authoritative replay engine.
 #
-# Architecture decision CONFIRMED 2026-08-11 (see Foundation_Build_Plan_v4.md
-# mục 0 điểm 4 + foundation/STATUS.md): Docling is removed. Geometry Layer is
-# python-docx (DOCX) + pdfplumber/pdf2image (PDF), deterministic, no AI.
-# pdfplumber/pdf2image are officially CRADL-approved as of 2026-08-11 — no
-# longer "waiting for approval".
+# The dependency list may therefore contain historical/prototype packages;
+# implementation decisions must follow the current baseline and frozen
+# Foundation Contract rather than comments or package presence.
 
 # --- Geometry Layer (deterministic, no AI) ---
 python-docx

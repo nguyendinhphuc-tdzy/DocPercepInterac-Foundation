@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Mapping
 from dataclasses import dataclass
 from enum import StrEnum
 from typing import Literal, Protocol
@@ -59,6 +60,32 @@ class TransitionAuditHook(Protocol):
     def emit(self, decision: TransitionDecision) -> None: ...
 
 
+class TransitionGuardRegistry:
+    """Explicit policy registry for governance-sensitive transitions.
+
+    Production callers must register the guard for each exact source/target
+    edge.  The test factory is intentionally explicit and is only for bounded
+    transition tests; it is not a production policy.
+    """
+
+    def __init__(self, guards: Mapping[tuple[ObjectType, StrEnum, StrEnum], TransitionGuard]):
+        self._guards = dict(guards)
+
+    @classmethod
+    def for_testing(cls, guard: TransitionGuard) -> "TransitionGuardRegistry":
+        return cls(
+            {
+                (object_type, source, target): guard
+                for object_type, edges in TRANSITIONS.items()
+                for source, targets in edges.items()
+                for target in targets
+            }
+        )
+
+    def resolve(self, object_type: ObjectType, source: StrEnum, target: StrEnum) -> TransitionGuard | None:
+        return self._guards.get((object_type, source, target))
+
+
 class StateTransitionError(ValueError):
     error_code = ErrorCode.INVALID_STATE_TRANSITION
 
@@ -68,6 +95,9 @@ class StateTransitionError(ValueError):
 
 
 class StateTransitionEngine:
+    def __init__(self, guard_registry: TransitionGuardRegistry):
+        self._guard_registry = guard_registry
+
     @staticmethod
     def transitions():
         return TRANSITIONS
@@ -100,7 +130,12 @@ class StateTransitionEngine:
                 raise StateTransitionError("COMPLETED SourceAssessment requires an outcome")
             if target_status is SourceAssessmentStatus.FAILED and record.outcome is not None:
                 raise StateTransitionError("FAILED SourceAssessment requires a null outcome")
-        guard_result = guard.evaluate(record, target_status, context)
+        registered_guard = self._guard_registry.resolve(object_type, record.status, target_status)
+        if registered_guard is None:
+            raise StateTransitionError("no registered transition guard")
+        if guard is not registered_guard:
+            raise StateTransitionError("caller guard is not the registered transition guard")
+        guard_result = registered_guard.evaluate(record, target_status, context)
         if not guard_result.passed:
             raise StateTransitionError(guard_result.reason)
         payload = record.model_dump(mode="json", exclude_unset=True)

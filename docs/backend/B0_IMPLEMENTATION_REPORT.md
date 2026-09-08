@@ -2,7 +2,7 @@
 
 **Architecture generation:** Foundation v2  
 **Frozen contract schema:** 0.1.0  
-**Implementation branch:** `build/backend-foundation-v2`  
+**Implementation branch:** `hardening/backend-b0-final`
 **Baseline implementation commit:** `3bd26dd` (`Backendd B0.1 and 0.2`)  
 **Status:** Complete; awaiting independent audit
 
@@ -111,13 +111,68 @@ The synthetic harness self-test passes one of one cases. Its qualification scope
 | --- | --- |
 | `.venv-contracts\\Scripts\\python.exe tools/contracts/validate_contract_fixtures.py --report contract-validation-report.json` | PASS: OpenAPI valid; 8/8 scenarios passed every validation dimension; 8/8 authorization digests and 276/276 event hashes verified. |
 | `.venv-contracts\\Scripts\\python.exe -m unittest discover -s tests/contracts -v` | PASS: 23 tests. |
-| `python -m pytest tests/backend -q` | PASS: 38 tests. |
-| `python -m pytest tests/golden -q` | PASS: 2 tests. |
-| `python -m foundation.evaluation.golden tests/golden/corpus_manifest.yaml tests/golden/reports/b0-synthetic-report.json` | PASS: 1/1 synthetic cases; no qualification claim. |
-| `python -m compileall -q foundation/governance foundation/audit foundation/ports foundation/evaluation tests/backend tests/golden` | PASS. |
+| `.venv-contracts\\Scripts\\python.exe -m pytest tests/backend -q` | PASS: 80 tests. |
+| `.venv-contracts\\Scripts\\python.exe -m pytest tests/golden -q` | PASS: 2 tests. |
+| `.venv-contracts\\Scripts\\python.exe -m foundation.evaluation.golden tests/golden/corpus_manifest.yaml tests/golden/reports/b0-synthetic-report.json` | PASS: 1/1 synthetic cases; no qualification claim. |
+| `.venv-contracts\\Scripts\\python.exe -m compileall -q foundation/domain foundation/governance foundation/audit foundation/ports foundation/evaluation tests/backend tests/golden` | PASS. |
 | `git diff --check` | PASS. |
 
-The ambient Python environment did not contain the contract validator's pinned `openapi-spec-validator` package. Contract validation and contract unit tests therefore use the repository's `.venv-contracts` environment, matching the established contract-tooling dependency set. Backend runtime tests use the dependencies pinned in `foundation/requirements.txt`.
+The ambient Python environment does not contain the repository's complete validation toolchain. Local validation therefore uses the repository's `.venv-contracts` environment after installing `tools/backend/requirements.txt`, which composes the pinned contract-tooling dependencies with the pinned pytest version used by backend CI.
+
+## Final Hardening
+
+The independent B0 audit identified four P0 governance gaps: authorization validated only records already listed in the authorization, capability checks did not compare the full execution tuple, review binding did not establish proposal revision lineage, and graph resolution could select records by stable business identity without task scope. The hardening pass closes each gap without changing Contract v0.1.0, ADRs, fixtures, or the baseline.
+
+### SourceRequirement completeness
+
+`FND-INV-SRC-001` now derives applicable requirements from the pinned TargetContractDefinition, matching TargetRegion and TargetRegionDefinition, and RulePack/BusinessRule relationships. It filters by the approved change's BusinessTargetID and blocking flag, then requires every applicable requirement to have a task-owned authorization SourceAssessment with `COMPLETED` + `SUFFICIENT` outcome and passing deterministic freshness evidence. Missing, stale, conflicting, ambiguous, non-authoritative, cross-target, cross-task, and unresolved replacement assessments fail closed with the corresponding frozen source error. Non-blocking requirements may remain absent.
+
+The micro-hardening pass also makes every governing relationship fail closed. An unresolved SourceRequirement referenced by an applicable definition, region definition, task region, or business rule produces `REFERENCE_NOT_FOUND`. An unresolved TargetRegionDefinition or BusinessRule cannot be skipped while determining whether its source policy applies.
+
+### Exact capability tuple
+
+`FND-INV-CAP-001` now verifies preflight completion and equality of DocumentVersion, NativeLocator scope, operation, engine, engine version, conformance, supported status, locator coverage, and non-empty qualification evidence. Capability observations from another task or another document version cannot satisfy an approval. No new engine or conformance class was added or qualified.
+
+The assessment, inline CapabilityResult, and NativeLocator must each bind the ApprovedChangeSet authorization's exact target DocumentVersionRef. Matching engine and operation metadata cannot qualify a locator captured from another document in the same task.
+
+### Exact review/proposal/change binding
+
+`FND-INV-AUTH-001` follows the frozen immutable-snapshot interpretation: the human ReviewDecision must approve an `IN_REVIEW` proposal revision, and the ApprovedChange must reference the immediate next `APPROVED` revision of the same logical task-owned proposal. A closed-model comparison permits only `revision`, `created_at`, and `status` to differ. Business target, document, contract, rule, mapping, source, evidence, locator, operation, values, payload, and error content must remain identical. The sealed ApprovedChange then must match the approved proposal and contain its source/evidence references.
+
+### Task-scoped governance isolation
+
+`GovernanceGraph` resolves immutable refs with explicit task ownership, rejects ambiguous duplicate identities, and groups latest records by `(record_id, task_id)`. Release evaluation now resolves TargetRegion by task and business target. Source, evidence, proposal, review, locator, binding, document, preflight, and authorization lookups reject cross-task records.
+
+Each ApprovedChangeSet now resolves its TargetContractInstance and target DocumentVersion inside the change set's task. The instance must bind the sealed TargetContractDefinitionRef and exact target DocumentVersionRef; equal reference values on foreign task records provide no authority.
+
+### State-machine review
+
+The frozen lifecycle matrix remains unchanged. `StateTransitionEngine` still requires an optimistic revision, an authenticated actor, an audit hook, immutable successor revisions, and idempotent request handling. A `TransitionGuardRegistry` now binds each exact source/target edge to the guard instance used for the decision; an unregistered or substituted caller guard fails with `INVALID_STATE_TRANSITION`. The test factory is explicitly test-only and no Local File rule is embedded in the state machine.
+
+### Port boundary decision
+
+The perception and native-identity ports now return explicit non-contract `PerceptionResult` and `NativeIdentityResult` DTOs. They carry contract records for application persistence without implying that an adapter may persist snapshots, semantic objects, locators, or bindings as a hidden side effect. No frozen domain schema was changed and no adapter was implemented.
+
+### Requirements authority cleanup
+
+`foundation/requirements.txt` now identifies itself as a dependency artifact, points architecture authority to `docs/CURRENT_BASELINE.md` and the frozen contract, preserves legacy packages for reference compatibility, identifies Docling-slim as the provisional B1 semantic candidate, and states that python-docx/openpyxl presence does not qualify universal replay. No Docling dependency was added.
+
+### Backend CI
+
+`.github/workflows/backend-b0.yml` adds a reproducible backend gate for Foundation and B0 tests. It installs `tools/backend/requirements.txt`, which reuses pinned contract dependencies and pins pytest, then runs frozen contract validation, contract unit tests, backend tests, Golden tests, compilation, and report upload. Both backend and contract workflows use the Node-24-compatible `actions/checkout@v7`, `actions/setup-python@v7`, and `actions/upload-artifact@v7` majors. Contract workflow triggers, behavior, and the required `Validate Foundation Contract v0.1` job name remain unchanged.
+
+### Final evidence
+
+The hardening suite contains 40 focused negative and regression tests, including nine micro-hardening cases. Final local results are:
+
+- frozen contract validation: 8/8 scenarios PASS, 8/8 authorization digests PASS, 276/276 AuditEvent hashes PASS, OpenAPI PASS;
+- contract unit tests: 23 passed;
+- backend tests: 80 passed;
+- Golden harness tests: 2 passed;
+- synthetic Golden run: 1/1 passed with `qualification_claimed=false`;
+- Foundation v2 compilation and `git diff --check`: PASS.
+
+The hardening pass still does not implement Docling, native Office adapters, replay, independent validation adapters, AI providers, production persistence, APIs, frontend integration, business services, or B1 orchestration. It makes no engine qualification claim and does not support Strict OOXML mutation.
 
 ## Known Limitations and B1 Boundary
 
