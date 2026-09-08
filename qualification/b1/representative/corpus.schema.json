@@ -1,0 +1,395 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Private B1.2R evaluation manifest (not a Foundation contract)",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "evaluation_version",
+    "required_profiles",
+    "coverage_review",
+    "cases"
+  ],
+  "properties": {
+    "evaluation_version": {
+      "const": "1.1.0"
+    },
+    "required_profiles": {
+      "type": "array",
+      "minItems": 1,
+      "uniqueItems": true,
+      "items": {
+        "$ref": "#/$defs/Feature"
+      }
+    },
+    "coverage_review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reviewer_id",
+        "rationale",
+        "scope_digest"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "COMPLETED"
+          ]
+        },
+        "reviewer_id": {
+          "type": "string"
+        },
+        "rationale": {
+          "type": "string"
+        },
+        "scope_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        }
+      }
+    },
+    "cases": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "case_id",
+          "local_path",
+          "format",
+          "document_role",
+          "privacy_classification",
+          "expected_feature_profile",
+          "review_status"
+        ],
+        "properties": {
+          "case_id": {
+            "type": "string",
+            "pattern": "^LF-(DOCX|XLSX)-(?!000)[0-9]{3}$"
+          },
+          "local_path": {
+            "type": "string",
+            "minLength": 1
+          },
+          "format": {
+            "type": "string",
+            "enum": [
+              "DOCX",
+              "XLSX"
+            ]
+          },
+          "document_role": {
+            "type": "string",
+            "enum": [
+              "TARGET",
+              "SOURCE",
+              "REFERENCE"
+            ]
+          },
+          "privacy_classification": {
+            "const": "CONFIDENTIAL"
+          },
+          "expected_feature_profile": {
+            "type": "array",
+            "minItems": 1,
+            "uniqueItems": true,
+            "items": {
+              "$ref": "#/$defs/Feature"
+            }
+          },
+          "review_status": {
+            "type": "string",
+            "enum": [
+              "PENDING",
+              "APPROVED_FOR_EVALUATION"
+            ]
+          },
+          "review": {
+            "$ref": "#/$defs/Review"
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "Review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "status",
+        "reviewer_id",
+        "reviewed_at",
+        "input_sha256",
+        "observation_digest",
+        "dimensions",
+        "notes",
+        "losses",
+        "evaluation_version",
+        "feature_evidence"
+      ],
+      "properties": {
+        "status": {
+          "type": "string",
+          "enum": [
+            "PENDING",
+            "COMPLETED"
+          ]
+        },
+        "reviewer_id": {
+          "type": "string"
+        },
+        "reviewed_at": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "input_sha256": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "observation_digest": {
+          "type": "string",
+          "pattern": "^[a-f0-9]{64}$"
+        },
+        "dimensions": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "CONTENT_FIDELITY",
+            "STRUCTURE_FIDELITY",
+            "TABLE_FIDELITY",
+            "BUSINESS_RELEVANT_STRUCTURE",
+            "SEMANTIC_LOSS",
+            "NATIVE_IDENTITY_LOSS",
+            "FAILURE_TRANSPARENCY"
+          ],
+          "properties": {
+            "CONTENT_FIDELITY": {
+              "type": "string",
+              "enum": [
+                "PASS",
+                "PARTIAL",
+                "FAIL",
+                "UNSUPPORTED",
+                "NOT_EVALUATED",
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "STRUCTURE_FIDELITY": {
+              "type": "string",
+              "enum": [
+                "PASS",
+                "PARTIAL",
+                "FAIL",
+                "UNSUPPORTED",
+                "NOT_EVALUATED",
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "TABLE_FIDELITY": {
+              "type": "string",
+              "enum": [
+                "PASS",
+                "PARTIAL",
+                "FAIL",
+                "UNSUPPORTED",
+                "NOT_EVALUATED",
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "BUSINESS_RELEVANT_STRUCTURE": {
+              "type": "string",
+              "enum": [
+                "PASS",
+                "PARTIAL",
+                "FAIL",
+                "UNSUPPORTED",
+                "NOT_EVALUATED",
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "SEMANTIC_LOSS": {
+              "type": "string",
+              "enum": [
+                "PASS",
+                "PARTIAL",
+                "FAIL",
+                "UNSUPPORTED",
+                "NOT_EVALUATED",
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "NATIVE_IDENTITY_LOSS": {
+              "type": "string",
+              "enum": [
+                "PASS",
+                "PARTIAL",
+                "FAIL",
+                "UNSUPPORTED",
+                "NOT_EVALUATED",
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
+              ]
+            },
+            "FAILURE_TRANSPARENCY": {
+              "type": "string",
+              "enum": [
+                "PASS",
+                "PARTIAL",
+                "FAIL",
+                "UNSUPPORTED",
+                "NOT_EVALUATED",
+                "REVIEW_REQUIRED",
+                "NOT_APPLICABLE"
+              ]
+            }
+          }
+        },
+        "notes": {
+          "type": "string"
+        },
+        "losses": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "classification",
+              "critical_semantic_loss",
+              "recoverable_by_native_identity",
+              "description"
+            ],
+            "properties": {
+              "classification": {
+                "type": "string",
+                "enum": [
+                  "SEMANTIC_REQUIRED",
+                  "NATIVE_REQUIRED",
+                  "OPTIONAL",
+                  "UNKNOWN"
+                ]
+              },
+              "critical_semantic_loss": {
+                "type": "boolean"
+              },
+              "recoverable_by_native_identity": {
+                "type": "boolean"
+              },
+              "description": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          }
+        },
+        "evaluation_version": {
+          "const": "1.1.0"
+        },
+        "feature_evidence": {
+          "type": "object",
+          "propertyNames": {
+            "enum": [
+              "NARRATIVE",
+              "HEADINGS",
+              "TABLES",
+              "HEADERS",
+              "FOOTERS",
+              "HYPERLINKS",
+              "FIELDS",
+              "BOOKMARKS",
+              "CONTENT_CONTROLS",
+              "IMAGES",
+              "DRAWINGS",
+              "ORGANISATION_CHARTS",
+              "REPEATED_SECTIONS",
+              "MULTIPLE_SHEETS",
+              "CELLS",
+              "FORMULAS",
+              "CACHED_VALUES",
+              "DEFINED_NAMES",
+              "MERGED_RANGES",
+              "HIDDEN_ROWS_COLUMNS",
+              "PROTECTION",
+              "CHARTS",
+              "CROSS_SHEET_CONTEXT"
+            ]
+          },
+          "additionalProperties": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "status",
+              "evidence_basis"
+            ],
+            "properties": {
+              "status": {
+                "type": "string",
+                "enum": [
+                  "PASS",
+                  "PARTIAL",
+                  "FAIL",
+                  "UNSUPPORTED",
+                  "NOT_EVALUATED"
+                ]
+              },
+              "evidence_basis": {
+                "type": "string",
+                "enum": [
+                  "AUTOMATED",
+                  "HUMAN",
+                  "BOTH"
+                ]
+              }
+            }
+          }
+        }
+      }
+    },
+    "Feature": {
+      "type": "string",
+      "enum": [
+        "NARRATIVE",
+        "HEADINGS",
+        "TABLES",
+        "HEADERS",
+        "FOOTERS",
+        "HYPERLINKS",
+        "FIELDS",
+        "BOOKMARKS",
+        "CONTENT_CONTROLS",
+        "IMAGES",
+        "DRAWINGS",
+        "ORGANISATION_CHARTS",
+        "REPEATED_SECTIONS",
+        "MULTIPLE_SHEETS",
+        "CELLS",
+        "FORMULAS",
+        "CACHED_VALUES",
+        "DEFINED_NAMES",
+        "MERGED_RANGES",
+        "HIDDEN_ROWS_COLUMNS",
+        "PROTECTION",
+        "CHARTS",
+        "CROSS_SHEET_CONTEXT"
+      ]
+    },
+    "ReviewDimension": {
+      "type": "string",
+      "enum": [
+        "CONTENT_FIDELITY",
+        "STRUCTURE_FIDELITY",
+        "TABLE_FIDELITY",
+        "BUSINESS_RELEVANT_STRUCTURE",
+        "SEMANTIC_LOSS",
+        "NATIVE_IDENTITY_LOSS",
+        "FAILURE_TRANSPARENCY"
+      ]
+    }
+  }
+}

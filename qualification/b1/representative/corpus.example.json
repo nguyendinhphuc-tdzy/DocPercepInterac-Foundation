@@ -1,0 +1,27 @@
+{
+  "evaluation_version": "1.1.0",
+  "required_profiles": [
+    "NARRATIVE",
+    "TABLES"
+  ],
+  "coverage_review": {
+    "status": "PENDING",
+    "reviewer_id": "",
+    "rationale": "",
+    "scope_digest": "c5e7192bf8aaa5eebb8a17ac7a64dfc7c56154f56f8b216f78495bdc054db3be"
+  },
+  "cases": [
+    {
+      "case_id": "LF-DOCX-001",
+      "local_path": "REPLACE_PRIVATELY.docx",
+      "format": "DOCX",
+      "document_role": "TARGET",
+      "privacy_classification": "CONFIDENTIAL",
+      "expected_feature_profile": [
+        "NARRATIVE",
+        "TABLES"
+      ],
+      "review_status": "PENDING"
+    }
+  ]
+}
