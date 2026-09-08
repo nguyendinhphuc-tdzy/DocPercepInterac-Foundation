@@ -1,0 +1,238 @@
+{
+  "dimension_pass_counts": {
+    "BEHAVIOR": 8,
+    "GOVERNANCE": 8,
+    "HASH": 8,
+    "REFERENCE": 8,
+    "SCHEMA": 8,
+    "STATE_MACHINE": 8,
+    "VALIDATOR_INTERNAL": 8
+  },
+  "environment": {
+    "platform": "Windows",
+    "python": "3.12.14"
+  },
+  "errors": [],
+  "fixtures_evaluated": 8,
+  "freeze_status": "NOT_FROZEN",
+  "github_actions_result": "NOT_VERIFIED",
+  "input_sha256": {
+    "docs/contracts/examples/01-ncp-valid-change.yaml": "c1904e2a89660d4da06ea8443d39a4b28333d9c1271e7bbcb0944cf102604394",
+    "docs/contracts/examples/02-missing-benchmark.yaml": "f7de9561be3cf4a6b1be63542a2ad66029c756ac1d53e54fb81bbe11c0fc9a5d",
+    "docs/contracts/examples/03-stale-target-after-approval.yaml": "bb988fa0d0dd783d3f9998485e23762251088f6e6dc5732e43c30aa7da82d852",
+    "docs/contracts/examples/04-ambiguous-native-locator.yaml": "e7829cac161c9b04efcca66e166d29ec2415f21d59da648177edbfeb20e48671",
+    "docs/contracts/examples/05-ai-correct-evidence-insufficient.yaml": "83965eaf209caf598511c9d7877138e4585913893de1ab4b33483a93847dcd71",
+    "docs/contracts/examples/06-unauthorized-change-detected.yaml": "015513376e5f2d9a07629ca986ae4709429d40d1c22ea79a9840ab3e7814d0fe",
+    "docs/contracts/examples/07-request-more-source.yaml": "bbd1193482243044fdb02cfd78629c18dbfd7254bb729828c4c8e8115512890d",
+    "docs/contracts/examples/08-strict-ooxml-unsupported.yaml": "0b9b89ca59efbb4c7a53b7cdced89f54c6fdc339cf3ee75735b169646c358fca",
+    "docs/contracts/foundation.openapi.yaml": "2cb348aeffa6173b2e0ec2411836491b6182cdd50346ac79c4cadb0fdffacfe0",
+    "tools/contracts/requirements.txt": "f9cf84f60ef50a6e58b97031dcd09b8486852290cdf305aba6428efc3f73efdc",
+    "tools/contracts/validate_contract_fixtures.py": "0b9c1de6cf9e1ed3a4aba2c939a0ed1ac5a9137bd3f4980eff9ee3af1bc7458b"
+  },
+  "openapi_result": "PASS",
+  "overall_result": "PASS",
+  "scenarios": [
+    {
+      "behavior_result": "PASS",
+      "error_count": 0,
+      "errors": [],
+      "file": "01-ncp-valid-change.yaml",
+      "governance_result": "PASS",
+      "hash_counts": {
+        "audit_event": {
+          "checked": 36,
+          "passed": 36
+        },
+        "authorization": {
+          "checked": 1,
+          "passed": 1
+        }
+      },
+      "hash_result": "PASS",
+      "overall_result": "PASS",
+      "reference_result": "PASS",
+      "scenario": "C2-01",
+      "schema_result": "PASS",
+      "state_machine_result": "PASS",
+      "validator_internal_result": "PASS"
+    },
+    {
+      "behavior_result": "PASS",
+      "error_count": 0,
+      "errors": [],
+      "file": "02-missing-benchmark.yaml",
+      "governance_result": "PASS",
+      "hash_counts": {
+        "audit_event": {
+          "checked": 48,
+          "passed": 48
+        },
+        "authorization": {
+          "checked": 1,
+          "passed": 1
+        }
+      },
+      "hash_result": "PASS",
+      "overall_result": "PASS",
+      "reference_result": "PASS",
+      "scenario": "C2-02",
+      "schema_result": "PASS",
+      "state_machine_result": "PASS",
+      "validator_internal_result": "PASS"
+    },
+    {
+      "behavior_result": "PASS",
+      "error_count": 0,
+      "errors": [],
+      "file": "03-stale-target-after-approval.yaml",
+      "governance_result": "PASS",
+      "hash_counts": {
+        "audit_event": {
+          "checked": 35,
+          "passed": 35
+        },
+        "authorization": {
+          "checked": 2,
+          "passed": 2
+        }
+      },
+      "hash_result": "PASS",
+      "overall_result": "PASS",
+      "reference_result": "PASS",
+      "scenario": "C2-03",
+      "schema_result": "PASS",
+      "state_machine_result": "PASS",
+      "validator_internal_result": "PASS"
+    },
+    {
+      "behavior_result": "PASS",
+      "error_count": 0,
+      "errors": [],
+      "file": "04-ambiguous-native-locator.yaml",
+      "governance_result": "PASS",
+      "hash_counts": {
+        "audit_event": {
+          "checked": 34,
+          "passed": 34
+        },
+        "authorization": {
+          "checked": 2,
+          "passed": 2
+        }
+      },
+      "hash_result": "PASS",
+      "overall_result": "PASS",
+      "reference_result": "PASS",
+      "scenario": "C2-04",
+      "schema_result": "PASS",
+      "state_machine_result": "PASS",
+      "validator_internal_result": "PASS"
+    },
+    {
+      "behavior_result": "PASS",
+      "error_count": 0,
+      "errors": [],
+      "file": "05-ai-correct-evidence-insufficient.yaml",
+      "governance_result": "PASS",
+      "hash_counts": {
+        "audit_event": {
+          "checked": 22,
+          "passed": 22
+        },
+        "authorization": {
+          "checked": 0,
+          "passed": 0
+        }
+      },
+      "hash_result": "PASS",
+      "overall_result": "PASS",
+      "reference_result": "PASS",
+      "scenario": "C2-05",
+      "schema_result": "PASS",
+      "state_machine_result": "PASS",
+      "validator_internal_result": "PASS"
+    },
+    {
+      "behavior_result": "PASS",
+      "error_count": 0,
+      "errors": [],
+      "file": "06-unauthorized-change-detected.yaml",
+      "governance_result": "PASS",
+      "hash_counts": {
+        "audit_event": {
+          "checked": 39,
+          "passed": 39
+        },
+        "authorization": {
+          "checked": 2,
+          "passed": 2
+        }
+      },
+      "hash_result": "PASS",
+      "overall_result": "PASS",
+      "reference_result": "PASS",
+      "scenario": "C2-06",
+      "schema_result": "PASS",
+      "state_machine_result": "PASS",
+      "validator_internal_result": "PASS"
+    },
+    {
+      "behavior_result": "PASS",
+      "error_count": 0,
+      "errors": [],
+      "file": "07-request-more-source.yaml",
+      "governance_result": "PASS",
+      "hash_counts": {
+        "audit_event": {
+          "checked": 38,
+          "passed": 38
+        },
+        "authorization": {
+          "checked": 0,
+          "passed": 0
+        }
+      },
+      "hash_result": "PASS",
+      "overall_result": "PASS",
+      "reference_result": "PASS",
+      "scenario": "C2-07",
+      "schema_result": "PASS",
+      "state_machine_result": "PASS",
+      "validator_internal_result": "PASS"
+    },
+    {
+      "behavior_result": "PASS",
+      "error_count": 0,
+      "errors": [],
+      "file": "08-strict-ooxml-unsupported.yaml",
+      "governance_result": "PASS",
+      "hash_counts": {
+        "audit_event": {
+          "checked": 24,
+          "passed": 24
+        },
+        "authorization": {
+          "checked": 0,
+          "passed": 0
+        }
+      },
+      "hash_result": "PASS",
+      "overall_result": "PASS",
+      "reference_result": "PASS",
+      "scenario": "C2-08",
+      "schema_result": "PASS",
+      "state_machine_result": "PASS",
+      "validator_internal_result": "PASS"
+    }
+  ],
+  "schema_version": "0.1.0",
+  "tool_versions": {
+    "PyYAML": "6.0.3",
+    "jsonschema": "4.26.0",
+    "openapi-spec-validator": "0.9.0",
+    "referencing": "0.37.0",
+    "rfc8785": "0.1.4"
+  },
+  "validator": "foundation-contract-fixture-validator",
+  "validator_internal_error_count": 0
+}

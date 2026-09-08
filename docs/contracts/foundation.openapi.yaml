@@ -1335,6 +1335,7 @@ components:
         engine_version: { type: string }
         input_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
         output_document_version_ref: { type: [object, 'null'], oneOf: [{ $ref: '#/components/schemas/DocumentVersionRef' }, { type: 'null' }] }
+        first_material_failure_event_id: { $ref: '#/components/schemas/ID' }
     ValidationMetadata:
       type: object
       additionalProperties: false
@@ -1349,6 +1350,7 @@ components:
         input_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
         output_document_version_ref: { $ref: '#/components/schemas/DocumentVersionRef' }
         observation_refs: { type: array, minItems: 1, items: { $ref: '#/components/schemas/ContentRef' } }
+        first_material_failure_event_id: { $ref: '#/components/schemas/ID' }
     ExceptionMetadata:
       type: object
       additionalProperties: false

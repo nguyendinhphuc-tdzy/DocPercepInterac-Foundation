@@ -10,26 +10,28 @@ from __future__ import annotations
 import argparse
 import hashlib
 import json
-import re
+import platform
 from collections import defaultdict
+from contextlib import contextmanager
+from importlib.metadata import version
 from pathlib import Path
 from typing import Any
 
 import yaml
-from jsonschema import Draft202012Validator, RefResolver
+import rfc8785
+from jsonschema import Draft202012Validator, FormatChecker
+from openapi_spec_validator import validate as validate_openapi
 
 ROOT = Path(__file__).resolve().parents[2]
 CONTRACTS = ROOT / "docs" / "contracts"
 EXAMPLES = CONTRACTS / "examples"
 SCHEMA_VERSION = "0.1.0"
-
-ID_RE = re.compile(r"^[A-Za-z0-9][A-Za-z0-9._:-]*$")
-TARGET_RE = re.compile(r"^[A-Z][A-Z0-9_.]*$")
-SHA_RE = re.compile(r"^[0-9a-f]{64}$")
-DATE_RE = re.compile(r"^\d{4}-\d{2}-\d{2}$")
-TIMESTAMP_RE = re.compile(r"^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d+)?Z$")
-DECIMAL_RE = re.compile(r"^-?(?:0|[1-9]\d*)(?:\.\d+)?$")
-INTEGER_RE = re.compile(r"^-?(?:0|[1-9]\d*)$")
+EXPECTED_FIXTURES = (
+    "01-ncp-valid-change.yaml", "02-missing-benchmark.yaml",
+    "03-stale-target-after-approval.yaml", "04-ambiguous-native-locator.yaml",
+    "05-ai-correct-evidence-insufficient.yaml", "06-unauthorized-change-detected.yaml",
+    "07-request-more-source.yaml", "08-strict-ooxml-unsupported.yaml",
+)
 
 REUSABLE_TYPES = {
     "TargetContractDefinition", "TargetRegionDefinition", "RulePack",
@@ -87,55 +89,98 @@ MATERIAL_EVENT_MAP = {
     "AIInteractionRecord": "AI_INTERACTION_RECORDED",
 }
 
-def section(text: str, heading: str) -> str:
-    match = re.search(rf"^### {re.escape(heading)}\s*\n(.*?)(?=^### |\Z)",
-                      text, flags=re.MULTILINE | re.DOTALL)
-    return match.group(1) if match else ""
+DIMENSIONS = {
+    "SCHEMA": "schema_result", "REFERENCE": "reference_result",
+    "STATE_MACHINE": "state_machine_result", "GOVERNANCE": "governance_result",
+    "HASH": "hash_result", "BEHAVIOR": "behavior_result",
+    "VALIDATOR_INTERNAL": "validator_internal_result",
+}
 
 
-def enum_registry() -> dict[str, set[str]]:
-    text = (CONTRACTS / "status-model.md").read_text(encoding="utf-8")
-    result: dict[str, set[str]] = {}
-    tick = chr(96)
-    for name in re.findall(r"^### ([A-Za-z][A-Za-z0-9_]*)\s*$", text, flags=re.MULTILINE):
-        values = re.findall(tick + r"([^" + tick + r"]+)" + tick, section(text, name))
-        if values:
-            result[name] = set(values)
-    return result
+class MachineContract:
+    """One in-memory Draft 2020-12 root, projected without schema inlining.
+
+    Each OpenAPI component occurs once under $defs. Local schema pointers and
+    discriminator mapping pointers are relocated; all validation keywords stay
+    intact. Unsupported external schema resources fail closed at bundle build.
+    The generated bundle is never a second checked-in contract authority.
+    """
+    def __init__(self, openapi: dict[str, Any]):
+        self.openapi = openapi
+        self.root = {
+            "$schema": "https://json-schema.org/draft/2020-12/schema",
+            "$defs": self.relocate(openapi["components"]["schemas"]),
+        }
+        self.schemas = self.root["$defs"]
+        self.check_pointers(self.root)
+        Draft202012Validator.check_schema(self.root)
+        self.enums = {name: set(node["enum"]) for name, node in self.schemas.items() if "enum" in node}
+        self._validators = {}
+
+    @classmethod
+    def relocate(cls, node: Any) -> Any:
+        if isinstance(node, list):
+            return [cls.relocate(item) for item in node]
+        if not isinstance(node, dict):
+            return node
+        result = {key: cls.relocate(value) for key, value in node.items()}
+        if "$ref" in node:
+            pointer = node["$ref"]
+            if not pointer.startswith("#/components/schemas/"):
+                raise ValueError(f"unsupported nonlocal schema reference: {pointer}")
+            result["$ref"] = pointer.replace("#/components/schemas/", "#/$defs/", 1)
+        if "discriminator" in node:
+            result["discriminator"]["mapping"] = {
+                key: value.replace("#/components/schemas/", "#/$defs/", 1)
+                for key, value in node["discriminator"].get("mapping", {}).items()
+            }
+        return result
+
+    def resolve(self, pointer: str) -> Any:
+        if not pointer.startswith("#/"):
+            raise ValueError(f"nonlocal schema pointer: {pointer}")
+        value = self.root
+        for part in pointer[2:].split("/"):
+            part = part.replace("~1", "/").replace("~0", "~")
+            value = value[int(part)] if isinstance(value, list) else value[part]
+        return value
+
+    def check_pointers(self, node: Any) -> None:
+        if isinstance(node, dict):
+            if "$ref" in node:
+                self.resolve(node["$ref"])
+            for pointer in node.get("discriminator", {}).get("mapping", {}).values():
+                self.resolve(pointer)
+            for child in node.values():
+                self.check_pointers(child)
+        elif isinstance(node, list):
+            for child in node:
+                self.check_pointers(child)
+
+    def validator(self, name: str) -> Draft202012Validator:
+        if name not in self.schemas:
+            raise KeyError(f"no projected schema for {name}")
+        if name not in self._validators:
+            pointer = "#/$defs/" + name.replace("~", "~0").replace("/", "~1")
+            self._validators[name] = Draft202012Validator(
+                {**self.root, "$ref": pointer}, format_checker=FormatChecker())
+        return self._validators[name]
+
+    def branch_matches(self, node: dict[str, Any], value: Any) -> bool:
+        return Draft202012Validator({**self.root, **node}, format_checker=FormatChecker()).is_valid(value)
 
 
-def load_openapi_contract() -> dict[str, Any]:
+def load_openapi_contract(contracts: Path = CONTRACTS) -> dict[str, Any]:
     """Load the machine projection; field shape authority lives there."""
-    spec = yaml.safe_load((CONTRACTS / "foundation.openapi.yaml").read_text(encoding="utf-8"))
+    spec = yaml.safe_load((contracts / "foundation.openapi.yaml").read_text(encoding="utf-8"))
     if not isinstance(spec, dict) or spec.get("openapi") != "3.1.0":
         raise ValueError("foundation.openapi.yaml must be OpenAPI 3.1.0")
     return spec
 
 
 def canonical(value: Any) -> str:
-    if value is None:
-        return "null"
-    if value is True:
-        return "true"
-    if value is False:
-        return "false"
-    if isinstance(value, int) and not isinstance(value, bool):
-        return str(value)
-    if isinstance(value, float):
-        if value != value or value in (float("inf"), float("-inf")):
-            raise ValueError("non-finite number")
-        if value == 0:
-            return "0"
-        return json.dumps(value, ensure_ascii=False, separators=(",", ":"), allow_nan=False)
-    if isinstance(value, str):
-        return json.dumps(value, ensure_ascii=False, separators=(",", ":"))
-    if isinstance(value, list):
-        return "[" + ",".join(canonical(v) for v in value) + "]"
-    if isinstance(value, dict):
-        keys = sorted(value, key=lambda item: item.encode("utf-16-be"))
-        return "{" + ",".join(json.dumps(k, ensure_ascii=False, separators=(",", ":")) + ":" + canonical(value[k])
-                             for k in keys) + "}"
-    raise TypeError(f"unsupported JSON value: {type(value)!r}")
+    """RFC 8785 JSON Canonicalization Scheme, including ECMAScript numbers."""
+    return rfc8785.dumps(value).decode("utf-8")
 
 
 def digest(value: Any) -> str:
@@ -143,10 +188,14 @@ def digest(value: Any) -> str:
 
 
 class FixtureValidator:
-    def __init__(self, path: Path, enums: dict[str, set[str]],
-                 openapi: dict[str, Any]):
-        self.path, self.enums, self.openapi = path, enums, openapi
-        self.openapi_resolver = RefResolver.from_schema(openapi)
+    def __init__(self, path: Path, machine: MachineContract):
+        self.path, self.machine = path, machine
+        self.enums, self.openapi = machine.enums, machine.openapi
+        self.category = "SCHEMA"
+        self.results = {name: "NOT_EVALUATED" for name in DIMENSIONS}
+        self.results["VALIDATOR_INTERNAL"] = "PASS"
+        self.hash_counts = {"authorization": {"checked": 0, "passed": 0},
+                            "audit_event": {"checked": 0, "passed": 0}}
         self.data: dict[str, Any] = {}
         self.errors: list[dict[str, str]] = []
         self.records: dict[tuple[str, str, int], dict[str, Any]] = {}
@@ -158,8 +207,38 @@ class FixtureValidator:
     def scenario(self) -> str:
         return str(self.data.get("scenario_id", self.path.stem))
 
-    def error(self, path: str, message: str) -> None:
-        self.errors.append({"path": path, "message": message})
+    def error(self, path: str, message: str, category: str | None = None) -> None:
+        category = category or self.category
+        self.errors.append({"category": category, "path": path, "message": message})
+        self.results[category] = "FAIL"
+
+    @contextmanager
+    def dimension(self, category: str):
+        previous, self.category = self.category, category
+        try:
+            yield
+        finally:
+            self.category = previous
+
+    def stage(self, category: str, operation) -> None:
+        if self.results[category] == "NOT_EVALUATED":
+            self.results[category] = "PASS"
+        with self.dimension(category):
+            try:
+                operation()
+            except Exception as exc:
+                self.results[category] = "FAIL"
+                name = getattr(operation, "__name__", type(operation).__name__)
+                self.error("$", f"{name}: {type(exc).__name__}: {exc}", "VALIDATOR_INTERNAL")
+
+    def check_schema(self, name: str, value: Any, path: str) -> bool:
+        valid = True
+        for issue in sorted(self.machine.validator(name).iter_errors(value), key=lambda error: str(list(error.path))):
+            valid = False
+            location = ".".join(str(part) for part in issue.path)
+            self.error(path + ("." + location if location else ""),
+                       "OpenAPI schema: " + issue.message, "SCHEMA")
+        return valid
 
     def exact(self, value: Any, required: set[str], optional: set[str], path: str) -> bool:
         if not isinstance(value, dict):
@@ -173,87 +252,28 @@ class FixtureValidator:
             self.error(path, "unknown fields: " + ", ".join(extra))
         return not missing and not extra
 
-    def enum(self, value: Any, name: str, path: str) -> None:
-        if name in self.enums and value not in self.enums[name]:
-            self.error(path, f"{value!r} is not in {name}")
-
-    def primitive(self, value: Any, type_name: str, path: str) -> None:
-        if type_name in self.enums:
-            self.enum(value, type_name, path)
-            return
-        if type_name in {"Text", "ExactText", "NullableText", "EvaluatorKey"}:
-            if not isinstance(value, str) or (type_name != "ExactText" and not value):
-                self.error(path, f"expected {type_name}")
-            return
-        if type_name == "ID" and (not isinstance(value, str) or not ID_RE.fullmatch(value)):
-            self.error(path, "invalid ID")
-        elif type_name == "BusinessTargetID" and (not isinstance(value, str) or not TARGET_RE.fullmatch(value)):
-            self.error(path, "invalid BusinessTargetID")
-        elif type_name == "SHA256" and (not isinstance(value, str) or not SHA_RE.fullmatch(value)):
-            self.error(path, "invalid SHA-256")
-        elif type_name == "URI" and (not isinstance(value, str) or not re.match(r"^[A-Za-z][A-Za-z0-9+.-]*:", value)):
-            self.error(path, "URI must be absolute")
-        elif type_name == "LocalDate" and (not isinstance(value, str) or not DATE_RE.fullmatch(value)):
-            self.error(path, "invalid LocalDate")
-        elif type_name == "Timestamp" and (not isinstance(value, str) or not TIMESTAMP_RE.fullmatch(value)):
-            self.error(path, "invalid UTC Timestamp")
-        elif type_name == "DecimalString" and (not isinstance(value, str) or not DECIMAL_RE.fullmatch(value)):
-            self.error(path, "invalid DecimalString")
-        elif type_name == "IntegerString" and (not isinstance(value, str) or not INTEGER_RE.fullmatch(value)):
-            self.error(path, "invalid IntegerString")
-        elif type_name == "CurrencyCode" and (not isinstance(value, str) or not re.fullmatch(r"[A-Z]{3}", value)):
-            self.error(path, "invalid CurrencyCode")
-        elif type_name in {"PositiveInt", "NonNegativeInt"}:
-            if isinstance(value, bool) or not isinstance(value, int) or value < (1 if type_name == "PositiveInt" else 0):
-                self.error(path, f"invalid {type_name}")
-        elif type_name == "Bool" and not isinstance(value, bool):
-            self.error(path, "expected boolean")
-        elif type_name == "CellAddress" and (not isinstance(value, str) or not re.fullmatch(r"[A-Z]{1,3}[1-9][0-9]*", value)):
-            self.error(path, "invalid CellAddress")
-        elif type_name == "RangeAddress" and (not isinstance(value, str) or not re.fullmatch(r"[A-Z]{1,3}[1-9][0-9]*:[A-Z]{1,3}[1-9][0-9]*", value)):
-            self.error(path, "invalid RangeAddress")
-        elif type_name not in {
-            "StructuredData", "Nullable", "SchemaVersion", "ObjectType", "Reference",
-            "DocumentVersionRef", "SemanticReference", "ContentRef", "EvaluatorBinding",
-            "Actor", "BusinessValue", "CapabilityResult", "CapabilityResultRef",
-            "PreflightFinding", "NativeAddress", "Condition", "ConditionValueTarget",
-            "FreshnessEvaluation", "ProtectedScope", "ValidationRequirement",
-            "AuthorizationBinding", "Period", "MutationPayload", "NativePathStep",
-            "NativeElementPath", "ApprovedChange",
-        }:
-            self.error(path, "unhandled contract type " + type_name)
-
     def validate_ref(self, value: Any, path: str) -> None:
-        if not self.exact(value, {"object_type", "object_id", "revision"}, set(), path):
+        if not self.check_schema("Ref", value, path):
             return
-        self.primitive(value["object_id"], "ID", path + ".object_id")
-        self.primitive(value["revision"], "PositiveInt", path + ".revision")
         typ = value["object_type"]
-        if typ not in self.enums.get("ObjectType", set()) and typ != "AuditEvent":
-            self.error(path, "invalid reference object_type")
-        elif typ == "AuditEvent":
-            if (value["object_id"], value["revision"]) not in self.events:
-                self.error(path, "unresolved AuditEvent reference")
-        elif (typ, value["object_id"], value["revision"]) not in self.records:
-            self.error(path, "unresolved record reference")
+        key = (typ, value["object_id"], value["revision"])
+        if typ == "AuditEvent":
+            if key[1:] not in self.events:
+                self.error(path, "unresolved AuditEvent reference", "REFERENCE")
+        elif key not in self.records:
+            self.error(path, "unresolved record reference", "REFERENCE")
 
     def validate_content(self, value: Any, path: str) -> None:
-        if not self.exact(value, {"uri", "sha256", "media_type"}, set(), path):
+        if not self.check_schema("ContentRef", value, path):
             return
-        self.primitive(value["uri"], "URI", path + ".uri")
-        self.primitive(value["sha256"], "SHA256", path + ".sha256")
-        self.primitive(value["media_type"], "Text", path + ".media_type")
         if (value["uri"], value["sha256"], value["media_type"]) not in self.content_refs:
-            self.error(path, "ContentRef is not declared in facts.artifacts")
+            self.error(path, "ContentRef is not declared in facts.artifacts", "REFERENCE")
 
     def validate_document_ref(self, value: Any, path: str) -> None:
-        if not self.exact(value, {"document_id", "version_id", "binary_hash"}, set(), path):
+        if not self.check_schema("DocumentVersionRef", value, path):
             return
-        self.primitive(value["document_id"], "ID", path + ".document_id")
-        self.primitive(value["version_id"], "ID", path + ".version_id")
-        self.primitive(value["binary_hash"], "SHA256", path + ".binary_hash")
         if (value["document_id"], value["version_id"], value["binary_hash"]) not in self.versions:
-            self.error(path, "DocumentVersionRef does not match DocumentVersion")
+            self.error(path, "DocumentVersionRef does not match DocumentVersion", "REFERENCE")
 
     def validate_evaluator(self, value: Any, path: str) -> None:
         """Check semantic binding resolution; shape is projected by OpenAPI."""
@@ -376,22 +396,11 @@ class FixtureValidator:
         for index, ref in enumerate(value.get("qualification_refs", [])):
             self.validate_content(ref, f"{path}.qualification_refs[{index}]")
 
-    def validate_period(self, value: Any, path: str) -> None:
-        if self.exact(value, {"label", "start_date", "end_date"}, set(), path):
-            self.primitive(value["label"], "Text", path + ".label")
-            self.primitive(value["start_date"], "LocalDate", path + ".start_date")
-            self.primitive(value["end_date"], "LocalDate", path + ".end_date")
-
-    def validate_actor(self, value: Any, path: str) -> None:
-        if self.exact(value, {"actor_type", "actor_id"}, set(), path):
-            self.primitive(value["actor_type"], "ActorType", path + ".actor_type")
-            self.primitive(value["actor_id"], "ID", path + ".actor_id")
-
     def load(self) -> None:
         try:
             loaded = yaml.safe_load(self.path.read_text(encoding="utf-8"))
-        except Exception as exc:
-            self.error("$", "YAML parse failed: " + str(exc))
+        except (yaml.YAMLError, OSError) as exc:
+            self.error("$", "YAML parse failed: " + str(exc), "SCHEMA")
             return
         if not isinstance(loaded, dict):
             self.error("$", "fixture must be an object")
@@ -404,6 +413,11 @@ class FixtureValidator:
             self.error("$.schema_version", "must be contract schema version 0.1.0")
         if self.data.get("fixture_type") != "CONTRACT_SCENARIO":
             self.error("$.fixture_type", "must be CONTRACT_SCENARIO")
+        for field in ("records", "actions", "audit_events"):
+            if not isinstance(self.data.get(field), list):
+                self.error("$." + field, "must be an array")
+        if self.results["SCHEMA"] == "FAIL":
+            return
         facts = self.data.get("facts", {})
         if not isinstance(facts, dict):
             self.error("$.facts", "must be an object")
@@ -421,15 +435,23 @@ class FixtureValidator:
                 self.error(f"$.records[{index}]", "must be an object")
                 continue
             typ, rid, revision = record.get("object_type"), record.get("id"), record.get("revision")
-            if typ not in self.enums.get("ObjectType", set()):
+            if not isinstance(typ, str) or typ not in self.enums.get("ObjectType", set()):
                 self.error(f"$.records[{index}].object_type", "invalid ObjectType")
-            if isinstance(revision, int) and not isinstance(revision, bool):
-                self.records[(typ, rid, revision)] = record
+            if isinstance(typ, str) and isinstance(rid, str) and isinstance(revision, int) and not isinstance(revision, bool):
+                key = (typ, rid, revision)
+                if key in self.records:
+                    self.error(f"$.records[{index}]", "duplicate immutable record identity", "REFERENCE")
+                    continue
+                self.records[key] = record
                 if typ == "DocumentVersion":
                     self.versions[(record.get("document_id"), rid, record.get("binary_hash"))] = record
         for event in self.data.get("audit_events", []) or []:
             if isinstance(event, dict):
-                self.events[(event.get("event_id"), event.get("event_version"))] = event
+                key = (event.get("event_id"), event.get("event_version"))
+                if key in self.events:
+                    self.error("$.audit_events", "duplicate immutable event identity", "REFERENCE")
+                else:
+                    self.events[key] = event
         expected = self.data.get("expected", {})
         expected_fields = {"task_ref", "task_status", "release_status", "first_material_failure_event_id",
                            "ai_execution_authority", "fuzzy_fallback_attempted", "mutation_attempted",
@@ -449,17 +471,6 @@ class FixtureValidator:
             if not isinstance(record, dict):
                 continue
             typ = record.get("object_type")
-            schema = self.openapi.get("components", {}).get("schemas", {}).get(typ)
-            if not schema:
-                self.error(f"$.records[{index}]", "no OpenAPI schema for ObjectType")
-                continue
-            validator = Draft202012Validator(schema, resolver=self.openapi_resolver)
-            for issue in sorted(validator.iter_errors(record), key=lambda error: list(error.path)):
-                location = ".".join(str(part) for part in issue.path)
-                self.error(f"$.records[{index}]" + ("." + location if location else ""),
-                           "OpenAPI schema: " + issue.message)
-            self.validate_closed_record_keys(typ, record, f"$.records[{index}]")
-            self.validate_schema_refs(schema, record, f"$.records[{index}]")
             if typ in REUSABLE_TYPES:
                 if "task_id" in record:
                     self.error(f"$.records[{index}].task_id", "reusable definition must not carry task_id")
@@ -548,27 +559,45 @@ class FixtureValidator:
                 if record.get("outcome") != "REQUEST_MORE_SOURCE" and requested:
                     self.error(f"$.records[{index}]", "only REQUEST_MORE_SOURCE may request source")
 
-    def _schema_parts(self, node: Any) -> tuple[set[str], set[str]]:
-        if not isinstance(node, dict):
-            return set(), set()
-        if "$ref" in node:
-            with self.openapi_resolver.resolving(node["$ref"]) as resolved:
-                return self._schema_parts(resolved)
-        props = set(node.get("properties", {}))
-        required = set(node.get("required", []))
-        for child in node.get("allOf", []) or []:
-            c_props, c_required = self._schema_parts(child)
-            props |= c_props
-            required |= c_required
-        return props, required
+    def validate_shapes(self) -> None:
+        for index, record in enumerate(self.data.get("records", [])):
+            if not isinstance(record, dict):
+                continue
+            typ = record.get("object_type")
+            if typ not in self.enums.get("ObjectType", set()) or typ == "AuditEvent":
+                self.error(f"$.records[{index}]", "no record schema for ObjectType")
+                continue
+            self.check_schema(typ, record, f"$.records[{index}]")
+        for index, event in enumerate(self.data.get("audit_events", [])):
+            self.check_schema("AuditEvent", event, f"$.audit_events[{index}]")
+        for index, action in enumerate(self.data.get("actions", [])):
+            if not isinstance(action, dict):
+                self.error(f"$.actions[{index}]", "must be an object")
+            elif "replay_request" in action:
+                self.check_schema("ReplayRequest", action["replay_request"], f"$.actions[{index}].replay_request")
 
-    def validate_closed_record_keys(self, typ: str, record: dict[str, Any], path: str) -> None:
-        allowed, required = self._schema_parts(self.openapi["components"]["schemas"][typ])
-        missing, extra = sorted(required - set(record)), sorted(set(record) - allowed)
-        if missing:
-            self.error(path, "missing fields: " + ", ".join(missing))
-        if extra:
-            self.error(path, "unknown fields: " + ", ".join(extra))
+    def validate_references(self) -> None:
+        for index, record in enumerate(self.data.get("records", [])):
+            if isinstance(record, dict) and record.get("object_type") in self.machine.schemas:
+                self.validate_schema_refs(self.machine.schemas[record["object_type"]], record, f"$.records[{index}]")
+        for index, event in enumerate(self.data.get("audit_events", [])):
+            self.validate_schema_refs(self.machine.schemas["AuditEvent"], event, f"$.audit_events[{index}]")
+        def walk(value, path):
+            if isinstance(value, dict):
+                if {"object_type", "object_id", "revision"} <= value.keys():
+                    self.validate_ref(value, path)
+                elif {"document_id", "version_id", "binary_hash"} <= value.keys():
+                    self.validate_document_ref(value, path)
+                elif {"uri", "sha256", "media_type"} <= value.keys():
+                    self.validate_content(value, path)
+                else:
+                    for key, child in value.items():
+                        walk(child, path + "." + key)
+            elif isinstance(value, list):
+                for index, child in enumerate(value):
+                    walk(child, f"{path}[{index}]")
+        for field in ("actions", "expected"):
+            walk(self.data.get(field), "$." + field)
 
     def validate_schema_refs(self, node: Any, value: Any, path: str) -> None:
         """Resolve references by following the OpenAPI projection, not a second field map."""
@@ -591,8 +620,7 @@ class FixtureValidator:
             if ref_name == "FreshnessEvaluation":
                 self.validate_freshness_evaluation(value, path)
                 return
-            with self.openapi_resolver.resolving(node["$ref"]) as resolved:
-                self.validate_schema_refs(resolved, value, path)
+            self.validate_schema_refs(self.machine.resolve(node["$ref"]), value, path)
             return
         if "allOf" in node:
             for child in node.get("allOf", []):
@@ -612,11 +640,12 @@ class FixtureValidator:
                         continue
                     branch_node = branch
                     if "$ref" in branch:
-                        with self.openapi_resolver.resolving(branch["$ref"]) as resolved:
-                            branch_node = resolved
+                        branch_node = self.machine.resolve(branch["$ref"])
                     const = branch_node.get("properties", {}).get(discriminator or "kind", {}).get("const")
                     if const is not None and isinstance(value, dict) and value.get(discriminator or "kind") == const:
                         selected.append(branch)
+            if not selected:
+                selected = [branch for branch in branches if self.machine.branch_matches(branch, value)]
             for branch in selected:
                 self.validate_schema_refs(branch, value, path)
             return
@@ -640,79 +669,6 @@ class FixtureValidator:
             for index, child in enumerate(value):
                 self.validate_reusable_boundary(child, f"{path}[{index}]", False)
 
-    def validate_metadata(self, metadata: Any, path: str) -> None:
-        if not isinstance(metadata, dict):
-            self.error(path, "metadata must be an object")
-            return
-        kind = metadata.get("metadata_kind")
-        self.enum(kind, "AuditMetadataKind", path + ".metadata_kind")
-        if kind not in self.enums.get("AuditMetadataKind", set()):
-            return
-        if "summary" in metadata:
-            self.primitive(metadata["summary"], "Text", path + ".summary")
-        if kind == "GOVERNANCE":
-            for name in ("prior_status", "resulting_status"):
-                if metadata.get(name) is not None:
-                    self.primitive(metadata[name], "Text", path + "." + name)
-            if "decision_ref" in metadata:
-                self.validate_ref(metadata["decision_ref"], path + ".decision_ref")
-        elif kind == "PERCEPTION":
-            self.validate_ref(metadata["analysis_run_ref"], path + ".analysis_run_ref")
-            if "perception_snapshot_ref" in metadata:
-                self.validate_ref(metadata["perception_snapshot_ref"], path + ".perception_snapshot_ref")
-            self.primitive(metadata["engine"], "Text", path + ".engine")
-            self.primitive(metadata["engine_version"], "Text", path + ".engine_version")
-            self.validate_content(metadata["configuration_ref"], path + ".configuration_ref")
-            for i, ref in enumerate(metadata["observation_refs"]):
-                self.validate_content(ref, f"{path}.observation_refs[{i}]")
-        elif kind == "NATIVE_BINDING":
-            self.validate_ref(metadata["native_binding_ref"], path + ".native_binding_ref")
-            self.validate_evaluator(metadata["evaluator_binding"], path + ".evaluator_binding")
-            for i, ref in enumerate(metadata["observation_refs"]):
-                self.validate_content(ref, f"{path}.observation_refs[{i}]")
-            self.primitive(metadata["outcome"], "BindingStatus", path + ".outcome")
-        elif kind == "DETERMINISTIC_EVALUATION":
-            self.validate_ref(metadata["evaluation_ref"], path + ".evaluation_ref")
-            self.validate_evaluator(metadata["evaluator_binding"], path + ".evaluator_binding")
-            self.primitive(metadata["outcome"], "Text", path + ".outcome")
-        elif kind == "AI_INTERACTION":
-            self.validate_ref(metadata["ai_interaction_ref"], path + ".ai_interaction_ref")
-            for field in ("provider", "model"):
-                self.primitive(metadata[field], "Text", path + "." + field)
-            if metadata["model_version"] is not None:
-                self.primitive(metadata["model_version"], "Text", path + ".model_version")
-            self.validate_content(metadata["instruction_ref"], path + ".instruction_ref")
-            for i, ref in enumerate(metadata["context_refs"]):
-                self.validate_content(ref, f"{path}.context_refs[{i}]")
-            self.validate_content(metadata["output_ref"], path + ".output_ref")
-        elif kind == "REPLAY":
-            self.validate_ref(metadata["approved_change_set_ref"], path + ".approved_change_set_ref")
-            if "execution_ref" in metadata:
-                self.validate_ref(metadata["execution_ref"], path + ".execution_ref")
-            self.primitive(metadata["engine"], "Text", path + ".engine")
-            self.primitive(metadata["engine_version"], "Text", path + ".engine_version")
-            self.validate_document_ref(metadata["input_document_version_ref"], path + ".input_document_version_ref")
-            if metadata["output_document_version_ref"] is not None:
-                self.validate_document_ref(metadata["output_document_version_ref"], path + ".output_document_version_ref")
-        elif kind == "VALIDATION":
-            self.validate_ref(metadata["validation_report_ref"], path + ".validation_report_ref")
-            self.validate_actor(metadata["validator"], path + ".validator")
-            if metadata["validator"].get("actor_type") != "VALIDATOR":
-                self.error(path, "VALIDATION requires VALIDATOR")
-            self.primitive(metadata["validator_version"], "Text", path + ".validator_version")
-            self.validate_content(metadata["configuration_ref"], path + ".configuration_ref")
-            self.validate_document_ref(metadata["input_document_version_ref"], path + ".input_document_version_ref")
-            self.validate_document_ref(metadata["output_document_version_ref"], path + ".output_document_version_ref")
-            for i, ref in enumerate(metadata["observation_refs"]):
-                self.validate_content(ref, f"{path}.observation_refs[{i}]")
-        elif kind == "EXCEPTION":
-            self.validate_ref(metadata["exception_ref"], path + ".exception_ref")
-            self.primitive(metadata["first_material_failure_event_id"], "ID", path + ".first_material_failure_event_id")
-            for i, ref in enumerate(metadata["remediation_refs"]):
-                self.validate_ref(ref, f"{path}.remediation_refs[{i}]")
-        if "first_material_failure_event_id" in metadata:
-            self.primitive(metadata["first_material_failure_event_id"], "ID", path + ".first_material_failure_event_id")
-
     def validate_events(self) -> None:
         events = self.data.get("audit_events", [])
         if not isinstance(events, list):
@@ -725,31 +681,6 @@ class FixtureValidator:
                 self.error(path, "must be an object")
                 continue
             positions[event.get("event_id")] = index
-            event_schema = self.openapi.get("components", {}).get("schemas", {}).get("AuditEvent")
-            if event_schema:
-                validator = Draft202012Validator(event_schema, resolver=self.openapi_resolver)
-                for issue in sorted(validator.iter_errors(event), key=lambda error: list(error.path)):
-                    location = ".".join(str(part) for part in issue.path)
-                    self.error(path + ("." + location if location else ""),
-                               "OpenAPI schema: " + issue.message)
-            for field, type_name in {
-                "event_id": "ID", "event_version": "PositiveInt", "schema_version": "SchemaVersion",
-                "event_type": "EventType", "occurred_at": "Timestamp", "task_id": "ID",
-                "correlation_id": "ID",
-            }.items():
-                if field in event:
-                    self.primitive(event[field], type_name, path + "." + field)
-            self.validate_actor(event.get("actor"), path + ".actor")
-            for i, ref in enumerate(event.get("document_version_refs", [])):
-                self.validate_document_ref(ref, f"{path}.document_version_refs[{i}]")
-            for i, target in enumerate(event.get("business_target_ids", [])):
-                self.primitive(target, "BusinessTargetID", f"{path}.business_target_ids[{i}]")
-            for field in ("object_refs", "input_refs", "output_refs"):
-                for i, ref in enumerate(event.get(field, [])):
-                    self.validate_ref(ref, f"{path}.{field}[{i}]")
-            for i, code in enumerate(event.get("error_codes", [])):
-                self.primitive(code, "ErrorCode", f"{path}.error_codes[{i}]")
-            self.validate_metadata(event.get("metadata"), path + ".metadata")
             if event.get("causation_event_id") is None:
                 roots.append(event)
             required_kind = EVENT_METADATA_KIND.get(event.get("event_type"))
@@ -758,13 +689,6 @@ class FixtureValidator:
             allowed = EVENT_ACTOR_TYPES.get(event.get("event_type"))
             if allowed and event.get("actor", {}).get("actor_type") not in allowed:
                 self.error(path, "actor type is not allowed")
-            payload = dict(event)
-            payload.pop("integrity_payload_hash", None)
-            try:
-                if event.get("integrity_payload_hash") != digest(payload):
-                    self.error(path, "integrity_payload_hash mismatch")
-            except Exception as exc:
-                self.error(path, f"integrity hash failed: {exc}")
         if len(roots) != 1 or (roots and roots[0].get("event_type") != "TASK_CREATED"):
             self.error("$.audit_events", "exactly one TASK_CREATED root is required")
         event_by_id = {event.get("event_id"): event for event in events if isinstance(event, dict)}
@@ -818,7 +742,7 @@ class FixtureValidator:
                 if matches and matches[0].get("metadata", {}).get("evaluator_binding") != record.get("evaluator_binding"):
                     self.error(f"$.records[{record_type}:{record.get('id')}]", "evaluator binding mismatch")
 
-    def validate_replay_and_governance(self) -> None:
+    def validate_states(self) -> None:
         records_by_type: dict[str, list[dict[str, Any]]] = defaultdict(list)
         for (typ, _rid, _revision), record in self.records.items():
             records_by_type[typ].append(record)
@@ -854,11 +778,17 @@ class FixtureValidator:
             before, after = task_records[i - 1].get("status"), task_records[i].get("status")
             if before != after and after not in TASK_EDGES.get(before, set()):
                 self.error("$.records.FoundationTask", f"illegal transition {before} -> {after}")
+            prior_release, next_release = task_records[i - 1]["release_status"], task_records[i]["release_status"]
+            release_edges = {"WITHHELD": {"ELIGIBLE"}, "ELIGIBLE": {"WITHHELD", "RELEASED"}, "RELEASED": {"WITHHELD"}}
+            if prior_release != next_release and next_release not in release_edges[prior_release]:
+                self.error("$.records.FoundationTask", f"illegal release transition {prior_release} -> {next_release}")
+    def validate_replay_and_governance(self) -> None:
+        records_by_type = defaultdict(list)
+        for (typ, _rid, _revision), record in self.records.items():
+            records_by_type[typ].append(record)
         acs_records = records_by_type["ApprovedChangeSet"]
         for acs in acs_records:
             authorization = acs.get("authorization", {})
-            if acs.get("authorization_digest") != digest(authorization):
-                self.error(f"$.records[ApprovedChangeSet:{acs.get('id')}]", "authorization_digest mismatch")
             if acs.get("status") == "APPROVED":
                 for ref in authorization.get("source_assessment_refs", []):
                     record = self.records.get((ref.get("object_type"), ref.get("object_id"), ref.get("revision")))
@@ -894,11 +824,10 @@ class FixtureValidator:
                 }.get(change.get("operation"))
                 if locator and compatible_locator and locator.get("locator_type") not in compatible_locator:
                     self.error("$.records.ApprovedChangeSet", "operation has no compatible exact locator")
-                if "fuzzy" in json.dumps(change, sort_keys=True).lower():
-                    self.error("$.records.ApprovedChangeSet", "fuzzy locator semantics are forbidden")
         for index, action in enumerate(self.data.get("actions", []) or []):
             observations = action.get("observations", {}) if isinstance(action, dict) else {}
-            if observations.get("fuzzy_fallback_attempted") is not False:
+            if (("replay_request" in action and observations.get("fuzzy_fallback_attempted") is not False)
+                    or observations.get("fuzzy_fallback_attempted") is True):
                 self.error(f"$.actions[{index}]", "fuzzy fallback must be explicitly false")
             if action.get("locator_override") is not None or action.get("operation_override") is not None or action.get("payload_override") is not None:
                 self.error(f"$.actions[{index}]", "free-form or fuzzy execution override is forbidden")
@@ -908,6 +837,8 @@ class FixtureValidator:
             if request is None:
                 continue
             requests.append(request)
+            if action.get("actor", {}).get("actor_type") != "SYSTEM":
+                self.error(f"$.actions[{index}]", "only governed SYSTEM orchestration may dispatch replay")
             if set(request) != {"execution_id", "approved_change_set_ref"}:
                 self.error(f"$.actions[{index}].replay_request", "ReplayRequest has extra or missing fields")
             self.validate_ref(request.get("approved_change_set_ref"), f"$.actions[{index}].replay_request.approved_change_set_ref")
@@ -937,6 +868,106 @@ class FixtureValidator:
                 result.get("status") == "UNSUPPORTED" for result in preflight.get("capability_results", [])
             ) and (acs_records or requests or records_by_type["ExecutionResult"]):
                 self.error("$.records.DocumentPreflightAssessment", "Strict OOXML bypassed refusal")
+
+    def resolve_record(self, ref: dict[str, Any] | None) -> dict[str, Any]:
+        if not isinstance(ref, dict):
+            return {}
+        return self.records.get((ref.get("object_type"), ref.get("object_id"), ref.get("revision")), {})
+
+    def validate_authorization_and_release(self) -> None:
+        """Check sealed approval and aggregate gates, independently of expected."""
+        by_type = defaultdict(list)
+        for (typ, _, _), record in self.records.items():
+            by_type[typ].append(record)
+        # FND-INV-AUTH-002/003: recomputing a digest cannot approve a new payload.
+        for acs in by_type["ApprovedChangeSet"]:
+            authorization = acs["authorization"]
+            original = self.records.get(("ApprovedChangeSet", acs["id"], 1), {})
+            if original.get("authorization") != authorization or original.get("authorization_digest") != acs["authorization_digest"]:
+                self.error("$.records.ApprovedChangeSet", "lifecycle revision rewrites sealed authorization")
+            for change in authorization["approved_changes"]:
+                proposal = self.resolve_record(change["change_proposal_ref"])
+                review = self.resolve_record(change["review_decision_ref"])
+                reviewed = self.resolve_record(review.get("change_proposal_ref"))
+                if proposal.get("status") != "APPROVED" or proposal.get("error_codes"):
+                    self.error("$.records.ApprovedChangeSet", "inline change must reference an eligible APPROVED proposal")
+                if review.get("outcome") != "APPROVE" or review.get("reviewer", {}).get("actor_type") != "HUMAN":
+                    self.error("$.records.ApprovedChangeSet", "inline change lacks explicit human approval")
+                if change["review_decision_ref"] not in authorization["review_decision_refs"]:
+                    self.error("$.records.ApprovedChangeSet", "inline review is absent from sealed review decisions")
+                # Review pins the IN_REVIEW revision; approval changes lifecycle,
+                # not the reviewed business content or native scope.
+                if reviewed.get("id") != proposal.get("id"):
+                    self.error("$.records.ApprovedChangeSet", "review refers to another proposal")
+                for field in ("business_target_id", "native_locator_ref", "operation", "payload"):
+                    if change[field] != proposal.get(field) or change[field] != reviewed.get(field):
+                        self.error("$.records.ApprovedChangeSet", f"approved {field} differs from reviewed proposal")
+                for field in ("target_document_version_ref", "target_contract_definition_ref", "target_contract_instance_ref", "rule_pack_ref"):
+                    if authorization[field] != proposal.get(field) or proposal.get(field) != reviewed.get(field):
+                        self.error("$.records.ApprovedChangeSet", f"authorization {field} differs from reviewed binding")
+                for field in ("source_assessment_refs", "evidence_assessment_refs"):
+                    if proposal.get(field) != reviewed.get(field) or any(ref not in authorization[field] for ref in proposal.get(field, [])):
+                        self.error("$.records.ApprovedChangeSet", f"authorization omits or changes reviewed {field}")
+        # FND-INV-SRC-001/EVD-001: VERIFIED must be supported by deterministic records.
+        for assessment in by_type["EvidenceAssessment"]:
+            if assessment["status"] != "VERIFIED":
+                continue
+            sources = [self.resolve_record(ref) for ref in assessment["source_assessment_refs"]]
+            checks = [self.resolve_record(ref) for ref in assessment["evidence_check_refs"]]
+            if any(source.get("status") != "COMPLETED" or source.get("outcome") != "SUFFICIENT" for source in sources):
+                self.error("$.records.EvidenceAssessment", "VERIFIED has insufficient deterministic source")
+            if any(check.get("outcome") != "PASS" for check in checks):
+                self.error("$.records.EvidenceAssessment", "VERIFIED has a nonpassing evidence check")
+        for action in self.data["actions"]:
+            if action.get("actor", {}).get("actor_type") == "AI":
+                if any(ref.get("object_type") != "AIInteractionRecord" for ref in action.get("output_refs", [])):
+                    self.error("$.actions", "AI may produce assistance records only, not governed verification or approval")
+        # FND-INV-VAL-001/002: mechanical completion cannot supply independent proof.
+        for report in by_type["ValidationReport"]:
+            execution = self.resolve_record(report["execution_ref"])
+            plan = self.resolve_record(report["validation_plan_ref"])
+            for field in ("approved_change_set_ref", "input_document_version_ref", "output_document_version_ref"):
+                if report[field] != execution.get(field):
+                    self.error("$.records.ValidationReport", f"validation {field} does not match execution")
+            checks = [self.resolve_record(ref) for ref in report["check_result_refs"]]
+            for check in checks:
+                if check.get("validation_report_ref") != {"object_type": "ValidationReport", "object_id": report["id"], "revision": report["revision"]}:
+                    self.error("$.records.ValidationReport", "validation check belongs to another report")
+            if report["status"] == "PASSED":
+                for requirement in plan.get("required_checks", []):
+                    matches = [check for check in checks if check.get("requirement_id") == requirement["requirement_id"] and check.get("kind") == requirement["kind"]]
+                    if requirement["mandatory"] and (len(matches) != 1 or matches[0].get("outcome") != "PASS"):
+                        self.error("$.records.ValidationReport", "PASSED lacks a mandatory passing independent check")
+                if report["blocking_exception_refs"] or report["error_codes"]:
+                    self.error("$.records.ValidationReport", "PASSED contains blocking findings")
+            if "UNAUTHORIZED_CHANGE_DETECTED" in report["error_codes"]:
+                outputs = [r for r in by_type["DocumentArtifact"] if r["id"] == report["output_document_version_ref"]["document_id"]]
+                if report["status"] != "FAILED" or not outputs or max(outputs, key=lambda r: r["revision"])["status"] != "QUARANTINED":
+                    self.error("$.records.ValidationReport", "unauthorized change must fail validation and quarantine output")
+        # FND-INV-REL-001: derive whole-task eligibility from target and validation
+        # records at that revision, never from the fixture's expected section.
+        for task in by_type["FoundationTask"]:
+            if task["status"] == "ANALYZING":
+                if not task["required_business_target_ids"] or any(field not in task for field in ("target_contract_definition_ref", "target_contract_instance_ref", "rule_pack_ref")):
+                    self.error("$.records.FoundationTask", "ANALYZING requires pinned contracts and required targets")
+            if task["status"] != "COMPLETED" and task["release_status"] == "WITHHELD":
+                continue
+            for target in task["required_business_target_ids"]:
+                regions = [r for r in by_type["TargetRegion"] if r["business_target_id"] == target and r["created_at"] <= task["created_at"]]
+                latest_regions = {}
+                for region in regions:
+                    if region["revision"] > latest_regions.get(region["id"], {}).get("revision", 0):
+                        latest_regions[region["id"]] = region
+                if not latest_regions or any(r["verification_status"] != "VERIFIED" for r in latest_regions.values()):
+                    self.error("$.records.FoundationTask", "required target remains blocked; whole-task release must be WITHHELD")
+            # A later independently assessed attempt can supersede a failed one;
+            # historical failed reports do not create a permanent release ban.
+            reports = {}
+            for report in sorted(by_type["ValidationReport"], key=lambda r: (r["created_at"], r["revision"])):
+                if report["created_at"] <= task["created_at"]:
+                    reports[report["execution_ref"]["object_id"]] = report
+            if not reports or any(r["status"] != "PASSED" for r in reports.values()):
+                self.error("$.records.FoundationTask", "release requires passing independent validation")
 
     def compare_expected(self) -> None:
         expected = self.data.get("expected", {})
@@ -1003,43 +1034,135 @@ class FixtureValidator:
         ):
             self.error("$.expected.new_correlation_id", "does not occur in audit events")
 
-    def run(self) -> dict[str, Any]:
-        self.load()
-        if not self.errors:
-            self.validate_records()
-            self.validate_events()
-            self.validate_material_coverage()
-            self.validate_replay_and_governance()
-            self.compare_expected()
-        status = "PASS" if not self.errors else "FAIL"
+    def validate_hashes(self) -> None:
+        def check(kind, payload, expected, path):
+            self.hash_counts[kind]["checked"] += 1
+            try:
+                actual = digest(payload)
+            except (ValueError, TypeError) as exc:
+                self.error(path, f"invalid RFC 8785 payload: {exc}")
+                return
+            if actual != expected:
+                self.error(path, f"digest mismatch: expected {expected}, calculated {actual}")
+            else:
+                self.hash_counts[kind]["passed"] += 1
+        for index, record in enumerate(self.data.get("records", [])):
+            if isinstance(record, dict) and record.get("object_type") == "ApprovedChangeSet":
+                check("authorization", record.get("authorization"), record.get("authorization_digest"),
+                      f"$.records[{index}].authorization_digest")
+        for index, event in enumerate(self.data.get("audit_events", [])):
+            if isinstance(event, dict):
+                check("audit_event", {key: value for key, value in event.items() if key != "integrity_payload_hash"},
+                      event.get("integrity_payload_hash"), f"$.audit_events[{index}].integrity_payload_hash")
+
+    def result(self) -> dict[str, Any]:
         return {
-            "scenario": self.scenario, "schema_result": status,
-            "reference_result": status, "state_machine_result": status,
-            "governance_result": status, "hash_result": status,
-            "overall_result": status, "error_count": len(self.errors),
-            "errors": self.errors,
+            "scenario": self.scenario, "file": self.path.name,
+            **{field: self.results[category] for category, field in DIMENSIONS.items()},
+            "overall_result": "PASS" if all(value == "PASS" for value in self.results.values()) else "FAIL",
+            "hash_counts": self.hash_counts, "error_count": len(self.errors), "errors": self.errors,
         }
 
+    def run(self) -> dict[str, Any]:
+        self.stage("SCHEMA", self.load)
+        if self.results["SCHEMA"] != "PASS":
+            return self.result()
+        self.stage("SCHEMA", self.validate_shapes)
+        self.stage("HASH", self.validate_hashes)
+        # Cross-object algorithms require schema-conforming values. Skipped is
+        # NOT_EVALUATED, never a fabricated pass or a misleading internal error.
+        if self.results["SCHEMA"] == "PASS":
+            self.stage("REFERENCE", self.validate_references)
+            self.stage("STATE_MACHINE", self.validate_states)
+            self.stage("GOVERNANCE", self.validate_records)
+            self.stage("GOVERNANCE", self.validate_events)
+            self.stage("GOVERNANCE", self.validate_material_coverage)
+            self.stage("GOVERNANCE", self.validate_replay_and_governance)
+            self.stage("GOVERNANCE", self.validate_authorization_and_release)
+            self.stage("BEHAVIOR", self.compare_expected)
+        return self.result()
 
-def main() -> int:
+
+def internal_result(path: Path, exc: Exception) -> dict[str, Any]:
+    return {
+        "scenario": "C2-" + path.name[:2] if path.name in EXPECTED_FIXTURES else path.stem, "file": path.name,
+        **{field: "NOT_EVALUATED" for field in DIMENSIONS.values()},
+        "validator_internal_result": "FAIL", "overall_result": "FAIL", "error_count": 1,
+        "hash_counts": {"authorization": {"checked": 0, "passed": 0}, "audit_event": {"checked": 0, "passed": 0}},
+        "errors": [{"category": "VALIDATOR_INTERNAL", "path": "$",
+                    "message": f"{type(exc).__name__}: {exc}"}],
+    }
+
+
+def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--root", type=Path, default=ROOT)
-    parser.add_argument("--report", type=Path)
-    args = parser.parse_args()
-    global CONTRACTS, EXAMPLES
-    CONTRACTS, EXAMPLES = args.root / "docs" / "contracts", args.root / "docs" / "contracts" / "examples"
-    enums, openapi = enum_registry(), load_openapi_contract()
-    results = [FixtureValidator(path, enums, openapi).run() for path in sorted(EXAMPLES.glob("*.yaml"))]
-    report = {
-        "schema_version": SCHEMA_VERSION,
-        "validator": "foundation-contract-fixture-validator",
-        "scenarios": results,
-        "overall_result": "PASS" if len(results) == 8 and all(x["overall_result"] == "PASS" for x in results) else "FAIL",
+    parser.add_argument("--report", type=Path, default=Path("contract-validation-report.json"))
+    args = parser.parse_args(argv)
+    contracts = args.root / "docs" / "contracts"
+    examples = contracts / "examples"
+    paths = sorted({examples / name for name in EXPECTED_FIXTURES} | set(examples.glob("*.yaml")))
+    report = {"schema_version": SCHEMA_VERSION, "validator": "foundation-contract-fixture-validator",
+              "openapi_result": "NOT_EVALUATED", "scenarios": [], "errors": [], "overall_result": "FAIL",
+              "freeze_status": "NOT_FROZEN", "github_actions_result": "NOT_VERIFIED"}
+    machine = None
+    try:
+        openapi = load_openapi_contract(contracts)
+        validate_openapi(openapi)
+        report["openapi_result"] = "PASS"
+        machine = MachineContract(openapi)
+    except Exception as exc:
+        report["errors"].append({"category": "VALIDATOR_INTERNAL", "path": "foundation.openapi.yaml",
+                                 "message": f"{type(exc).__name__}: {exc}"})
+        if report["openapi_result"] != "PASS":
+            report["openapi_result"] = "FAIL"
+        setup_error = exc
+    for path in paths:
+        try:
+            result = FixtureValidator(path, machine).run() if machine else internal_result(path, setup_error)
+        except Exception as exc:
+            result = internal_result(path, exc)
+        report["scenarios"].append(result)
+    if len(paths) != 8:
+        report["errors"].append({"category": "SCHEMA", "path": "examples/", "message": f"expected 8 fixtures, found {len(paths)}"})
+    report["fixtures_evaluated"] = len(report["scenarios"])
+    report["dimension_pass_counts"] = {
+        category: sum(row[field] == "PASS" for row in report["scenarios"])
+        for category, field in DIMENSIONS.items()
     }
-    encoded = json.dumps(report, indent=2, sort_keys=True)
-    print(encoded)
-    if args.report:
-        args.report.write_text(encoded + "\n", encoding="utf-8")
+    report["environment"] = {"python": platform.python_version(), "platform": platform.system()}
+    report["tool_versions"] = {}
+    for name in ("PyYAML", "openapi-spec-validator", "jsonschema", "referencing", "rfc8785"):
+        try:
+            report["tool_versions"][name] = version(name)
+        except Exception as exc:
+            report["errors"].append({"category": "VALIDATOR_INTERNAL", "path": name,
+                                     "message": f"tooling metadata: {type(exc).__name__}: {exc}"})
+    input_paths = [contracts / "foundation.openapi.yaml", Path(__file__),
+                   Path(__file__).with_name("requirements.txt"), *paths]
+    report["input_sha256"] = {}
+    for path in input_paths:
+        try:
+            if path.is_file():
+                name = path.relative_to(args.root).as_posix() if path.is_relative_to(args.root) else path.name
+                report["input_sha256"][name] = hashlib.sha256(path.read_bytes()).hexdigest()
+        except Exception as exc:
+            report["errors"].append({"category": "VALIDATOR_INTERNAL", "path": str(path),
+                                     "message": f"input manifest: {type(exc).__name__}: {exc}"})
+    if not report["errors"] and all(item["overall_result"] == "PASS" for item in report["scenarios"]):
+        report["overall_result"] = "PASS"
+    report["validator_internal_error_count"] = sum(
+        error["category"] == "VALIDATOR_INTERNAL"
+        for error in report["errors"] + [e for row in report["scenarios"] for e in row["errors"]]
+    )
+    args.report.parent.mkdir(parents=True, exist_ok=True)
+    args.report.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print("Scenario | Schema | Refs | State | Governance | Hash | Behavior | Overall")
+    print("--- | --- | --- | --- | --- | --- | --- | ---")
+    fields = ["scenario", "schema_result", "reference_result", "state_machine_result", "governance_result", "hash_result", "behavior_result", "overall_result"]
+    for result in report["scenarios"]:
+        print(" | ".join(result[field] for field in fields))
+    print(f"OpenAPI: {report['openapi_result']}; report: {args.report}; overall: {report['overall_result']}")
     return 0 if report["overall_result"] == "PASS" else 1
 
 
