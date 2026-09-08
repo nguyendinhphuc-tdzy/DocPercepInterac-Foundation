@@ -1,3 +1,18 @@
+## Contract Baseline
+
+Foundation Contract v0.1.0 is the frozen shared implementation contract.
+
+See:
+
+- `docs/contracts/CONTRACT_FREEZE_v0.1.md`
+- `docs/contracts/domain-model.md`
+- `docs/contracts/foundation.openapi.yaml`
+
+Any implementation that conflicts with the frozen contract must be treated
+as an implementation defect unless a formally approved contract change
+supersedes the baseline.
+
+
 # Document Processing Foundation — Current Architecture Baseline
 
 **Effective date:** 2026-09-07  

@@ -8,6 +8,7 @@ The objective is not to build an AI chatbot that reads and rewrites Office
 documents.
 
 The system must determine:
+
 1. what exists in the document,
 2. what business information requires change,
 3. whether sufficient authoritative evidence exists,
@@ -20,7 +21,7 @@ The system must determine:
 
 When documents conflict, use this precedence:
 
-1. docs/CURRENT_BASELINE.md
+1. docs/CURRENT\_BASELINE.md
 2. latest approved ADRs under docs/adr/
 3. Foundation Implementation Plan dated 2026-09-07
 4. consolidated research dated 2026-09-07
@@ -43,12 +44,13 @@ AI must not independently authorize or directly perform native document mutation
 All mutations require an ApprovedChangeSet.
 
 Execution must fail closed when:
-- document version is stale
-- locator is ambiguous
-- source is insufficient
-- operation is unsupported
-- object is protected
-- validation detects unauthorized change
+
+* document version is stale
+* locator is ambiguous
+* source is insufficient
+* operation is unsupported
+* object is protected
+* validation detects unauthorized change
 
 ## MVP Definition
 
@@ -64,21 +66,23 @@ Reduce business breadth, not architectural integrity.
 Prefer proven external engines for generic document mechanics.
 
 Foundation custom code should focus on:
-- business rules
-- target contracts
-- source sufficiency
-- evidence governance
-- mapping
-- approval
-- audit
-- orchestration
-- validation
+
+* business rules
+* target contracts
+* source sufficiency
+* evidence governance
+* mapping
+* approval
+* audit
+* orchestration
+* validation
 
 Do not create another generic DOCX/XLSX parser or serializer.
 
 ## Before Changing Code
 
 Always:
+
 1. identify the requirement being implemented
 2. identify affected contracts
 3. inspect existing implementation
@@ -89,3 +93,38 @@ Always:
 8. report evidence of completion
 
 Never claim success solely because the file opens.
+
+
+
+FOUNDATION CONTRACT FREEZE
+
+
+
+Foundation Contract v0.1.0 is frozen.
+
+
+
+Implementation must conform to:
+
+docs/contracts/
+
+
+
+Do not modify frozen contract semantics to make implementation easier.
+
+
+
+If implementation evidence reveals a contract problem:
+
+1\. stop;
+
+2\. classify the issue;
+
+3\. show evidence;
+
+4\. assess impact;
+
+5\. propose a versioned contract change;
+
+6\. do not silently update the contract.
+

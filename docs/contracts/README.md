@@ -1,3 +1,21 @@
+## Contract Status
+
+**Status:** FROZEN  
+**Version:** 0.1.0  
+**Architecture Generation:** Foundation v2  
+**Validated Baseline:** `8b6f6bba0e588ee0a7202ff98beb01259ffa25e6`
+
+Formal freeze evidence:
+
+`docs/contracts/CONTRACT_FREEZE_v0.1.md`
+
+Foundation Contract v0.1 is the implementation baseline for Backend,
+Frontend, Replay, Validation and Audit.
+
+Implementation may not silently redefine contract semantics.
+
+
+
 # Foundation Shared Contracts
 
 This directory defines the shared language between:
