@@ -1,0 +1,7 @@
+# B1.2A qualification only; never a production dependency/qualification claim.
+-c constraints-b1-docling-spike.txt
+-r requirements.txt
+docling-slim[format-docx,format-xlsx]==2.126.0
+# Observed upstream Office-backend import dependency omitted by these extras.
+# This supplement does not qualify PDF processing or replay.
+pypdfium2==5.13.0

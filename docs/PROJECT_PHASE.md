@@ -16,18 +16,26 @@ Foundation v2 Implementation Phase
 - Contract C3
 - Foundation Contract v0.1 Freeze
 
+### Completed Backend Workstream
+
+B0 — Implementation Bootstrap — ACCEPTED
+
+Accepted in PR #4, merge commit `b0f028e0b3de53debf99b38b898fbd7a9f7b9503`.
+
 ## Current Workstreams
 
 ### Backend
 
-B0 — Implementation Bootstrap
+B1 — Capability Preflight + Semantic Perception + Native Identity
 
-- typed contract models
-- state-machine enforcement
-- contract validation
-- audit foundation
-- Golden Corpus harness
-- architecture skeleton
+Current B1 iteration: B1.0 + B1.1 + B1.2A.
+
+- B1.0: phase transition and qualification plan
+- B1.1: deterministic binary capability preflight
+- B1.2A: isolated Docling-slim qualification spike
+
+Docling-slim technology qualification remains PROVISIONAL. This iteration
+does not complete B1 or authorize a production Docling adapter.
 
 ### Frontend
 
@@ -41,9 +49,14 @@ U0 — Governed Workspace Bootstrap
 - exception UX
 - approval UX
 
-## Next Backend Phase
+## Deferred Backend Work
 
-B1 — Capability Preflight + Semantic Perception + Native Identity
+- B1.2B — Production Docling Adapter
+- B1.3 — Production Native Office Identity / Locator implementation
+- B1.4 — Semantic → Native Binding
+- B1.5 — Integrated B1 Qualification
+
+Each requires explicit later authorization and its own evidence gates.
 
 ## Next Frontend Phase
 
