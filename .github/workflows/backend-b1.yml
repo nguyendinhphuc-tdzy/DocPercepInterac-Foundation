@@ -53,17 +53,20 @@ jobs:
       - name: Golden and perception qualification tests
         run: python -m pytest tests/golden -q
       - name: Generate preflight evidence
-        run: python tools/b1/preflight_probe.py --report .b1-ci-reports/preflight.json
+        run: python tools/b1/preflight_probe.py --report b1-ci-reports/preflight.json
       - name: Run three conversions per corpus case
-        run: python tools/b1/docling_probe.py --report .b1-ci-reports/docling-qualification.json
+        run: python tools/b1/docling_probe.py --report b1-ci-reports/docling-qualification.json
       - name: Compile B1 boundaries
         run: python -m compileall -q foundation/adapters/preflight foundation/evaluation/perception foundation/ports tools/b1 tests/backend/b1 tests/golden/b1
+      - name: Verify qualification evidence artifacts
+        run: python tools/b1/verify_ci_artifacts.py
       - name: Upload qualification evidence
         if: always()
         uses: actions/upload-artifact@v7
         with:
           name: foundation-b1-qualification
           path: |
-            .b1-ci-reports/*.json
+            b1-ci-reports/preflight.json
+            b1-ci-reports/docling-qualification.json
             contract-validation-report.json
           if-no-files-found: error

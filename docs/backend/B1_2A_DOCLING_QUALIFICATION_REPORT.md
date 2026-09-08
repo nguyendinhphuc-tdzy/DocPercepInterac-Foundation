@@ -217,8 +217,35 @@ score, latency SLO, rendering comparison or mutation qualification is claimed.
 Machine evidence is `tests/golden/reports/b1/docling-qualification.json`;
 preflight evidence is `tests/golden/reports/b1/preflight.json`. Tests independently
 check known content, table shapes, repeated output, input hashes and failures.
-Local Python checks passed; hosted Linux GitHub Actions has not run for this
-unpublished branch. Cross-platform qualification remains open.
+
+Previous hosted CI run (GitHub Actions run ID 34213137801) completed with SUCCESS:
+- Platform: Ubuntu 24.04
+- Python: 3.12.14
+- Docling candidate: 2.126.0
+- Contract scenarios: 8/8 PASS
+- Contract regression tests: 23 PASS
+- Backend tests: 112 PASS
+- Golden tests: 5 PASS
+- Docling stable payload SHA256: `236dae3459fe6cd73d34077502879836aaefa8b7e173e78aa2965ff2d80655e0`
+
+This hosted Linux stable payload matched the Windows qualification result for the same
+candidate, configuration, and synthetic corpus.
+This provides cross-platform repeatability evidence for the tested synthetic corpus.
+It is NOT:
+- production determinism
+- production accuracy
+- Local File qualification
+- NativeLocator stability
+
+Observed defect in prior run:
+The prior hosted run generated qualification reports in `.b1-ci-reports/`. Because
+`actions/upload-artifact@v7` runs with default `include-hidden-files: false`, only
+`contract-validation-report.json` was retained in the workflow artifact, omitting
+`preflight.json` and `docling-qualification.json`.
+This micro-hardening pass updates report generation to non-hidden `b1-ci-reports/`,
+configures explicit upload paths for all three evidence files, adds pre-upload existence
+and format verification via `tools/b1/verify_ci_artifacts.py`, and adds unit tests in
+`tests/backend/b1/test_ci_artifacts.py`.
 
 ## 19. B1.2B recommendation
 

@@ -94,15 +94,16 @@ The commands below use that interpreter as `python`, with
 | --- | --- |
 | `python tools/contracts/validate_contract_fixtures.py --report contract-validation-report.json` | OpenAPI PASS; 8/8 scenarios PASS in every dimension |
 | `python -m unittest discover -s tests/contracts -v` | 23 passed |
-| `python -m pytest tests/backend -q` | 112 passed, 0 skipped |
+| `python -m pytest tests/backend -q` | 124 passed, 0 skipped |
 | `python -m pytest tests/golden -q` | 5 passed, 0 skipped |
-| `python tools/b1/preflight_probe.py` | Three COMPLETED assessments; malformed FAILED; artifacts generated |
-| `python tools/b1/docling_probe.py` | Four expected behaviors PASS, three runs each; PROVISIONAL_CONTINUE |
+| `python tools/b1/preflight_probe.py --report b1-ci-reports/preflight.json` | Three COMPLETED assessments; malformed FAILED; artifacts generated |
+| `python tools/b1/docling_probe.py --report b1-ci-reports/docling-qualification.json` | Four expected behaviors PASS, three runs each; PROVISIONAL_CONTINUE |
+| `python tools/b1/verify_ci_artifacts.py` | PASS; all three evidence files verified and valid JSON |
 | `python -m pip check` | No broken requirements |
-| `python -m compileall -q foundation/domain foundation/governance foundation/audit foundation/ports foundation/evaluation foundation/adapters/preflight tools/b1 tests/backend tests/golden` | PASS |
+| `python -m compileall -q foundation/adapters/preflight foundation/evaluation/perception foundation/ports tools/b1 tests/backend/b1 tests/golden/b1` | PASS |
 | `git diff --check` | PASS |
 
-The aggregate includes 35 new B1 tests (25 preflight, 7 perception, 3 Golden).
+The aggregate includes 47 new B1 tests (25 preflight, 7 perception, 3 Golden, 12 CI artifact retention).
 All 82 original B0 backend/Golden tests also passed under the independent
 `.venv-contracts/Scripts/python.exe` using:
 
@@ -122,24 +123,57 @@ their checks. Changed Markdown fences and new workflow YAML are checked locally.
 New workflow: `.github/workflows/backend-b1.yml`, job
 `Foundation Backend B1 qualification`, Python 3.12, actions v7. It installs pinned
 B0 and isolated B1 tooling, requires the candidate, runs contract/B0/B1/Golden
-checks, compiles the new boundaries and uploads fresh reports. Existing required
+checks, compiles the new boundaries, verifies evidence artifacts, and uploads fresh reports. Existing required
 check names, triggers and behavior are unchanged.
 
-Hosted GitHub Actions result: NOT_RUN for this unpublished work. Local steps
-passed; this does not prove Linux runner compatibility. No push or merge is
-authorized by this task. The branch is retained locally for review.
+Previous hosted run: 34213137801
+Result: SUCCESS
+
+Verified prior hosted evidence:
+- Platform: Ubuntu 24.04
+- Python: 3.12.14
+- Docling: 2.126.0
+- Contract: 8/8 PASS
+- Contract tests: 23 PASS
+- Backend: 112 PASS
+- Golden: 5 PASS
+- Docling stable payload SHA256: `236dae3459fe6cd73d34077502879836aaefa8b7e173e78aa2965ff2d80655e0`
+
+Observed defect in prior run:
+Qualification reports were generated successfully, but hidden-path artifact retention
+(`.b1-ci-reports/` skipped under `actions/upload-artifact@v7` default `include-hidden-files: false`)
+caused only one file (`contract-validation-report.json`) to be uploaded instead of all three expected
+evidence files (`preflight.json`, `docling-qualification.json`, `contract-validation-report.json`).
+
+Micro-hardening fix:
+This pass changes artifact retention only. It moves report generation to `b1-ci-reports/`,
+adds explicit artifact paths to workflow upload, adds pre-upload gate `tools/b1/verify_ci_artifacts.py`,
+and adds unit testing in `tests/backend/b1/test_ci_artifacts.py`.
+
+Cross-platform repeatability finding:
+The hosted Ubuntu 24.04 run produced the exact same stable payload SHA256 (`236dae3459fe6cd73d34077502879836aaefa8b7e173e78aa2965ff2d80655e0`)
+as local Windows execution for the same candidate/configuration/synthetic corpus.
+This is cross-platform repeatability evidence for the tested synthetic corpus.
+It is NOT:
+- production determinism
+- production accuracy
+- Local File qualification
+- NativeLocator stability
+
+Qualification status remains strictly PROVISIONAL_CONTINUE. Representative Local File corpus gate remains open.
+Hosted CI verification of the new micro-hardening run remains pending until pushed and evaluated.
 
 ## File inventory and remaining gates
 
-Modified: `docs/PROJECT_PHASE.md` only.
+Modified: `docs/PROJECT_PHASE.md`, `.github/workflows/backend-b1.yml`, and documentation reports.
 
 Created:
 
 - This report, the B1 qualification plan and B1.2A findings report in `docs/backend/`.
 - `foundation/ports/content.py` and three files under `foundation/adapters/preflight/`.
 - Two evaluation files under `foundation/evaluation/perception/`.
-- Three CLI/fixture builder files under `tools/b1/` and two pinned dependency files.
-- B1 preflight/perception tests, Golden tests and their README.
+- Four CLI/fixture builder files under `tools/b1/` (including `verify_ci_artifacts.py`) and two pinned dependency files.
+- B1 preflight/perception/artifact tests (including `test_ci_artifacts.py`), Golden tests and their README.
 - Four synthetic binaries, corpus manifest and two machine report snapshots.
 - `.github/workflows/backend-b1.yml`.
 
