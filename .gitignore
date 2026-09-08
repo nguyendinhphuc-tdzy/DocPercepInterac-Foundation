@@ -45,3 +45,6 @@ foundation/.lineage_logs/
 # Generated at runtime by applications/pilot/event_log.py — pilot
 # instrumentation event logs, never source
 foundation/.pilot_logs/
+
+# Local representative qualification metadata/evidence, never public corpus.
+.foundation-private/

@@ -9,17 +9,21 @@ on:
       - 'tests/golden/**'
       - 'tools/backend/**'
       - 'tools/b1/**'
+      - 'qualification/b1/representative/**'
+      - '.gitignore'
       - 'docs/backend/**'
       - 'docs/PROJECT_PHASE.md'
       - '.github/workflows/backend-b1.yml'
   push:
-    branches: ['build/backend-b1-*']
+    branches: ['build/backend-b1-*', 'qualification/backend-b1-representative']
     paths:
       - 'foundation/**'
       - 'tests/backend/b1/**'
       - 'tests/golden/**'
       - 'tools/backend/**'
       - 'tools/b1/**'
+      - 'qualification/b1/representative/**'
+      - '.gitignore'
       - 'docs/backend/**'
       - 'docs/PROJECT_PHASE.md'
       - '.github/workflows/backend-b1.yml'
@@ -50,6 +54,8 @@ jobs:
         run: python -m unittest discover -s tests/contracts -v
       - name: B0 and B1 backend tests
         run: python -m pytest tests/backend -q
+      - name: Verify private corpus Git boundary
+        run: python tools/b1/verify_private_corpus_boundary.py
       - name: Golden and perception qualification tests
         run: python -m pytest tests/golden -q
       - name: Generate preflight evidence

@@ -1,0 +1,26 @@
+{
+  "evaluation_version": "1.0.0",
+  "required_profiles": [
+    "NARRATIVE",
+    "TABLES"
+  ],
+  "coverage_review": {
+    "status": "PENDING",
+    "reviewer_id": "",
+    "rationale": ""
+  },
+  "cases": [
+    {
+      "case_id": "LF-DOCX-001",
+      "local_path": "REPLACE_PRIVATELY.docx",
+      "format": "DOCX",
+      "document_role": "TARGET",
+      "privacy_classification": "CONFIDENTIAL",
+      "expected_feature_profile": [
+        "NARRATIVE",
+        "TABLES"
+      ],
+      "review_status": "PENDING"
+    }
+  ]
+}
