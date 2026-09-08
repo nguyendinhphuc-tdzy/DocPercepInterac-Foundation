@@ -1,0 +1,17 @@
+schema_version: "0.1.0"
+manifest_id: "b0-synthetic-corpus"
+qualification_claimed: false
+cases:
+  - case_id: "synthetic-docx-run-text"
+    input_document:
+      uri: "urn:foundation:golden:synthetic-docx"
+      sha256: "1111111111111111111111111111111111111111111111111111111111111111"
+      media_type: "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+    input_hash: "1111111111111111111111111111111111111111111111111111111111111111"
+    format: "DOCX"
+    feature_profile: ["SYNTHETIC", "DOCX_RUN_TEXT"]
+    operation: "REPLACE_RUN_TEXT"
+    expected_capability: "SUPPORTED"
+    expected_preservation: ["OUTSIDE_APPROVED_SCOPE_UNCHANGED"]
+    expected_failure: null
+    qualification_scope: "HARNESS_SELF_TEST_ONLY"

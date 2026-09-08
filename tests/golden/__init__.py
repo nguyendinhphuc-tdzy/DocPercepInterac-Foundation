@@ -1,0 +1,1 @@
+"""Golden Corpus harness tests."""
