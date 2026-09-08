@@ -1,0 +1,26 @@
+{
+  "failed_cases": 0,
+  "manifest_id": "b0-synthetic-corpus",
+  "overall_result": "PASS",
+  "passed_cases": 1,
+  "qualification_claimed": false,
+  "results": [
+    {
+      "case_id": "synthetic-docx-run-text",
+      "differences": [],
+      "observation": {
+        "adapter_id": "b0-dummy-adapter",
+        "adapter_version": "0.1.0",
+        "case_id": "synthetic-docx-run-text",
+        "error_code": null,
+        "observed_capability": "SUPPORTED",
+        "preservation_observations": [
+          "OUTSIDE_APPROVED_SCOPE_UNCHANGED"
+        ]
+      },
+      "passed": true
+    }
+  ],
+  "schema_version": "0.1.0",
+  "total_cases": 1
+}

@@ -29,6 +29,8 @@ pandas
 
 # --- Shared / schema ---
 pydantic>=2
+rfc8785==0.1.4
+PyYAML==6.0.3
 python-multipart
 
 # --- Access layer (Flask, per v3) ---
