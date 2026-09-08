@@ -218,34 +218,84 @@ Machine evidence is `tests/golden/reports/b1/docling-qualification.json`;
 preflight evidence is `tests/golden/reports/b1/preflight.json`. Tests independently
 check known content, table shapes, repeated output, input hashes and failures.
 
-Previous hosted CI run (GitHub Actions run ID 34213137801) completed with SUCCESS:
+### Verified hosted micro-hardening CI evidence
+
+Commit: `4ca85288ab5f8c9365c1f39fa06a2a18d5621bfb`
+
+B0 GitHub Actions:
+- Workflow: Foundation Backend B0
+- Run ID: 34216321034
+- Head SHA: `4ca85288ab5f8c9365c1f39fa06a2a18d5621bfb`
+- Conclusion: SUCCESS
+
+B1 GitHub Actions:
+- Workflow: Foundation Backend B1
+- Run ID: 34216321161
+- Head SHA: `4ca85288ab5f8c9365c1f39fa06a2a18d5621bfb`
+- Conclusion: SUCCESS
+
+All B1 hosted workflow steps completed successfully:
+- Validate frozen contract: SUCCESS
+- Contract regression tests: SUCCESS
+- B0 and B1 backend tests: SUCCESS
+- Golden and perception qualification tests: SUCCESS
+- Generate preflight evidence: SUCCESS
+- Run three conversions per corpus case: SUCCESS
+- Compile B1 boundaries: SUCCESS
+- Verify qualification evidence artifacts: SUCCESS
+- Upload qualification evidence: SUCCESS
+
+Retained qualification artifact:
+- Artifact ID: 10051954863
+- Name: `foundation-b1-qualification`
+- Size: 19,572 bytes
+- Digest: `sha256:9783c006f2727e43523a3c31874e3593d55ea9c845b66914509ec1b5dd1a2f94`
+- Required evidence files configured and verified before upload:
+  1. `b1-ci-reports/preflight.json`
+  2. `b1-ci-reports/docling-qualification.json`
+  3. `contract-validation-report.json`
+
+The pre-upload artifact verification gate confirmed all three required evidence files existed, were regular files, were non-empty valid JSON objects, and contained the required minimum semantic keys. The subsequent GitHub artifact upload step completed successfully and produced artifact 10051954863.
+
+Docling stable payload SHA256:
+```text
+236dae3459fe6cd73d34077502879836aaefa8b7e173e78aa2965ff2d80655e0
+```
+
+### Evidence boundary
+
+The matching Windows and hosted Linux (Ubuntu 24.04) stable payload is evidence of cross-platform repeatability for:
+- the identical candidate (`docling-slim[format-docx,format-xlsx]==2.126.0`, `pypdfium2==5.13.0`),
+- identical tested configuration,
+- the tested synthetic corpus.
+
+It is NOT evidence of:
+- production determinism
+- production accuracy
+- representative Local File qualification
+- NativeLocator stability
+- NativeBinding correctness
+- replay correctness
+- document mutation qualification
+- semantic/business mapping accuracy
+
+### Prior hosted run (defect context)
+
+Prior hosted CI run (GitHub Actions run ID 34213137801) completed with SUCCESS on job execution:
 - Platform: Ubuntu 24.04
 - Python: 3.12.14
 - Docling candidate: 2.126.0
 - Contract scenarios: 8/8 PASS
 - Contract regression tests: 23 PASS
-- Backend tests: 112 PASS
+- Backend tests: 112 PASS (B0 environment)
 - Golden tests: 5 PASS
 - Docling stable payload SHA256: `236dae3459fe6cd73d34077502879836aaefa8b7e173e78aa2965ff2d80655e0`
 
-This hosted Linux stable payload matched the Windows qualification result for the same
-candidate, configuration, and synthetic corpus.
-This provides cross-platform repeatability evidence for the tested synthetic corpus.
-It is NOT:
-- production determinism
-- production accuracy
-- Local File qualification
-- NativeLocator stability
-
 Observed defect in prior run:
-The prior hosted run generated qualification reports in `.b1-ci-reports/`. Because
-`actions/upload-artifact@v7` runs with default `include-hidden-files: false`, only
-`contract-validation-report.json` was retained in the workflow artifact, omitting
-`preflight.json` and `docling-qualification.json`.
-This micro-hardening pass updates report generation to non-hidden `b1-ci-reports/`,
-configures explicit upload paths for all three evidence files, adds pre-upload existence
-and format verification via `tools/b1/verify_ci_artifacts.py`, and adds unit tests in
-`tests/backend/b1/test_ci_artifacts.py`.
+The prior hosted run generated qualification reports in `.b1-ci-reports/`. Because `actions/upload-artifact@v7` runs with default `include-hidden-files: false`, only `contract-validation-report.json` was retained in the workflow artifact, omitting `preflight.json` and `docling-qualification.json`.
+
+Micro-hardening fix:
+The micro-hardening pass updated report generation to non-hidden `b1-ci-reports/`, configured explicit upload paths for all three evidence files, added pre-upload existence and format verification via `tools/b1/verify_ci_artifacts.py`, and added unit tests in `tests/backend/b1/test_ci_artifacts.py`. This was verified in hosted runs 34216321034 (B0) and 34216321161 (B1), successfully retaining all three evidence files in artifact 10051954863.
 
 ## 19. B1.2B recommendation
 
@@ -262,5 +312,29 @@ not silently advance to B1.2B or close its gates.
 
 ## 20. Qualification status
 
-**PROVISIONAL_CONTINUE**, with the representative-corpus, packaging/API,
-production-adapter, native-identity, binding and replay evidence gates still open.
+**PROVISIONAL_CONTINUE.**
+
+The qualification status remains strictly PROVISIONAL_CONTINUE. It is NOT promoted to:
+- QUALIFIED
+- PRODUCTION_READY
+- ACCEPTED_FOR_PRODUCTION
+- SUPPORTED
+- production baseline
+
+The following architectural gates remain strictly OPEN and deferred:
+- Representative approved Local File corpus qualification
+- B1.2B Production Docling Adapter
+- Public API / packaging profile decision
+- Semantic-loss handling policy
+- Resource lifecycle integration
+- Audit/lifecycle integration design
+- B1.3 Native Identity / Native Locator
+- Formula versus cached-value native capture
+- Protection-scope qualification
+- B1.4 Semantic → Native Binding
+- B1.5 integrated qualification / replay qualification where applicable
+- Controlled replay production implementation
+- Execution engine qualification
+- Production accuracy
+- Production performance/SLO qualification
+- End-to-end Local File MVP validation
