@@ -10,10 +10,12 @@ The adapter now enforces XML capacity incrementally before structural inspection
 without retaining all expanded ZIP members or constructing XML DOMs. Binary
 verification, package integrity, namespace/conformance rules, native and unknown
 findings, protection observations and operation-specific capabilities are preserved.
-Audit remediation 1.1.1 also establishes a deliberately narrow ZIP admission
+Audit remediation 1.1.1 also established a deliberately narrow ZIP admission
 profile: only stored members with local/central header agreement and contiguous
 physical member layout are qualified. DEFLATE, BZIP2, LZMA and data-descriptor
-layouts fail closed before member decompression.
+layouts fail closed before member decompression. Final integrity remediation
+1.1.2 forces every admitted member, including an empty member, through
+ZipExtFile's terminal CRC check.
 
 This implements the approved HYBRID C+D direction: sequential phases and shared
 streaming reducers. Optional control-part DOMs proved unnecessary: existing
@@ -31,10 +33,12 @@ is included.
 - **F01 closed:** Expat errors and parser-originated ValueError/LookupError codec
   failures now return FAILED / CORRUPTED_DOCUMENT with a fixed reason in either
   pass. Observation-reducer exceptions are re-raised as implementation failures.
-- **F02 closed for the admitted profile:** the ineffective request for one byte
-  beyond ZipExtFile's declared view was removed. Stored-member local and central
-  fields, local extra data and physical boundaries are validated before reads;
-  an understated member with a hidden suffix fails as CORRUPTED_DOCUMENT.
+- **F02 closed for the admitted profile:** stored-member local and central fields,
+  local extra data and physical boundaries are validated before reads, so an
+  understated member with a hidden suffix fails as CORRUPTED_DOCUMENT. After
+  consuming the declared bytes, a terminal ZipExtFile read finalizes CRC checking,
+  including for zero-length members. Foundation does not claim that this terminal
+  read exposes bytes beyond the declared size.
 - **F03 closed:** STORED is the only qualified compression method. DEFLATE,
   BZIP2, LZMA and data-descriptor layouts fail before member decompression.
 - **F04 closed:** finding occurrence identity is deterministic and distinct from
@@ -88,9 +92,9 @@ next part; only reduced observations remain for final validation and evidence.
 
 | Item | Accepted baseline | PR before remediation | Remediated |
 | --- | --- | --- | --- |
-| OoxmlPreflight engine version | 1.0.0 | 1.1.0 | 1.1.1 |
+| OoxmlPreflight engine version | 1.0.0 | 1.1.0 | 1.1.2 |
 | PreflightConfig profile version | 1.0.0 | 1.1.0 | 1.1.1 |
-| Streaming parser strategy version | N/A | 1.0.0 | 1.1.0 |
+| Streaming parser strategy version | N/A | 1.0.0 | 1.1.1 |
 | max_package_bytes | 33,554,432 | 33,554,432 | 33,554,432 |
 | max_uncompressed_bytes | 134,217,728 | 134,217,728 | 134,217,728 |
 | max_part_bytes | 16,777,216 | 16,777,216 | 16,777,216 |
@@ -107,11 +111,13 @@ environment produce identical evidence.
 The ZIP trust boundary is explicit. Python ZipFile supplies parsed central-directory
 metadata and CRC verification for admitted reads. Foundation does not claim that
 ZipExtFile can reveal bytes beyond its declared expanded size. Before opening any
-member, Foundation instead compares the admitted stored member's central metadata
-with its local header and requires its physical data end to equal the next local
-header or central-directory start. This closes hidden physical suffixes for the
-qualified stored-only profile without adding a general ZIP decompressor. Other
-compression/layout profiles remain unsupported pending separate qualification.
+member, Foundation compares the admitted stored member's central metadata with its
+local header and requires its physical data end to equal the next local header or
+central-directory start. This closes hidden physical suffixes for the qualified
+stored-only profile. After the declared bytes are consumed, a terminal ZipExtFile
+read triggers CRC finalization, including for zero-length members. No second CRC
+algorithm or general ZIP decompressor is introduced. DEFLATE and other compression
+or layout profiles remain unsupported pending separate qualification.
 
 Old profile versions are not silently relabeled. Historical assessments, artifacts
 and reviews remain intact. New engine/configuration observations require new
@@ -179,7 +185,10 @@ are refused before ZipFile.open, while stored packages remain admitted. Repeated
 identical protection observations preserve a shared observation_ref but receive
 unique deterministic finding IDs. Each finding ID combines the stable traversal
 occurrence ordinal with its evidence digest; IDs are unique within the assessment,
-repeatable across identical runs and do not create native execution identity.
+repeatable across identical runs and do not create native execution identity. A
+valid empty stored member reaches the terminal integrity read and remains admitted;
+matching forged local and central CRC metadata on an empty member fails as
+CORRUPTED_DOCUMENT through ZipExtFile's CRC check.
 
 ## Local validation evidence
 
@@ -190,9 +199,9 @@ explicitly authorized; no private Docling or representative Run-001 was invoked.
 | --- | --- |
 | Contract fixture validator | OpenAPI PASS; 8/8 scenarios PASS |
 | Contract unittest suite | 23 passed |
-| Focused preflight tests | 72 passed: 25 original-module + 47 resource-safe/remediation |
+| Focused preflight tests | 74 passed: 25 original-module + 49 resource-safe/remediation |
 | Representative/privacy tests | 83 passed |
-| Full backend tests | 254 passed |
+| Full backend tests | 256 passed |
 | Golden tests | 5 passed |
 | Private corpus boundary | PASS |
 | pip check | No broken requirements |

@@ -71,6 +71,24 @@ def understate_stored_member(data, name, exposed):
         offset += 46 + name_length
 
 
+def forge_member_crc(data, name, forged_crc):
+    """Make local and central CRC metadata agree on the same wrong value."""
+    result = bytearray(data)
+    with ZipFile(BytesIO(result)) as archive:
+        info = archive.getinfo(name)
+    pack_into('<I', result, info.header_offset + 14, forged_crc)
+    offset = 0
+    while True:
+        offset = result.find(b'PK\x01\x02', offset)
+        if offset < 0:
+            raise AssertionError('central directory entry not found')
+        name_length = unpack_from('<H', result, offset + 28)[0]
+        if result[offset + 46:offset + 46 + name_length] == name.encode():
+            pack_into('<I', result, offset + 16, forged_crc)
+            return bytes(result)
+        offset += 46 + name_length
+
+
 def parity_parts(case):
     p=docx_parts(True) if case!='xlsx' else xlsx_parts()
     if case=='strict': p={k:v.replace(W,old.WS).replace(R,old.RS) for k,v in p.items()}
@@ -96,7 +114,7 @@ def test_old_new_semantic_equivalence(case):
 
 def test_versioned_mechanics_preserve_all_numeric_defaults():
     new=asdict(PreflightConfig()); previous=asdict(old.PreflightConfig())
-    assert OoxmlPreflight.version=='1.1.1' and new.pop('profile_version')=='1.1.1'
+    assert OoxmlPreflight.version=='1.1.2' and new.pop('profile_version')=='1.1.1'
     previous.pop('profile_version'); assert new==previous
 
 
@@ -135,6 +153,46 @@ def test_observer_programmer_error_is_not_normalized_as_input_failure(monkeypatc
 def test_qualified_stored_compression_is_accepted():
     result = run(package_with_compression(docx_parts(), ZIP_STORED))
     assert result.assessment.status.value == 'COMPLETED'
+
+
+def test_valid_zero_length_member_reaches_terminal_integrity_read(monkeypatch):
+    data = package_with_compression({**docx_parts(), 'zero.bin': b''}, ZIP_STORED)
+    reads = []
+    original = ZipFile.open
+
+    class TrackedStream:
+        def __init__(self, stream):
+            self.stream = stream
+
+        def __enter__(self):
+            self.stream.__enter__()
+            return self
+
+        def __exit__(self, *args):
+            return self.stream.__exit__(*args)
+
+        def read(self, size=-1):
+            reads.append(size)
+            return self.stream.read(size)
+
+    def tracked_open(self, member, *args, **kwargs):
+        stream = original(self, member, *args, **kwargs)
+        name = member.filename if hasattr(member, 'filename') else member
+        return TrackedStream(stream) if name == 'zero.bin' else stream
+
+    monkeypatch.setattr(ZipFile, 'open', tracked_open)
+    result = run(data)
+    assert result.assessment.status.value == 'COMPLETED'
+    assert reads == [1]
+
+
+def test_forged_crc_zero_length_member_fails_closed():
+    data = package_with_compression({**docx_parts(), 'zero.bin': b''}, ZIP_STORED)
+    result = run(forge_member_crc(data, 'zero.bin', 0x12345678))
+    assert result.assessment.status.value == 'FAILED'
+    assert [code.value for code in result.assessment.error_codes] == ['CORRUPTED_DOCUMENT']
+    failure = json.loads(result.artifacts[-1].data)
+    assert failure['reason'] == 'Unreadable ZIP structure or CRC'
 
 
 @pytest.mark.parametrize('compression', [ZIP_DEFLATED, ZIP_BZIP2, ZIP_LZMA])
@@ -301,6 +359,7 @@ def test_constant_numeric_profile_and_explicit_parser_provenance():
     configuration=json.loads(result.artifacts[0].data)
     assert configuration['config']==asdict(PreflightConfig())
     strategy=configuration['parser_strategy']
+    assert strategy['strategy_version'] == '1.1.1'
     assert strategy['dom']=='NONE' and 'CONTROL_XML' in strategy and 'BULK_XML' in strategy
     assert strategy['dtd']==strategy['external_entities']=='REFUSED'
     assert strategy['qualified_zip_compression_methods'] == [{'code': ZIP_STORED, 'name': 'STORED'}]

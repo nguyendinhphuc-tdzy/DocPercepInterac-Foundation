@@ -8,7 +8,7 @@ from foundation.domain import ErrorCode
 
 CHUNK_BYTES = 64 * 1024
 PARSER_STRATEGY = {
-    'strategy_version': '1.1.0',
+    'strategy_version': '1.1.1',
     'capacity': 'sequential streaming pre-pass; aggregate start-element gate',
     'CONTROL_XML': 'content types and .rels; shared events plus direct-child records',
     'BULK_XML': 'all other .xml; shared events without tree or text retention',
@@ -113,6 +113,10 @@ def member_chunks(archive, info, budget):
             if consumed > budget.config.max_part_bytes or budget.expanded_bytes > budget.config.max_uncompressed_bytes:
                 raise InspectionFailure(ErrorCode.DOCUMENT_TOO_LARGE, 'Configured expanded package limits exceeded')
             yield block
+        # Force ZipExtFile through its terminal CRC check, including when the
+        # declared expanded size is zero. Physical suffixes are handled by
+        # validate_package_profile(), not by this terminal read.
+        stream.read(1)
     if consumed != info.file_size:
         raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'Expanded member size disagrees with ZIP metadata')
 

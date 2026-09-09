@@ -125,7 +125,7 @@ class PartObservation:
 
 class OoxmlPreflight:
     engine = 'foundation-ooxml-preflight'
-    version = '1.1.1'
+    version = '1.1.2'
 
     def __init__(self, resolver: DocumentContentResolverPort, config: PreflightConfig | None = None):
         self.resolver, self.config = resolver, config or PreflightConfig()
