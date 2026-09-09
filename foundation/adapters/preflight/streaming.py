@@ -17,8 +17,13 @@ UTF8_NAME_FLAG = 0x0800
 DATA_DESCRIPTOR_FLAG = 0x0008
 STORED_ALLOWED_FLAGS = UTF8_NAME_FLAG
 DEFLATE_ALLOWED_FLAGS = UTF8_NAME_FLAG | 0x0006
+ZIP64_EXTRA_FIELD_ID = 0x0001
+OPC_GROWTH_HINT_EXTRA_FIELD_ID = 0xA220
+OPC_GROWTH_HINT_SIGNATURE = 0xA028
+ENCRYPTION_EXTRA_FIELD_IDS = frozenset((0x0014, 0x0015, 0x0016, 0x0017, 0x9901))
 PARSER_STRATEGY = {
     'strategy_version': '1.2.0',
+    'implementation_revision': 'opc-growth-hint-allowlist-1',
     'capacity': 'sequential streaming pre-pass; aggregate start-element gate',
     'CONTROL_XML': 'content types and .rels; shared events plus direct-child records',
     'BULK_XML': 'all other .xml; shared events without tree or text retention',
@@ -34,7 +39,13 @@ PARSER_STRATEGY = {
         'STORED': STORED_ALLOWED_FLAGS,
         'DEFLATE': DEFLATE_ALLOWED_FLAGS,
     },
-    'physical_member_layout': 'local/central fields equal; members contiguous before central directory',
+    'physical_member_layout': 'local/central core fields agree; members contiguous before central directory',
+    'zip_extra_field_policy': {
+        'LOCAL': {'0xA220': 'OPC Growth Hint; signature 0xA028 and zero padding required'},
+        'CENTRAL': {},
+        'duplicates': 'REFUSED',
+        'unknown': 'REFUSED',
+    },
     'deflate_compressed_input_chunk_bytes': DEFLATE_INPUT_CHUNK_BYTES,
     'deflate_expanded_output_chunk_bytes': DEFLATE_OUTPUT_CHUNK_BYTES,
     'deflate_window_bits': DEFLATE_WINDOW_BITS,
@@ -62,8 +73,21 @@ class MemberEnvelope:
     data_end: int
 
 
-def _extra_fields(extra):
+@dataclass(frozen=True)
+class ExtraFieldRecord:
+    header_id: int
+    declared_length: int
+    payload: bytes
+    location: str
+    occurrence: int
+
+
+def _extra_fields(extra, location):
+    """Parse a complete ZIP extra-field sequence without interpreting payloads."""
     offset = 0
+    occurrence = 0
+    records = []
+    seen = set()
     while offset < len(extra):
         if offset + 4 > len(extra):
             raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'Malformed ZIP extra field')
@@ -72,8 +96,36 @@ def _extra_fields(extra):
         end = offset + length
         if end > len(extra):
             raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'Malformed ZIP extra field')
-        yield kind
+        if kind in seen:
+            raise InspectionFailure(
+                ErrorCode.UNSUPPORTED_FILE_FORMAT,
+                f'Duplicate ZIP extra field is outside qualified {location} profile',
+            )
+        seen.add(kind)
+        records.append(ExtraFieldRecord(kind, length, extra[offset:end], location, occurrence))
+        occurrence += 1
         offset = end
+    return tuple(records)
+
+
+def _validate_extra_fields(extra, location):
+    records = _extra_fields(extra, location)
+    for record in records:
+        if record.header_id == ZIP64_EXTRA_FIELD_ID:
+            raise InspectionFailure(ErrorCode.UNSUPPORTED_FILE_FORMAT, 'ZIP64 is outside qualified preflight profile')
+        if record.header_id in ENCRYPTION_EXTRA_FIELD_IDS:
+            raise InspectionFailure(ErrorCode.ENCRYPTED_DOCUMENT, 'ZIP encryption extra field is outside qualified preflight profile')
+        if record.header_id != OPC_GROWTH_HINT_EXTRA_FIELD_ID or location != 'LOCAL':
+            raise InspectionFailure(
+                ErrorCode.UNSUPPORTED_FILE_FORMAT,
+                f'ZIP extra field is outside qualified {location} profile',
+            )
+        if record.declared_length < 4:
+            raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'Malformed OPC Growth Hint extra field')
+        signature, _padding_initial_value = unpack_from('<HH', record.payload)
+        if signature != OPC_GROWTH_HINT_SIGNATURE or any(record.payload[4:]):
+            raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'Malformed OPC Growth Hint extra field')
+    return records
 
 
 def validate_package_profile(data, infos, central_directory_offset):
@@ -103,8 +155,7 @@ def validate_package_profile(data, infos, central_directory_offset):
                 ErrorCode.UNSUPPORTED_FILE_FORMAT,
                 'ZIP general-purpose flags are outside qualified preflight profile',
             )
-        if 0x0001 in set(_extra_fields(info.extra)):
-            raise InspectionFailure(ErrorCode.UNSUPPORTED_FILE_FORMAT, 'ZIP64 is outside qualified preflight profile')
+        _validate_extra_fields(info.extra, 'CENTRAL')
 
     ordered = sorted(infos, key=lambda info: info.header_offset)
     if ordered and ordered[0].header_offset != 0:
@@ -127,12 +178,12 @@ def validate_package_profile(data, infos, central_directory_offset):
         extra_start = name_start + name_length
         data_start = extra_start + extra_length
         local_extra = data[extra_start:data_start]
+        _validate_extra_fields(local_extra, 'LOCAL')
         if (
             version_needed >= 45
             or info.extract_version >= 45
             or compressed == 0xFFFFFFFF
             or expanded == 0xFFFFFFFF
-            or 0x0001 in set(_extra_fields(local_extra))
         ):
             raise InspectionFailure(ErrorCode.UNSUPPORTED_FILE_FORMAT, 'ZIP64 is outside qualified preflight profile')
         expected_name = info.filename.encode('utf-8' if info.flag_bits & 0x800 else 'cp437')
@@ -146,7 +197,6 @@ def validate_package_profile(data, infos, central_directory_offset):
             or expanded != info.file_size
             or (method == ZIP_STORED and compressed != expanded)
             or data[name_start:name_start + name_length] != expected_name
-            or local_extra != info.extra
             or data_start + compressed != next_offset
         ):
             raise InspectionFailure(

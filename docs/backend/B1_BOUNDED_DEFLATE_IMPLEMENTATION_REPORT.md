@@ -40,10 +40,26 @@ the refusal is attributable to Foundation's independent actual-size check.
 
 Python `ZipFile` parses the central directory. Before decompression, Foundation
 validates each local header against that parsed entry: signature, method,
-general-purpose flags, CRC, compressed and expanded sizes, filename and extra
-fields must agree. Members must start at offset zero and be physically
-contiguous through the central directory. The validated local header and
-compressed size define the exact physical compressed range.
+general-purpose flags, CRC, compressed and expanded sizes, and filename must
+agree. Members must start at offset zero and be physically contiguous through
+the central directory. The validated local header, including its independently
+parsed extra-field length, and compressed size define the exact physical
+compressed range.
+
+Representative metadata qualification rejected byte-for-byte LOCAL/CENTRAL
+extra-field equality as an invalid assumption. The candidate now applies an
+intentionally narrow, location-specific allowlist. LOCAL `0xA220` is admitted
+only as an OPC Growth Hint with a payload of at least four bytes, little-endian
+signature `0xA028`, a parsed two-byte Padding Initial Value and zero-valued
+remaining padding. The Padding Initial Value is parsed as a structural field;
+without stronger normative evidence it is neither compared with nor interpreted
+as the current padding length. CENTRAL `0xA220`, duplicate IDs, malformed TLVs,
+non-zero Growth Hint padding and every unknown extra-field ID fail closed. This
+is qualification of one observed shape, not general ZIP-extra support.
+
+The LOCAL Growth Hint length legitimately moves `data_start`; its TLV and
+padding remain outside the compressed member range. Core LOCAL/CENTRAL metadata,
+member adjacency, overlap and hidden-suffix checks remain unchanged.
 
 Foundation refuses ZIP64 indicators in local or central extra fields, ZIP64
 sentinel sizes, extraction versions at or above 4.5 and a ZIP64 end-of-central-
@@ -116,8 +132,11 @@ latency. No CPU timeout or production performance threshold is introduced.
 
 Configuration evidence records qualified methods, both chunk bounds, raw window
 mode, Python version, zlib compile/runtime versions, required EOF, actual-size
-and CRC policies, trailing-data refusal and the prohibition on unbounded flush.
-Historical 1.1.x assessments remain STORED-only and are not relabeled.
+and CRC policies, trailing-data refusal, the prohibition on unbounded flush and
+the exact extra-field allowlist. The strategy remains version `1.2.0` because
+this is a compatibility refinement within the not-yet-accepted candidate. An
+`opc-growth-hint-allowlist-1` implementation revision makes candidate evidence
+unambiguous without relabeling historical accepted 1.1.x assessments.
 
 ## Synthetic verification
 
@@ -131,6 +150,14 @@ Pre-decompression tests cover data descriptors, ZIP64, unqualified flags and a
 hidden physical suffix. Instrumentation proves every zlib input and returned
 output remains within its configured structural bound and observes
 `unconsumed_tail` processing.
+
+The focused OPC Growth Hint matrix additionally covers LOCAL-only admission,
+zero-length padding, non-matching Padding Initial Value, bad signature, short
+payload, non-zero padding, duplicate IDs, CENTRAL-only and LOCAL-plus-CENTRAL
+placement, identical and asymmetric unknown extras, LOCAL and CENTRAL ZIP64,
+known encryption-related IDs, malformed TLV length, exact `data_start` movement,
+physical-range obscuring attempts, and synthetic payload lengths of 36, 260 and
+516 bytes. No private payload, filename, path, hash or content is embedded.
 
 The resource probe runs generated packages in fresh processes. All nine
 expected behaviors passed across the prior accepted implementation, the
@@ -170,9 +197,9 @@ no private document was sent to Docling.
 | --- | --- |
 | Contract fixture validator | OpenAPI PASS; 8/8 scenarios PASS |
 | Contract unittest suite | 23 passed |
-| Focused B1 preflight suite | 94 passed |
+| Focused B1 preflight suite | 117 passed |
 | Representative/privacy suite | 83 passed |
-| Full backend suite | 276 passed |
+| Full backend suite | 299 passed |
 | Golden suite | 5 passed |
 | Private corpus boundary | PASS |
 | Dependency consistency | No broken requirements |
