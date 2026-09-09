@@ -17,7 +17,7 @@ import re
 
 from jsonschema import Draft202012Validator, FormatChecker
 
-from foundation.adapters.preflight import OoxmlPreflight
+from foundation.adapters.preflight import OoxmlPreflight, PreflightConfig
 from foundation.domain import DocumentPreflightAssessment, DocumentVersion
 from . import docling_probe as probe
 
@@ -31,10 +31,37 @@ REVIEW_DIMENSIONS = tuple(SCHEMA['$defs']['ReviewDimension']['enum'])
 REPEATABILITY = ('conversion', 'content', 'structure', 'tables', 'ordering', 'references')
 EVALUATION_STATUSES = ('EVALUATED', 'FAILED', 'NOT_EVALUATED')
 FEATURE_STATUSES = ('OBSERVED', 'NOT_OBSERVED', 'NOT_EVALUATED')
+REPRESENTATIVE_PREFLIGHT_PROFILE_ID = 'b1-representative-core-v1'
+REPRESENTATIVE_PREFLIGHT_CONFIG = PreflightConfig(
+    profile_version='1.2.0',
+    max_package_bytes=3004377,
+    max_uncompressed_bytes=22302224,
+    max_part_bytes=17856208,
+    max_parts=132,
+    max_xml_elements=796703,
+)
 
 
 class QualificationError(ValueError):
     """Messages are deliberately fixed safe codes, not input/path diagnostics."""
+
+
+def representative_preflight(resolver):
+    """Construct the B1 evaluator's explicit qualification-only preflight."""
+    return OoxmlPreflight(resolver, config=REPRESENTATIVE_PREFLIGHT_CONFIG)
+
+
+def stable_observation_payload(*, input_hash, adapter, preflight_status, feature_checks, runs,
+                               input_unchanged, profile_id=REPRESENTATIVE_PREFLIGHT_PROFILE_ID):
+    """Return the review-bound deterministic evidence projection."""
+    return {'evaluation_version': EVALUATION_VERSION, 'input_sha256': input_hash,
+        'configuration': probe.CONFIGURATION,
+        'representative_preflight_profile_id': profile_id,
+        'preflight_engine': adapter.engine, 'preflight_version': adapter.version,
+        'preflight_configuration': adapter.configuration.ref.model_dump(mode='json'),
+        'preflight_status': preflight_status, 'feature_checks': feature_checks,
+        'runs': [{k: v for k, v in run.items() if k != 'elapsed_seconds'} for run in runs],
+        'input_unchanged': input_unchanged}
 
 
 @contextmanager
@@ -228,7 +255,7 @@ def evaluate_case(case, path):
         document_id='document-' + case['case_id'], binary_hash=input_hash, byte_length=len(initial),
         content_ref={'uri': 'urn:private:sha256:' + input_hash, 'sha256': input_hash, 'media_type': 'application/octet-stream'})
     resolver = probe.LocalPinnedContent(path)
-    adapter = OoxmlPreflight(resolver)
+    adapter = representative_preflight(resolver)
     started = DocumentPreflightAssessment(schema_version='0.1.0', object_type='DocumentPreflightAssessment',
         id='preflight-' + case['case_id'], revision=2, created_at=now, task_id=document.task_id,
         document_version_ref={'document_id': document.document_id, 'version_id': document.id, 'binary_hash': input_hash},
@@ -237,6 +264,8 @@ def evaluate_case(case, path):
         assessor={'actor_type': 'SYSTEM', 'actor_id': 'representative-evaluator'}, engine=adapter.engine,
         engine_version=adapter.version, configuration_ref=adapter.configuration.ref, assessed_at=None, error_codes=[])
     value = {**case, 'input_sha256': input_hash, 'local_path': str(path), 'document': document.model_dump(mode='json'),
+        'representative_preflight_profile_id': REPRESENTATIVE_PREFLIGHT_PROFILE_ID,
+        'preflight_configuration_ref': adapter.configuration.ref.model_dump(mode='json'),
         'evaluation_status': 'FAILED', 'runs': [], 'preflight': None, 'feature_checks': [],
         'input_unchanged': False, 'conversion_success': False,
         'repeatability': {k: 'NOT_EVALUATED' for k in REPEATABILITY}, 'limitations': ['REVIEW_REQUIRED']}
@@ -271,13 +300,9 @@ def evaluate_case(case, path):
             value['post_input_sha256'] = None
         if not value['input_unchanged']:
             value['evaluation_status'] = 'FAILED'
-    stable = {'evaluation_version': EVALUATION_VERSION, 'input_sha256': input_hash, 'configuration': probe.CONFIGURATION,
-        'preflight_engine': adapter.engine, 'preflight_version': adapter.version,
-        'preflight_configuration': adapter.configuration.ref.model_dump(mode='json'),
-        'preflight_status': value['preflight']['assessment']['status'] if value['preflight'] else None,
-        'feature_checks': value['feature_checks'],
-        'runs': [{k: v for k, v in r.items() if k != 'elapsed_seconds'} for r in value['runs']],
-        'input_unchanged': value['input_unchanged']}
+    stable = stable_observation_payload(input_hash=input_hash, adapter=adapter,
+        preflight_status=value['preflight']['assessment']['status'] if value['preflight'] else None,
+        feature_checks=value['feature_checks'], runs=value['runs'], input_unchanged=value['input_unchanged'])
     value['observation_digest'] = probe.digest(stable)
     return value
 
