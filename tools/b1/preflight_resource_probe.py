@@ -10,6 +10,8 @@ from pathlib import Path
 import subprocess
 import sys
 from time import perf_counter
+from io import BytesIO
+from zipfile import ZIP_DEFLATED, ZipFile, ZipInfo
 
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT))
@@ -20,6 +22,17 @@ from tests.backend.b1.preflight.test_ooxml import document, Resolver, started
 from tools.b1.build_corpus import large_xlsx_parts, package
 
 CASES = {'dominant':(10000,5), 'distributed':(2000,)*5, 'over-default-elements':(20000,5)}
+
+
+def deflate_package(parts):
+    stream = BytesIO()
+    with ZipFile(stream, 'w') as archive:
+        for name, content in sorted(parts.items()):
+            info = ZipInfo(name, date_time=(2026, 9, 8, 0, 0, 0))
+            info.compress_type = ZIP_DEFLATED
+            info.create_system = 0
+            archive.writestr(info, content.encode() if isinstance(content, str) else content)
+    return stream.getvalue()
 
 
 def memory():
@@ -50,7 +63,8 @@ def memory():
 
 
 def worker(case, engine):
-    data=package(large_xlsx_parts(CASES[case],cells=10,formulas=True))
+    parts=large_xlsx_parts(CASES[case],cells=10,formulas=True)
+    data=deflate_package(parts) if engine=='resource-safe-deflate' else package(parts)
     doc=document(data)
     adapter=(accepted_v1.OoxmlPreflight if engine=='accepted-v1' else OoxmlPreflight)(Resolver(data))
     request=started(doc,adapter); gc.collect()
@@ -60,6 +74,7 @@ def worker(case, engine):
     expected='FAILED' if case=='over-default-elements' else 'COMPLETED'
     reasons=[json.loads(a.data).get('reason') for a in result.artifacts if json.loads(a.data).get('observation_type')=='inspection_failure']
     return {'case':case,'engine':engine,'engine_version':adapter.version,'package_bytes':len(data),
+        'compression':'DEFLATE' if engine=='resource-safe-deflate' else 'STORED',
         'rows_per_sheet':CASES[case],'cells_per_row':10,'status':result.assessment.status.value,
         'error_codes':[e.value for e in result.assessment.error_codes],'refusal_reasons':reasons,
         'behavior_matches_expected':result.assessment.status.value==expected,
@@ -70,7 +85,7 @@ def main():
     parser=argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--report',type=Path)
     parser.add_argument('--worker',choices=CASES)
-    parser.add_argument('--engine',choices=('accepted-v1','resource-safe'))
+    parser.add_argument('--engine',choices=('accepted-v1','resource-safe','resource-safe-deflate'))
     args=parser.parse_args()
     if args.worker:
         if not args.engine: parser.error('--engine required with --worker')
@@ -79,7 +94,7 @@ def main():
     if args.report.exists(): parser.error('Report exists; choose a new observation path')
     rows=[]
     for case in CASES:
-        for engine in ('accepted-v1','resource-safe'):
+        for engine in ('accepted-v1','resource-safe','resource-safe-deflate'):
             result=subprocess.run([sys.executable,__file__,'--worker',case,'--engine',engine],
                 check=True,capture_output=True,text=True,timeout=60)
             rows.append(json.loads(result.stdout))

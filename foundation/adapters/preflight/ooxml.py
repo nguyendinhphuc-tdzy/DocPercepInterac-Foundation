@@ -41,7 +41,7 @@ SHEET_FINDINGS = {'c':'cell','f':'formula','definedName':'defined_name','table':
 class PreflightConfig:
     """Versioned technical limits; no business freshness or production thresholds."""
 
-    profile_version: str = '1.1.1'
+    profile_version: str = '1.2.0'
     max_package_bytes: int = 32 * 1024 * 1024
     max_uncompressed_bytes: int = 128 * 1024 * 1024
     max_part_bytes: int = 16 * 1024 * 1024
@@ -49,7 +49,7 @@ class PreflightConfig:
     max_xml_elements: int = 500000
 
     def __post_init__(self):
-        if self.profile_version != '1.1.1' or any(type(v) is not int or v <= 0 for k,v in asdict(self).items() if k != 'profile_version'):
+        if self.profile_version != '1.2.0' or any(type(v) is not int or v <= 0 for k,v in asdict(self).items() if k != 'profile_version'):
             raise ValueError('Unknown profile or invalid positive technical limits')
 
 
@@ -125,7 +125,7 @@ class PartObservation:
 
 class OoxmlPreflight:
     engine = 'foundation-ooxml-preflight'
-    version = '1.1.2'
+    version = '1.2.0'
 
     def __init__(self, resolver: DocumentContentResolverPort, config: PreflightConfig | None = None):
         self.resolver, self.config = resolver, config or PreflightConfig()
@@ -177,10 +177,10 @@ class OoxmlPreflight:
                     raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'Duplicate or noncanonical package part')
                 if any(i.flag_bits & 1 for i in infos):
                     raise InspectionFailure(ErrorCode.ENCRYPTED_DOCUMENT, 'Encrypted ZIP member')
-                validate_package_profile(data, infos, archive.start_dir)
+                envelopes=validate_package_profile(data, infos, archive.start_dir)
                 members={i.filename:i for i in infos}
-                scan_capacity(archive, members, cfg)
-                observations=dict(inspect_parts(archive, members, cfg, PartObservation))
+                scan_capacity(data, archive, members, envelopes, cfg)
+                observations=dict(inspect_parts(data, archive, members, envelopes, cfg, PartObservation))
         except (BadZipFile, DecompressionError, RuntimeError, NotImplementedError, EOFError, OSError) as exc:
             raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'Unreadable ZIP structure or CRC') from exc
         try:
