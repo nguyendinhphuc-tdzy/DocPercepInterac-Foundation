@@ -83,6 +83,19 @@ def xlsx_parts() -> dict[str, str]:
     }
 
 
+def large_xlsx_parts(rows=(1000,), cells=10, formulas=False):
+    """Deterministic variable-scale workbook; never consumes private documents."""
+    names=[f'xl/worksheets/sheet{i+1}.xml' for i in range(len(rows))]
+    return {
+        '[Content_Types].xml':content_types({'xl/workbook.xml':'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml',
+            **{n:'application/vnd.openxmlformats-officedocument.spreadsheetml.worksheet+xml' for n in names}}),
+        '_rels/.rels':relationships([('main',R+'/officeDocument','xl/workbook.xml',False)]),
+        'xl/workbook.xml':f'<workbook xmlns="{S}" xmlns:r="{R}"><sheets>'+''.join(f'<sheet name="Synthetic{i}" sheetId="{i}" r:id="s{i}"/>' for i in range(1,len(rows)+1))+'</sheets></workbook>',
+        'xl/_rels/workbook.xml.rels':relationships([(f's{i+1}',R+'/worksheet',f'worksheets/sheet{i+1}.xml',False) for i in range(len(rows))]),
+        **{name:f'<worksheet xmlns="{S}"><sheetData>'+(''.join('<row>'+('<c>'+('<f>1+1</f><v>2</v>' if formulas else '')+'</c>')*cells+'</row>' for _ in range(count)))+'</sheetData></worksheet>' for name,count in zip(names,rows)},
+    }
+
+
 def build(root: Path) -> dict:
     cases = [
         ('docx-basic', 'DOCX', package(docx_parts()), ['headings', 'paragraphs', 'multiple_runs', 'table']),

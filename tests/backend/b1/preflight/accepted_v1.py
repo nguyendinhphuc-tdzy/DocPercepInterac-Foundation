@@ -1,3 +1,5 @@
+# Test-only accepted B1.1 oracle from a8c91372b9a7b63e806a039abcde569dc4800569.
+# Only the evidence import is relocated; never imported by Foundation runtime.
 """Bounded OOXML package inspection, not semantic parsing or native addressing."""
 
 from collections import Counter
@@ -5,6 +7,7 @@ from dataclasses import asdict, dataclass
 from io import BytesIO
 import posixpath
 from urllib.parse import unquote, urlsplit
+from xml.etree import ElementTree as ET
 from zipfile import BadZipFile, ZipFile
 from zlib import error as DecompressionError
 
@@ -13,8 +16,7 @@ from foundation.domain import (
     ErrorCode, PreflightFinding,
 )
 from foundation.ports.content import ContentAccessError, DocumentContentResolverPort, verified_bytes
-from .evidence import EvidenceArtifact, PreflightResult
-from .streaming import InspectionFailure, PARSER_STRATEGY, scan_capacity, inspect_parts
+from foundation.adapters.preflight.evidence import EvidenceArtifact, PreflightResult
 
 W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 S = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
@@ -41,7 +43,7 @@ SHEET_FINDINGS = {'c':'cell','f':'formula','definedName':'defined_name','table':
 class PreflightConfig:
     """Versioned technical limits; no business freshness or production thresholds."""
 
-    profile_version: str = '1.1.0'
+    profile_version: str = '1.0.0'
     max_package_bytes: int = 32 * 1024 * 1024
     max_uncompressed_bytes: int = 128 * 1024 * 1024
     max_part_bytes: int = 16 * 1024 * 1024
@@ -49,8 +51,17 @@ class PreflightConfig:
     max_xml_elements: int = 500000
 
     def __post_init__(self):
-        if self.profile_version != '1.1.0' or any(type(v) is not int or v <= 0 for k,v in asdict(self).items() if k != 'profile_version'):
+        if self.profile_version != '1.0.0' or any(type(v) is not int or v <= 0 for k,v in asdict(self).items() if k != 'profile_version'):
             raise ValueError('Unknown profile or invalid positive technical limits')
+
+
+class InspectionFailure(Exception):
+    def __init__(self, code, reason): self.code, self.reason = code, reason
+
+
+class NoDTD(ET.TreeBuilder):
+    def doctype(self, *args):
+        raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'DTD declarations are outside the inspection profile')
 
 
 def qname(tag):
@@ -70,67 +81,14 @@ def part_target(source: str, target: str) -> str:
     return path
 
 
-@dataclass(frozen=True)
-class ControlEntry:
-    """Direct-child metadata only; no XML node or descendant/value payload."""
-    tag: str
-    attrib: dict
-
-    def get(self, key, default=None):
-        return self.attrib.get(key, default)
-
-
-class PartObservation:
-    """One common reducer for bulk and control events; no document values retained."""
-    def __init__(self, name, strategy):
-        self.name, self.strategy = name, strategy
-        self.root_tag = None
-        self.counts = Counter()
-        self.conformance_signals = set()
-        self.control_children = []
-        self.protection_observations = []
-
-    def start(self, tag, attributes, depth):
-        if depth == 1: self.root_tag = tag
-        self.counts[tag] += 1
-        if self.strategy == 'CONTROL_XML' and depth == 2:
-            keys = ('PartName','ContentType') if self.name == '[Content_Types].xml' else ('Id','Type','Target','TargetMode')
-            self.control_children.append(ControlEntry(tag, {k:attributes[k] for k in keys if k in attributes}))
-        namespaces = {qname(tag)[0]}
-        namespaces.update(qname(k)[0] for k in attributes if qname(k)[0])
-        for ns in namespaces:
-            if ns in (W,S,R) or ns.startswith('http://schemas.openxmlformats.org/drawingml/'):
-                self.conformance_signals.add('TRANSITIONAL')
-            elif ns in (WS,SS,RS) or ns.startswith('http://purl.oclc.org/ooxml/drawingml/'):
-                self.conformance_signals.add('STRICT')
-            elif ns not in (P,CT,'http://www.w3.org/XML/1998/namespace') and not ns.startswith(('http://schemas.microsoft.com/office/', 'http://schemas.openxmlformats.org/markup-compatibility/', 'http://schemas.openxmlformats.org/officeDocument/2006/math', 'urn:schemas-microsoft-com:')):
-                self.conformance_signals.add('UNKNOWN')
-        ns, local = qname(tag)
-        # Match accepted local-attribute semantics, retaining only relevant flags.
-        attrs = {qname(k)[1]:v for k,v in attributes.items()}
-        if ns in (W,WS) and local == 'documentProtection':
-            flag = attrs.get('enforcement','false')
-            if flag in ('1','true','on'):
-                self.protection_observations.append(('document_protection',{'enforcement':True},True))
-            elif flag not in ('0','false','off'):
-                self.protection_observations.append(('unknown_structure',{'reason':'unrecognized protection enforcement'},False))
-        if ns in (W,WS) and local == 'lock' and attrs.get('val') in ('sdtLocked','contentLocked','sdtContentLocked'):
-            self.protection_observations.append(('content_control_lock',{'lock':attrs['val']},True))
-        if ns in (S,SS) and local in ('workbookProtection','sheetProtection'):
-            keys = ('lockStructure','lockWindows','lockRevision') if local == 'workbookProtection' else ('sheet',)
-            active = {k:attrs[k] for k in keys if attrs.get(k) in ('1','true','on')}
-            if active:
-                self.protection_observations.append(('workbook_protection' if local=='workbookProtection' else 'worksheet_protection',{'flags':active},True))
-
-
 class OoxmlPreflight:
     engine = 'foundation-ooxml-preflight'
-    version = '1.1.0'
+    version = '1.0.0'
 
     def __init__(self, resolver: DocumentContentResolverPort, config: PreflightConfig | None = None):
         self.resolver, self.config = resolver, config or PreflightConfig()
         self.configuration = EvidenceArtifact.create({'engine':self.engine, 'engine_version':self.version,
-            'config':asdict(self.config), 'parser_strategy':PARSER_STRATEGY, 'candidate_engine':'OpenXmlSdk', 'candidate_version':'3.5.1',
+            'config':asdict(self.config), 'candidate_engine':'OpenXmlSdk', 'candidate_version':'3.5.1',
             'qualification':'UNQUALIFIED', 'coverage':'all XML element names and relationships; no execution locators'})
 
     def assess(self, document: DocumentVersion, started: DocumentPreflightAssessment, completed_at: str) -> PreflightResult:
@@ -177,49 +135,64 @@ class OoxmlPreflight:
                     raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'Duplicate or noncanonical package part')
                 if any(i.flag_bits & 1 for i in infos):
                     raise InspectionFailure(ErrorCode.ENCRYPTED_DOCUMENT, 'Encrypted ZIP member')
-                members={i.filename:i for i in infos}
-                scan_capacity(archive, members, cfg)
-                observations=dict(inspect_parts(archive, members, cfg, PartObservation))
+                parts={i.filename:archive.read(i) for i in infos}
         except (BadZipFile, DecompressionError, RuntimeError, NotImplementedError, EOFError, OSError) as exc:
             raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'Unreadable ZIP structure or CRC') from exc
         try:
-            types=observations['[Content_Types].xml']; root_rels=observations['_rels/.rels']
-            if types.root_tag != f'{{{CT}}}Types' or root_rels.root_tag != f'{{{P}}}Relationships':
+            xml={}
+            for name, blob in sorted(parts.items()):
+                if name.endswith(('.xml','.rels')):
+                    xml[name]=ET.fromstring(blob,parser=ET.XMLParser(target=NoDTD()))
+            if sum(sum(1 for _ in root.iter()) for root in xml.values())>cfg.max_xml_elements:
+                raise InspectionFailure(ErrorCode.DOCUMENT_TOO_LARGE, 'Configured XML element limit exceeded')
+            types=xml['[Content_Types].xml']; root_rels=xml['_rels/.rels']
+            if types.tag != f'{{{CT}}}Types' or root_rels.tag != f'{{{P}}}Relationships':
                 raise ValueError('Unexpected OPC roots')
             overrides={}
-            for item in types.control_children:
+            for item in types:
                 if item.tag==f'{{{CT}}}Override':
                     name=item.attrib['PartName'].lstrip('/')
-                    if name in overrides or name not in members: raise ValueError('Invalid override')
+                    if name in overrides or name not in parts: raise ValueError('Invalid override')
                     overrides[name]=item.attrib['ContentType']
-            mains=[x for x in root_rels.control_children if x.get('Type') in (R+'/officeDocument',RS+'/officeDocument')]
+            mains=[x for x in root_rels if x.get('Type') in (R+'/officeDocument',RS+'/officeDocument')]
             if len(mains)!=1 or mains[0].get('TargetMode','Internal')!='Internal': raise ValueError('Missing/ambiguous main part')
             main=part_target('',mains[0].attrib['Target'])
             main_type=overrides.get(main)
             if main_type not in MAIN_TYPES:
                 raise InspectionFailure(ErrorCode.UNSUPPORTED_FILE_FORMAT, 'Main content type is outside DOCX/XLSX profile')
             fmt,root_name=MAIN_TYPES[main_type]
-            if qname(observations[main].root_tag)[1]!=root_name: raise ValueError('Main XML root disagrees with content type')
+            if qname(xml[main].tag)[1]!=root_name: raise ValueError('Main XML root disagrees with content type')
             rel_observations=[]; classes=set()
-            for name,root in observations.items():
+            for name,root in xml.items():
                 if name.endswith('.rels'):
-                    if root.root_tag!=f'{{{P}}}Relationships': raise ValueError('Invalid relationship part root')
+                    if root.tag!=f'{{{P}}}Relationships': raise ValueError('Invalid relationship part root')
                     source='' if name=='_rels/.rels' else posixpath.join(posixpath.dirname(posixpath.dirname(name)),posixpath.basename(name)[:-5])
-                    if source and source not in members: raise ValueError('Missing relationship source')
+                    if source and source not in parts: raise ValueError('Missing relationship source')
                     ids=set()
-                    for rel in root.control_children:
+                    for rel in root:
                         if rel.tag!=f'{{{P}}}Relationship' or not {'Id','Type','Target'} <= rel.attrib.keys() or rel.attrib['Id'] in ids: raise ValueError('Malformed relationship')
                         ids.add(rel.attrib['Id']); kind=rel.attrib['Type']; mode=rel.get('TargetMode','Internal')
                         if mode not in ('Internal','External'): raise ValueError('Invalid relationship mode')
-                        if mode=='Internal' and part_target(source,rel.attrib['Target']) not in members: raise ValueError('Missing relationship target')
+                        if mode=='Internal' and part_target(source,rel.attrib['Target']) not in parts: raise ValueError('Missing relationship target')
                         if kind.startswith(R+'/'): classes.add('TRANSITIONAL')
                         elif kind.startswith(RS+'/'): classes.add('STRICT')
                         rel_observations.append({'part':name,'type':kind,'external':mode=='External'})
-                classes.update(root.conformance_signals)
-            main_ns=qname(observations[main].root_tag)[0]
+                for node in root.iter():
+                    # Used attribute namespaces are evidence too. Unqualified
+                    # attributes and xml:space do not establish OOXML conformance.
+                    namespaces={qname(node.tag)[0]}
+                    namespaces.update(qname(attr)[0] for attr in node.attrib if qname(attr)[0])
+                    for ns in namespaces:
+                        if ns in (W,S,R) or ns.startswith('http://schemas.openxmlformats.org/drawingml/'):
+                            classes.add('TRANSITIONAL')
+                        elif ns in (WS,SS,RS) or ns.startswith('http://purl.oclc.org/ooxml/drawingml/'):
+                            classes.add('STRICT')
+                        elif ns not in (P,CT,'http://www.w3.org/XML/1998/namespace') and not ns.startswith(('http://schemas.microsoft.com/office/', 'http://schemas.openxmlformats.org/markup-compatibility/', 'http://schemas.openxmlformats.org/officeDocument/2006/math', 'urn:schemas-microsoft-com:')):
+                            classes.add('UNKNOWN')
+            main_ns=qname(xml[main].tag)[0]
             expected_ns=(W,WS) if fmt=='DOCX' else (S,SS)
             conf=next(iter(classes)) if len(classes)==1 and main_ns in expected_ns else 'UNKNOWN'
-        except (KeyError, ValueError) as exc:
+        except (ET.ParseError, KeyError, ValueError) as exc:
             raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'Malformed or inconsistent OPC/XML package') from exc
         findings=[]; protections=[]; codes=set(); observed=set(); global_protected=False
         def finding(kind,name,facts,protected=False):
@@ -228,8 +201,8 @@ class OoxmlPreflight:
                 native_locator_refs=[], observation_ref=obs, description=f'{kind} observed in package part; inspection is not native execution identity')
             (protections if protected else findings).append(f)
             observed.add(kind)
-        for name,root in sorted(observations.items()):
-            counts=root.counts
+        for name,root in sorted(xml.items()):
+            counts=Counter(node.tag for node in root.iter())
             finding('xml_inventory',name,{'element_counts':dict(sorted(counts.items()))})
             for tag,count in sorted(counts.items()):
                 ns,local=qname(tag)
@@ -239,14 +212,25 @@ class OoxmlPreflight:
                 if not known:
                     finding('unknown_structure',name,{'qname':tag,'count':count})
                     codes.add(ErrorCode.UNSUPPORTED_NATIVE_OBJECT)
-            for kind, facts, protected in root.protection_observations:
-                finding(kind,name,facts,protected)
-                if kind=='document_protection': global_protected=True
-                if kind=='unknown_structure': codes.add(ErrorCode.UNSUPPORTED_NATIVE_OBJECT)
+            for node in root.iter():
+                ns,local=qname(node.tag); attrs={qname(k)[1]:v for k,v in node.attrib.items()}
+                # Never export passwords, formula/text contents or hyperlink targets.
+                if ns in (W,WS) and local=='documentProtection':
+                    enforcement=attrs.get('enforcement','false')
+                    if enforcement in ('1','true','on'):
+                        global_protected=True; finding('document_protection',name,{'enforcement':True},True)
+                    elif enforcement not in ('0','false','off'):
+                        finding('unknown_structure',name,{'reason':'unrecognized protection enforcement'}); codes.add(ErrorCode.UNSUPPORTED_NATIVE_OBJECT)
+                if ns in (W,WS) and local=='lock' and attrs.get('val') in ('sdtLocked','contentLocked','sdtContentLocked'):
+                    finding('content_control_lock',name,{'lock':attrs['val']},True)
+                if ns in (S,SS) and local in ('workbookProtection','sheetProtection'):
+                    keys=('lockStructure','lockWindows','lockRevision') if local=='workbookProtection' else ('sheet',)
+                    active={k:attrs[k] for k in keys if attrs.get(k) in ('1','true','on')}
+                    if active: finding('workbook_protection' if local=='workbookProtection' else 'worksheet_protection',name,{'flags':active},True)
         for name in sorted({r['part'] for r in rel_observations}):
             finding('relationship',name,{'relationships':[r for r in rel_observations if r['part']==name]})
-        for name in sorted(members.keys()-observations.keys()):
-            finding('uninspected_binary_part',name,{'byte_length':members[name].file_size})
+        for name in sorted(parts.keys()-xml.keys()):
+            finding('uninspected_binary_part',name,{'byte_length':len(parts[name])})
             codes.add(ErrorCode.UNSUPPORTED_NATIVE_OBJECT)
         capabilities=[]
         if conf=='STRICT': codes.add(ErrorCode.STRICT_OOXML_MUTATION_UNQUALIFIED)
@@ -263,7 +247,7 @@ class OoxmlPreflight:
         else:
             codes.add(ErrorCode.EXECUTION_UNSUPPORTED)  # No XLSX MutationOperation in v0.1.
         format_ref=evidence('format_and_coverage', main_part=main, main_content_type=main_type,
-            detected_format=fmt, conformance=conf, namespace_classes=sorted(classes), package_parts=sorted(members),
-            inspected_xml_parts=sorted(observations), mutation_qualification=False, native_locators_created=False,
+            detected_format=fmt, conformance=conf, namespace_classes=sorted(classes), package_parts=sorted(parts),
+            inspected_xml_parts=sorted(xml), mutation_qualification=False, native_locators_created=False,
             schema_validation_performed=False, candidate_policy='OpenXmlSdk 3.5.1 is provisional; frozen DOCX operations only')
         return fmt,conf,findings,protections,capabilities,sorted(codes,key=lambda c:c.value),format_ref
