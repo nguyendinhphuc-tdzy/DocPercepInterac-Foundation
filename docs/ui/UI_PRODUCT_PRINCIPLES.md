@@ -1,9 +1,9 @@
 # Foundation UI Product Principles
 
-**Document status:** U0 BASELINE — ACCEPTED (Product/BA review passed 2026-09-09)  
-**Date:** 2026-09-09  
-**Workstream:** Frontend U0 — Governed Workspace Foundation  
-**Branch:** `build/ui-foundation-v2`  
+**Document status:** U0 BASELINE — ACCEPTED (Product/BA implementation guidance; not a Frozen Foundation Contract; does not override CURRENT_BASELINE.md, accepted ADRs, or docs/contracts/)
+**Date:** 2026-09-09
+**Workstream:** Frontend U0 — Governed Workspace Foundation
+**Branch:** `build/ui-foundation-v2`
 **Precedence authority:** `docs/CURRENT_BASELINE.md`, accepted ADRs (`docs/adr/`), Frozen Foundation Contract v0.1 (`docs/contracts/`).
 
 ---
@@ -29,7 +29,7 @@ To ensure clarity and precision across all product and engineering discussions, 
 - **Classification:** `[DECISION]`
 - **Principle:** The UI is structured around deterministic, governed lifecycle stages rather than unstructured, arbitrary in-place canvas editing.
 - **Why It Matters:** Foundation's mission is proving that document transformations adhere strictly to authoritative business rules and evidence. Uncontrolled rich-text editing bypasses governance gates, evades target contract bindings, and destroys verifiable auditability.
-- **Implication for UI:** The primary workspace adapts to the task's current lifecycle stage (Intake, Preflight, Review, Execution, Validation). The document viewer is an inspection and interaction surface, not a rich-text canvas with floating formatting ribbons.
+- **Implication for UI:** The primary workspace adapts its workspace emphasis to the task's current governed lifecycle stage (e.g., Intake, Analysis, Review, Execution, Validation). The document viewer is an inspection and interaction surface, not a rich-text canvas with floating formatting ribbons.
 - **Anti-Pattern:** Providing Word-like formatting toolbars (bold, italic, font pickers) or allowing unconstrained inline text modification directly to source files.
 
 ---

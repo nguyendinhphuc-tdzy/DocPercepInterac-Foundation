@@ -1,9 +1,9 @@
 # Foundation UI Legacy Migration Map
 
-**Document status:** U0 BASELINE — ACCEPTED (Product/BA review passed 2026-09-09)  
-**Date:** 2026-09-09  
-**Workstream:** Frontend U0 — Governed Workspace Foundation  
-**Branch:** `build/ui-foundation-v2`  
+**Document status:** U0 BASELINE — ACCEPTED (Product/BA implementation guidance; not a Frozen Foundation Contract; does not override CURRENT_BASELINE.md, accepted ADRs, or docs/contracts/)
+**Date:** 2026-09-09
+**Workstream:** Frontend U0 — Governed Workspace Foundation
+**Branch:** `build/ui-foundation-v2`
 **Precedence authority:** `docs/CURRENT_BASELINE.md`, accepted ADRs (`docs/adr/`), Frozen Foundation Contract v0.1 (`docs/contracts/`).
 
 ---
@@ -14,7 +14,7 @@ This migration map audits all existing frontend prototype components, state stor
 
 It defines an orderly, phased transition that shuts down un-governed mutation shortcuts, isolates legacy prototypes, and replaces ad-hoc data structures with machine-generated types from Frozen Contract v0.1.
 
-**Governing Migration Rule:**  
+**Governing Migration Rule:**
 `No legacy artifact is deleted during U0 documentation. Legacy code is classified and bounded; destructive removals occur in subsequent authorized code workstreams.`
 
 Epistemic classifications:
@@ -31,7 +31,7 @@ Epistemic classifications:
 | **`EditableText`** (Direct text input on rendered elements) | **Contextual Action Palette → `Propose Change` Modal** | `[DECISION]` Inline editing falsely implied direct document mutation. Direct selection does NOT create a proposal (`Selection != ChangeProposal != ApprovedChangeSet`). Selecting an object offers `Inspect`, `Extract`, `Ask AI`, or `Propose Change`. Only an explicit user choice to propose a change creates a `ChangeProposal` (`DRAFT`). |
 | **Direct `PATCH /api/elements/{id}`** | **`ChangeProposal` → Review → `ApprovedChangeSet` → Controlled Replay** | `[FACT]` Backend is authoritative. Direct PATCH was a prototype shortcut bypassing source sufficiency, evidence gates, and approval contracts. |
 | **`Confirm & Apply` Button** | **`ReviewDecision` (`APPROVE`, `REJECT`, `DEFER`, `REQUEST_MORE_SOURCE`)** | `[DECISION]` Review decisions are explicit, auditable business determinations, not generic UI confirmations. |
-| **`Approve & Execute` Combined Action** | **Sealed `ApprovedChangeSet` followed by Controlled Replay Dispatch** | `[FACT]` Approval and execution are distinct stages. Approval seals the change set; execution dispatches to a qualified engine. |
+| **`Approve & Execute` Combined Action** | **Backend ApprovedChangeSet Materialization → Inspect Approved ChangeSet / Execute Approved Changes** | `[FACT]` Approval and execution are distinct stages. Frontend does not seal ApprovedChangeSet; backend materializes the change set upon review decisions. Execution actions are displayed and enabled only when authoritative backend governance exposes the action as currently permitted. |
 | **`ConfidenceBadge %`** (e.g., "95% Confident") | **Deterministic Verification State (`VERIFIED`, `BLOCKED`, `STALE`, `UNVERIFIED`)** | `[DECISION]` Percentages visually masquerade as system verification. Governed UI requires deterministic evidence outcomes. |
 | **`GTPS Mapping Output` (`GptsMappingAction`)** | **Governed Task Transformation & Validation Result** | `[DECISION]` Legacy GTPS action was an unstructured prototype bypass. Foundation v2 uses structured RulePacks and target contracts. |
 | **Local Client `editHistory` / Undo** | **Immutable `AuditEvent` Stream & Server Task Projections** | `[FACT]` Client-side undo arrays cannot guarantee cryptographic document recovery. All historical changes belong in the append-only audit log. *(AuditEvent domain/hash mechanics is `ACCEPTED_V2`; concrete persistent store is `NOT_IMPLEMENTED`).* |

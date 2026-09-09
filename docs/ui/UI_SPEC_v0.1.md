@@ -1,9 +1,9 @@
 # Foundation UI Specification v0.1
 
-**Document status:** U0 BASELINE — ACCEPTED (Product/BA review passed 2026-09-09)  
-**Date:** 2026-09-09  
-**Workstream:** Frontend U0 — Governed Workspace Foundation  
-**Branch:** `build/ui-foundation-v2`  
+**Document status:** U0 BASELINE — ACCEPTED (Product/BA implementation guidance; not a Frozen Foundation Contract; does not override CURRENT_BASELINE.md, accepted ADRs, or docs/contracts/)
+**Date:** 2026-09-09
+**Workstream:** Frontend U0 — Governed Workspace Foundation
+**Branch:** `build/ui-foundation-v2`
 **Precedence authority:** `docs/CURRENT_BASELINE.md`, accepted ADRs (`docs/adr/`), Frozen Foundation Contract v0.1 (`docs/contracts/`).
 
 ---
@@ -18,9 +18,13 @@ The Foundation UI serves as the **governed professional workbench** where users:
 1. Intake and inspect complex Office and PDF document binaries.
 2. Verify that sufficient authoritative source evidence exists before any transformation is attempted.
 3. Review proposed changes with side-by-side evidentiary proof and deterministic policy checks.
-4. Issue legally binding, auditable approval decisions.
+4. Record governed, explicit and auditable review decisions.
 5. Monitor controlled native execution and inspect independent post-execution validation reports.
 6. Directly interact with document regions to extract derived data artifacts (tables to CSV/XLSX, images, text) without mutating the source document.
+
+> [!NOTE]
+> **Illustrative UX Scenario Data Notice:**
+> All names, values, filenames, BusinessTargetIDs, SemanticReferences, NativeLocator IDs, evaluator identifiers, dates, and numeric examples in journeys, wireframes, and tables (such as `VN_LOCAL_FILE.FINANCIAL.NCP`, `#/tables/...`, SDT IDs, financial percentages, company/director names, evaluator IDs, and sample filenames) are illustrative UX examples unless explicitly identified as Frozen Contract fixture data. They must not be interpreted as implemented backend objects, policies, evaluators, or production client data.
 
 ---
 
@@ -63,12 +67,12 @@ The Foundation UI serves as the **governed professional workbench** where users:
 
 ### Journey A: Start Local File Workflow & Understand Missing/Blocked Source
 1. **User Action:** Associate navigates to Workspace and selects "Start VN Local File Transformation".
-2. **System State (`CREATED` / `INTAKE`):** The workspace loads in Intake emphasis. FileRail prompts for required document roles:
+2. **System State (Backend TaskStatus: `CREATED` · UI workspace emphasis: Intake):** FileRail prompts for required document roles:
    - Target Template: `VN_Local_File_2024_Template.docx`
    - Current Source: `Audited_Financial_Statements_2025.pdf`
    - Historical Source: `VN_Local_File_2024_Final.docx`
 3. **User Action:** Associate uploads the 2024 template and historical local file, but omits the 2025 audited financial statement.
-4. **Governed Response (`BLOCKED`):** 
+4. **Governed Response (Backend TaskStatus: `BLOCKED`):**
    - Backend evaluates `SourceAssessment` -> outcome: `MISSING`.
    - The Source Readiness panel highlights a red shield blocker: *"Mandatory Source Missing: Audited Financial Statement FY2025"*.
    - Target financial fields in the document viewer are tagged `BLOCKED`.
@@ -106,16 +110,16 @@ The Foundation UI serves as the **governed professional workbench** where users:
    - `[REJECT]`: Rejects proposal; retains original text; records mandatory rejection note.
    - `[DEFER]`: Defers decision for later inspection; proposal remains `IN_REVIEW`.
    - `[REQUEST_MORE_SOURCE]`: Opens modal prompting for missing document requirements; moves proposal to `BLOCKED`.
-4. **Governed Rule:** The reviewer cannot click "Approve All" if any proposal is in `BLOCKED` status.
+4. **Governed Rule:** A `BLOCKED` proposal cannot itself be approved. Independent eligible proposals may remain reviewable/approvable when backend governance permits subset processing. Whole-task/document release remains separately governed, and the frontend does not infer subset eligibility itself.
 
 ---
 
 ### Journey D: Select Complete Table & Extract to CSV / XLSX
 1. **User Action:** Associate drags a selection box over Table 4 ("Intercompany Transaction Benchmark Summary") in the DOCX viewer.
-2. **System State (`SELECTION_READY`):**
+2. **Client Interaction State (`SELECTION_READY`):**
    - The UI evaluates intersected DOM cells and queries semantic perception.
    - Semantic Snapping prompt activates when the selection substantially overlaps the table:
-     *"Table detected (5 columns × 12 rows). Snap to complete table?"*  
+     *"Table detected (5 columns × 12 rows). Snap to complete table?"*
      *(Snapping threshold is TBD / REQUIRES UX AND CORPUS VALIDATION).*
    - Associate clicks `[Use Full Table]`.
 3. **Selection Inspector Displays:**
@@ -123,7 +127,7 @@ The Foundation UI serves as the **governed professional workbench** where users:
    - Actions: `[Extract to CSV]`, `[Extract to XLSX]`, `[Propose Change]`.
 4. **User Action:** Associate clicks `[Extract to CSV]`.
 5. **System Execution:** A derived export task generates RFC 4180 compliant CSV. The browser triggers file download: `VN_Local_File_Table_4.csv`.
-6. **Governance Rule:** Source document is untouched; no `ApprovedChangeSet` or mutation review required. An immutable `AuditEvent` (`SELECTION_EXTRACTED`) is appended.
+6. **Governance Rule:** Source document is untouched; no `ApprovedChangeSet` or mutation review required. Extraction must produce auditable provenance. The exact audit/event representation is TBD and must conform to the authoritative audit/event contract before backend implementation. Selection/extraction remains a non-contract application capability for now.
 
 ---
 
@@ -167,10 +171,10 @@ The Foundation UI serves as the **governed professional workbench** where users:
    - The UI **fails closed**. It does NOT attempt a broken native export.
    - An informative alert appears:
      > *"Native-Fidelity Export Unavailable: This document section contains advanced Word DrawingML canvas objects that cannot be isolated with guaranteed fidelity."*
-   - Remediation Options provided:
-     - `[Extract as Structured DOCX]` (Converts text and tables, exports shapes as raster images).
-     - `[Extract Text Only]`
-     - `[Cancel]`
+    - Remediation Options provided:
+      - `[Extract as Structured DOCX]` (Extracts supported content into Structured DOCX according to the qualified export capability; unsupported components must be explicitly disclosed without silent degradation).
+      - `[Extract Text Only]`
+      - `[Cancel]`
 4. **Result:** Associate clicks `[Extract as Structured DOCX]` and receives a clean, functional document without silent package corruption.
 
 ---
@@ -214,17 +218,20 @@ The Foundation UI serves as the **governed professional workbench** where users:
 
 The workspace layout shifts focus according to authoritative backend `TaskStatus`:
 
-| TaskStatus | Layout Configuration | Dominant User Controls | Guard to Progress |
-|---|---|---|---|
-| `CREATED` | FileRail expanded, central intake dropzone active. | "Upload Document", "Assign Role", "Run Preflight". | All mandatory roles assigned (`TARGET`, `SOURCE`). |
-| `ANALYZING` | Central viewer shows document outline with loading spinners. | "Cancel Analysis", view preflight log. | Backend preflight & perception complete. |
-| `AWAITING_REVIEW` | Document viewer active with highlighted targets; Review Inspector active. | "Approve", "Reject", "Defer", "Request Source". | All proposals have explicit `ReviewDecision`. |
-| `READY_FOR_EXECUTION`| Split-view: Proposed changes diff against original target. | "Inspect Approved ChangeSet", "Seal & Execute". | Backend verifies zero pending blockers and valid hashes. |
-| `EXECUTING` | Central viewer locked; real-time execution attempt monitor. | "Cancel Dispatch" (if queued). | Controlled Replay stages output. |
-| `VALIDATING` | Side-by-side comparison: Staged output vs. input. | "Inspect Validation Checks", "View Diff". | Independent validator produces `ValidationReport`. |
-| `COMPLETED` | Validated output rendered; release certificate badge active. | "Download Validated Output", "Export Audit Package". | Task `ReleaseStatus` == `RELEASED`. |
-| `BLOCKED` | Viewer dims non-blocked sections; Exception panel spotlights blockers. | "Inspect Blocker", "Upload Remediation", "Re-evaluate". | Remediation satisfies failing deterministic checks. |
-| `FAILED` | Viewer displays failure diagnostic; technical trace open. | "Download Diagnostic Log", "Retry", "Quarantine". | Technical root cause diagnosed. |
+| Backend TaskStatus | UI Workspace Emphasis | Layout Configuration | Dominant User Controls | Guard to Progress |
+|---|---|---|---|---|
+| `CREATED` | Intake | FileRail expanded, central intake dropzone active. | "Upload Document", "Assign Role", "Run Preflight". | All mandatory roles assigned (`TARGET`, `SOURCE`). |
+| `ANALYZING` | Analysis & Preflight | Central viewer shows document outline with loading spinners. | "Cancel Analysis", view preflight log. | Backend preflight & perception complete. |
+| `AWAITING_REVIEW` | Review & Verification | Document viewer active with highlighted targets; Review Inspector active. | "Approve", "Reject", "Defer", "Request Source". | All proposals have explicit `ReviewDecision`. |
+| `READY_FOR_EXECUTION` | Execution Preparation | Split-view: Proposed changes diff against original target. | "Inspect Approved ChangeSet", "Execute Approved Changes" (displayed/enabled only when authoritative backend governance exposes the action as currently permitted; frontend does not seal ApprovedChangeSet). | Backend verifies zero pending blockers and valid hashes. |
+| `EXECUTING` | Execution Monitoring | Central viewer locked; real-time execution attempt monitor. | "Cancel Dispatch" (if queued and permitted by backend). | Controlled Replay stages output. |
+| `VALIDATING` | Validation Inspection | Side-by-side comparison: Staged output vs. input. | "Inspect Validation Checks", "View Diff". | Independent validator produces `ValidationReport`. |
+| `COMPLETED` | Release & Audit | Validated output rendered; release certificate badge active. | "Download Validated Output", "Export Audit Package". | Task `ReleaseStatus` == `RELEASED`. |
+| `BLOCKED` | Exception Remediation | Viewer dims non-blocked sections; Exception panel spotlights blockers. | "Inspect Blocker", "Upload Remediation" (remediation and re-evaluation controls enabled only when backend governance permits). | Remediation satisfies failing deterministic checks. |
+| `FAILED` | Diagnostics & Recovery | Viewer displays failure diagnostic; technical trace open. | "Download Diagnostic Log" (retry and quarantine actions enabled only where backend capability explicitly allows). | Technical root cause diagnosed. |
+| `CANCELLED` | Cancellation Summary | Read-only task summary; technical trace available. | "View Cancellation Record", "Export Diagnostic Log". | Terminal status reached. |
+
+**Governance Rule:** `TaskStatus` determines workspace emphasis and context. Backend-provided governance, capability, and action availability determine which user actions are actually enabled. Status alone must never authorize an action. Controls such as retry, cancel, re-evaluate, or remediation must be backend/capability driven.
 
 ---
 
@@ -242,7 +249,7 @@ Step 2: Candidate Resolution & Semantic Snapping
 - User chooses to use full object or keep current selection bounds.
 
 Step 3: Semantic Resolution
-- Client dispatches candidate element IDs to `/api/selection/resolve` (Simulated in U0).
+- Client dispatches candidate element IDs to Selection Resolution Service (API shape TBD; U0 may simulate a typed application service interface, but no endpoint becomes architectural authority until formally defined).
 - Response returns `ResolvedSelection` with typed document objects and available export capabilities.
 
 Step 4: Selection Inspector Presentation
@@ -253,7 +260,7 @@ Step 4: Selection Inspector Presentation
 Step 5: Export Execution (If Extract Chosen)
 - User selects export format (e.g., Table -> CSV).
 - Client submits `ExtractionPlan`.
-- Derived artifact generated, hash logged to `AuditEvent`, file downloaded.
+- Derived artifact generated, extraction provenance recorded (audit/event representation TBD conforming to authoritative audit contract), file downloaded.
 ```
 
 ---

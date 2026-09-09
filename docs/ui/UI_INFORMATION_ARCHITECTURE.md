@@ -1,9 +1,9 @@
 # Foundation UI Information Architecture
 
-**Document status:** U0 BASELINE — ACCEPTED (Product/BA review passed 2026-09-09)  
-**Date:** 2026-09-09  
-**Workstream:** Frontend U0 — Governed Workspace Foundation  
-**Branch:** `build/ui-foundation-v2`  
+**Document status:** U0 BASELINE — ACCEPTED (Product/BA implementation guidance; not a Frozen Foundation Contract; does not override CURRENT_BASELINE.md, accepted ADRs, or docs/contracts/)
+**Date:** 2026-09-09
+**Workstream:** Frontend U0 — Governed Workspace Foundation
+**Branch:** `build/ui-foundation-v2`
 **Precedence authority:** `docs/CURRENT_BASELINE.md`, accepted ADRs (`docs/adr/`), Frozen Foundation Contract v0.1 (`docs/contracts/`).
 
 ---
@@ -114,19 +114,22 @@ Workspace
 
 ## 4. Task-State-Driven Workspace Emphasis
 
-`[DECISION]` The workspace is not hard-coded into fixed, static tabs ("Agent", "Inspect", "Review"). Instead, the primary layout shifts emphasis dynamically based on the backend `TaskStatus` from Frozen Contract v0.1:
+`[DECISION]` The workspace is not hard-coded into fixed, static tabs ("Agent", "Inspect", "Review"). Instead, the primary layout shifts emphasis dynamically based on the authoritative backend `TaskStatus` from Frozen Contract v0.1:
 
-| TaskStatus | Primary Focus Region (Left/Center) | Contextual Work Inspector (Right) | Secondary / Auxiliary Tools |
-|---|---|---|---|
-| `CREATED` / `INTAKE` | Document Intake Rail + Source Registration Canvas | **Source Readiness Panel**: Missing files, period requirements, authority checks | Auxiliary Agent: "What files are required for VN Local File?" |
-| `ANALYZING` / `PREFLIGHT` | Document Viewer (Preflight overlay) | **Preflight Findings & Capability Detection**: Structure detection, OOXML conformance, protection locks | Diagnostic Log (Read-only) |
-| `AWAITING_REVIEW` | Document Viewer (Interactive targets highlighted) | **Governed Evidence & Review Panel**: ChangeProposal list, side-by-side excerpts, decision buttons | Agent: Explains discrepancy or source excerpt |
-| `READY_FOR_EXECUTION` | Approved Change Summary (Diff view against target) | **Execution Readiness Gate**: Pinned binary hashes, locators confirmed, validation obligations | Technical Trace Drawer (Locators & Payloads) |
-| `EXECUTING` | Staged Document Canvas (Lock during run) | **Execution Progress Monitor**: Controlled replay status, dispatch attempt log | System Event Stream |
-| `VALIDATING` | Side-by-Side: Original Input vs. Staged Output | **Independent Validation Report**: Mandatory invariant checks, preservation scope checks | Audit Event Inspector |
-| `COMPLETED` | Validated Output Document (Read/Export enabled) | **Release Summary & Audit Package**: Signed audit certificate, hash manifest, download artifact | Export & Archive Options |
-| `BLOCKED` | Problem Document / Missing Evidence Viewer | **Exception Resolution Panel**: Explicit blocking checks, remediation options | Agent: Clarifies policy rule violation |
-| `FAILED` | Quarantine / Error Diagnostic Surface | **Failure Root-Cause Analysis**: Assessor, executor, or validator failure records | Error Catalog Reference |
+| Backend TaskStatus | UI Workspace Emphasis | Primary Focus Region (Left/Center) | Contextual Work Inspector (Right) | Secondary / Auxiliary Tools |
+|---|---|---|---|---|
+| `CREATED` | Intake | Document Intake Rail + Source Registration Canvas | **Source Readiness Panel**: Missing files, period requirements, authority checks | Auxiliary Agent: "What files are required for VN Local File?" |
+| `ANALYZING` | Analysis & Preflight | Document Viewer (Preflight overlay) | **Preflight Findings & Capability Detection**: Structure detection, OOXML conformance, protection locks | Diagnostic Log (Read-only) |
+| `AWAITING_REVIEW` | Review & Verification | Document Viewer (Interactive targets highlighted) | **Governed Evidence & Review Panel**: ChangeProposal list, side-by-side excerpts, decision buttons | Agent: Explains discrepancy or source excerpt |
+| `READY_FOR_EXECUTION` | Execution Preparation | Approved Change Summary (Diff view against target) | **Execution Readiness Gate**: Pinned binary hashes, locators confirmed, validation obligations | Technical Trace Drawer (Locators & Payloads) |
+| `EXECUTING` | Execution Monitoring | Staged Document Canvas (Lock during run) | **Execution Progress Monitor**: Controlled replay status, dispatch attempt log | System Event Stream |
+| `VALIDATING` | Validation Inspection | Side-by-Side: Original Input vs. Staged Output | **Independent Validation Report**: Mandatory invariant checks, preservation scope checks | Audit Event Inspector |
+| `COMPLETED` | Release & Audit | Validated Output Document (Read/Export enabled) | **Release Summary & Audit Package**: Signed audit certificate, hash manifest, download artifact | Export & Archive Options |
+| `BLOCKED` | Exception Remediation | Problem Document / Missing Evidence Viewer | **Exception Resolution Panel**: Explicit blocking checks, remediation options | Agent: Clarifies policy rule violation |
+| `FAILED` | Diagnostics & Recovery | Quarantine / Error Diagnostic Surface | **Failure Root-Cause Analysis**: Assessor, executor, or validator failure records | Error Catalog Reference |
+| `CANCELLED` | Cancellation Summary | Read-only task summary surface | **Cancellation Audit Record**: Reason code and cancellation actor | Audit Event Inspector |
+
+**Governance Rule:** `TaskStatus` determines workspace emphasis and context. Authoritative backend-provided governance, capability, and action availability determine which user actions are actually enabled. Status alone must never authorize an action. Controls such as retry, re-evaluate, approve, remediation, or cancel are backend/capability driven (e.g., `FAILED` does not automatically enable generic retry; `BLOCKED` does not automatically enable re-evaluate).
 
 ---
 
@@ -164,8 +167,8 @@ Workspace
 └─────────────────────────────────────────────────────────────────────────────┘
 ```
 
-**Identity Rule (`INV-UI-01`):**  
-`BusinessTargetID != SemanticReference != NativeLocator`  
+**Identity Rule (`INV-UI-01`):**
+`BusinessTargetID != SemanticReference != NativeLocator`
 Under no circumstance may the UI use these three identifiers interchangeably.
 
 ---
@@ -184,7 +187,7 @@ SelectionGeometry (Screen coordinates: viewport x, y, w, h)
          ↓
 Candidate Rendered DOM Elements (Intersected paragraphs, cells, images)
          ↓
-Semantic Resolution Request (POST /api/selection/resolve [Simulated in U0])
+Semantic Resolution Request (Selection Resolution Service — API shape TBD [Simulated in U0])
          ↓
 ResolvedSelection (Semantic objects, counts, ambiguity status)
          ↓
@@ -255,7 +258,7 @@ When a user selects content in the Document Viewer, the Selection Inspector acti
 
 ### 6.4 Semantic Snapping
 - When a user selection substantially overlaps a structured object (e.g., a table), the UI may offer semantic snapping to the complete object:
-  > *"Table detected (4 cols × 6 rows). Snap to complete table?"*  
+  > *"Table detected (4 cols × 6 rows). Snap to complete table?"*
   > Actions: `[Use Full Table]` | `[Keep Current Selection]`
 - `[DECISION]` The snapping threshold is **TBD / REQUIRES UX AND CORPUS VALIDATION**. It is an ergonomic technical parameter, not business truth. Exact overlap percentages must not be proposed, invented, or hardcoded as product truth.
 

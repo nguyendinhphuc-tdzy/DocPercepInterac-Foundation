@@ -1,18 +1,18 @@
 # Foundation UI State Model
 
-**Document status:** U0 BASELINE — ACCEPTED (Product/BA review passed 2026-09-09)  
-**Date:** 2026-09-09  
-**Workstream:** Frontend U0 — Governed Workspace Foundation  
-**Branch:** `build/ui-foundation-v2`  
+**Document status:** U0 BASELINE — ACCEPTED (Product/BA implementation guidance; not a Frozen Foundation Contract; does not override CURRENT_BASELINE.md, accepted ADRs, or docs/contracts/)
+**Date:** 2026-09-09
+**Workstream:** Frontend U0 — Governed Workspace Foundation
+**Branch:** `build/ui-foundation-v2`
 **Precedence authority:** `docs/CURRENT_BASELINE.md`, accepted ADRs (`docs/adr/`), Frozen Foundation Contract v0.1 (`docs/contracts/status-model.md`, `domain-model.md`).
 
 ---
 
 ## 1. Executive Summary & Epistemic Taxonomy
 
-State management in the Foundation frontend must maintain an uncompromised separation between authoritative backend governance and transient client-side presentation. 
+State management in the Foundation frontend must maintain an uncompromised separation between authoritative backend governance and transient client-side presentation.
 
-**The Golden Rule of Foundation UI State:**  
+**The Golden Rule of Foundation UI State:**
 `Frontend MUST NOT own or compute legal business-state transitions.`
 
 The frontend never decides whether an approval is permitted, whether source evidence is sufficient, or whether a task is ready to execute. The backend is the single source of truth; the frontend merely projects server state and renders actions explicitly authorized by backend responses.
@@ -88,6 +88,8 @@ To eliminate state confusion, the frontend categorizes all application state int
 ### 3.2 Strict Prohibition: No Frontend Business State Machine
 `[DECISION]` The frontend must NEVER maintain an authoritative allowed-transitions table or decide if a business action is valid.
 
+`TaskStatus` determines workspace emphasis and context, but status alone must never authorize an action. Backend-provided governance, capability, and action availability determine which user actions are actually enabled. Controls such as retry, re-evaluate, approve, remediation, or cancel must be backend/capability driven (e.g., `FAILED` does not automatically enable generic retry; `BLOCKED` does not automatically enable re-evaluate).
+
 **Incorrect Anti-Pattern:**
 ```typescript
 // VIOLATION of architectural boundary:
@@ -103,7 +105,7 @@ if (task.status === 'AWAITING_REVIEW') {
 const isApprovePermitted = task.capabilities?.can_submit_review_decision ?? false;
 const blockers = task.blocking_exceptions ?? [];
 
-<Button 
+<Button
   disabled={!isApprovePermitted || blockers.length > 0}
   onClick={() => submitReviewDecision({ outcome: 'APPROVE' })}
 >
@@ -123,7 +125,7 @@ const blockers = task.blocking_exceptions ?? [];
 - `error`: Network timeout, 5xx server failure, or 4xx client contract error.
 - `stale`: Server data version or ETag no longer guaranteed fresh; UI prompts or background refreshes.
 
-**Optimistic Updates Policy:**  
+**Optimistic Updates Policy:**
 Optimistic UI updates are **prohibited** for all governed business mutations (approving proposals, submitting change sets, executing transforms). The UI displays a pending spinner until the backend commits the event and returns an updated snapshot.
 
 ---
@@ -291,7 +293,7 @@ Every component across the Foundation workbench must handle all six universal pr
 |---|---|---|---|
 | **`empty`** | Informative icon, title, description, and primary CTA. | Click CTA (e.g., "Add Document", "Start Preflight"). | Showing blank white canvas or broken layout. |
 | **`loading`** | Pulsing skeleton loaders preserving final layout geometry. | Cancel request (if long-running). | Blocking browser main thread or shifting content. |
-| **`error`** | Warning border, clear plain-language error message, retry button. | "Retry", "View Error Details", "Report". | Displaying raw stack trace or opaque HTTP status codes. |
+| **`error`** | Warning border, clear plain-language error message, retry button. | "Retry" (enabled only where backend capability explicitly allows), "View Error Details", "Report". | Displaying raw stack trace or opaque HTTP status codes; assuming generic retry without backend capability authorization. |
 | **`stale`** | Subtle amber outline, timestamp indicator ("Updated 5m ago · Rechecking"). | "Refresh Now", read current cached values. | Allowing user to approve stale change proposals. |
 | **`partial`** | Progress bar, partial elements count badge ("848 / 2,832 perceived"). | Inspect perceived elements; zoom and read original. | Hiding entire document because perception is partial. |
-| **`blocked`** | Red/Amber shield icon, list of failing evidence checks, remediation prompt. | "Inspect Exceptions", "Upload Missing Document". | Allowing user to click "Execute" or "Bypass". |
+| **`blocked`** | Red/Amber shield icon, list of failing evidence checks, remediation prompt. | "Inspect Exceptions", "Upload Missing Document" (re-evaluation enabled only when backend permits). | Allowing user to click "Execute" or "Bypass"; assuming re-evaluate is legal without backend capability authorization. |
