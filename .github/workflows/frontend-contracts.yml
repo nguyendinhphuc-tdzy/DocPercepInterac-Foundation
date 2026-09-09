@@ -1,0 +1,52 @@
+name: Frontend contract projection check
+
+on:
+  push:
+    paths:
+      - 'docs/contracts/foundation.openapi.yaml'
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - 'frontend/src/contracts/**'
+      - 'frontend/tools/generate-contracts.mjs'
+      - 'frontend/tools/check-contracts.mjs'
+      - '.github/workflows/frontend-contracts.yml'
+
+  pull_request:
+    branches:
+      - master
+    paths:
+      - 'docs/contracts/foundation.openapi.yaml'
+      - 'frontend/package.json'
+      - 'frontend/package-lock.json'
+      - 'frontend/src/contracts/**'
+      - 'frontend/tools/generate-contracts.mjs'
+      - 'frontend/tools/check-contracts.mjs'
+      - '.github/workflows/frontend-contracts.yml'
+
+jobs:
+  check-projection:
+    name: Verify frontend contract projection
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+          cache: 'npm'
+          cache-dependency-path: frontend/package-lock.json
+
+      - name: Install dependencies
+        working-directory: frontend
+        run: npm ci
+
+      - name: Verify contract projection is up to date
+        working-directory: frontend
+        run: npm run contracts:check
+
+      - name: Run full frontend verification
+        working-directory: frontend
+        run: npm test
