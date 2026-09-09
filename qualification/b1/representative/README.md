@@ -6,6 +6,34 @@ Foundation domain contract. `corpus.example.json` and `review.example.json` are
 inert templates containing no actual corpus values. Never fill them with private
 information in this directory. The only versioned binaries remain synthetic.
 
+## Qualification-only preflight profile
+
+The B1.2R evaluator explicitly supplies the non-contract profile
+`b1-representative-core-v1` to `OoxmlPreflight`. It uses these exact finite
+limits:
+
+| Limit | Value |
+| --- | ---: |
+| `max_package_bytes` | 3,004,377 |
+| `max_uncompressed_bytes` | 22,302,224 |
+| `max_part_bytes` | 17,856,208 |
+| `max_parts` | 132 |
+| `max_xml_elements` | 796,703 |
+
+The general Foundation defaults are unchanged. Only the part and XML-element
+limits exceed those defaults; the other three values deliberately narrow the
+qualification envelope. The profile has zero numeric headroom and was calibrated
+for the approved immutable CORE corpus. Any corpus binary or reviewed-scope
+change requires recalibration.
+
+The profile does not establish production capacity, general Office support,
+semantic fidelity, native identity, mutation capability or business sufficiency.
+Its numeric values are not a cryptographic corpus binding. Private evidence
+records the profile ID and exact preflight `configuration_ref`, and both
+participate in the observation digest bound by review. Input hashes and the
+coverage scope digest retain their separate identity roles. The public summary
+does not expose the profile ID or configuration reference.
+
 Approved actual binaries must be outside the Git repository. Set
 `FOUNDATION_B1_PRIVATE_CORPUS_DIR` to that existing private directory in your local
 environment. Do not echo its value to public logs. Resolve filenames privately
