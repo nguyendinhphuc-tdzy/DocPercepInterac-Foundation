@@ -10,6 +10,10 @@ The adapter now enforces XML capacity incrementally before structural inspection
 without retaining all expanded ZIP members or constructing XML DOMs. Binary
 verification, package integrity, namespace/conformance rules, native and unknown
 findings, protection observations and operation-specific capabilities are preserved.
+Audit remediation 1.1.1 also establishes a deliberately narrow ZIP admission
+profile: only stored members with local/central header agreement and contiguous
+physical member layout are qualified. DEFLATE, BZIP2, LZMA and data-descriptor
+layouts fail closed before member decompression.
 
 This implements the approved HYBRID C+D direction: sequential phases and shared
 streaming reducers. Optional control-part DOMs proved unnecessary: existing
@@ -21,6 +25,21 @@ This is implementation evidence, not production qualification or broader scale
 support. The private representative Run-001 remains gated. No NativeLocator,
 NativeBinding, replay, mutation, production Docling integration or contract change
 is included.
+
+## Acceptance audit remediation
+
+- **F01 closed:** Expat errors and parser-originated ValueError/LookupError codec
+  failures now return FAILED / CORRUPTED_DOCUMENT with a fixed reason in either
+  pass. Observation-reducer exceptions are re-raised as implementation failures.
+- **F02 closed for the admitted profile:** the ineffective request for one byte
+  beyond ZipExtFile's declared view was removed. Stored-member local and central
+  fields, local extra data and physical boundaries are validated before reads;
+  an understated member with a hidden suffix fails as CORRUPTED_DOCUMENT.
+- **F03 closed:** STORED is the only qualified compression method. DEFLATE,
+  BZIP2, LZMA and data-descriptor layouts fail before member decompression.
+- **F04 closed:** finding occurrence identity is deterministic and distinct from
+  observation content identity. Duplicate semantic observations may share their
+  observation_ref, while every finding_id remains unique within the assessment.
 
 ## Allocation lifecycle and phases
 
@@ -35,12 +54,15 @@ The new phases are:
    before package inspection. No alternate unverified input path exists.
 2. **B — ZIP metadata safety.** Retain ZipInfo/name indexes; enforce package,
    part-count, expanded-total and per-part limits, canonical names, uniqueness
-   and encryption refusal before decompression.
+   and encryption refusal before decompression. Then enforce the stored-only
+   compression policy and verify local/central CRC, size, method, flags and name
+   agreement plus exact physical adjacency through the central-directory start.
 3. **C — Streaming safety/capacity.** Visit all members in sorted name order.
    XML/rels use start/end events, incremental aggregate element counting and
    explicit DTD/external-entity refusal. Non-XML members are drained for read/CRC
-   parity. Read chunks are at most 64 KiB. Check actual member/aggregate byte
-   accounting; stop immediately at the first hard refusal and close the stream.
+   parity. Stored-member reads request at most 64 KiB. Count bytes exposed by
+   ZipExtFile against the already validated physical layout; stop immediately at
+   the first hard refusal and close the stream.
 4. **D — Sequential inspection.** Reopen admitted XML/rels one at a time against
    the same verified immutable bytes. Shared reducers retain QName counters,
    namespace signals, root identity, ordered protection observations and the
@@ -58,27 +80,38 @@ members are BULK_XML. This internal classification changes control metadata
 collection, not common QName, namespace or protection interpretation. The
 case-sensitive `.xml`/`.rels` inspection coverage remains unchanged.
 
-The two passes intentionally repeat XML decompression/parsing. The second pass
+The two passes intentionally repeat admitted member reads/XML parsing. The second pass
 also enforces its own safety counters. No parser or member survives into the
 next part; only reduced observations remain for final validation and evidence.
 
 ## Versions and capacities
 
-| Item | Accepted previous | New |
-| --- | --- | --- |
-| OoxmlPreflight engine version | 1.0.0 | 1.1.0 |
-| PreflightConfig profile version | 1.0.0 | 1.1.0 |
-| max_package_bytes | 33,554,432 | 33,554,432 |
-| max_uncompressed_bytes | 134,217,728 | 134,217,728 |
-| max_part_bytes | 16,777,216 | 16,777,216 |
-| max_parts | 4,096 | 4,096 |
-| max_xml_elements | 500,000 | 500,000 |
+| Item | Accepted baseline | PR before remediation | Remediated |
+| --- | --- | --- | --- |
+| OoxmlPreflight engine version | 1.0.0 | 1.1.0 | 1.1.1 |
+| PreflightConfig profile version | 1.0.0 | 1.1.0 | 1.1.1 |
+| Streaming parser strategy version | N/A | 1.0.0 | 1.1.0 |
+| max_package_bytes | 33,554,432 | 33,554,432 | 33,554,432 |
+| max_uncompressed_bytes | 134,217,728 | 134,217,728 | 134,217,728 |
+| max_part_bytes | 16,777,216 | 16,777,216 | 16,777,216 |
+| max_parts | 4,096 | 4,096 | 4,096 |
+| max_xml_elements | 500,000 | 500,000 | 500,000 |
 
 Configuration evidence now pins the parser strategy, chunk size, DOM absence,
-entity/DTD refusal and actual Expat version. Canonical EvidenceArtifact encoding
+entity/DTD refusal, actual Expat version, stored-only compression method, refusal
+of data descriptors and physical-layout rule. Canonical EvidenceArtifact encoding
 remains RFC 8785 plus SHA-256. Engine/configuration provenance changes necessarily
 change dependent artifact/finding hashes; identical runs in the same pinned
 environment produce identical evidence.
+
+The ZIP trust boundary is explicit. Python ZipFile supplies parsed central-directory
+metadata and CRC verification for admitted reads. Foundation does not claim that
+ZipExtFile can reveal bytes beyond its declared expanded size. Before opening any
+member, Foundation instead compares the admitted stored member's central metadata
+with its local header and requires its physical data end to equal the next local
+header or central-directory start. This closes hidden physical suffixes for the
+qualified stored-only profile without adding a general ZIP decompressor. Other
+compression/layout profiles remain unsupported pending separate qualification.
 
 Old profile versions are not silently relabeled. Historical assessments, artifacts
 and reviews remain intact. New engine/configuration observations require new
@@ -97,8 +130,11 @@ multiple defects compared with loading all members before parsing.
 
 After safety admission, deterministic control validation retains the previous
 content-type/main-part/relationship ordering. Existing fixed refusal reasons and
-frozen ErrorCodes remain in use; streamed size discrepancies additionally produce
-CORRUPTED_DOCUMENT with a fixed technical reason.
+frozen ErrorCodes remain in use. Invalid admitted physical layouts produce
+CORRUPTED_DOCUMENT. Unqualified compression or data-descriptor layouts produce
+UNSUPPORTED_FILE_FORMAT before decompression. Expected Expat encoding ValueError,
+LookupError and ExpatError paths produce deterministic structured failures; errors
+raised by the observation reducer remain programmer failures and are not relabeled.
 
 Conformance still uses element namespaces, attribute namespaces and relationship
 type signals with the accepted exclusions. Unknown constructs remain observable.
@@ -120,8 +156,10 @@ artifacts are compared, preserving list order and multiplicity. Only engine
 version/configuration provenance and digest-derived references are normalized;
 each referenced semantic payload is compared. Document identity is not normalized.
 
-The test-first run against old code had four expected failures: new versioning,
-two early-refusal cases, and DOM-free admitted inspection. All new checks now pass.
+The original test-first run against old code had four expected failures: new
+versioning, two early-refusal cases, and DOM-free admitted inspection. The 1.1.1
+remediation test-first run then exposed nine expected failures covering F01-F04.
+All focused checks now pass.
 An instrumentation test was corrected to observe inspection reads rather than
 fixture-construction ZIP writes; its early-stop assertion was retained.
 
@@ -130,8 +168,18 @@ capacity refusal, prove later malformed members remain unopened, verify stream
 closure, and refuse large controls before reducer allocation. Boundary tests cover
 exact aggregate XML and per-part byte limits; dominant and distributed workloads
 exercise aggregate accounting. Unknown counts and sensitive-value exclusion,
-CRC/deflate, encryption, malformed/control relationships, protection, immutable
+CRC, compression refusal, encryption, malformed/control relationships, protection, immutable
 identity and deterministic evidence remain covered.
+
+Remediation regressions cover UTF-7, Shift-JIS and unknown codec declarations in
+the shared parser, including explicit inspection-pass coverage; observer programmer
+errors remain visible. They reproduce understated stored-member metadata with a
+hidden malformed suffix and require structural refusal. DEFLATE, BZIP2 and LZMA
+are refused before ZipFile.open, while stored packages remain admitted. Repeated
+identical protection observations preserve a shared observation_ref but receive
+unique deterministic finding IDs. Each finding ID combines the stable traversal
+occurrence ordinal with its evidence digest; IDs are unique within the assessment,
+repeatable across identical runs and do not create native execution identity.
 
 ## Local validation evidence
 
@@ -142,9 +190,9 @@ explicitly authorized; no private Docling or representative Run-001 was invoked.
 | --- | --- |
 | Contract fixture validator | OpenAPI PASS; 8/8 scenarios PASS |
 | Contract unittest suite | 23 passed |
-| Focused preflight tests | 61 passed: 25 existing + 36 new |
+| Focused preflight tests | 72 passed: 25 original-module + 47 resource-safe/remediation |
 | Representative/privacy tests | 83 passed |
-| Full backend tests | 243 passed |
+| Full backend tests | 254 passed |
 | Golden tests | 5 passed |
 | Private corpus boundary | PASS |
 | pip check | No broken requirements |
@@ -163,13 +211,13 @@ no large binary is committed. Existing Golden fixture bytes remain reproducible.
 
 | Synthetic case | Old / new result | Old peak working set | New peak working set |
 | --- | --- | --- | --- |
-| Dominant worksheet | COMPLETED / COMPLETED | 114.45 MiB | 49.42 MiB |
-| Distributed worksheets | COMPLETED / COMPLETED | 115.09 MiB | 49.11 MiB |
-| Above default element limit | FAILED / FAILED | 129.91 MiB | 56.95 MiB |
+| Dominant worksheet | COMPLETED / COMPLETED | 114.90 MiB | 49.54 MiB |
+| Distributed worksheets | COMPLETED / COMPLETED | 115.80 MiB | 49.26 MiB |
+| Above default element limit | FAILED / FAILED | 129.82 MiB | 56.97 MiB |
 
 These are single local lifetime peaks, including imports/input generation, not
 portable pass thresholds. The new runs did not exceed their pre-assessment peak.
-Elapsed times were approximately 0.99/1.05 seconds, 0.81/1.01 seconds and 0.36/0.30
+Elapsed times were approximately 0.73/0.92 seconds, 0.71/0.94 seconds and 0.34/0.29
 seconds respectively. Two-pass overhead remains observable; production performance
 or security qualification is not implied.
 
@@ -182,10 +230,11 @@ python tools/b1/preflight_resource_probe.py --report <new-synthetic-report.json>
 ## Private default-profile observation and next gate
 
 After all required regressions passed, the existing external LF-XLSX-003 mirror
-was checked against prior private identity evidence. Engine/profile 1.1.0 with
+was checked against prior private identity evidence. Engine/profile 1.1.1 with
 unchanged defaults returned FAILED / DOCUMENT_TOO_LARGE / "Configured expanded
 package limits exceeded". Before/after identity checks passed. No member/XML
-inspection or Docling was needed beyond that metadata refusal.
+inspection or Docling was needed beyond that metadata refusal, and representative
+Run-001 was not invoked.
 
 This private result remains local and ignored; source names, source hashes and
 content are not published. The case is not declared supported. Its representative
@@ -195,11 +244,14 @@ explicit harness plumbing, followed by fresh preflight and SME/scope review.
 ## Remaining bounds
 
 The content port still materializes compressed bytes before the package-size
-check, and ZIP directory parsing precedes the part-count gate. Streaming parsers
-may allocate token/attribute/depth state; chunk size alone is not a process-memory
-guarantee. Exact unknown-QName inventories, relationship metadata, protection
-occurrences and returned evidence can grow with admitted XML. The adapter retains
-reduced observations across parts, not constant-size state. No new depth, token,
-CPU or output-memory thresholds are claimed. Those require separate evidence and
-architecture decisions. This implementation neither widens capacity nor replaces
-independent validation, native identity or governance.
+check, and ZIP directory parsing precedes the part-count gate. Only the stored,
+contiguous, no-data-descriptor layout is qualified; ordinary DEFLATE Office
+packages therefore fail closed until an independently bounded decompression path
+is qualified. Streaming parsers may allocate token/attribute/depth state; chunk
+size alone is not a process-memory guarantee. Exact unknown-QName inventories,
+relationship metadata, protection occurrences and returned evidence can grow with
+admitted XML. The adapter retains reduced observations across parts, not
+constant-size state. No new depth, token, CPU or output-memory thresholds are
+claimed. Those require separate evidence and architecture decisions. This
+implementation neither widens capacity nor replaces independent validation,
+native identity or governance.

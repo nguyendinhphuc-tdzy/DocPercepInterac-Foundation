@@ -14,7 +14,7 @@ from foundation.domain import (
 )
 from foundation.ports.content import ContentAccessError, DocumentContentResolverPort, verified_bytes
 from .evidence import EvidenceArtifact, PreflightResult
-from .streaming import InspectionFailure, PARSER_STRATEGY, scan_capacity, inspect_parts
+from .streaming import InspectionFailure, PARSER_STRATEGY, inspect_parts, scan_capacity, validate_package_profile
 
 W = 'http://schemas.openxmlformats.org/wordprocessingml/2006/main'
 S = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
@@ -41,7 +41,7 @@ SHEET_FINDINGS = {'c':'cell','f':'formula','definedName':'defined_name','table':
 class PreflightConfig:
     """Versioned technical limits; no business freshness or production thresholds."""
 
-    profile_version: str = '1.1.0'
+    profile_version: str = '1.1.1'
     max_package_bytes: int = 32 * 1024 * 1024
     max_uncompressed_bytes: int = 128 * 1024 * 1024
     max_part_bytes: int = 16 * 1024 * 1024
@@ -49,7 +49,7 @@ class PreflightConfig:
     max_xml_elements: int = 500000
 
     def __post_init__(self):
-        if self.profile_version != '1.1.0' or any(type(v) is not int or v <= 0 for k,v in asdict(self).items() if k != 'profile_version'):
+        if self.profile_version != '1.1.1' or any(type(v) is not int or v <= 0 for k,v in asdict(self).items() if k != 'profile_version'):
             raise ValueError('Unknown profile or invalid positive technical limits')
 
 
@@ -125,7 +125,7 @@ class PartObservation:
 
 class OoxmlPreflight:
     engine = 'foundation-ooxml-preflight'
-    version = '1.1.0'
+    version = '1.1.1'
 
     def __init__(self, resolver: DocumentContentResolverPort, config: PreflightConfig | None = None):
         self.resolver, self.config = resolver, config or PreflightConfig()
@@ -177,6 +177,7 @@ class OoxmlPreflight:
                     raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'Duplicate or noncanonical package part')
                 if any(i.flag_bits & 1 for i in infos):
                     raise InspectionFailure(ErrorCode.ENCRYPTED_DOCUMENT, 'Encrypted ZIP member')
+                validate_package_profile(data, infos, archive.start_dir)
                 members={i.filename:i for i in infos}
                 scan_capacity(archive, members, cfg)
                 observations=dict(inspect_parts(archive, members, cfg, PartObservation))
@@ -221,10 +222,12 @@ class OoxmlPreflight:
             conf=next(iter(classes)) if len(classes)==1 and main_ns in expected_ns else 'UNKNOWN'
         except (KeyError, ValueError) as exc:
             raise InspectionFailure(ErrorCode.CORRUPTED_DOCUMENT, 'Malformed or inconsistent OPC/XML package') from exc
-        findings=[]; protections=[]; codes=set(); observed=set(); global_protected=False
+        findings=[]; protections=[]; codes=set(); observed=set(); global_protected=False; finding_ordinal=0
         def finding(kind,name,facts,protected=False):
+            nonlocal finding_ordinal
             obs=evidence(kind, part=name, **facts)
-            f=PreflightFinding(finding_id='finding-'+obs.sha256, native_object_type=kind, part_uri='/'+name,
+            finding_ordinal += 1
+            f=PreflightFinding(finding_id=f'finding-{finding_ordinal:06d}-{obs.sha256}', native_object_type=kind, part_uri='/'+name,
                 native_locator_refs=[], observation_ref=obs, description=f'{kind} observed in package part; inspection is not native execution identity')
             (protections if protected else findings).append(f)
             observed.add(kind)

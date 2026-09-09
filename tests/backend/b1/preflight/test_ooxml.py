@@ -80,7 +80,7 @@ def test_malformed_fails_closed(data):
     assert not a.capability_results
 
 
-def test_corrupt_deflate_stream_returns_structured_failure():
+def test_unqualified_deflate_stream_is_refused_before_corruption_inspection():
     from io import BytesIO
     from struct import unpack_from
     from zipfile import ZipFile, ZIP_DEFLATED
@@ -95,7 +95,7 @@ def test_corrupt_deflate_stream_returns_structured_failure():
     damaged[data_offset] |= 7  # Reserved DEFLATE block type; valid ZIP envelope.
     assessment = run(bytes(damaged)).assessment
     assert assessment.status.value == 'FAILED'
-    assert assessment.error_codes == [ErrorCode.CORRUPTED_DOCUMENT]
+    assert assessment.error_codes == [ErrorCode.UNSUPPORTED_FILE_FORMAT]
     assert not assessment.capability_results
 
 

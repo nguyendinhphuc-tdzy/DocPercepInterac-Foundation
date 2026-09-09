@@ -2,10 +2,11 @@
 from dataclasses import asdict, replace
 from io import BytesIO
 import json
-from struct import pack_into
+from struct import pack_into, unpack_from
 import warnings
 from xml.etree import ElementTree as ET
-from zipfile import ZipFile
+from zlib import crc32
+from zipfile import ZIP_BZIP2, ZIP_DEFLATED, ZIP_LZMA, ZIP_STORED, ZipFile
 
 import pytest
 
@@ -43,6 +44,33 @@ def semantics(result):
     return value
 
 
+def package_with_compression(parts, compression):
+    stream = BytesIO()
+    with ZipFile(stream, 'w', compression=compression) as archive:
+        for name, content in sorted(parts.items()):
+            archive.writestr(name, content.encode() if isinstance(content, str) else content)
+    return stream.getvalue()
+
+
+def understate_stored_member(data, name, exposed):
+    """Keep a physical suffix while making both ZIP headers describe only a prefix."""
+    result = bytearray(data)
+    with ZipFile(BytesIO(result)) as archive:
+        info = archive.getinfo(name)
+    prefix_crc = crc32(exposed)
+    pack_into('<III', result, info.header_offset + 14, prefix_crc, len(exposed), len(exposed))
+    offset = 0
+    while True:
+        offset = result.find(b'PK\x01\x02', offset)
+        if offset < 0:
+            raise AssertionError('central directory entry not found')
+        name_length = unpack_from('<H', result, offset + 28)[0]
+        if result[offset + 46:offset + 46 + name_length] == name.encode():
+            pack_into('<III', result, offset + 16, prefix_crc, len(exposed), len(exposed))
+            return bytes(result)
+        offset += 46 + name_length
+
+
 def parity_parts(case):
     p=docx_parts(True) if case!='xlsx' else xlsx_parts()
     if case=='strict': p={k:v.replace(W,old.WS).replace(R,old.RS) for k,v in p.items()}
@@ -68,8 +96,70 @@ def test_old_new_semantic_equivalence(case):
 
 def test_versioned_mechanics_preserve_all_numeric_defaults():
     new=asdict(PreflightConfig()); previous=asdict(old.PreflightConfig())
-    assert OoxmlPreflight.version=='1.1.0' and new.pop('profile_version')=='1.1.0'
+    assert OoxmlPreflight.version=='1.1.1' and new.pop('profile_version')=='1.1.1'
     previous.pop('profile_version'); assert new==previous
+
+
+@pytest.mark.parametrize('encoding', ['UTF-7', 'Shift-JIS', 'unknown-audit-encoding'])
+def test_xml_encoding_failures_are_structured(encoding):
+    p = docx_parts()
+    p['word/document.xml'] = f'<?xml version="1.0" encoding="{encoding}"?>' + p['word/document.xml']
+    result = run(package(p))
+    assert result.assessment.status.value == 'FAILED'
+    assert [code.value for code in result.assessment.error_codes] == ['CORRUPTED_DOCUMENT']
+    failure = json.loads(result.artifacts[-1].data)
+    assert failure['reason'] == 'Malformed or unsupported XML encoding'
+
+
+def test_inspection_pass_also_structures_xml_encoding_failure(monkeypatch):
+    p = docx_parts()
+    p['word/document.xml'] = '<?xml version="1.0" encoding="UTF-7"?>' + p['word/document.xml']
+    monkeypatch.setattr(ooxml, 'scan_capacity', lambda *args: 0)
+    result = run(package(p))
+    assert result.assessment.status.value == 'FAILED'
+    assert [code.value for code in result.assessment.error_codes] == ['CORRUPTED_DOCUMENT']
+    assert json.loads(result.artifacts[-1].data)['reason'] == 'Malformed or unsupported XML encoding'
+
+
+def test_observer_programmer_error_is_not_normalized_as_input_failure(monkeypatch):
+    monkeypatch.setattr(ooxml, 'scan_capacity', lambda *args: 0)
+
+    def programmer_error(*args, **kwargs):
+        raise ValueError('synthetic observer defect')
+
+    monkeypatch.setattr(ooxml.PartObservation, 'start', programmer_error)
+    with pytest.raises(ValueError, match='synthetic observer defect'):
+        run(package(docx_parts()))
+
+
+def test_qualified_stored_compression_is_accepted():
+    result = run(package_with_compression(docx_parts(), ZIP_STORED))
+    assert result.assessment.status.value == 'COMPLETED'
+
+
+@pytest.mark.parametrize('compression', [ZIP_DEFLATED, ZIP_BZIP2, ZIP_LZMA])
+def test_unqualified_compression_is_refused_before_member_decompression(monkeypatch, compression):
+    data = package_with_compression(docx_parts(), compression)
+
+    def forbidden(*args, **kwargs):
+        pytest.fail('unqualified compression reached member decompression')
+
+    monkeypatch.setattr(ZipFile, 'open', forbidden)
+    result = run(data)
+    assert result.assessment.status.value == 'FAILED'
+    assert [code.value for code in result.assessment.error_codes] == ['UNSUPPORTED_FILE_FORMAT']
+    assert json.loads(result.artifacts[-1].data)['reason'] == 'ZIP compression method is outside qualified preflight profile'
+
+
+def test_understated_stored_member_with_hidden_suffix_is_refused():
+    p = docx_parts()
+    p['z-audit.xml'] = '<x/><hidden-malformed'
+    data = package_with_compression(p, ZIP_STORED)
+    data = understate_stored_member(data, 'z-audit.xml', b'<x/>')
+    result = run(data)
+    assert result.assessment.status.value == 'FAILED'
+    assert [code.value for code in result.assessment.error_codes] == ['CORRUPTED_DOCUMENT']
+    assert json.loads(result.artifacts[-1].data)['reason'] == 'ZIP local/central metadata or physical member layout is inconsistent'
 
 
 @pytest.mark.parametrize('delta',[-1,0,1])
@@ -191,6 +281,21 @@ def test_unknown_namespace_counts_and_private_values_are_not_lost_or_retained():
     assert 'SECRET_' not in json.dumps(payloads)
 
 
+def test_repeated_findings_have_unique_deterministic_occurrence_ids():
+    p = docx_parts()
+    p['word/settings.xml'] = f'<w:settings xmlns:w="{W}"><w:documentProtection w:enforcement="true"/><w:documentProtection w:enforcement="true"/></w:settings>'
+    first, second = run(package(p)), run(package(p))
+    first_findings = first.assessment.native_structure_findings + first.assessment.protection_findings
+    second_findings = second.assessment.native_structure_findings + second.assessment.protection_findings
+    ids = [finding.finding_id for finding in first_findings]
+    assert len(ids) == len(set(ids))
+    assert ids == [finding.finding_id for finding in second_findings]
+    repeated = [finding for finding in first.assessment.protection_findings if finding.native_object_type == 'document_protection']
+    assert len(repeated) == 2
+    assert repeated[0].observation_ref == repeated[1].observation_ref
+    assert repeated[0].finding_id != repeated[1].finding_id
+
+
 def test_constant_numeric_profile_and_explicit_parser_provenance():
     result=run(package(docx_parts()))
     configuration=json.loads(result.artifacts[0].data)
@@ -198,3 +303,4 @@ def test_constant_numeric_profile_and_explicit_parser_provenance():
     strategy=configuration['parser_strategy']
     assert strategy['dom']=='NONE' and 'CONTROL_XML' in strategy and 'BULK_XML' in strategy
     assert strategy['dtd']==strategy['external_entities']=='REFUSED'
+    assert strategy['qualified_zip_compression_methods'] == [{'code': ZIP_STORED, 'name': 'STORED'}]
