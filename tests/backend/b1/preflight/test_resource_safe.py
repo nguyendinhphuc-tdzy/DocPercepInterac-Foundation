@@ -114,7 +114,7 @@ def test_old_new_semantic_equivalence(case):
 
 def test_versioned_mechanics_preserve_all_numeric_defaults():
     new=asdict(PreflightConfig()); previous=asdict(old.PreflightConfig())
-    assert OoxmlPreflight.version=='1.1.2' and new.pop('profile_version')=='1.1.1'
+    assert OoxmlPreflight.version=='1.2.0' and new.pop('profile_version')=='1.2.0'
     previous.pop('profile_version'); assert new==previous
 
 
@@ -195,7 +195,7 @@ def test_forged_crc_zero_length_member_fails_closed():
     assert failure['reason'] == 'Unreadable ZIP structure or CRC'
 
 
-@pytest.mark.parametrize('compression', [ZIP_DEFLATED, ZIP_BZIP2, ZIP_LZMA])
+@pytest.mark.parametrize('compression', [ZIP_BZIP2, ZIP_LZMA])
 def test_unqualified_compression_is_refused_before_member_decompression(monkeypatch, compression):
     data = package_with_compression(docx_parts(), compression)
 
@@ -359,7 +359,10 @@ def test_constant_numeric_profile_and_explicit_parser_provenance():
     configuration=json.loads(result.artifacts[0].data)
     assert configuration['config']==asdict(PreflightConfig())
     strategy=configuration['parser_strategy']
-    assert strategy['strategy_version'] == '1.1.1'
+    assert strategy['strategy_version'] == '1.2.0'
     assert strategy['dom']=='NONE' and 'CONTROL_XML' in strategy and 'BULK_XML' in strategy
     assert strategy['dtd']==strategy['external_entities']=='REFUSED'
-    assert strategy['qualified_zip_compression_methods'] == [{'code': ZIP_STORED, 'name': 'STORED'}]
+    assert strategy['qualified_zip_compression_methods'] == [
+        {'code': ZIP_STORED, 'name': 'STORED'},
+        {'code': ZIP_DEFLATED, 'name': 'DEFLATE'},
+    ]
