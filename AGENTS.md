@@ -33,6 +33,18 @@ Historical files may contain superseded decisions.
 
 Do not implement a historical decision merely because existing code uses it.
 
+## Current Product / Business Overview
+
+Before designing product flows, frontend UX, Workflow Profiles, Business Targets,
+or MVP use-case behaviour, read `docs/FOUNDATION_PRODUCT_OVERVIEW.md`.
+
+That document captures the current product thesis, business pain points, stakeholder
+direction, generic Foundation vs use-case-specific logic, technology direction and
+MVP scope.
+
+It is a product/business overview, not a contract authority. It must not override
+`docs/CURRENT_BASELINE.md`, accepted ADRs or the Frozen Foundation Contract v0.1.
+
 ## Architecture Principles
 
 Perceive != Understand != Authorize != Locate != Execute.
@@ -110,4 +122,3 @@ If implementation evidence reveals a contract problem:
 4. assess impact;
 5. propose a versioned contract change;
 6. do not silently update the contract.
-
