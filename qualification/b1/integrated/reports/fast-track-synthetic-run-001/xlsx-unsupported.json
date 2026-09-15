@@ -1,0 +1,34 @@
+{
+  "evaluation_version": "b1-integrated-1.0.0",
+  "implementation_status": "PROVISIONAL",
+  "stages": {
+    "input_integrity": {
+      "implementation": "IMPLEMENTED",
+      "outcome": "PASS"
+    },
+    "preflight": {
+      "implementation": "IMPLEMENTED",
+      "outcome": "PASS"
+    },
+    "perception": {
+      "implementation": "IMPLEMENTED",
+      "outcome": "PASS"
+    },
+    "native_identity": {
+      "implementation": "IMPLEMENTED",
+      "outcome": "FAIL"
+    },
+    "binding": {
+      "implementation": "IMPLEMENTED",
+      "outcome": "NOT_EVALUATED"
+    },
+    "invariants": {
+      "implementation": "IMPLEMENTED",
+      "outcome": "NOT_EVALUATED"
+    }
+  },
+  "review_status": "REVIEW_REQUIRED",
+  "decision": "INSUFFICIENT_EVIDENCE",
+  "production_qualified": false,
+  "production_authorized": false
+}
