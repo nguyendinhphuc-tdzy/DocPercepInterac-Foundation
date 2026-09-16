@@ -26,6 +26,16 @@ Accepted in PR #4, merge commit `b0f028e0b3de53debf99b38b898fbd7a9f7b9503`.
 
 ### Backend
 
+Current authorization update (2026-09-17): **B2.1 governed GTPS mapping plan** may
+proceed under the explicit Business Owner progression waiver. Formal Run-003 SME
+records remain incomplete as documentation/audit debt and are not fabricated.
+Run-003 mechanical evidence is preserved; no Run-004 or qualification promotion
+is implied. General Office fidelity remains provisional, production_qualified=false,
+and Replay remains unqualified. B2.1 stops at mapping evidence review.
+See [B2.1 implementation and progression status](backend/B2_1_GTPS_MAPPING_STATUS.md).
+
+### B1 qualification baseline (preserved)
+
 B1 — Capability Preflight + Semantic Perception + Native Identity
 
 Current B1 iteration: B1.0 + B1.1 + B1.2A.
