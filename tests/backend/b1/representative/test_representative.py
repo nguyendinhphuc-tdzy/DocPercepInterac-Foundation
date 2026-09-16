@@ -12,15 +12,15 @@ from tools.b1.build_corpus import docx_parts, xlsx_parts, package
 
 
 def manifest(fmt='DOCX'):
-    return {'evaluation_version': '1.1.0', 'required_profiles': ['NARRATIVE'],
+    return {'evaluation_version': '1.2.0', 'required_profiles': ['NARRATIVE'],
             'coverage_review': {'status': 'PENDING', 'reviewer_id': '', 'rationale': '', 'scope_digest': '0' * 64},
             'cases': [{'case_id': f'LF-{fmt}-001', 'local_path': 'client-secret.' + fmt.lower(),
-                       'format': fmt, 'document_role': 'TARGET', 'privacy_classification': 'CONFIDENTIAL',
+                       'format': fmt, 'document_role': 'TARGET', 'business_role': 'TARGET_TEMPLATE', 'privacy_classification': 'CONFIDENTIAL',
                        'expected_feature_profile': ['NARRATIVE'], 'review_status': 'APPROVED_FOR_EVALUATION'}]}
 
 
 def result():
-    return {'case_id': 'LF-DOCX-001', 'format': 'DOCX', 'document_role': 'TARGET',
+    return {'case_id': 'LF-DOCX-001', 'format': 'DOCX', 'document_role': 'TARGET', 'business_role': 'TARGET_TEMPLATE',
             'expected_feature_profile': ['NARRATIVE'], 'evaluation_status': 'EVALUATED',
             'input_unchanged': True, 'input_sha256': 'a' * 64, 'observation_digest': 'b' * 64,
             'conversion_success': True, 'review': None, 'repeatability': {k: 'PASS' for k in rep.REPEATABILITY},
@@ -28,7 +28,7 @@ def result():
 
 
 def review(case, classification=None, critical=False):
-    return {'evaluation_version': '1.1.0', 'status': 'COMPLETED', 'reviewer_id': 'private-reviewer', 'reviewed_at': '2026-09-08T00:00:00Z',
+    return {'evaluation_version': '1.2.0', 'status': 'COMPLETED', 'reviewer_id': 'private-reviewer', 'reviewed_at': '2026-09-08T00:00:00Z',
             'input_sha256': case['input_sha256'], 'observation_digest': case['observation_digest'],
             'dimensions': {d: ('NOT_APPLICABLE' if d == 'TABLE_FIDELITY' and 'TABLES' not in case['expected_feature_profile'] else 'PASS') for d in rep.REVIEW_DIMENSIONS},
             'feature_evidence': {p: {'status': 'PASS', 'evidence_basis': 'HUMAN'} for p in case['expected_feature_profile']},
@@ -43,7 +43,7 @@ def test_schema_and_example():
     rep.validate_manifest(json.loads((rep.SPEC / 'corpus.example.json').read_text()))
     template = json.loads((rep.SPEC / 'review.example.json').read_text())
     assert rep.Draft202012Validator(rep.SCHEMA['$defs']['Review']).is_valid(template)
-    assert template['evaluation_version'] == '1.1.0'
+    assert template['evaluation_version'] == '1.2.0'
 
 
 @pytest.mark.parametrize('field,value', [('case_id', 'ClientCo'), ('case_id', 'LF-DOCX-000'),
@@ -339,7 +339,7 @@ def test_scope_digest_and_feature_evidence_do_not_leak_private_fields():
     full = completed_full(); c = full['cases'][0]
     c['review']['notes'] = 'SECRET NOTES'; c['private_detail'] = '/SECRET/PATH/client.docx'
     public = rep.sanitize(full)
-    assert public['evaluation_version'] == '1.1.0'
+    assert public['evaluation_version'] == '1.2.0'
     assert public['cases'][0]['feature_evidence'] == {'NARRATIVE': {'status': 'PASS', 'evidence_basis': 'HUMAN'}}
     encoded = json.dumps(public)
     for private in ['SECRET', 'client.docx', 'private-reviewer', c['input_sha256'], c['observation_digest'], full['manifest']['coverage_review']['scope_digest']]:

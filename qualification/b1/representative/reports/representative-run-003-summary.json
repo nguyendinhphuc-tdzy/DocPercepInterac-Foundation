@@ -1,5 +1,5 @@
 {
-  "evaluation_version": "1.1.0",
+  "evaluation_version": "1.2.0",
   "evidence_kind": "REPRESENTATIVE_QUALIFICATION",
   "corpus_status": "AVAILABLE",
   "decision": "INSUFFICIENT_EVIDENCE",
@@ -23,6 +23,7 @@
         "DRAWINGS",
         "ORGANISATION_CHARTS"
       ],
+      "business_role_category": "TARGET_TEMPLATE",
       "evaluation_status": "EVALUATED",
       "repeatability": {
         "conversion": "PASS",
@@ -99,7 +100,7 @@
     {
       "case_id": "LF-DOCX-003",
       "format": "DOCX",
-      "document_role_category": "TARGET",
+      "document_role_category": "REFERENCE",
       "feature_profile": [
         "NARRATIVE",
         "TABLES",
@@ -112,6 +113,7 @@
         "DRAWINGS",
         "IMAGES"
       ],
+      "business_role_category": "GOLDEN_EVALUATION_ONLY",
       "evaluation_status": "EVALUATED",
       "repeatability": {
         "conversion": "PASS",
@@ -207,6 +209,7 @@
         "ORGANISATION_CHARTS",
         "IMAGES"
       ],
+      "business_role_category": "HISTORICAL_REFERENCE",
       "evaluation_status": "EVALUATED",
       "repeatability": {
         "conversion": "PASS",
@@ -305,6 +308,7 @@
         "IMAGES",
         "CROSS_SHEET_CONTEXT"
       ],
+      "business_role_category": "HISTORICAL_SOURCE",
       "evaluation_status": "EVALUATED",
       "repeatability": {
         "conversion": "PASS",
@@ -393,6 +397,7 @@
         "IMAGES",
         "CROSS_SHEET_CONTEXT"
       ],
+      "business_role_category": "CURRENT_SOURCE",
       "evaluation_status": "EVALUATED",
       "repeatability": {
         "conversion": "PASS",
