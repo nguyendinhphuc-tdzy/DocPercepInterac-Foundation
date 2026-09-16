@@ -1,6 +1,67 @@
 # B1.2R REMAINS OPEN — SME REVIEW REQUIRED
 
-## Run-003 preparation update — 2026-09-16
+## Run-003 mechanical execution — 2026-09-16
+
+RUN003_CODE_BASELINE: `ff479464a117992d628b066631bb3770c19b7c1f`.
+The preparation commit was pushed to `qualification/backend-b1-representative-run2`
+and the working tree was clean before execution.
+
+The Business Owner / qualification reviewer explicitly accepted reuse of
+`b1-representative-core-v1`: **ACCEPTED_FOR_CORRECTED_RUN003_CORPUS**.
+Acceptance is qualification-only, bounded to the exact corrected five-case
+corpus, and non-production. All five inputs completed preflight within existing
+finite limits; no numeric limits, general defaults or dependency pins changed.
+The corrected historical reference was verified. This acceptance is not general
+Local File capacity, semantic fidelity, replay or future corpus authorization.
+
+The new immutable private Run-003 report uses representative evaluation schema
+1.2.0 and the approved pinned Docling environment. Its separate
+[sanitized Run-003 summary](../../qualification/b1/representative/reports/representative-run-003-summary.json)
+is the exact harness projection. Run-002 reports, original manifest, provenance
+audit, review pack and viewer remain byte-for-byte unchanged.
+
+| Evidence | Run-003 result |
+| --- | --- |
+| Cases | Five evaluated: three DOCX and two XLSX |
+| Preflight | COMPLETED, 5/5 |
+| Semantic conversion | PASS, 15/15 (three per case) |
+| Input integrity | PASS, 5/5 |
+| Repeatability | PASS for conversion, content, structure, tables, ordering and references |
+| Human review | REVIEW_REQUIRED for all five cases; no completed SME judgments |
+| Coverage review | PENDING; bound to the corrected scope, including business roles |
+| Decision | INSUFFICIENT_EVIDENCE |
+| Technology status | PROVISIONAL_CONTINUE |
+| production_qualified | false |
+
+| Case | Document role | Business role |
+| --- | --- | --- |
+| LF-DOCX-001 | TARGET | TARGET_TEMPLATE |
+| LF-DOCX-003 | REFERENCE | GOLDEN_EVALUATION_ONLY |
+| LF-DOCX-004 | REFERENCE | HISTORICAL_REFERENCE |
+| LF-XLSX-001 | SOURCE | HISTORICAL_SOURCE |
+| LF-XLSX-002 | SOURCE | CURRENT_SOURCE |
+
+A new private review pack contains five worksheets bound to the exact input,
+observation, evaluation version, business role and feature profile. Its separate
+read-only viewer displays retained semantic observations, original-document
+links, role-specific guidance and the Golden evaluation-only warning. No source
+information was reconstructed to repair perception. Human identity, time,
+judgments and coverage approval remain unfilled. Evaluation admission does not
+constitute human fidelity review.
+
+Post-run validation: 119 representative/privacy tests, 340 backend/Golden tests,
+23 contract tests and all eight contract fixtures passed; OpenAPI validation,
+private boundary guard and diff whitespace check passed. Frozen Contract remains
+unchanged and no private files are tracked. Static viewer checks cover retained
+text, tables, sheet groups, picture placeholders, role guidance and original
+link targets. Browser visual rendering and native Office launch were not verified.
+
+Next: authentic SME fidelity and coverage review against Run-003, followed by a
+separately authorized immutable follow-up run using a reviewed manifest revision.
+No Replay or GTPS mapping was started. Mechanical success, presence and
+repeatability do not establish correctness or complete B1.2R.
+
+## Historical preparation state before acceptance — 2026-09-16
 
 The non-contract representative evaluation schema is now 1.2.0 for new runs.
 It requires the closed business_role field, enforces its document_role pairing,

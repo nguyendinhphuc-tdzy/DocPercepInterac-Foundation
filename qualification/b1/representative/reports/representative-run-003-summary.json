@@ -1,0 +1,500 @@
+{
+  "evaluation_version": "1.2.0",
+  "evidence_kind": "REPRESENTATIVE_QUALIFICATION",
+  "corpus_status": "AVAILABLE",
+  "decision": "INSUFFICIENT_EVIDENCE",
+  "docling_qualification_status": "PROVISIONAL_CONTINUE",
+  "engine": "docling-slim",
+  "engine_version": "2.126.0",
+  "production_qualified": false,
+  "cases": [
+    {
+      "case_id": "LF-DOCX-001",
+      "format": "DOCX",
+      "document_role_category": "TARGET",
+      "feature_profile": [
+        "NARRATIVE",
+        "TABLES",
+        "HEADERS",
+        "FOOTERS",
+        "FIELDS",
+        "BOOKMARKS",
+        "CONTENT_CONTROLS",
+        "DRAWINGS",
+        "ORGANISATION_CHARTS"
+      ],
+      "business_role_category": "TARGET_TEMPLATE",
+      "evaluation_status": "EVALUATED",
+      "repeatability": {
+        "conversion": "PASS",
+        "content": "PASS",
+        "structure": "PASS",
+        "tables": "PASS",
+        "ordering": "PASS",
+        "references": "PASS"
+      },
+      "input_integrity": "PASS",
+      "review_status": "REVIEW_REQUIRED",
+      "review_dimensions": {
+        "CONTENT_FIDELITY": "REVIEW_REQUIRED",
+        "STRUCTURE_FIDELITY": "REVIEW_REQUIRED",
+        "TABLE_FIDELITY": "REVIEW_REQUIRED",
+        "BUSINESS_RELEVANT_STRUCTURE": "REVIEW_REQUIRED",
+        "SEMANTIC_LOSS": "REVIEW_REQUIRED",
+        "NATIVE_IDENTITY_LOSS": "REVIEW_REQUIRED",
+        "FAILURE_TRANSPARENCY": "REVIEW_REQUIRED"
+      },
+      "feature_evidence": {},
+      "loss_classifications": [
+        "UNKNOWN"
+      ],
+      "critical_semantic_loss": null,
+      "automated_feature_presence": [
+        {
+          "feature": "NARRATIVE",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "OBSERVED"
+        },
+        {
+          "feature": "TABLES",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "OBSERVED"
+        },
+        {
+          "feature": "HEADERS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "FOOTERS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "FIELDS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "BOOKMARKS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "CONTENT_CONTROLS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "DRAWINGS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "ORGANISATION_CHARTS",
+          "native_presence": "NOT_EVALUATED",
+          "semantic_presence": "NOT_EVALUATED"
+        }
+      ]
+    },
+    {
+      "case_id": "LF-DOCX-003",
+      "format": "DOCX",
+      "document_role_category": "REFERENCE",
+      "feature_profile": [
+        "NARRATIVE",
+        "TABLES",
+        "HEADERS",
+        "FOOTERS",
+        "HYPERLINKS",
+        "FIELDS",
+        "BOOKMARKS",
+        "CONTENT_CONTROLS",
+        "DRAWINGS",
+        "IMAGES"
+      ],
+      "business_role_category": "GOLDEN_EVALUATION_ONLY",
+      "evaluation_status": "EVALUATED",
+      "repeatability": {
+        "conversion": "PASS",
+        "content": "PASS",
+        "structure": "PASS",
+        "tables": "PASS",
+        "ordering": "PASS",
+        "references": "PASS"
+      },
+      "input_integrity": "PASS",
+      "review_status": "REVIEW_REQUIRED",
+      "review_dimensions": {
+        "CONTENT_FIDELITY": "REVIEW_REQUIRED",
+        "STRUCTURE_FIDELITY": "REVIEW_REQUIRED",
+        "TABLE_FIDELITY": "REVIEW_REQUIRED",
+        "BUSINESS_RELEVANT_STRUCTURE": "REVIEW_REQUIRED",
+        "SEMANTIC_LOSS": "REVIEW_REQUIRED",
+        "NATIVE_IDENTITY_LOSS": "REVIEW_REQUIRED",
+        "FAILURE_TRANSPARENCY": "REVIEW_REQUIRED"
+      },
+      "feature_evidence": {},
+      "loss_classifications": [
+        "UNKNOWN"
+      ],
+      "critical_semantic_loss": null,
+      "automated_feature_presence": [
+        {
+          "feature": "NARRATIVE",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "OBSERVED"
+        },
+        {
+          "feature": "TABLES",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "OBSERVED"
+        },
+        {
+          "feature": "HEADERS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "FOOTERS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "HYPERLINKS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "OBSERVED"
+        },
+        {
+          "feature": "FIELDS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "BOOKMARKS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "CONTENT_CONTROLS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "DRAWINGS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "IMAGES",
+          "native_presence": "NOT_EVALUATED",
+          "semantic_presence": "OBSERVED"
+        }
+      ]
+    },
+    {
+      "case_id": "LF-DOCX-004",
+      "format": "DOCX",
+      "document_role_category": "REFERENCE",
+      "feature_profile": [
+        "NARRATIVE",
+        "TABLES",
+        "HEADERS",
+        "FOOTERS",
+        "HYPERLINKS",
+        "FIELDS",
+        "BOOKMARKS",
+        "CONTENT_CONTROLS",
+        "DRAWINGS",
+        "ORGANISATION_CHARTS",
+        "IMAGES"
+      ],
+      "business_role_category": "HISTORICAL_REFERENCE",
+      "evaluation_status": "EVALUATED",
+      "repeatability": {
+        "conversion": "PASS",
+        "content": "PASS",
+        "structure": "PASS",
+        "tables": "PASS",
+        "ordering": "PASS",
+        "references": "PASS"
+      },
+      "input_integrity": "PASS",
+      "review_status": "REVIEW_REQUIRED",
+      "review_dimensions": {
+        "CONTENT_FIDELITY": "REVIEW_REQUIRED",
+        "STRUCTURE_FIDELITY": "REVIEW_REQUIRED",
+        "TABLE_FIDELITY": "REVIEW_REQUIRED",
+        "BUSINESS_RELEVANT_STRUCTURE": "REVIEW_REQUIRED",
+        "SEMANTIC_LOSS": "REVIEW_REQUIRED",
+        "NATIVE_IDENTITY_LOSS": "REVIEW_REQUIRED",
+        "FAILURE_TRANSPARENCY": "REVIEW_REQUIRED"
+      },
+      "feature_evidence": {},
+      "loss_classifications": [
+        "UNKNOWN"
+      ],
+      "critical_semantic_loss": null,
+      "automated_feature_presence": [
+        {
+          "feature": "NARRATIVE",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "OBSERVED"
+        },
+        {
+          "feature": "TABLES",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "OBSERVED"
+        },
+        {
+          "feature": "HEADERS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "FOOTERS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "HYPERLINKS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "OBSERVED"
+        },
+        {
+          "feature": "FIELDS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "BOOKMARKS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "CONTENT_CONTROLS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "DRAWINGS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "ORGANISATION_CHARTS",
+          "native_presence": "NOT_EVALUATED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "IMAGES",
+          "native_presence": "NOT_EVALUATED",
+          "semantic_presence": "OBSERVED"
+        }
+      ]
+    },
+    {
+      "case_id": "LF-XLSX-001",
+      "format": "XLSX",
+      "document_role_category": "SOURCE",
+      "feature_profile": [
+        "MULTIPLE_SHEETS",
+        "CELLS",
+        "FORMULAS",
+        "CACHED_VALUES",
+        "DEFINED_NAMES",
+        "MERGED_RANGES",
+        "DRAWINGS",
+        "IMAGES",
+        "CROSS_SHEET_CONTEXT"
+      ],
+      "business_role_category": "HISTORICAL_SOURCE",
+      "evaluation_status": "EVALUATED",
+      "repeatability": {
+        "conversion": "PASS",
+        "content": "PASS",
+        "structure": "PASS",
+        "tables": "PASS",
+        "ordering": "PASS",
+        "references": "PASS"
+      },
+      "input_integrity": "PASS",
+      "review_status": "REVIEW_REQUIRED",
+      "review_dimensions": {
+        "CONTENT_FIDELITY": "REVIEW_REQUIRED",
+        "STRUCTURE_FIDELITY": "REVIEW_REQUIRED",
+        "TABLE_FIDELITY": "REVIEW_REQUIRED",
+        "BUSINESS_RELEVANT_STRUCTURE": "REVIEW_REQUIRED",
+        "SEMANTIC_LOSS": "REVIEW_REQUIRED",
+        "NATIVE_IDENTITY_LOSS": "REVIEW_REQUIRED",
+        "FAILURE_TRANSPARENCY": "REVIEW_REQUIRED"
+      },
+      "feature_evidence": {},
+      "loss_classifications": [
+        "UNKNOWN"
+      ],
+      "critical_semantic_loss": null,
+      "automated_feature_presence": [
+        {
+          "feature": "MULTIPLE_SHEETS",
+          "native_presence": "NOT_EVALUATED",
+          "semantic_presence": "OBSERVED"
+        },
+        {
+          "feature": "CELLS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "FORMULAS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "CACHED_VALUES",
+          "native_presence": "NOT_EVALUATED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "DEFINED_NAMES",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "MERGED_RANGES",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "DRAWINGS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "IMAGES",
+          "native_presence": "NOT_EVALUATED",
+          "semantic_presence": "OBSERVED"
+        },
+        {
+          "feature": "CROSS_SHEET_CONTEXT",
+          "native_presence": "NOT_EVALUATED",
+          "semantic_presence": "NOT_EVALUATED"
+        }
+      ]
+    },
+    {
+      "case_id": "LF-XLSX-002",
+      "format": "XLSX",
+      "document_role_category": "SOURCE",
+      "feature_profile": [
+        "MULTIPLE_SHEETS",
+        "CELLS",
+        "FORMULAS",
+        "CACHED_VALUES",
+        "DEFINED_NAMES",
+        "MERGED_RANGES",
+        "DRAWINGS",
+        "IMAGES",
+        "CROSS_SHEET_CONTEXT"
+      ],
+      "business_role_category": "CURRENT_SOURCE",
+      "evaluation_status": "EVALUATED",
+      "repeatability": {
+        "conversion": "PASS",
+        "content": "PASS",
+        "structure": "PASS",
+        "tables": "PASS",
+        "ordering": "PASS",
+        "references": "PASS"
+      },
+      "input_integrity": "PASS",
+      "review_status": "REVIEW_REQUIRED",
+      "review_dimensions": {
+        "CONTENT_FIDELITY": "REVIEW_REQUIRED",
+        "STRUCTURE_FIDELITY": "REVIEW_REQUIRED",
+        "TABLE_FIDELITY": "REVIEW_REQUIRED",
+        "BUSINESS_RELEVANT_STRUCTURE": "REVIEW_REQUIRED",
+        "SEMANTIC_LOSS": "REVIEW_REQUIRED",
+        "NATIVE_IDENTITY_LOSS": "REVIEW_REQUIRED",
+        "FAILURE_TRANSPARENCY": "REVIEW_REQUIRED"
+      },
+      "feature_evidence": {},
+      "loss_classifications": [
+        "UNKNOWN"
+      ],
+      "critical_semantic_loss": null,
+      "automated_feature_presence": [
+        {
+          "feature": "MULTIPLE_SHEETS",
+          "native_presence": "NOT_EVALUATED",
+          "semantic_presence": "OBSERVED"
+        },
+        {
+          "feature": "CELLS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "FORMULAS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "CACHED_VALUES",
+          "native_presence": "NOT_EVALUATED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "DEFINED_NAMES",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "MERGED_RANGES",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "DRAWINGS",
+          "native_presence": "OBSERVED",
+          "semantic_presence": "NOT_EVALUATED"
+        },
+        {
+          "feature": "IMAGES",
+          "native_presence": "NOT_EVALUATED",
+          "semantic_presence": "OBSERVED"
+        },
+        {
+          "feature": "CROSS_SHEET_CONTEXT",
+          "native_presence": "NOT_EVALUATED",
+          "semantic_presence": "NOT_EVALUATED"
+        }
+      ]
+    }
+  ],
+  "unevaluated_profiles": [
+    "BOOKMARKS",
+    "CACHED_VALUES",
+    "CELLS",
+    "CHARTS",
+    "CONTENT_CONTROLS",
+    "CROSS_SHEET_CONTEXT",
+    "DEFINED_NAMES",
+    "DRAWINGS",
+    "FIELDS",
+    "FOOTERS",
+    "FORMULAS",
+    "HEADERS",
+    "HEADINGS",
+    "HIDDEN_ROWS_COLUMNS",
+    "HYPERLINKS",
+    "IMAGES",
+    "MERGED_RANGES",
+    "MULTIPLE_SHEETS",
+    "NARRATIVE",
+    "ORGANISATION_CHARTS",
+    "PROTECTION",
+    "REPEATED_SECTIONS",
+    "TABLES"
+  ]
+}
