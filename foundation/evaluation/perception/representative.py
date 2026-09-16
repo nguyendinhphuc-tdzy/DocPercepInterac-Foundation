@@ -26,6 +26,10 @@ SPEC = ROOT / 'qualification/b1/representative'
 CORPUS_ENV = 'FOUNDATION_B1_PRIVATE_CORPUS_DIR'
 SCHEMA = json.loads((SPEC / 'corpus.schema.json').read_text(encoding='utf-8'))
 EVALUATION_VERSION = SCHEMA['properties']['evaluation_version']['const']
+BUSINESS_ROLE_CATEGORIES = {
+    rule['properties']['business_role']['const']: rule['properties']['document_role']['const']
+    for rule in SCHEMA['properties']['cases']['items']['oneOf']
+}
 FEATURES = tuple(SCHEMA['$defs']['Feature']['enum'])
 REVIEW_DIMENSIONS = tuple(SCHEMA['$defs']['ReviewDimension']['enum'])
 REPEATABILITY = ('conversion', 'content', 'structure', 'tables', 'ordering', 'references')
@@ -119,6 +123,8 @@ def dimension_applicable(case, dimension):
 
 
 def review_valid(case):
+    if BUSINESS_ROLE_CATEGORIES.get(case.get('business_role')) != case.get('document_role'):
+        return False
     review = case.get('review')
     if not Draft202012Validator(SCHEMA['$defs']['Review'], format_checker=FormatChecker()).is_valid(review):
         return False
@@ -156,7 +162,8 @@ def coverage_scope_digest(manifest):
     scope = {'evaluation_version': manifest['evaluation_version'],
         'required_profiles': sorted(manifest['required_profiles']),
         'cases': sorted(({'case_id': c['case_id'], 'format': c['format'],
-            'document_role': c['document_role'], 'expected_feature_profile': sorted(c['expected_feature_profile'])}
+            'document_role': c['document_role'], 'business_role': c['business_role'],
+            'expected_feature_profile': sorted(c['expected_feature_profile'])}
             for c in manifest['cases']), key=lambda c: c['case_id'])}
     return probe.digest(scope)
 
@@ -331,6 +338,8 @@ def evaluate(manifest, repo=ROOT):
 
 def sanitize(full):
     """Build a safe public projection; no free text, path or document hash fields."""
+    if full.get('evaluation_version', EVALUATION_VERSION) != EVALUATION_VERSION:
+        raise QualificationError('HISTORICAL_EVALUATION_REQUIRES_ORIGINAL_SCHEMA')
     if full['corpus_status'] not in ('AVAILABLE', 'CORPUS_NOT_PROVIDED'):
         raise QualificationError('INVALID_PUBLIC_STATUS')
     cases = []
@@ -338,6 +347,7 @@ def sanitize(full):
         if (not re.fullmatch(r'LF-(DOCX|XLSX)-(?!000)[0-9]{3}', case['case_id'])
                 or case['format'] not in ('DOCX', 'XLSX') or case['case_id'].split('-')[1] != case['format']
                 or case['document_role'] not in ('TARGET', 'SOURCE', 'REFERENCE')
+                or BUSINESS_ROLE_CATEGORIES.get(case.get('business_role')) != case['document_role']
                 or case['evaluation_status'] not in EVALUATION_STATUSES
                 or any(p not in FEATURES for p in case['expected_feature_profile'])
                 or set(case['repeatability']) != set(REPEATABILITY)
@@ -351,6 +361,7 @@ def sanitize(full):
         valid = review_valid(case)
         cases.append({'case_id': case['case_id'], 'format': case['format'],
             'document_role_category': case['document_role'], 'feature_profile': list(case['expected_feature_profile']),
+            'business_role_category': case['business_role'],
             'evaluation_status': case['evaluation_status'], 'repeatability': dict(case['repeatability']),
             'input_integrity': 'PASS' if case['input_unchanged'] is True else 'NOT_CONFIRMED',
             'review_status': 'COMPLETED' if valid else 'REVIEW_REQUIRED',

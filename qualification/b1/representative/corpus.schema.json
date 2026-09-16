@@ -11,7 +11,7 @@
   ],
   "properties": {
     "evaluation_version": {
-      "const": "1.1.0"
+      "const": "1.2.0"
     },
     "required_profiles": {
       "type": "array",
@@ -60,11 +60,23 @@
           "local_path",
           "format",
           "document_role",
+          "business_role",
           "privacy_classification",
           "expected_feature_profile",
           "review_status"
         ],
+        "oneOf": [
+          {"properties": {"business_role": {"const": "TARGET_TEMPLATE"}, "document_role": {"const": "TARGET"}}},
+          {"properties": {"business_role": {"const": "HISTORICAL_REFERENCE"}, "document_role": {"const": "REFERENCE"}}},
+          {"properties": {"business_role": {"const": "GOLDEN_EVALUATION_ONLY"}, "document_role": {"const": "REFERENCE"}}},
+          {"properties": {"business_role": {"const": "CURRENT_SOURCE"}, "document_role": {"const": "SOURCE"}}},
+          {"properties": {"business_role": {"const": "HISTORICAL_SOURCE"}, "document_role": {"const": "SOURCE"}}}
+        ],
         "properties": {
+          "business_role": {
+            "type": "string",
+            "enum": ["TARGET_TEMPLATE", "HISTORICAL_REFERENCE", "CURRENT_SOURCE", "HISTORICAL_SOURCE", "GOLDEN_EVALUATION_ONLY"]
+          },
           "case_id": {
             "type": "string",
             "pattern": "^LF-(DOCX|XLSX)-(?!000)[0-9]{3}$"
@@ -289,7 +301,7 @@
           }
         },
         "evaluation_version": {
-          "const": "1.1.0"
+          "const": "1.2.0"
         },
         "feature_evidence": {
           "type": "object",

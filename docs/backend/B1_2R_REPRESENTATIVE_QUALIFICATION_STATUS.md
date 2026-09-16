@@ -1,5 +1,33 @@
 # B1.2R REMAINS OPEN — SME REVIEW REQUIRED
 
+## Run-003 preparation update — 2026-09-16
+
+The non-contract representative evaluation schema is now 1.2.0 for new runs.
+It requires the closed business_role field, enforces its document_role pairing,
+binds business_role into coverage scope, and allowlists both categories in new
+public projections. This follows clarified workflow semantics, not a Frozen
+Foundation Contract gap. Historical Run-002 remains 1.1.0 and is preserved.
+
+The corrected five-case pending private manifest uses the Business Owner's
+verified FY2023 historical reference. The Golden case is REFERENCE /
+GOLDEN_EVALUATION_ONLY and must never serve as execution input or authority.
+The original manifest, Run-002 report, public summary, provenance audit and
+SME review pack have not been overwritten.
+
+All five corrected binaries fit the existing finite b1-representative-core-v1
+limits and complete preflight. Status: **PROFILE_REUSE_CANDIDATE** only.
+Profile acceptance for this scope is still pending; no general defaults changed.
+Run-003 semantic execution is **NOT AUTHORIZED / NOT EXECUTED** while this gate
+is open. A new viewer will be generated only from actual Run-003 observations.
+Human review and coverage remain pending; production_qualified remains false.
+
+Validation: 119 representative/privacy tests passed (including 25 new role,
+scope and projection checks); 340 backend/Golden tests passed; 23 contract
+tests and all eight contract fixtures passed. Private boundary and pinned
+dependency checks passed. No representative semantic run was performed.
+
+## Preserved Run-002 status
+
 Date: 2026-09-14. Foundation v2; Frozen Contract **0.1.0 unchanged**.
 Run: **run-002**. Accepted repository baseline:
 `f29e218976b597100eb8e056055df647f3ab7305`.

@@ -1,5 +1,5 @@
 {
-  "evaluation_version": "1.1.0",
+  "evaluation_version": "1.2.0",
   "required_profiles": [
     "NARRATIVE",
     "TABLES"
@@ -8,7 +8,7 @@
     "status": "PENDING",
     "reviewer_id": "",
     "rationale": "",
-    "scope_digest": "c5e7192bf8aaa5eebb8a17ac7a64dfc7c56154f56f8b216f78495bdc054db3be"
+    "scope_digest": "8120b368acfb6916d68d3cceb1f482a1c222e6db26acc68f23587f25f39b55a1"
   },
   "cases": [
     {
@@ -16,6 +16,7 @@
       "local_path": "REPLACE_PRIVATELY.docx",
       "format": "DOCX",
       "document_role": "TARGET",
+      "business_role": "TARGET_TEMPLATE",
       "privacy_classification": "CONFIDENTIAL",
       "expected_feature_profile": [
         "NARRATIVE",

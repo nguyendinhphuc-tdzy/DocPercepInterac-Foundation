@@ -1,6 +1,48 @@
 # Representative B1 qualification — public specification only
 
-`corpus.schema.json` is evaluation version **1.1.0**, a closed Draft 2020-12
+## Evaluation v1.2.0 migration and Run-003 gate
+
+Run-002 remains immutable historical evidence under evaluation schema 1.1.0.
+Its private report, original manifest, provenance audit, review pack and public
+summary are not migrated in place. The public summary remains Run-002 until a
+separately authorized new immutable run completes.
+
+New manifests and case reviews use evaluation schema 1.2.0. Each case requires:
+
+| business_role | document_role |
+| --- | --- |
+| TARGET_TEMPLATE | TARGET |
+| HISTORICAL_REFERENCE | REFERENCE |
+| GOLDEN_EVALUATION_ONLY | REFERENCE |
+| CURRENT_SOURCE | SOURCE |
+| HISTORICAL_SOURCE | SOURCE |
+
+Other combinations fail closed. These are qualification metadata, not execution
+permissions. GOLDEN_EVALUATION_ONLY is an evaluation benchmark: never an
+execution target, authoritative source, or historical mapping source.
+
+The v1.2.0 coverage scope digest includes business_role alongside case ID,
+format, document_role and expected_feature_profile. Paths, filenames, input
+hashes and content remain excluded. Changing a role invalidates old coverage.
+Public v1.2.0 output allowlists document_role_category and business_role_category.
+
+Run-003 uses a NEW private manifest with the verified corrected FY2023 reference
+and the Business Owner's five role mappings. Human reviews and coverage remain
+PENDING; no old digest or review is approval for the corrected scope. Case
+review_status is the distinct approval-for-evaluation gate; preparation leaves
+it PENDING too until all run gates are accepted.
+
+Measure and reassess all corrected inputs with the qualification-only profile.
+Admission under existing limits yields PROFILE_REUSE_CANDIDATE, not acceptance.
+Record profile acceptance separately before semantic execution. General preflight
+defaults remain unchanged. Only after all gates pass may immutable Run-003 and
+its own review pack/viewer be generated. Mechanical success never completes
+SME or coverage review and never qualifies production.
+
+This non-contract evolution follows clarified business workflow semantics, not
+a Frozen Foundation Contract gap. No contract semantics change.
+
+`corpus.schema.json` is evaluation version **1.2.0**, a closed Draft 2020-12
 evaluation manifest schema, not a
 Foundation domain contract. `corpus.example.json` and `review.example.json` are
 inert templates containing no actual corpus values. Never fill them with private
@@ -103,7 +145,7 @@ NOT_EVALUATED. Repeatability compares conversion, content, structure, tables,
 ordering and references separately: PASS, OBSERVED_LIMITATION, NOT_EVALUATED.
 All values describe qualification observations, never native execution support.
 
-## Feature evidence and scope binding (1.1.0)
+## Feature evidence and scope binding (1.2.0)
 
 Every declared profile must have a corresponding `review.feature_evidence` entry;
 undeclared keys are rejected. The inert review template corresponds to the
@@ -139,7 +181,7 @@ PARTIAL, FAIL, UNSUPPORTED or NOT_EVALUATED results remain conservative blockers
 
 `coverage_review.scope_digest` is SHA-256 lowercase hex over compact sorted-key
 UTF-8 JSON containing evaluation_version, sorted required_profiles, and cases
-sorted by case_id. Each case includes only case_id, format, document_role and
+sorted by case_id. Each case includes only case_id, format, document_role, business_role and
 sorted expected_feature_profile. Array ordering has no scope meaning. Paths,
 filenames, reviewer notes, actual input hashes and source text are excluded.
 Input and observation integrity remain separate case-review bindings.
@@ -148,9 +190,9 @@ Changing any included field requires renewed scope review. An old approved
 digest is never recalculated automatically, and result case scope must match
 the reviewed manifest scope. The public summary does not expose this digest.
 
-Migration from 1.0.0 is explicit: use the 1.1.0 manifest/review templates, populate
+Historical migration from 1.0.0 to 1.1.0 used versioned templates to populate
 feature evidence, apply the dimension rules, approve the scope digest and bind
-the case review to the new evaluation observation digest. Preserve old private
+the case review to that evaluation observation digest. Preserve old private
 reports. This does not change Foundation Contract v0.1.0, Docling's version or
 the accepted synthetic B1.2A evaluation schema.
 
