@@ -45,6 +45,32 @@ MVP scope.
 It is a product/business overview, not a contract authority. It must not override
 `docs/CURRENT_BASELINE.md`, accepted ADRs or the Frozen Foundation Contract v0.1.
 
+## GTPS Local File Pioneer Workflow
+
+Before designing or implementing any GTPS Local File Roll-Forward behavior, read:
+
+`docs/business/GTPS_LOCAL_FILE_WORKFLOW_PROFILE_v0.2.md`
+
+This document is the current business/workflow interpretation for the pioneer Local File use case.
+It defines the intended document roles, mapping logic, First Draft boundary, source-authority principles,
+review/highlight requirement, and the distinction between governed transformation and whole-document generation.
+
+For this workflow, the canonical interpretation is:
+
+* the approved Local File Template is the `TARGET` / output base;
+* the prior-year Local File is a `HISTORICAL_REFERENCE`, not the execution target;
+* current-year FA&RPTs / Appendix I / FS / approved evidence are current sources according to the Workflow Profile;
+* Foundation uses current sources plus historical context to identify Business Targets and map them into the TARGET Template;
+* users must be able to review mapped/changed regions with visible traceability;
+* only approved changes may mutate the TARGET;
+* the downloadable First Draft is a derived version of the approved Template, not a newly AI-authored Office document.
+
+Do not implement a "generate a new Local File from source documents" flow for this profile.
+Do not copy the prior-year Local File and treat that copy as the default TARGET unless a future approved workflow version explicitly says so.
+
+The GTPS Workflow Profile is use-case business guidance. It must not override higher-authority architecture or frozen contract documents.
+If the Workflow Profile exposes a real contract gap, stop and follow the versioned contract-change process.
+
 ## Architecture Principles
 
 Perceive != Understand != Authorize != Locate != Execute.
