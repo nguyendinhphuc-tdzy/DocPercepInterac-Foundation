@@ -1,5 +1,8 @@
 # B2.1 GTPS governed mapping plan
 
+This records the frozen B2.1 baseline. Subsequent representative resolution is
+documented in [B2.1R status](B2_1R_GTPS_MAPPING_RESOLUTION_STATUS.md).
+
 ## Business Owner progression decision
 
 The Business Owner explicitly authorized B2.1 in the current task and stated

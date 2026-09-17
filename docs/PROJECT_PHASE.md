@@ -34,6 +34,10 @@ is implied. General Office fidelity remains provisional, production_qualified=fa
 and Replay remains unqualified. B2.1 stops at mapping evidence review.
 See [B2.1 implementation and progression status](backend/B2_1_GTPS_MAPPING_STATUS.md).
 
+B2.1R supplies representative native-bound DRAFT proposals and private mapping
+review evidence. It remains non-executable and does not close B1 qualification.
+See [B2.1R mapping resolution](backend/B2_1R_GTPS_MAPPING_RESOLUTION_STATUS.md).
+
 ### B1 qualification baseline (preserved)
 
 B1 — Capability Preflight + Semantic Perception + Native Identity
