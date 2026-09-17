@@ -44,6 +44,8 @@ class Selection:
     meaning_pointer: str = ''
     meaning_expected: str = ''
     field_patterns: dict[str,str] = field(default_factory=dict)
+    context_only: bool = False
+    context_concept: str = ''
 
 
 @dataclass(frozen=True)
@@ -80,6 +82,8 @@ class Policy:
     target_definition_ref: dict
     target_instance_ref: dict
     rule_pack_ref: dict
+    party_alias_entries: tuple = ()
+    engagement_scope: str = ''
 
 
 @dataclass(frozen=True)
@@ -92,6 +96,9 @@ class Slot:
     protected: bool = False
     value_prefix: str = ''
     value_suffix: str = ''
+    occurrence_group: str = ''
+    party_id: str = ''
+    value_format: str = ''
 
 
 @dataclass(frozen=True)
@@ -103,6 +110,8 @@ class NativeResult:
     protected: bool = False
     record_region_id: str = ''
     semantic_pointer: str = ''
+    status: str = ''
+    semantic_content: str | None = None
 
 
 class NativeCandidates(Protocol):
@@ -177,6 +186,11 @@ def normalize(view, selections, policy):
             raise MappingError('BUSINESS_TARGET_UNSUPPORTED')
         label=pointer(view.data,s.label_pointer)
         concept=policy.aliases.get(' '.join(label.casefold().split()))
+        if s.context_concept:
+            if not s.context_only or view.role!='HISTORICAL_REFERENCE' or not any(
+                r.kind==s.kind and r.concept==s.context_concept and r.historical_meaning==s.meaning for r in policy.targets):
+                raise MappingError('HISTORICAL_CONTEXT_UNVERIFIED')
+            concept=s.context_concept
         if not concept: raise MappingError('BUSINESS_MEANING_UNRESOLVED')
         years=set(re.findall(r'(?<!\d)(20\d{2})(?!\d)',pointer(view.data,s.period_pointer)))
         expected=policy.current_year if view.role=='CURRENT_SOURCE' else policy.historical_year
@@ -188,7 +202,8 @@ def normalize(view, selections, policy):
             if match is None or match.lastindex!=1:raise MappingError('SOURCE_PATTERN_MISMATCH')
             fields[key]=match.group(1)
         required={'party','country','relationship','amount'} if s.kind=='RPT' else ({'value','index'} if s.kind=='NCP' else {'value'})
-        if view.role=='HISTORICAL_REFERENCE':required={'party','amount'} if s.kind=='RPT' else set()
+        if view.role=='HISTORICAL_REFERENCE':required={'party','amount'} if s.kind=='RPT' and not s.context_only else set()
+        if s.context_only and (view.role!='HISTORICAL_REFERENCE' or s.fields):raise MappingError('HISTORICAL_CONTEXT_UNVERIFIED')
         if not required<=fields.keys(): raise MappingError('SOURCE_MISSING')
         for k in ('amount','percentage') if s.kind=='RPT' else (('value',) if s.kind in ('NCP','FINANCIAL') else ()):
             if k in fields: fields[k]=number(fields[k])
@@ -208,7 +223,7 @@ def record_ref(record):
 def serialized_fact(fact):
     return {'document_key':fact.document_key,'document_version':fact.version.model_dump(mode='json'),
         'observation_digest':fact.observation_digest,'kind':fact.kind,'concept':fact.concept,'period':fact.period,
-        'fields':dict(fact.fields),'evidence':dict(fact.evidence),'meaning':fact.meaning}
+        'fields':dict(fact.fields),'evidence':dict(fact.evidence),'meaning':fact.meaning,'context_only':fact.selection.context_only}
 
 
 class MappingPlanner:
@@ -246,21 +261,47 @@ class MappingPlanner:
                     if normalize(v,[f.selection],self.policy)!=[f]:raise MappingError('SOURCE_FACT_TAMPERED')
         except MappingError as exc:
             refuse(exc.code); return result
+        from .resolution import PartyAliasMap
+        aliases=None
+        if self.policy.party_alias_entries:
+            try:aliases=PartyAliasMap(self.policy.engagement_scope,self.policy.party_alias_entries,views)
+            except MappingError as exc:
+                refuse(exc.code);return result
+        def party(f):
+            name=f.fields.get('party','')
+            return aliases.resolve(name) if aliases and f.kind=='RPT' and not f.selection.context_only else name
+        def transaction_identity(f):return (f.kind,f.concept,party(f))
+        invalid=set()
+        for f in [*current,*historical]:
+            try:party(f)
+            except MappingError as exc:refuse(exc.code,f);invalid.add(f.concept)
         if not current:refuse('SOURCE_MISSING')
         for f in sorted(current,key=lambda x:(x.kind,x.concept,x.fields.get('party',''),x.document_key)):
-            duplicate=[x for x in current if (x.kind,x.concept,x.fields.get('party'))==(f.kind,f.concept,f.fields.get('party'))]
+            if f.concept in invalid:continue
+            duplicate=[x for x in current if transaction_identity(x)==transaction_identity(f)]
             if len(duplicate)>1:refuse('SOURCE_CONFLICTING',f);continue
-            candidates=[x for x in historical if (x.kind,x.concept)==(f.kind,f.concept)]
-            same_party=[x for x in candidates if x.fields.get('party')==f.fields.get('party')]
-            if same_party:candidates=same_party
+            all_past=[x for x in historical if (x.kind,x.concept)==(f.kind,f.concept) and (f.kind!='RPT' or not x.selection.context_only)]
+            candidates=[x for x in all_past if transaction_identity(x)==transaction_identity(f)]
+            changed_party=False
+            if not candidates and f.kind=='RPT':
+                unmatched_past=[x for x in all_past if not any(transaction_identity(x)==transaction_identity(y) for y in current)]
+                unmatched_now=[y for y in current if (y.kind,y.concept)==(f.kind,f.concept) and not any(transaction_identity(x)==transaction_identity(y) for x in all_past)]
+                if len(unmatched_past)==len(unmatched_now)==1:
+                    candidates=unmatched_past;changed_party=True
             if len(candidates)>1:refuse('HISTORICAL_CONTEXT_AMBIGUOUS',f);continue
             history=candidates[0] if candidates else None
+            new_transaction=history is None and f.kind=='RPT'
+            if new_transaction:
+                contexts=[x for x in historical if x.selection.context_only and (x.kind,x.concept)==(f.kind,f.concept)]
+                if len(contexts)>1:refuse('HISTORICAL_CONTEXT_AMBIGUOUS',f);continue
+                history=contexts[0] if contexts else None
             changes=[]
-            if history is None:
+            if history is None or new_transaction:
                 if f.kind!='RPT':refuse('HISTORICAL_CONTEXT_MISSING',f);continue
                 changes=['NEW_TRANSACTION','NARRATIVE_REVIEW_REQUIRED']
             elif f.kind=='RPT':
-                for key,change in [('party','CHANGED_RELATED_PARTY'),('relationship','CHANGED_RELATIONSHIP'),('country','CHANGED_RELATIONSHIP')]:
+                if changed_party:changes.append('CHANGED_RELATED_PARTY')
+                for key,change in [('relationship','CHANGED_RELATIONSHIP'),('country','CHANGED_RELATIONSHIP')]:
                     if key in history.fields and f.fields.get(key)!=history.fields.get(key) and change not in changes:changes.append(change)
                 if changes:changes.append('NARRATIVE_REVIEW_REQUIRED')
                 elif f.fields.get('amount')!=history.fields.get('amount') or ('percentage' in history.fields and f.fields.get('percentage')!=history.fields['percentage']):
@@ -271,84 +312,102 @@ class MappingPlanner:
             if len(rules)!=1:refuse('BUSINESS_TARGET_AMBIGUOUS' if rules else 'BUSINESS_TARGET_UNRESOLVED',f);continue
             rule=rules[0]
             if f.document_key not in rule.current_sources:refuse('SOURCE_NOT_AUTHORITATIVE',f);continue
-            matches=[s for s in slots if s.region.business_target_id==rule.business_target_id]
-            if len(matches)!=1:refuse('TARGET_REGION_AMBIGUOUS' if matches else 'TARGET_REGION_MISSING',f);continue
-            slot=matches[0]
-            if slot.region.document_version_ref!=target.version:refuse('STALE_TARGET_VERSION',f);continue
-            if slot.region.task_id!=self.task_id or slot.region.target_contract_instance_ref.model_dump(mode='json')!=self.policy.target_instance_ref:
-                refuse('TARGET_CONTRACT_MISMATCH',f);continue
-            try:existing=pointer(target.data,slot.pointer,allow_empty=True)
-            except MappingError:refuse('TARGET_REGION_MISSING',f);continue
-            if existing!=slot.expected_content:refuse('STALE_TARGET_CONTENT',f);continue
-            if slot.protected:refuse('PROTECTED_OBJECT',f);continue
-            payloads={'REPLACE_RUN_TEXT':'RUN_TEXT_REPLACEMENT','REPLACE_SDT_TEXT':'SDT_TEXT_REPLACEMENT','REPLACE_SIMPLE_TABLE_CELL_TEXT':'SIMPLE_TABLE_CELL_TEXT_REPLACEMENT'}
-            if slot.operation not in payloads:refuse('OPERATION_UNSUPPORTED',f);continue
-            if slot.field not in f.fields:refuse('SOURCE_MISSING',f);continue
-            proposed=slot.value_prefix+f.fields[slot.field]+slot.value_suffix
-            rationale=f"{self.policy.workflow_profile}@{self.policy.version}: configured {f.concept} fact; historical meaning {history.meaning if history else 'new transaction, narrative review required'}; resolves {rule.business_target_id} to pinned template region. Current evidence only supplies current values."
-            identity={'policy':asdict(self.policy),'source':serialized_fact(f),'history':serialized_fact(history) if history else None,
-                'target':target.version.model_dump(mode='json'),'target_observation':target.digest,'region':slot.region.model_dump(mode='json'),
-                'pointer':slot.pointer,'operation':slot.operation,'field':slot.field,'existing':existing,'task_id':self.task_id,
-                'prefix':slot.value_prefix,'suffix':slot.value_suffix,'created_at':self.created_at}
-            key=canonical_digest(identity)[:32]
-            evidence=EvidenceRecord(**self.envelope('EvidenceRecord','evidence-'+key),kind='SOURCE_EXCERPT',document_version_ref=f.version,
-                content_ref={'uri':'urn:foundation:semantic:'+f.observation_digest,'sha256':f.observation_digest,'media_type':'application/json'},
-                observed_value={'kind':'TEXT','review_text':proposed,'value':proposed},authority='AUTHORITATIVE',period_scope='UNKNOWN',period=None)
-            mapping=MappingProposal(**self.envelope('MappingProposal','mapping-'+key),business_target_id=rule.business_target_id,
-                target_region_ref=record_ref(slot.region),evidence_refs=[record_ref(evidence)],rule_evaluation_refs=[],ai_interaction_refs=[],
-                proposed_value={'kind':'TEXT','review_text':proposed,'value':proposed},status='PROPOSED',rationale=rationale,error_codes=[])
-            warnings=['B2_1_NOT_EXECUTABLE','SOURCE_FRESHNESS_NOT_QUALIFIED']
-            if history and f.kind=='RPT' and not {'country','relationship'}<=history.fields.keys():warnings.append('HISTORICAL_RELATIONSHIP_NOT_OBSERVED')
-            if 'NARRATIVE_REVIEW_REQUIRED' in changes:warnings.append('NARRATIVE_REVIEW_REQUIRED')
-            if history is None:warnings.extend(['HISTORICAL_INVENTORY_NOT_QUALIFIED','ROW_GROWTH_NOT_QUALIFIED'])
-            try:
-                resolution=native.resolve(slot,target) if native else NativeResult()
-            except Exception:
-                resolution=NativeResult()
-                warnings.append('NATIVE_RESOLUTION_FAILED')
-            locator=None
-            if len(resolution.locators)>1:warnings.append('NATIVE_LOCATOR_AMBIGUOUS')
-            elif not resolution.locators:warnings.append('NATIVE_LOCATOR_UNRESOLVED')
-            else:
-                candidate=resolution.locators[0]
-                expected={'REPLACE_RUN_TEXT':'DOCX_RUN','REPLACE_SDT_TEXT':'DOCX_CONTENT_CONTROL','REPLACE_SIMPLE_TABLE_CELL_TEXT':'DOCX_TABLE_CELL'}[slot.operation]
-                if resolution.record_region_id!=slot.region.id or resolution.semantic_pointer!=slot.pointer:warnings.append('NATIVE_REGION_MISMATCH')
-                elif candidate.document_version_ref!=target.version or candidate.task_id!=self.task_id:warnings.append('STALE_NATIVE_LOCATOR')
-                elif candidate.structural_fingerprint!=resolution.observed_fingerprint:warnings.append('NATIVE_FINGERPRINT_MISMATCH')
-                elif candidate.locator_type.value!=expected:warnings.append('NATIVE_OPERATION_UNSUPPORTED')
-                elif resolution.protected:warnings.append('PROTECTED_OBJECT')
-                elif resolution.observed_content!=existing:warnings.append('STALE_NATIVE_CONTENT')
-                else:locator=candidate
-            change=None
-            if locator and history is not None:
-                change_key=canonical_digest({'mapping':identity,'locator':locator.model_dump(mode='json')})[:32]
-                change=ChangeProposal(**self.envelope('ChangeProposal','change-'+change_key),status='DRAFT',business_target_id=rule.business_target_id,
-                    target_document_version_ref=target.version,target_contract_definition_ref=self.policy.target_definition_ref,
-                    target_contract_instance_ref=self.policy.target_instance_ref,rule_pack_ref=self.policy.rule_pack_ref,mapping_proposal_ref=record_ref(mapping),
-                    source_assessment_refs=[],evidence_assessment_refs=[],proposed_value=mapping.proposed_value,
-                    current_value={'kind':'TEXT','review_text':existing,'value':existing},native_locator_ref=record_ref(locator),
-                    operation=slot.operation,payload={'kind':payloads[slot.operation],'replacement_text':proposed},error_codes=[])
-            if change is None:
-                mapping=mapping.model_copy(update={'status':type(mapping.status).BLOCKED})
-                for code in warnings[2:]:
-                    result['exceptions'].append({'code':code,'proposal_id':'change-'+key,'executable':False,'review_status':'REVIEW_REQUIRED'})
-            projection={'business_target_id':rule.business_target_id,'target_region':record_ref(slot.region),
-                'semantic_region':{'document_version':target.version.model_dump(mode='json'),'observation_digest':target.digest,'pointer':slot.pointer},
-                'native_target_ref':record_ref(locator) if locator else None,'existing_value':existing,'proposed_value':proposed,
-                'change_type':changes,'source_evidence_ref':record_ref(evidence),
-                'historical_reference_ref':serialized_fact(history) if history else None,'mapping_status':'PROPOSED' if change else 'BLOCKED',
-                'review_status':'REVIEW_REQUIRED','warning':warnings,'mapping_rationale':rationale,'executable':False}
-            result['items'].append({'proposal_id':change.id if change else 'intent-'+key,'workflow_profile':self.policy.workflow_profile,'business_target_id':rule.business_target_id,
-                'source_fact':serialized_fact(f),'source_role':'CURRENT_SOURCE','source_evidence_ref':record_ref(evidence),
-                'historical_context':serialized_fact(history) if history else None,'historical_reference_ref':projection['historical_reference_ref'],
-                'target_region':record_ref(slot.region),'native_binding_status':'EXACT_CANDIDATE' if locator else 'UNRESOLVED',
-                'existing_target_content':existing,'proposed_content':proposed,'change_types':changes,'mapping_rationale':rationale,
-                'conflict_state':'NONE_DETECTED','review_status':'REVIEW_REQUIRED','executable':False,'warnings':warnings,
-                'mapping_proposal':mapping.model_dump(mode='json'),'change_proposal':change.model_dump(mode='json') if change else None,
-                'native_locator_candidate':locator.model_dump(mode='json') if locator else None,
-                'evidence_record':evidence.model_dump(mode='json'),'projection':projection})
+            matches=[s for s in slots if s.region.business_target_id==rule.business_target_id and (not s.party_id or s.party_id==party(f))]
+            explicit_multiple=(len(matches)>1 and all(s.occurrence_group for s in matches)
+                and len({s.occurrence_group for s in matches})==1
+                and len({s.region.id for s in matches})==len(matches))
+            if len(matches)!=1 and not explicit_multiple:
+                refuse('TARGET_REGION_AMBIGUOUS' if matches else 'TARGET_REGION_MISSING',f);continue
+            for slot in matches:
+                if slot.region.document_version_ref!=target.version:refuse('STALE_TARGET_VERSION',f);continue
+                if slot.region.task_id!=self.task_id or slot.region.target_contract_instance_ref.model_dump(mode='json')!=self.policy.target_instance_ref:
+                    refuse('TARGET_CONTRACT_MISMATCH',f);continue
+                try:existing=pointer(target.data,slot.pointer,allow_empty=True)
+                except MappingError:refuse('TARGET_REGION_MISSING',f);continue
+                if existing!=slot.expected_content:refuse('STALE_TARGET_CONTENT',f);continue
+                if slot.protected:refuse('PROTECTED_OBJECT',f);continue
+                payloads={'REPLACE_RUN_TEXT':'RUN_TEXT_REPLACEMENT','REPLACE_SDT_TEXT':'SDT_TEXT_REPLACEMENT','REPLACE_SIMPLE_TABLE_CELL_TEXT':'SIMPLE_TABLE_CELL_TEXT_REPLACEMENT'}
+                if slot.operation not in payloads:refuse('OPERATION_UNSUPPORTED',f);continue
+                if slot.field=='label':value=pointer(bykey[f.document_key].data,f.selection.label_pointer)
+                elif slot.field in f.fields:value=f.fields[slot.field]
+                else:refuse('SOURCE_MISSING',f);continue
+                if slot.value_format=='YEAR':
+                    years=re.findall(r'(?<!\d)(20\d{2})(?!\d)',value)
+                    if years!=[str(self.policy.current_year)]:refuse('SOURCE_PERIOD_MISMATCH',f);continue
+                    value=years[0]
+                elif slot.value_format:refuse('VALUE_FORMAT_UNSUPPORTED',f);continue
+                proposed=slot.value_prefix+value+slot.value_suffix
+                rationale=f"{self.policy.workflow_profile}@{self.policy.version}: configured {f.concept} fact; historical meaning {history.meaning if history else 'new transaction, narrative review required'}; resolves {rule.business_target_id} to pinned template region. Current evidence only supplies current values."
+                identity={'policy':asdict(self.policy),'source':serialized_fact(f),'history':serialized_fact(history) if history else None,
+                    'target':target.version.model_dump(mode='json'),'target_observation':target.digest,'region':slot.region.model_dump(mode='json'),
+                    'pointer':slot.pointer,'operation':slot.operation,'field':slot.field,'existing':existing,'task_id':self.task_id,
+                    'prefix':slot.value_prefix,'suffix':slot.value_suffix,'format':slot.value_format,'created_at':self.created_at}
+                key=canonical_digest(identity)[:32]
+                evidence=EvidenceRecord(**self.envelope('EvidenceRecord','evidence-'+key),kind='SOURCE_EXCERPT',document_version_ref=f.version,
+                    content_ref={'uri':'urn:foundation:semantic:'+f.observation_digest,'sha256':f.observation_digest,'media_type':'application/json'},
+                    observed_value={'kind':'TEXT','review_text':proposed,'value':proposed},authority='AUTHORITATIVE',period_scope='UNKNOWN',period=None)
+                mapping=MappingProposal(**self.envelope('MappingProposal','mapping-'+key),business_target_id=rule.business_target_id,
+                    target_region_ref=record_ref(slot.region),evidence_refs=[record_ref(evidence)],rule_evaluation_refs=[],ai_interaction_refs=[],
+                    proposed_value={'kind':'TEXT','review_text':proposed,'value':proposed},status='PROPOSED',rationale=rationale,error_codes=[])
+                warnings=['B2_1_NOT_EXECUTABLE','SOURCE_FRESHNESS_NOT_QUALIFIED']
+                if history and f.kind=='RPT' and not {'country','relationship'}<=history.fields.keys():warnings.append('HISTORICAL_RELATIONSHIP_NOT_OBSERVED')
+                if 'NARRATIVE_REVIEW_REQUIRED' in changes:warnings.append('NARRATIVE_REVIEW_REQUIRED')
+                if history is None:warnings.extend(['HISTORICAL_INVENTORY_NOT_QUALIFIED','ROW_GROWTH_NOT_QUALIFIED'])
+                try:
+                    resolution=native.resolve(slot,target) if native else NativeResult()
+                except Exception:
+                    resolution=NativeResult()
+                    warnings.append('NATIVE_RESOLUTION_FAILED')
+                if resolution.status and resolution.status!='EXACT_MATCH':warnings.append(resolution.status)
+                locator=None
+                if resolution.status and resolution.status!='EXACT_MATCH':pass
+                elif len(resolution.locators)>1:warnings.append('NATIVE_LOCATOR_AMBIGUOUS')
+                elif not resolution.locators:warnings.append('NATIVE_LOCATOR_UNRESOLVED')
+                else:
+                    candidate=resolution.locators[0]
+                    expected={'REPLACE_RUN_TEXT':'DOCX_RUN','REPLACE_SDT_TEXT':'DOCX_CONTENT_CONTROL','REPLACE_SIMPLE_TABLE_CELL_TEXT':'DOCX_TABLE_CELL'}[slot.operation]
+                    if resolution.record_region_id!=slot.region.id or resolution.semantic_pointer!=slot.pointer:warnings.append('NATIVE_REGION_MISMATCH')
+                    elif candidate.document_version_ref!=target.version or candidate.task_id!=self.task_id:warnings.append('STALE_NATIVE_LOCATOR')
+                    elif candidate.structural_fingerprint!=resolution.observed_fingerprint:warnings.append('NATIVE_FINGERPRINT_MISMATCH')
+                    elif candidate.locator_type.value!=expected:warnings.append('NATIVE_OPERATION_UNSUPPORTED')
+                    elif resolution.protected:warnings.append('PROTECTED_OBJECT')
+                    elif resolution.observed_content!=existing and not (
+                        resolution.semantic_content==existing and resolution.observed_content.strip()==existing.strip()):
+                        warnings.append('STALE_NATIVE_CONTENT')
+                    else:
+                        locator=candidate
+                        if existing!=resolution.observed_content:warnings.append('SEMANTIC_WHITESPACE_NORMALIZED')
+                        existing=resolution.observed_content
+                change=None
+                if locator and history is not None:
+                    change_key=canonical_digest({'mapping':identity,'locator':locator.model_dump(mode='json')})[:32]
+                    change=ChangeProposal(**self.envelope('ChangeProposal','change-'+change_key),status='DRAFT',business_target_id=rule.business_target_id,
+                        target_document_version_ref=target.version,target_contract_definition_ref=self.policy.target_definition_ref,
+                        target_contract_instance_ref=self.policy.target_instance_ref,rule_pack_ref=self.policy.rule_pack_ref,mapping_proposal_ref=record_ref(mapping),
+                        source_assessment_refs=[],evidence_assessment_refs=[],proposed_value=mapping.proposed_value,
+                        current_value={'kind':'TEXT','review_text':existing,'value':existing},native_locator_ref=record_ref(locator),
+                        operation=slot.operation,payload={'kind':payloads[slot.operation],'replacement_text':proposed},error_codes=[])
+                if change is None:
+                    mapping=mapping.model_copy(update={'status':type(mapping.status).BLOCKED})
+                    for code in warnings[2:]:
+                        result['exceptions'].append({'code':code,'proposal_id':'change-'+key,'executable':False,'review_status':'REVIEW_REQUIRED'})
+                projection={'business_target_id':rule.business_target_id,'target_region_id':slot.region.id,'target_region':record_ref(slot.region),
+                    'semantic_region':{'document_version':target.version.model_dump(mode='json'),'observation_digest':target.digest,'pointer':slot.pointer},
+                    'native_target_ref':record_ref(locator) if locator else None,'existing_value':existing,'proposed_value':proposed,
+                    'change_type':changes,'source_evidence_ref':record_ref(evidence),
+                    'historical_reference_ref':serialized_fact(history) if history else None,'mapping_status':'PROPOSED' if change else 'BLOCKED',
+                    'review_status':'DRAFT' if change else 'REVIEW_REQUIRED','warning':warnings,'mapping_rationale':rationale,'executable':False}
+                result['items'].append({'proposal_id':change.id if change else 'intent-'+key,'workflow_profile':self.policy.workflow_profile,'business_target_id':rule.business_target_id,
+                    'source_fact':serialized_fact(f),'source_role':'CURRENT_SOURCE','source_evidence_ref':record_ref(evidence),
+                    'historical_context':serialized_fact(history) if history else None,'historical_reference_ref':projection['historical_reference_ref'],
+                    'target_region':record_ref(slot.region),'native_binding_status':'EXACT_CANDIDATE' if locator else 'UNRESOLVED',
+                    'existing_target_content':existing,'proposed_content':proposed,'change_types':changes,'mapping_rationale':rationale,
+                    'conflict_state':'NONE_DETECTED','review_status':'REVIEW_REQUIRED','executable':False,'warnings':warnings,
+                    'mapping_proposal':mapping.model_dump(mode='json'),'change_proposal':change.model_dump(mode='json') if change else None,
+                    'native_locator_candidate':locator.model_dump(mode='json') if locator else None,
+                    'evidence_record':evidence.model_dump(mode='json'),'projection':projection})
         for past in historical:
-            if past.kind=='RPT' and not any((f.kind,f.concept)==(past.kind,past.concept) for f in current):
+            if past.kind=='RPT' and not past.selection.context_only and past.concept not in invalid and not any(transaction_identity(f)==transaction_identity(past) for f in current):
                 refuse('REMOVED_TRANSACTION',past)
                 result['exceptions'][-1]['warning']='Absent from supplied current selection only; confirm complete source inventory. No deletion proposal or row-shrink operation.'
         occupied={}

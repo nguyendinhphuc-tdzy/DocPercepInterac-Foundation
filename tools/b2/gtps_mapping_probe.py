@@ -22,7 +22,7 @@ def private_path(value, *, output=False):
     return path
 
 
-def evaluate(report,config):
+def evaluate(report,config,*,native=None):
     """Config selects only non-Golden roles. Unselected case content is never read."""
     if report.get('evaluation_version')!='1.2.0':raise ValueError('RUN003_VERSION_REQUIRED')
     views=[]; selections={}; boundaries={}
@@ -63,7 +63,15 @@ def evaluate(report,config):
     targets=[v for v in views if v.role=='TARGET_TEMPLATE']
     if len(targets)!=1:raise ValueError('TARGET_ROLE_AMBIGUOUS')
     slots=[];regions=[]
-    for s in config['slots']:
+    slot_definitions=list(config['slots'])
+    allocation=None;allocation_error=None
+    if 'transaction_container' in config and not normalization_errors:
+        from foundation.applications.gtps_mapping.template_resolution import transaction_slots
+        try:
+            generated,allocation=transaction_slots(targets[0],current,historical,policy,config['transaction_container'],views)
+            slot_definitions.extend(generated)
+        except MappingError as exc:allocation_error=exc.code
+    for s in slot_definitions:
         region=TargetRegion(**planner.envelope('TargetRegion',s['region_id']),
             region_definition_ref={'object_type':'TargetRegionDefinition','object_id':s['region_id']+'-definition','revision':1},
             target_contract_instance_ref=policy.target_instance_ref,business_target_id=s['business_target_id'],
@@ -71,20 +79,47 @@ def evaluate(report,config):
             source_requirement_refs=[],preflight_assessment_refs=[],capability_result_refs=[])
         regions.append(region.model_dump(mode='json'))
         slots.append(Slot(region,s['pointer'],s['expected_content'],s['field'],s['operation'],
-            s.get('protected',False),s.get('value_prefix',''),s.get('value_suffix','')))
+            s.get('protected',False),s.get('value_prefix',''),s.get('value_suffix',''),s.get('occurrence_group',''),s.get('party_id',''),s.get('value_format','')))
     if normalization_errors:
         result={'workflow_profile':policy.workflow_profile,'profile_version':policy.version,'items':[],
             'exceptions':[{'code':'NORMALIZATION_INCOMPLETE','executable':False,'review_status':'REVIEW_REQUIRED'}],
             'executable':False,'production_qualified':False,'replay_qualified':False}
     else:
-        result=planner.plan(views,current,historical,slots)
+        result=planner.plan(views,current,historical,slots,native=native)
+    result["row_allocation"]=allocation
+    if allocation_error:result["exceptions"].append({"code":allocation_error,"executable":False,"review_status":"REVIEW_REQUIRED"})
+    if config.get('detailed_regions') and native:
+        result['detailed_regions']={key:native.heading_candidates(targets[0],d['semantic_heading'],d['native_heading'])
+            for key,d in config['detailed_regions'].items()}
+    if native:
+        result['native_fingerprint_profile']={'ref':native.identity.profile.ref.model_dump(mode='json'),
+            'definition':json.loads(native.identity.profile.data)}
+        result['native_preflight']=native.preflight_summary
     result.update(evidence_kind='PRIVATE_B2_1_MAPPING_EVALUATION',run003_bindings=boundaries,
         normalization_errors=normalization_errors,target_region_records=regions,configuration_digest=canonical_digest(config),
         limitations=['Engagement selectors and template-region hypotheses require mapping evidence review.',
-            'No native provider configured: no concrete ChangeProposal, approval, replay or output document.',
+            'Native candidates are read-only and provisional; no approval, replay or output document.' if native else 'No native provider configured: no concrete ChangeProposal.',
             'Source/target contract and policy references are evaluation configuration, not registered production definitions.',
             'No formula-cache freshness or business source-sufficiency qualification.'])
     return result
+
+
+def native_provider(report,config):
+    from foundation.domain import DocumentVersion
+    from foundation.adapters.gtps_native_candidates import TemplateNativeCandidates
+    definitions=[d for d in config['documents'].values() if d['role']=='TARGET_TEMPLATE']
+    if len(definitions)!=1:raise ValueError('TARGET_ROLE_AMBIGUOUS')
+    matches=[c for c in report['cases'] if c['case_id']==definitions[0]['case_id']]
+    if len(matches)!=1:raise ValueError('CASE_AMBIGUOUS')
+    case=matches[0]
+    if case['business_role']!='TARGET_TEMPLATE' or case['document_role']!='TARGET':raise ValueError('ROLE_NOT_PERMITTED')
+    document=DocumentVersion.model_validate(case['document'])
+    if document.task_id!=config['task_id']:raise ValueError('TASK_IDENTITY_MISMATCH')
+    class Reader:
+        def resolve(self,requested):
+            if requested!=document:raise ValueError('STALE_DOCUMENT_VERSION')
+            return Path(case['local_path']).read_bytes()
+    return TemplateNativeCandidates(document,Reader())
 
 
 def sanitized_counts(result):
@@ -103,7 +138,11 @@ def main():
     report_path=private_path(args.report);config_path=private_path(args.config);output=private_path(args.output,output=True)
     data=report_path.read_bytes();config=json.loads(config_path.read_text(encoding='utf-8'))
     if sha256(data).hexdigest()!=config['report_sha256']:raise ValueError('REPORT_BINDING_MISMATCH')
-    result=evaluate(json.loads(data),config)
+    report=json.loads(data)
+    native=None
+    if config.get('native_identity')=='B21R_REVIEW_ONLY':
+        native=native_provider(report,config)
+    result=evaluate(report,config,native=native)
     output.parent.mkdir(parents=True,exist_ok=True)
     with output.open('x',encoding='utf-8') as stream:json.dump(result,stream,ensure_ascii=False,indent=2)
     print(json.dumps(sanitized_counts(result)))

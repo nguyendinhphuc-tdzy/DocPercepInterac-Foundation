@@ -64,6 +64,9 @@ class DocxNativeIdentity:
     The tighter DOM envelope is additional to unchanged resource-safe preflight.
     All returned identities remain unqualified for mutation.
     """
+    profile = PROFILE
+    identity_conformances = {"TRANSITIONAL"}
+
     def __init__(self,resolver,config=None):
         self.resolver=resolver
         self.preflight=OoxmlPreflight(resolver,config or PreflightConfig())
@@ -84,7 +87,7 @@ class DocxNativeIdentity:
         a=result.assessment
         if a.status.value!='COMPLETED': return result,None,'UNSUPPORTED: preflight refused input'
         if a.detected_format.value!='DOCX': return result,None,'UNSUPPORTED: XLSX/native non-DOCX identity is outside this bounded profile'
-        if a.detected_conformance.value!='TRANSITIONAL': return result,None,'UNSUPPORTED: only Transitional DOCX identity profile'
+        if a.detected_conformance.value not in self.identity_conformances: return result,None,'UNSUPPORTED: only Transitional DOCX identity profile'
         if a.protection_findings: return result,None,'UNSUPPORTED: protection observations require a separately qualified identity profile'
         # python-docx materializes a DOM; bound it more tightly than streaming preflight.
         from zipfile import ZipFile
@@ -95,7 +98,7 @@ class DocxNativeIdentity:
             loaded=docx.Document(BytesIO(data))
         except Exception:
             return result,None,'UNSUPPORTED: external DOCX reader could not load the validated package'
-        if str(loaded.part.partname)!='/word/document.xml':
+        if loaded.element.tag != Q('document') or str(loaded.part.partname)!='/word/document.xml':
             return result,None,'UNSUPPORTED: main part outside bounded /word/document.xml profile'
         return result,loaded.element,None
 
@@ -161,7 +164,7 @@ class DocxNativeIdentity:
         result,root,refusal=self._load(document)
         limitations=['PROVISIONAL: native identity is not qualified operation support or semantic fidelity.',
             'UNSUPPORTED: XLSX, headers/footers, bookmarks, nested/merged tables, fields, drawings, revisions, complex SDTs.']
-        if refusal: return NativeDiscoveryResult(result.assessment,(),tuple(limitations+[refusal]),result.artifacts+(PROFILE,))
+        if refusal: return NativeDiscoveryResult(result.assessment,(),tuple(limitations+[refusal]),result.artifacts+(self.profile,))
         locators=[]
         for e in root.iter():
             if e.tag not in {Q('r'),Q('tc'),Q('sdt')}: continue
@@ -172,17 +175,17 @@ class DocxNativeIdentity:
             address=self._address(e)
             if e.tag==Q('sdt') and (not address['sdt_id'] or sum(x.get(Q('val'))==address['sdt_id'] for x in root.iter(Q('id')))>1):
                 limitations.append('AMBIGUOUS: duplicate or missing SDT identity'); continue
-            digest=sha256(json.dumps([document.task_id,version_ref(document).model_dump(),address,PROFILE.ref.sha256],sort_keys=True).encode()).hexdigest()
+            digest=sha256(json.dumps([document.task_id,version_ref(document).model_dump(),address,self.profile.ref.sha256],sort_keys=True).encode()).hexdigest()
             locators.append(NativeLocator(schema_version='0.1.0',object_type='NativeLocator',id='native-'+digest,revision=1,
                 created_at=document.created_at,task_id=document.task_id,document_version_ref=version_ref(document),part_uri='/word/document.xml',
                 locator_type=address['kind'],address=address,expected_object_type=e.tag,capture_engine='python-docx/'+docx.__version__,
-                structural_fingerprint=fingerprint(e),fingerprint_profile_ref=PROFILE.ref))
-        return NativeDiscoveryResult(result.assessment,tuple(locators),tuple(dict.fromkeys(limitations)),result.artifacts+(PROFILE,))
+                structural_fingerprint=fingerprint(e),fingerprint_profile_ref=self.profile.ref))
+        return NativeDiscoveryResult(result.assessment,tuple(locators),tuple(dict.fromkeys(limitations)),result.artifacts+(self.profile,))
 
     def resolve(self,document,locator):
         if locator.document_version_ref!=version_ref(document) or locator.task_id!=document.task_id:
             return NativeResolution('STALE_DOCUMENT_VERSION','Locator task/version does not equal requested exact binary')
-        if locator.fingerprint_profile_ref!=PROFILE.ref or locator.capture_engine!='python-docx/'+docx.__version__:
+        if locator.fingerprint_profile_ref!=self.profile.ref or locator.capture_engine!='python-docx/'+docx.__version__:
             return NativeResolution('UNSUPPORTED','Unknown fingerprint/capture engine profile')
         if locator.part_uri!='/word/document.xml' or locator.locator_type.value not in {'DOCX_RUN','DOCX_CONTENT_CONTROL','DOCX_TABLE_CELL'}:
             return NativeResolution('UNSUPPORTED','Native address outside provisional reader profile')
