@@ -51,7 +51,7 @@ function formatOf(file: File): DocumentFormat | null {
   return (SUPPORTED_FORMATS as string[]).includes(ext ?? '') ? (ext as DocumentFormat) : null;
 }
 
-export type AppView = 'home' | 'workspace' | 'history' | 'settings';
+export type AppView = 'home' | 'workspace' | 'gtps-demo' | 'history' | 'settings';
 export type WorkspacePreset = 'agent' | 'inspect' | 'review' | 'compare';
 
 export interface TaskHistoryEntry {

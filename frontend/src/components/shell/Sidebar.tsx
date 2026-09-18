@@ -1,7 +1,7 @@
 import React from 'react';
-import { Home, FolderOpen, Clock, Settings, PanelLeftClose, PanelLeft } from 'lucide-react';
+import { Home, FolderOpen, Clock, Settings, PanelLeftClose, PanelLeft, FileCheck } from 'lucide-react';
 
-export type NavRoute = 'home' | 'workspace' | 'history' | 'settings';
+export type NavRoute = 'home' | 'workspace' | 'gtps-demo' | 'history' | 'settings';
 
 interface SidebarProps {
   currentRoute: NavRoute;
@@ -13,6 +13,7 @@ interface SidebarProps {
 const NAV_ITEMS: { route: NavRoute; icon: React.ElementType; label: string }[] = [
   { route: 'home', icon: Home, label: 'Home' },
   { route: 'workspace', icon: FolderOpen, label: 'Workspaces' },
+  { route: 'gtps-demo', icon: FileCheck, label: 'GTPS Demo' },
   { route: 'history', icon: Clock, label: 'History' },
   { route: 'settings', icon: Settings, label: 'Settings' },
 ];

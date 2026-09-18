@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src data:; connect-src 'none'; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+<title>Foundation · HMV Local File FY2024</title>
+<style>
+:root{--blue:#2359cc;--navy:#162849;--ink:#202f46;--muted:#68768a;--line:#e1e6ee;--bg:#f4f6fa;--green:#237358;--amber:#966110;--red:#b34545;--rail:228px;--inspector:370px}*{box-sizing:border-box}body{margin:0;color:var(--ink);background:var(--bg);font:14px/1.5 'Segoe UI',Arial,sans-serif}button,input,select,textarea{font:inherit}button{cursor:pointer}button:disabled{cursor:not-allowed;opacity:.48}button:focus-visible,a:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #83aaff;outline-offset:2px}button{border:1px solid var(--line);border-radius:6px;background:white;color:var(--ink);padding:8px 12px;font-weight:600;transition:background .15s}button:hover:not(:disabled){background:#edf2fb}button.primary{background:var(--blue);border-color:var(--blue);color:white}button.primary:hover:not(:disabled){background:#1745a8}button.ghost{background:transparent;border-color:transparent}button.small{font-size:12px;padding:5px 9px}button.danger{color:var(--red)}input,select,textarea{border:1px solid #cbd4e2;border-radius:6px;padding:9px 10px;color:var(--ink);background:white;max-width:100%}textarea{width:100%;min-height:94px;resize:vertical}h1,h2,h3,h4,p{margin:0}h1{font-size:25px;letter-spacing:-.7px;font-weight:650}h2{font-size:19px;letter-spacing:-.35px}h3{font-size:15px}h4{font-size:13px}a{color:var(--blue)}small,.smalltext{font-size:12px}.muted{color:var(--muted)}.eyebrow{font-size:10px;font-weight:750;letter-spacing:1.4px;text-transform:uppercase;color:var(--muted);margin-bottom:7px}.row{display:flex;align-items:center;gap:10px}.between{justify-content:space-between}.wrap{flex-wrap:wrap}.stack{display:grid;gap:14px}.spacer{flex:1}.topbar{height:64px;background:white;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 24px;gap:32px;position:sticky;top:0;z-index:20}.brand{font-size:19px;font-weight:750;letter-spacing:-.6px;display:flex;align-items:center;gap:10px;min-width:182px}.mark{display:inline-grid;place-items:center;background:var(--navy);color:white;width:30px;height:32px;border-radius:6px;font-family:Georgia,serif;font-size:25px}.global{display:flex;gap:6px;align-self:stretch}.global button{border:0;border-radius:0;background:transparent;font-size:13px;padding:0 13px;color:var(--muted)}.global button.active{color:var(--blue);box-shadow:inset 0 -2px var(--blue)}.avatar{display:grid;place-items:center;background:#e9eef6;border:1px solid #d5deec;color:#375171;width:32px;height:32px;border-radius:50%;font-size:11px;font-weight:700}.private-label{font-size:11px;color:var(--muted)}.prototype{background:#edf2fc;border-bottom:1px solid #dce5f6;color:#425e89;padding:5px 25px;font-size:11px;display:flex;justify-content:space-between;gap:12px}.shell{display:grid;grid-template-columns:var(--rail) minmax(0,1fr);min-height:calc(100vh - 93px)}.sidebar{border-right:1px solid var(--line);padding:23px 14px;background:#fafbfd}.workspace-label{padding:0 10px 20px;border-bottom:1px solid var(--line);margin-bottom:14px}.workspace-icon{background:#e5ecfa;color:#315ba6;padding:8px;border-radius:7px;line-height:1;font-size:12px;font-weight:800}.workspace-label strong{font-size:13px}.side-nav{display:grid;gap:3px}.side-nav button{display:flex;align-items:center;text-align:left;gap:10px;padding:9px 11px;border-color:transparent;background:transparent;font-weight:500;font-size:13px}.side-nav button.active{background:#e8eefb;color:#214eab;font-weight:650}.nav-symbol{font-size:16px;width:20px;text-align:center;font-weight:400}.nav-count{margin-left:auto;font-size:10px;background:#e6eaf0;border-radius:4px;padding:1px 5px}.source-rail{margin-top:28px;padding:0 9px}.source-rail button{display:flex;width:100%;gap:10px;padding:10px 0;border:0;background:transparent;text-align:left;font-weight:500;font-size:12px}.file-icon{flex-shrink:0;width:30px;height:36px;border:1px solid #cbd7eb;background:#eef3ff;color:#315ca5;display:grid;place-items:center;border-radius:4px;font-weight:800;font-size:10px}.file-icon.xlsx{color:#287555;background:#e9f3ed;border-color:#c8dfd2}.rail-footer{margin:24px 10px 0;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--muted)}main{min-width:0;padding:28px 30px 40px}.breadcrumb{font-size:11px;color:var(--muted);margin-bottom:15px}.page-head{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:24px}.subtitle{color:var(--muted);margin-top:5px;font-size:13px}.pill{display:inline-flex;align-items:center;gap:5px;font-size:10px;font-weight:700;line-height:1.4;padding:4px 7px;border-radius:4px;white-space:nowrap;background:#edf0f4;color:#617086}.pill.good{background:#e6f3ec;color:#247054}.pill.warn{background:#fff1d9;color:#916113}.pill.bad{background:#fbecec;color:#aa4848}.pill.blue{background:#eaf0ff;color:#325eaf}.pill.ref{background:#eeeafa;color:#67548b}.dot{width:6px;height:6px;background:currentColor;border-radius:50%}.card{border:1px solid var(--line);border-radius:9px;background:white;overflow:hidden;box-shadow:0 2px 3px #15254102}.card-pad{padding:22px}.card-head{padding:18px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--line);gap:10px}.stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:14px;margin-bottom:20px}.stat{padding:18px 20px}.stat .number{font-size:28px;line-height:1.3;letter-spacing:-.8px;margin-top:9px}.stat .foot{font-size:11px;color:var(--muted);margin-top:6px}.overview-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(290px,1fr);gap:20px}.notice{border:1px solid #efdbb4;border-left:3px solid #d4a24b;background:#fffaf1;padding:15px 17px;border-radius:6px;font-size:12px}.notice.info{border-color:#cfddf5;border-left-color:#6d96dd;background:#f1f6ff}.notice.bad{background:#fff4f4;border-color:#ebc9c9;border-left-color:#bf5656}.notice strong{display:block;margin-bottom:3px;font-size:13px}.list-row{padding:15px 20px;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:14px}.list-row:last-child{border-bottom:0}.list-row .title{font-weight:600;font-size:13px}.list-row .sub{font-size:11px;color:var(--muted);margin-top:3px}.list-row.actionable{cursor:pointer}.list-row.actionable:hover{background:#f8faff}.value-delta{display:flex;gap:12px;align-items:center;margin-top:7px;font-size:13px;font-variant-numeric:tabular-nums}.old{color:var(--muted)}.arrow{color:#8d9bb0}.new{color:#285c9d;font-weight:650}.progress-track{height:6px;background:#e7ebf1;border-radius:20px;overflow:hidden}.progress-bar{height:100%;background:#4a7dd4;border-radius:20px}.steps{display:grid;grid-template-columns:repeat(4,1fr);margin-top:19px}.step{font-size:11px;position:relative;padding-top:16px;border-top:2px solid #e7ebf2;color:var(--muted)}.step:before{content:'';width:8px;height:8px;background:#d5deeb;border-radius:50%;position:absolute;left:0;top:-5px}.step.done{border-color:#528971;color:#237358}.step.done:before{background:#528971}.step.current{color:var(--blue)}.step.current:before{background:var(--blue)}.toolbar{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}.search{flex:1;min-width:170px}.toolbar select{font-size:12px;max-width:190px}.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);padding:0 14px;overflow-x:auto}.tabs button{border:0;border-radius:0;background:transparent;color:var(--muted);font-size:12px;white-space:nowrap;padding:13px 10px}.tabs button.active{color:var(--blue);box-shadow:inset 0 -2px var(--blue)}.work-grid{display:grid;grid-template-columns:minmax(300px,1fr) var(--inspector);gap:16px;align-items:start}.changes{max-height:calc(100vh - 290px);overflow:auto;min-height:370px}.change{display:block;width:100%;text-align:left;border:0;border-bottom:1px solid var(--line);border-radius:0;padding:17px 18px;background:white;font-weight:400}.change.selected{background:#f1f5ff;box-shadow:inset 3px 0 var(--blue)}.change .meta{font-size:10px;color:var(--muted);margin-bottom:5px}.change .title{font-size:14px;font-weight:650}.change .value-delta{font-size:12px}.change .bottom{margin-top:10px;display:flex;gap:6px;flex-wrap:wrap}.inspector{position:sticky;top:108px;max-height:calc(100vh - 125px);overflow:auto}.inspector-body{padding:19px}.inspector-title{padding:17px 18px 12px}.inspector-title h3{margin:5px 0}.label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;font-weight:700;margin-bottom:7px}.field{margin-bottom:19px}.field p{font-size:12px}.field .content{border:1px solid var(--line);border-radius:5px;padding:11px;font-size:12px;background:#fafbfd;overflow-wrap:anywhere}.field .content.proposed{background:#eef5ff;border-color:#d5e2f8;color:#295388}.field .content.blocked{background:#fff7e8;border-color:#ecdab9;color:#875e22}.inspector-actions{border-top:1px solid var(--line);padding:13px 16px;background:#fafbfd;display:flex;flex-wrap:wrap;gap:6px;position:sticky;bottom:0}.inspector-actions button{font-size:11px;flex:1;white-space:nowrap;padding:8px 9px}.evidence-line{border-left:2px solid #d0dcf0;padding-left:12px;font-size:12px;margin:12px 0}.evidence-line strong{display:block}.audit-mini{margin-top:8px;padding-top:8px;border-top:1px solid var(--line);font-size:11px}.doc-grid{display:grid;grid-template-columns:270px minmax(0,1fr);gap:18px}.doc-list button{width:100%;display:flex;gap:11px;text-align:left;padding:17px;border:0;border-bottom:1px solid var(--line);border-radius:0;font-size:12px;font-weight:500}.doc-list button.active{background:#edf3ff;box-shadow:inset 3px 0 var(--blue)}.doc-meta{padding:18px;font-size:11px;overflow-wrap:anywhere}.doc-meta dl{display:grid;grid-template-columns:70px 1fr;gap:10px;margin:15px 0}.doc-meta dt{color:var(--muted)}.doc-meta dd{margin:0}.paper-well{background:#e9edf3;padding:24px;min-height:540px}.paper{max-width:720px;min-height:520px;margin:auto;background:white;padding:38px 44px;box-shadow:0 3px 12px #28394f0c;font-family:Georgia,'Times New Roman',serif;font-size:13px;line-height:1.7;position:relative}.paper h2,.paper h3{color:#244f90;font-family:'Segoe UI',sans-serif;margin:20px 0 12px}.paper h2{font-size:20px}.paper p{margin:12px 0}.paper .running{font:10px 'Segoe UI',sans-serif;color:#758197;border-bottom:1px solid #dce3ed;padding-bottom:12px;margin-bottom:20px}.paper .page-foot{margin-top:36px;border-top:1px solid #dce3ed;padding-top:10px;font:9px 'Segoe UI',sans-serif;color:#758197}.paper mark{background:#e5f0ff;color:inherit;padding:3px 4px}.paper .pending{background:#fff3d9;color:#8a652b;padding:10px;font:12px 'Segoe UI',sans-serif;border-left:2px solid #d5aa59}.paper table{font:11px/1.5 'Segoe UI',sans-serif}.paper th{background:#2d5183;color:white}.paper .guidance{font:12px/1.6 'Segoe UI',sans-serif;background:#ededed;padding:14px;border:1px solid #d9d9d9}.paper .replaceable{background:#fff29e}.comparison{display:grid;grid-template-columns:1fr 1fr;gap:14px}.comparison .paper{padding:22px;min-height:310px;font-size:12px}.table-scroll{overflow:auto}table{border-collapse:collapse;width:100%;text-align:left;font-size:12px}th{font-size:10px;letter-spacing:.4px;text-transform:uppercase;color:var(--muted);background:#f8fafc;padding:12px 15px;border-bottom:1px solid var(--line);font-weight:700;white-space:nowrap}td{padding:14px 15px;border-bottom:1px solid var(--line);vertical-align:top}tbody tr:last-child td{border-bottom:0}td .sub{font-size:11px;color:var(--muted);margin-top:4px}.requirements{min-width:650px}.empty{text-align:center;padding:44px 24px;color:var(--muted)}.empty h3{color:var(--ink);margin-bottom:8px}.empty button{margin-top:15px}.checklist{list-style:none;padding:0;margin:0}.checklist li{padding:11px 0;border-bottom:1px solid var(--line);display:flex;align-items:flex-start;gap:10px;font-size:12px}.checklist li:last-child{border:0}.check{color:var(--green);font-weight:700}.timeline{padding:10px 24px 22px}.event{position:relative;padding:16px 0 16px 25px;border-left:1px solid #d8e1ed;margin-left:5px}.event:before{content:'';position:absolute;top:23px;left:-4px;width:7px;height:7px;border-radius:50%;background:#7d9bc5;box-shadow:0 0 0 3px white}.event h4{margin:4px 0}.event p{font-size:12px;color:var(--muted)}.event-meta{font-size:10px;color:#7a8799}.split{display:grid;grid-template-columns:1fr 1fr;gap:18px}.output-title{padding:25px;display:flex;gap:16px;align-items:center}.output-title .file-icon{width:46px;height:57px;font-size:13px}.code-detail{font:11px/1.6 Consolas,monospace;overflow-wrap:anywhere;background:#f4f6f9;padding:12px;border-radius:5px;white-space:pre-wrap}.dialog{border:0;border-radius:12px;box-shadow:0 20px 80px #12234238;padding:0;width:560px;max-width:calc(100vw - 28px);color:var(--ink)}.dialog.wide{width:1080px}.dialog::backdrop{background:#182b4866}.dialog-head{display:flex;justify-content:space-between;align-items:center;padding:20px 24px;border-bottom:1px solid var(--line)}.dialog-body{padding:24px;max-height:73vh;overflow:auto}.dialog-foot{padding:16px 24px;border-top:1px solid var(--line);display:flex;gap:8px;justify-content:flex-end}.form-label{display:block;font-weight:600;font-size:12px;margin:15px 0 6px}.error-text{color:var(--red);font-size:12px;margin-top:12px}.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);z-index:90;background:#21334e;color:white;box-shadow:0 6px 30px #17253730;padding:12px 19px;border-radius:7px;max-width:min(620px,90vw);font-size:12px}.mobile-menu,.mobile-close{display:none}.toolbar-note{font-size:11px;color:var(--muted);margin:6px 0 14px}.progress-stage{display:flex;align-items:center;gap:12px;margin:19px 0;font-size:13px}.stage-no{border:1px solid #ccd7e6;border-radius:50%;width:27px;height:27px;display:grid;place-items:center;color:var(--muted);font-size:11px}.progress-stage.done .stage-no{background:#e6f3ec;border-color:#cee6d9;color:var(--green)}.progress-stage.active{color:var(--blue)}.progress-stage.active .stage-no{border-color:var(--blue);color:var(--blue)}.sr-only{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}.recent-card{max-width:920px}.screen-reader-status{position:fixed;bottom:0;pointer-events:none}.disabled-note{font-size:11px;color:var(--amber);width:100%}.reduced-density .change{padding:12px 18px}.reduced-density td{padding:10px 15px}@media(min-width:1550px){:root{--inspector:420px}main{padding:32px 38px}.changes{max-height:calc(100vh - 305px)}}@media(max-width:1190px){:root{--rail:194px;--inspector:330px}main{padding:24px 20px}.topbar{padding:0 18px;gap:16px}.overview-grid{grid-template-columns:1fr}.stats{gap:10px}.stat{padding:16px}.doc-grid{grid-template-columns:225px 1fr}.paper{padding:28px}.private-label{display:none}}@media(max-width:1000px){:root{--rail:0px}.sidebar{display:none}.mobile-menu{display:block}.sidebar.open{display:block;position:fixed;top:93px;bottom:0;width:245px;z-index:30;box-shadow:15px 0 30px #22344a22;overflow:auto}.brand{min-width:0}.global{margin-left:0}.topbar{gap:12px}.overview-grid{grid-template-columns:1.2fr 1fr}.work-grid{grid-template-columns:minmax(290px,1fr) 340px}.doc-grid{grid-template-columns:220px 1fr}}@media(max-width:750px){body{font-size:13px}.topbar{height:56px;padding:0 12px}.brand{font-size:17px}.mark{height:28px;width:27px;font-size:23px}.global{display:none}.prototype{padding:5px 14px;font-size:10px}.prototype span:last-child{display:none}main{padding:19px 14px 28px}.shell{min-height:calc(100vh - 82px)}.sidebar.open{top:82px}.page-head{margin-bottom:18px;gap:10px}.page-head .row{flex-wrap:wrap;justify-content:flex-end}.page-head h1{font-size:23px}.page-head button{font-size:11px}.stats{grid-template-columns:1fr 1fr}.stat .number{font-size:24px}.overview-grid,.split{grid-template-columns:1fr}.work-grid{grid-template-columns:1fr}.changes{max-height:none}.inspector{display:none}.inspector.open{display:block;position:fixed;inset:0;z-index:40;border-radius:0;max-height:100vh;background:white;padding-bottom:5px}.inspector.open .inspector-body{min-height:calc(100dvh - 260px)}.inspector-actions{bottom:0;padding:13px 12px 23px}.mobile-close{display:block}.doc-grid{grid-template-columns:1fr}.doc-list{display:flex;overflow:auto}.doc-list button{min-width:170px}.doc-meta{display:none}.paper-well{padding:14px;min-height:420px}.paper{padding:24px 20px;min-height:440px}.comparison{grid-template-columns:1fr}.toolbar select{flex:1;max-width:100%;min-width:130px}.search{flex-basis:100%}.breadcrumb{margin-bottom:12px}.dialog-body{padding:19px}.dialog-head{padding:16px 19px}.card-pad{padding:19px}.output-title{padding:20px}.row.wrap .pill{white-space:normal}}@media(prefers-reduced-motion:reduce){*{transition:none!important;scroll-behavior:auto!important}}
+</style>
+</head>
+<body>
+<header class="topbar"><button class="ghost mobile-menu" data-action="menu" aria-label="Open workspace navigation">☰</button><div class="brand"><span class="mark">f</span>Foundation</div><nav class="global" aria-label="Primary navigation"></nav><div class="spacer"></div><span class="private-label">Private workspace · Local only</span><button class="small ghost" data-action="assistant">Assistant</button><button class="avatar" data-action="profile" aria-label="Reviewer profile">LR</button></header>
+<div class="prototype"><span>INTERACTIVE PROTOTYPE · Inspected source excerpts · Review and execution are local simulations</span><span>No document mutation · No network connections</span></div>
+<div class="shell"><aside class="sidebar" id="sidebar"></aside><main id="main"></main></div>
+<dialog class="dialog" id="dialog" aria-labelledby="dialog-title"></dialog>
+<div id="toast" class="toast" role="status" hidden></div>
+<script id="fixture" type="application/json">{
+  "workspace": {
+    "id": "hmv-local-file-fy2024",
+    "title": "HMV Local File FY2024",
+    "period": "FY2024",
+    "prototype": true
+  },
+  "documents": [
+    {
+      "id": "prior",
+      "label": "Previous Local File · FY2023",
+      "short": "Previous Local File",
+      "role": "Previous approved Local File",
+      "shortRole": "Historical",
+      "period": "FY2023",
+      "authority": "Historical business content only",
+      "filename": "HMV-24-Final-Local File for FY2023-EN-R0303KPMG.docx",
+      "type": "DOCX",
+      "inspection": "2655 paragraphs · 22 tables · headings, fields, bookmarks, drawings and headers/footers inspected"
+    },
+    {
+      "id": "template",
+      "label": "Master template · Manufacturer",
+      "short": "Master Template",
+      "role": "Master target template",
+      "shortRole": "Structure",
+      "period": "FY20XX",
+      "authority": "Required structure and template guidance",
+      "filename": "Client-25-Template-Local File for FY20XX-Manufacturer-EN-RddmmKPMG-13062025 (Decree 20-2025).docx",
+      "type": "DOCX",
+      "inspection": "760 paragraphs · 16 tables · headings, fields, bookmarks, drawings and headers/footers inspected"
+    },
+    {
+      "id": "appendix",
+      "label": "Appendix I · FY2024",
+      "short": "Appendix I FY2024",
+      "role": "Current-year structured source",
+      "shortRole": "Current source",
+      "period": "FY2024",
+      "authority": "Authoritative for supplied FY2024 structured facts; scope-specific",
+      "filename": "HMV-25-Appendix I under D20 for FY2024-Final-W3103.xlsx",
+      "type": "XLSX",
+      "inspection": "18 sheets · formula and cached values inspected · financial, RPT and interest-expense structures inspected"
+    }
+  ],
+  "transactions": [
+    {
+      "title": "Provision of processing services",
+      "party": "Martin Magnusson & CO. AB",
+      "cell": "H38",
+      "amount": "193,729,728,552"
+    },
+    {
+      "title": "Purchase of raw materials and tools",
+      "party": "Pinghu Hestra Trading Co., Ltd.",
+      "cell": "J18",
+      "amount": "2,956,409,617"
+    },
+    {
+      "title": "Sales of raw materials",
+      "party": "Hestra (Cambodia) Co., Ltd",
+      "cell": "H19",
+      "amount": "739,999,488"
+    },
+    {
+      "title": "Interest expense",
+      "party": "Martin Magnusson & CO. AB",
+      "cell": "J34",
+      "amount": "6,134,596,996"
+    },
+    {
+      "title": "Other expenses",
+      "party": "Pinghu Hestra Trading Co., Ltd.",
+      "cell": "J39",
+      "amount": "67,786,656"
+    },
+    {
+      "title": "Payment on behalf for logistics expense",
+      "party": "Martin Magnusson & CO. AB",
+      "cell": "L51",
+      "amount": "1,470,922,374"
+    }
+  ],
+  "changes": [
+    {
+      "id": "period",
+      "title": "Reporting period",
+      "section": "1 · Introduction",
+      "type": "UPDATE_VALUE",
+      "before": "FY2023",
+      "after": "FY2024",
+      "source": "appendix",
+      "location": "I. Related parties!A5; III. Summary-RPTs!A5",
+      "classification": "SOURCE_VERIFIED",
+      "verdict": "VERIFIED",
+      "reason": "The workbook explicitly identifies the fiscal year ending 31 December 2024. This is the reporting period, not permission to roll forward every dated fact.",
+      "evidence": "Fiscal year end: 31 December 2024.",
+      "risk": "Low",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "priorLocation": "Previous Local File · ¶3",
+      "need": "Current reporting period"
+    },
+    {
+      "id": "processing",
+      "title": "Provision of processing services",
+      "section": "4 · Related-party transactions",
+      "type": "UPDATE_TABLE",
+      "before": "VND 207,324,199,532",
+      "after": "Pending reconciliation · declared VND 193,729,728,552",
+      "source": "appendix",
+      "location": "III. Summary-RPTs!C38, E38, H38, O38; Note FS!P374:R374",
+      "classification": "SOURCE_MISSING",
+      "verdict": "SOURCE_CONFLICT",
+      "reason": "The summary records 193,729,728,552 VND as a literal input, while Note FS!R374 records 196,138,816,993 VND for the same category and counterparty. O38 cites client data provided by email on 29 March 2025, but the email and reconciliation were not supplied. The discrepancy cannot be silently resolved.",
+      "evidence": "Two real observations: H38 = 193,729,728,552 VND; Note FS!R374 = 196,138,816,993 VND. Difference: 2,409,088,441 VND. No automatic selection of the final-answer value.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The current summary maps to the prior MMAB processing transaction, but its amount differs from the underlying Note FS row. Request the cited client email and reconciliation. A golden-output match cannot resolve this conflict.",
+      "priorLocation": "Previous Local File · Table 7, ¶376–381",
+      "need": "Client confirmation and reconciliation of summary H38 to Note FS!R374"
+    },
+    {
+      "id": "materials",
+      "title": "Purchase of raw materials and tools",
+      "section": "4 · Related-party transactions",
+      "type": "UPDATE_VALUE",
+      "before": "VND 6,401,721,244",
+      "after": "VND 2,956,409,617",
+      "source": "appendix",
+      "location": "III. Summary-RPTs!C18, E18, J18",
+      "classification": "SOURCE_VERIFIED",
+      "verdict": "VERIFIED",
+      "reason": "The recorded purchase amount is scoped to Pinghu Hestra Trading and reconciles to matching Note FS rows.",
+      "evidence": "J18 cached amount: 2,956,409,617 VND. This is a purchase, not sales revenue.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "priorLocation": "Previous Local File · ¶401–404",
+      "need": "Current materials purchase value"
+    },
+    {
+      "id": "sales",
+      "title": "Sales of raw materials · Cambodia",
+      "section": "4 · Related-party transactions",
+      "type": "UPDATE_VALUE",
+      "before": "VND 3,165,438,205",
+      "after": "VND 739,999,488",
+      "source": "appendix",
+      "location": "III. Summary-RPTs!C19, E19, H19",
+      "classification": "SOURCE_VERIFIED",
+      "verdict": "VERIFIED",
+      "reason": "Current sales relate to Hestra Cambodia. The cached amount reconciles to matching Note FS rows. This does not prove that other prior counterparties should be deleted.",
+      "evidence": "Hestra (Cambodia) Co., Ltd · H19 = 739,999,488 VND.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "priorLocation": "Previous Local File · ¶410–412",
+      "need": "Current sales to Hestra Cambodia"
+    },
+    {
+      "id": "interest",
+      "title": "Recorded related-party interest transaction",
+      "section": "4 · Related-party transactions",
+      "type": "UPDATE_VALUE",
+      "before": "VND 1,787,410,898",
+      "after": "VND 6,134,596,996",
+      "source": "appendix",
+      "location": "III. Summary-RPTs!C34, E34, J34",
+      "classification": "SOURCE_VERIFIED",
+      "verdict": "VERIFIED",
+      "reason": "J34 is the recorded related-party transaction amount. It is not interchangeable with the 3,756,852,624 VND P&L interest-expense figure in IV. Segmented data!F24.",
+      "evidence": "MMAB · J34 = 6,134,596,996 VND. Keep transaction disclosure separate from expense deductibility and financial-statement classification.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "Two interest figures serve different purposes. Use J34 for the RPT disclosure, and retain the financial-statement and interest limitation calculations in their separate scopes.",
+      "priorLocation": "Previous Local File · ¶413–416",
+      "need": "Recorded interest RPT disclosure"
+    },
+    {
+      "id": "other-expenses",
+      "title": "Other related-party expenses",
+      "section": "4 · Related-party transactions",
+      "type": "ADD_TRANSACTION",
+      "before": "No separate row in prior Other RPTs table",
+      "after": "VND 67,786,656",
+      "source": "appendix",
+      "location": "III. Summary-RPTs!C39, E39, J39",
+      "classification": "SOURCE_VERIFIED",
+      "verdict": "VERIFIED",
+      "reason": "A populated current-year Other expenses row supports adding that recorded disclosure. This does not infer a transaction narrative beyond the workbook category.",
+      "evidence": "Pinghu Hestra Trading · J39 = 67,786,656 VND.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "priorLocation": "Previous Local File · Table 8 / Other RPTs",
+      "need": "Other-expense transaction disclosure"
+    },
+    {
+      "id": "on-behalf",
+      "title": "Payment-on-behalf classification",
+      "section": "4 · Related-party transactions",
+      "type": "REVIEW_REQUIRED",
+      "before": "No separate payment-on-behalf row in prior Other RPTs table",
+      "after": "Review direction and placement · VND 1,470,922,374",
+      "source": "appendix",
+      "location": "III. Summary-RPTs!C51, E51, L51, C53, L53",
+      "classification": "SOURCE_VERIFIED",
+      "verdict": "REVIEW_REQUIRED",
+      "reason": "A current value exists, but the row label and subtotal placement need interpretation. Do not infer the payment direction or combine this value with operating expense.",
+      "evidence": "C51 says Payment on behalf for logistics expense; its value feeds the subtotal for related parties paying on the taxpayer’s behalf.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "need": "Confirm payment direction and Local File disclosure placement"
+    },
+    {
+      "id": "ncp",
+      "title": "Net Cost Plus (NCP)",
+      "section": "6 · Economic analysis",
+      "type": "UPDATE_VALUE",
+      "before": "14.18%",
+      "after": "6.08%",
+      "source": "appendix",
+      "location": "FS!D56, D61, D65; IV. Segmented data!C40",
+      "classification": "DERIVED",
+      "verdict": "VERIFIED",
+      "reason": "The workbook contains both the native NCP formula and the financial inputs. Independent arithmetic reproduces 6.084647…%, displayed as 6.08%. This verifies the factual PLI only, not an arm’s-length conclusion.",
+      "evidence": "Net revenue = 194,469,728,040 VND; EBIT = 11,154,109,008 VND; operating costs = 183,315,619,032 VND. The workbook cached result matches the calculation.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The PLI falls from 14.18% to 6.08%. This numerical movement is supported by the workbook. It cannot establish whether 6.08% lies within a current arm’s-length range.",
+      "formula": "FS!D65 = D61 / (D56 − D61)\n11,154,109,008 / 183,315,619,032 × 100\n= 6.0846473786…% → 6.08%\nIV. Segmented data!C40 references FS!D65.\nRounding: 2 decimal places for display.\nNo workbook recalculation engine invoked.",
+      "priorLocation": "Previous Local File · ¶240; formula ¶747–753",
+      "need": "Current-period NCP calculation evidence"
+    },
+    {
+      "id": "entity",
+      "title": "Current English legal entity name",
+      "section": "3 · Company overview",
+      "type": "UPDATE_NARRATIVE",
+      "before": "Hestra Matsuoka Vietnam Co., Ltd.",
+      "after": "Pending authoritative English identity",
+      "source": "appendix",
+      "location": "Full Appendix I!C14–C15; I. Related parties!A3",
+      "classification": "SOURCE_MISSING",
+      "verdict": "SOURCE_CONFLICT",
+      "reason": "The Vietnamese taxpayer field names Hestra Việt Nam, while the English taxpayer and workpaper headings retain Matsuoka. The current English legal name is not unambiguously established.",
+      "evidence": "C14: Công ty TNHH Hestra Việt Nam. C15: Hestra Matsuoka Vietnam Company Limited. The mixed identity fields need reconciliation against registration evidence.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "need": "Current registration certificate / approved English legal name",
+      "priorLocation": "Previous Local File · ¶1"
+    },
+    {
+      "id": "registration",
+      "title": "Company registration amendment",
+      "section": "3 · Company overview",
+      "type": "SOURCE_REQUIRED",
+      "before": "Fifth amendment · 1 June 2023",
+      "after": "Pending current registration evidence",
+      "source": "missing",
+      "location": "No current registration certificate among the three inputs",
+      "classification": "SOURCE_MISSING",
+      "verdict": "SOURCE_MISSING",
+      "reason": "The historical amendment is not proof of the current registration position. The workflow cannot populate an updated amendment date without a current authoritative record.",
+      "evidence": "Prior content is available; no current registration evidence was supplied.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "A historical registration statement may need updating. Request the authoritative amendment record; an expected-output reference cannot supply the evidence.",
+      "priorLocation": "Previous Local File · ¶266",
+      "need": "Current investment registration certificate and amendment record"
+    },
+    {
+      "id": "address",
+      "title": "Current registered / operating address",
+      "section": "3 · Company overview",
+      "type": "SOURCE_REQUIRED",
+      "before": "Lot E-3a · Tan Tien Commune, An Duong District",
+      "after": "Pending address scope confirmation",
+      "source": "appendix",
+      "location": "Full Appendix I!C20–C21",
+      "classification": "SOURCE_MISSING",
+      "verdict": "SOURCE_AMBIGUOUS",
+      "reason": "The workbook supplies Plot D7, Japan–Hai Phong Industrial Park, An Hung Ward. It does not establish whether this is the complete current office address or a different address scope.",
+      "evidence": "The current workbook address differs from the prior office address. A current registration or authoritative office record is required before replacing the Local File address.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "priorLocation": "Previous Local File · ¶267",
+      "need": "Current registered and operating address evidence, with effective date"
+    },
+    {
+      "id": "workforce",
+      "title": "Year-end workforce",
+      "section": "3 · Company overview",
+      "type": "SOURCE_REQUIRED",
+      "before": "404 employees",
+      "after": "Pending FY2024 workforce evidence",
+      "source": "missing",
+      "location": "No current workforce schedule or audited FS narrative supplied",
+      "classification": "SOURCE_MISSING",
+      "verdict": "SOURCE_MISSING",
+      "reason": "The workbook contains financial-statement working data, but it is not the full audited financial statements or an authoritative workforce schedule. No current headcount was established.",
+      "evidence": "404 employees is a historical FY2023 observation only.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "priorLocation": "Previous Local File · ¶310",
+      "need": "FY2024 audited workforce disclosure or authoritative HR schedule"
+    },
+    {
+      "id": "benchmark",
+      "title": "Current benchmark & arm’s-length conclusion",
+      "section": "6 · Economic analysis",
+      "type": "SOURCE_REQUIRED",
+      "before": "13 comparables · 2020–2022 WA data",
+      "after": "Pending current benchmark study",
+      "source": "missing",
+      "location": "No current benchmarking search, comparables or financial-data pack supplied",
+      "classification": "SOURCE_MISSING",
+      "verdict": "SOURCE_MISSING",
+      "reason": "Prior-year comparable companies cannot verify the current population, data period or conclusion. NCP evidence does not fill this separate requirement.",
+      "evidence": "Historical analysis: 13 comparables and 2020–2022 weighted-average data. A current search and comparability analysis are required.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "priorLocation": "Previous Local File · ¶234–240",
+      "need": "Current benchmarking search, selection matrix and comparable financials"
+    },
+    {
+      "id": "far",
+      "title": "Organisation / FAR matrix refresh",
+      "section": "5 · Functional analysis",
+      "type": "UPDATE_FIGURE",
+      "before": "Prior organisation and FAR descriptions exist",
+      "after": "Pending current organisation and FAR confirmation",
+      "source": "template",
+      "location": "Template ¶372, ¶787; prior ¶277, ¶581",
+      "classification": "TEMPLATE_REQUIREMENT",
+      "verdict": "REVIEW_REQUIRED",
+      "reason": "The template explicitly requires client-specific adaptation of the FAR matrix and describes local organisation and reporting-line requirements. Prior content alone cannot validate the FY2024 organisation.",
+      "evidence": "Use the current template structure, then obtain a current organisation chart and confirmation of functions, assets, risks and business strategy.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "need": "FY2024 organisation chart, reporting lines and FAR/business-strategy confirmation",
+      "templateContext": "Adapt the FAR matrix to the client; consider limited information and escalate to the engagement reviewer as needed."
+    },
+    {
+      "id": "template-contents",
+      "title": "Required Local File contents appendix",
+      "section": "Appendices · Template alignment",
+      "type": "INSERT_NEW_TEMPLATE_SECTION",
+      "before": "Prior Appendix A: regulatory overview",
+      "after": "Insert required Local File contents section",
+      "source": "template",
+      "location": "Template ¶780–787",
+      "classification": "TEMPLATE_REQUIREMENT",
+      "verdict": "VERIFIED",
+      "reason": "The current template contains a List of contents required to be included in the Local File section. A structural insertion is supported; unresolved client facts inside it remain placeholders.",
+      "evidence": "Structure-only scope: insert the section heading and requirement checklist. It does not certify that each requirement is satisfied.",
+      "risk": "Low",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "need": "Current required template structure",
+      "priorLocation": "Previous Local File · Appendix A"
+    },
+    {
+      "id": "regulatory",
+      "title": "Current template regulatory references",
+      "section": "1 · Introduction",
+      "type": "UPDATE_NARRATIVE",
+      "before": "Decree 132 reference",
+      "after": "Refer to Decree 132 and Decree 20/2025",
+      "source": "template",
+      "location": "Template ¶75, ¶89",
+      "classification": "TEMPLATE_REQUIREMENT",
+      "verdict": "VERIFIED",
+      "reason": "The master template expressly includes both regulatory references. Approval is limited to aligning that wording with the supplied template, not independently interpreting the law.",
+      "evidence": "Template wording identifies Decree 20/2025/ND-CP dated 10 February 2025 as an amendment to Decree 132.",
+      "risk": "Low",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "need": "Supplied current template wording"
+    },
+    {
+      "id": "guidance",
+      "title": "Remove selected template instruction box",
+      "section": "5 · Functional analysis",
+      "type": "REMOVE_TEMPLATE_GUIDANCE",
+      "before": "Client-adaptation instructions in gray guidance box",
+      "after": "Remove the instruction box; retain section and unresolved content",
+      "source": "template",
+      "location": "Template ¶372 · FAR matrix instruction block",
+      "classification": "TEMPLATE_REQUIREMENT",
+      "verdict": "VERIFIED",
+      "reason": "The selected text addresses the preparer and is template guidance. Remove this exact instruction block only; do not delete the underlying FAR evidence requirement.",
+      "evidence": "Selected excerpt: “You will need to modify/adopt the matrix below for your client accordingly.” Client-specific yellow fields still require supported replacement.",
+      "risk": "Low",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "need": "Template guidance classification"
+    },
+    {
+      "id": "obsolete",
+      "title": "Prior benchmark narrative retention",
+      "section": "6 · Economic analysis",
+      "type": "REMOVE_OBSOLETE_PRIOR_CONTENT",
+      "before": "FY2023 comparable-company search narrative",
+      "after": "Pending replacement study; do not copy as FY2024",
+      "source": "prior",
+      "location": "Previous Local File · ¶754–761",
+      "classification": "PRIOR_YEAR_ONLY",
+      "verdict": "REVIEW_REQUIRED",
+      "reason": "The old search narrative is period-specific. It cannot simply be relabeled FY2024, but removing it without a replacement leaves a mandatory section incomplete.",
+      "evidence": "Hold this proposed removal until the current benchmark section has authoritative replacement content.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "need": "Current benchmark narrative and completeness review"
+    },
+    {
+      "id": "remove-hungary",
+      "title": "Prior Hungary raw-material sales row",
+      "section": "4 · Related-party transactions",
+      "type": "REMOVE_TRANSACTION",
+      "before": "Hestra Hungary · VND 503,789,089",
+      "after": "Pending confirmation before removing prior counterparty row",
+      "source": "appendix",
+      "location": "III. Summary-RPTs!C18–C19; prior ¶405–407",
+      "classification": "SOURCE_MISSING",
+      "verdict": "REVIEW_REQUIRED",
+      "reason": "The current summary lists Cambodia sales; absence of a separate Hungary row is not conclusive proof that the prior transaction category must be removed.",
+      "evidence": "Request transaction completeness confirmation. Do not infer a zero value from an absent row.",
+      "risk": "High",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "need": "Current transaction completeness and counterparty confirmation"
+    },
+    {
+      "id": "product",
+      "title": "Product description · carry-forward candidate",
+      "section": "3 · Company overview",
+      "type": "UNCHANGED",
+      "before": "Production of gloves",
+      "after": "Production of gloves · historical context only",
+      "source": "prior",
+      "location": "Previous Local File · ¶268–270",
+      "classification": "PRIOR_YEAR_ONLY",
+      "verdict": "REVIEW_REQUIRED",
+      "reason": "Stable wording is available as historical content. No automated current-year assertion or mutation is proposed.",
+      "evidence": "Prior description includes leather, sports and other gloves. Business continuity still needs current confirmation.",
+      "risk": "Low",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "mutates": false,
+      "mandatory": false,
+      "need": "Current business continuity confirmation"
+    },
+    {
+      "id": "protected",
+      "title": "Content outside the approved scope",
+      "section": "Document-wide · Protection",
+      "type": "DO_NOT_CHANGE",
+      "before": "All unapproved document content",
+      "after": "Preserve unchanged",
+      "source": "template",
+      "location": "Prototype protected-scope policy; master template structure",
+      "classification": "TEMPLATE_REQUIREMENT",
+      "verdict": "VERIFIED",
+      "reason": "All native content outside the exact approved target remains protected in the simulation. This is a governance constraint, not extracted business evidence.",
+      "evidence": "Any simulated unrelated content change causes independent validation failure and quarantine.",
+      "risk": "Low",
+      "decision": "PENDING",
+      "ai": "The cited input appears relevant to this business concept. Confirm the period and meaning before making an explicit review decision.",
+      "mutates": false,
+      "mandatory": false
+    }
+  ],
+  "requirements": [
+    "processing",
+    "ncp",
+    "entity",
+    "registration",
+    "address",
+    "workforce",
+    "benchmark",
+    "far",
+    "template-contents",
+    "on-behalf",
+    "remove-hungary"
+  ],
+  "golden": {
+    "filename": "HMV-26-Final-Local File for FY2024-EN-R2901KPMG.docx",
+    "role": "EXPECTED_OUTPUT_REFERENCE_ONLY"
+  },
+  "oracle": [
+    {
+      "change_id": "period",
+      "expected": "FY2024",
+      "location": "Golden ¶3",
+      "classification": "GOLDEN_REFERENCE_ONLY"
+    },
+    {
+      "change_id": "processing",
+      "expected": "VND 193,729,728,552",
+      "location": "Golden Table 7",
+      "classification": "GOLDEN_REFERENCE_ONLY"
+    },
+    {
+      "change_id": "ncp",
+      "expected": "6.08%",
+      "location": "Golden ¶241",
+      "classification": "GOLDEN_REFERENCE_ONLY"
+    },
+    {
+      "change_id": "entity",
+      "expected": "Hestra Vietnam Limited Liability Company",
+      "location": "Golden ¶1",
+      "classification": "GOLDEN_REFERENCE_ONLY"
+    },
+    {
+      "change_id": "registration",
+      "expected": "Sixth amendment · 05 March 2025",
+      "location": "Golden ¶256",
+      "classification": "GOLDEN_REFERENCE_ONLY"
+    },
+    {
+      "change_id": "address",
+      "expected": "Lot E-3A and Lot D7, Japanese Industrial Zone – Hai Phong, Hong An Ward, Hai Phong City, Vietnam",
+      "location": "Golden ¶257",
+      "classification": "GOLDEN_REFERENCE_ONLY"
+    },
+    {
+      "change_id": "workforce",
+      "expected": "403 employees",
+      "location": "Golden ¶300",
+      "classification": "GOLDEN_REFERENCE_ONLY"
+    },
+    {
+      "change_id": "benchmark",
+      "expected": "10 comparables · 2021–2023 WA data",
+      "location": "Golden ¶235–237",
+      "classification": "GOLDEN_REFERENCE_ONLY"
+    }
+  ],
+  "factMatrix": [
+    {
+      "ui_fact": "Reporting period",
+      "workflow_proposal": "FY2024",
+      "source_document": "appendix",
+      "source_location": "I. Related parties!A5; III. Summary-RPTs!A5",
+      "golden_expected_output": "FY2024",
+      "ui_classification": "SOURCE_VERIFIED",
+      "system_verdict": "VERIFIED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Provision of processing services",
+      "workflow_proposal": "Pending reconciliation · declared VND 193,729,728,552",
+      "source_document": "appendix",
+      "source_location": "III. Summary-RPTs!C38, E38, H38, O38; Note FS!P374:R374",
+      "golden_expected_output": "VND 193,729,728,552",
+      "ui_classification": "SOURCE_MISSING",
+      "system_verdict": "SOURCE_CONFLICT",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Purchase of raw materials and tools",
+      "workflow_proposal": "VND 2,956,409,617",
+      "source_document": "appendix",
+      "source_location": "III. Summary-RPTs!C18, E18, J18",
+      "golden_expected_output": null,
+      "ui_classification": "SOURCE_VERIFIED",
+      "system_verdict": "VERIFIED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Sales of raw materials · Cambodia",
+      "workflow_proposal": "VND 739,999,488",
+      "source_document": "appendix",
+      "source_location": "III. Summary-RPTs!C19, E19, H19",
+      "golden_expected_output": null,
+      "ui_classification": "SOURCE_VERIFIED",
+      "system_verdict": "VERIFIED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Recorded related-party interest transaction",
+      "workflow_proposal": "VND 6,134,596,996",
+      "source_document": "appendix",
+      "source_location": "III. Summary-RPTs!C34, E34, J34",
+      "golden_expected_output": null,
+      "ui_classification": "SOURCE_VERIFIED",
+      "system_verdict": "VERIFIED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Other related-party expenses",
+      "workflow_proposal": "VND 67,786,656",
+      "source_document": "appendix",
+      "source_location": "III. Summary-RPTs!C39, E39, J39",
+      "golden_expected_output": null,
+      "ui_classification": "SOURCE_VERIFIED",
+      "system_verdict": "VERIFIED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Payment-on-behalf classification",
+      "workflow_proposal": "Review direction and placement · VND 1,470,922,374",
+      "source_document": "appendix",
+      "source_location": "III. Summary-RPTs!C51, E51, L51, C53, L53",
+      "golden_expected_output": null,
+      "ui_classification": "SOURCE_VERIFIED",
+      "system_verdict": "REVIEW_REQUIRED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Net Cost Plus (NCP)",
+      "workflow_proposal": "6.08%",
+      "source_document": "appendix",
+      "source_location": "FS!D56, D61, D65; IV. Segmented data!C40",
+      "golden_expected_output": "6.08%",
+      "ui_classification": "DERIVED",
+      "system_verdict": "VERIFIED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Current English legal entity name",
+      "workflow_proposal": "Pending authoritative English identity",
+      "source_document": "appendix",
+      "source_location": "Full Appendix I!C14–C15; I. Related parties!A3",
+      "golden_expected_output": "Hestra Vietnam Limited Liability Company",
+      "ui_classification": "SOURCE_MISSING",
+      "system_verdict": "SOURCE_CONFLICT",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Company registration amendment",
+      "workflow_proposal": "Pending current registration evidence",
+      "source_document": "missing",
+      "source_location": "No current registration certificate among the three inputs",
+      "golden_expected_output": "Sixth amendment · 05 March 2025",
+      "ui_classification": "SOURCE_MISSING",
+      "system_verdict": "SOURCE_MISSING",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Current registered / operating address",
+      "workflow_proposal": "Pending address scope confirmation",
+      "source_document": "appendix",
+      "source_location": "Full Appendix I!C20–C21",
+      "golden_expected_output": "Lot E-3A and Lot D7, Japanese Industrial Zone – Hai Phong, Hong An Ward, Hai Phong City, Vietnam",
+      "ui_classification": "SOURCE_MISSING",
+      "system_verdict": "SOURCE_AMBIGUOUS",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Year-end workforce",
+      "workflow_proposal": "Pending FY2024 workforce evidence",
+      "source_document": "missing",
+      "source_location": "No current workforce schedule or audited FS narrative supplied",
+      "golden_expected_output": "403 employees",
+      "ui_classification": "SOURCE_MISSING",
+      "system_verdict": "SOURCE_MISSING",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Current benchmark & arm’s-length conclusion",
+      "workflow_proposal": "Pending current benchmark study",
+      "source_document": "missing",
+      "source_location": "No current benchmarking search, comparables or financial-data pack supplied",
+      "golden_expected_output": "10 comparables · 2021–2023 WA data",
+      "ui_classification": "SOURCE_MISSING",
+      "system_verdict": "SOURCE_MISSING",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Organisation / FAR matrix refresh",
+      "workflow_proposal": "Pending current organisation and FAR confirmation",
+      "source_document": "template",
+      "source_location": "Template ¶372, ¶787; prior ¶277, ¶581",
+      "golden_expected_output": null,
+      "ui_classification": "TEMPLATE_REQUIREMENT",
+      "system_verdict": "REVIEW_REQUIRED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Required Local File contents appendix",
+      "workflow_proposal": "Insert required Local File contents section",
+      "source_document": "template",
+      "source_location": "Template ¶780–787",
+      "golden_expected_output": null,
+      "ui_classification": "TEMPLATE_REQUIREMENT",
+      "system_verdict": "VERIFIED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Current template regulatory references",
+      "workflow_proposal": "Refer to Decree 132 and Decree 20/2025",
+      "source_document": "template",
+      "source_location": "Template ¶75, ¶89",
+      "golden_expected_output": null,
+      "ui_classification": "TEMPLATE_REQUIREMENT",
+      "system_verdict": "VERIFIED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Remove selected template instruction box",
+      "workflow_proposal": "Remove the instruction box; retain section and unresolved content",
+      "source_document": "template",
+      "source_location": "Template ¶372 · FAR matrix instruction block",
+      "golden_expected_output": null,
+      "ui_classification": "TEMPLATE_REQUIREMENT",
+      "system_verdict": "VERIFIED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Prior benchmark narrative retention",
+      "workflow_proposal": "Pending replacement study; do not copy as FY2024",
+      "source_document": "prior",
+      "source_location": "Previous Local File · ¶754–761",
+      "golden_expected_output": null,
+      "ui_classification": "PRIOR_YEAR_ONLY",
+      "system_verdict": "REVIEW_REQUIRED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Prior Hungary raw-material sales row",
+      "workflow_proposal": "Pending confirmation before removing prior counterparty row",
+      "source_document": "appendix",
+      "source_location": "III. Summary-RPTs!C18–C19; prior ¶405–407",
+      "golden_expected_output": null,
+      "ui_classification": "SOURCE_MISSING",
+      "system_verdict": "REVIEW_REQUIRED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Product description · carry-forward candidate",
+      "workflow_proposal": "Production of gloves · historical context only",
+      "source_document": "prior",
+      "source_location": "Previous Local File · ¶268–270",
+      "golden_expected_output": null,
+      "ui_classification": "PRIOR_YEAR_ONLY",
+      "system_verdict": "REVIEW_REQUIRED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Content outside the approved scope",
+      "workflow_proposal": "Preserve unchanged",
+      "source_document": "template",
+      "source_location": "Prototype protected-scope policy; master template structure",
+      "golden_expected_output": null,
+      "ui_classification": "TEMPLATE_REQUIREMENT",
+      "system_verdict": "VERIFIED",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Expected output: Reporting period",
+      "source_document": "golden",
+      "source_location": "Golden ¶3",
+      "golden_expected_output": "FY2024",
+      "ui_classification": "GOLDEN_REFERENCE_ONLY",
+      "system_verdict": "NOT_WORKFLOW_EVIDENCE",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Expected output: Provision of processing services",
+      "source_document": "golden",
+      "source_location": "Golden Table 7",
+      "golden_expected_output": "VND 193,729,728,552",
+      "ui_classification": "GOLDEN_REFERENCE_ONLY",
+      "system_verdict": "NOT_WORKFLOW_EVIDENCE",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Expected output: Net Cost Plus (NCP)",
+      "source_document": "golden",
+      "source_location": "Golden ¶241",
+      "golden_expected_output": "6.08%",
+      "ui_classification": "GOLDEN_REFERENCE_ONLY",
+      "system_verdict": "NOT_WORKFLOW_EVIDENCE",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Expected output: Current English legal entity name",
+      "source_document": "golden",
+      "source_location": "Golden ¶1",
+      "golden_expected_output": "Hestra Vietnam Limited Liability Company",
+      "ui_classification": "GOLDEN_REFERENCE_ONLY",
+      "system_verdict": "NOT_WORKFLOW_EVIDENCE",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Expected output: Company registration amendment",
+      "source_document": "golden",
+      "source_location": "Golden ¶256",
+      "golden_expected_output": "Sixth amendment · 05 March 2025",
+      "ui_classification": "GOLDEN_REFERENCE_ONLY",
+      "system_verdict": "NOT_WORKFLOW_EVIDENCE",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Expected output: Current registered / operating address",
+      "source_document": "golden",
+      "source_location": "Golden ¶257",
+      "golden_expected_output": "Lot E-3A and Lot D7, Japanese Industrial Zone – Hai Phong, Hong An Ward, Hai Phong City, Vietnam",
+      "ui_classification": "GOLDEN_REFERENCE_ONLY",
+      "system_verdict": "NOT_WORKFLOW_EVIDENCE",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Expected output: Year-end workforce",
+      "source_document": "golden",
+      "source_location": "Golden ¶300",
+      "golden_expected_output": "403 employees",
+      "ui_classification": "GOLDEN_REFERENCE_ONLY",
+      "system_verdict": "NOT_WORKFLOW_EVIDENCE",
+      "golden_is_evidence": false
+    },
+    {
+      "ui_fact": "Expected output: Current benchmark & arm’s-length conclusion",
+      "source_document": "golden",
+      "source_location": "Golden ¶235–237",
+      "golden_expected_output": "10 comparables · 2021–2023 WA data",
+      "ui_classification": "GOLDEN_REFERENCE_ONLY",
+      "system_verdict": "NOT_WORKFLOW_EVIDENCE",
+      "golden_is_evidence": false
+    }
+  ],
+  "inspection_method": "Read-only OOXML extraction and openpyxl formula/cached-value inspection. Display values independently checked. No Docling or replay engine invoked.",
+  "changeTypeVocabulary": [
+    "UNCHANGED",
+    "UPDATE_VALUE",
+    "UPDATE_NARRATIVE",
+    "INSERT_NEW_TEMPLATE_SECTION",
+    "REMOVE_TEMPLATE_GUIDANCE",
+    "REMOVE_OBSOLETE_PRIOR_CONTENT",
+    "UPDATE_TABLE",
+    "ADD_TRANSACTION",
+    "REMOVE_TRANSACTION",
+    "UPDATE_FIGURE",
+    "SOURCE_REQUIRED",
+    "REVIEW_REQUIRED",
+    "DO_NOT_CHANGE"
+  ]
+}</script>
+<script>
+'use strict';
+const F=JSON.parse(document.getElementById('fixture').textContent);
+const clone=x=>JSON.parse(JSON.stringify(x));
+const state={area:'Overview',global:'Workspaces',selected:'processing',tab:'Evidence',doc:'prior',preview:'Before / After',filter:'All verdicts',section:'All sections',source:'All sources',search:'',changes:clone(F.changes),decisions:[],audit:[],sealed:null,authorizationHistory:[],output:null,outputHistory:[],run:0,scenario:'NORMAL',reviewer:'Local reviewer',dense:false,requests:[],uploads:[],busy:false,view:'Summary'};
+const $=s=>document.querySelector(s), esc=x=>String(x??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const byId=id=>state.changes.find(c=>c.id===id), selected=()=>byId(state.selected), doc=id=>F.documents.find(d=>d.id===id), now=()=>new Date().toISOString();
+const pretty=s=>s.replaceAll('_',' ').toLowerCase().replace(/^./,c=>c.toUpperCase());
+function tone(s){return ['VERIFIED','SUFFICIENT','APPROVED','PASS','MATCHED','APPLIED'].includes(s)?'good':['SOURCE_MISSING','REVIEW_REQUIRED','PENDING','WITHHELD','PARTIALLY_COMPLETED','DEFERRED','SOURCE_REQUESTED','AWAITING_REASSESSMENT'].includes(s)?'warn':['SOURCE_CONFLICT','SOURCE_AMBIGUOUS','SOURCE_STALE','SOURCE_NOT_AUTHORITATIVE','REJECTED','FAILED','INVALIDATED','QUARANTINED'].includes(s)?'bad':'blue'}
+function pill(s,label){return `<span class="pill ${tone(s)}"><span class="dot"></span>${esc(label||pretty(s))}</span>`}
+function button(label,action,cls='',extra=''){return `<button class="${cls}" data-action="${action}" ${extra}>${label}</button>`}
+function decision(c){return c.decision||'PENDING'}
+function eligible(c){return c.verdict==='VERIFIED'&&decision(c)==='APPROVED'&&c.mutates!==false}
+function approvalList(){return state.changes.filter(eligible)}
+function blockers(){return state.changes.filter(c=>c.mandatory!==false&&c.verdict!=='VERIFIED')}
+function addEvent(type,title,detail,object=null){const prev=state.audit.at(-1);state.audit.push({event_id:'demo-event-'+String(state.audit.length+1).padStart(4,'0'),occurred_at:now(),type,title,detail,actor:type==='USER_ACTION'?state.reviewer:'Local prototype',object_ref:object,causation_event_id:prev?.event_id||null,simulation:true});}
+function seedAudit(){addEvent('WORKSPACE_CREATED','FY2024 Local File workspace opened','Three workflow inputs; expected-output reference isolated.');F.documents.forEach(d=>addEvent(d.id==='prior'?'PRIOR_YEAR_OBSERVATION':d.id==='template'?'TEMPLATE_TARGET':'SOURCE_OBSERVATION',d.label+' inspected',d.inspection+' · Source file was not modified.',d.id));addEvent('AI_SEMANTIC_ASSESSMENT','Illustrative semantic explanations prepared','Static authored explanations. No model or external AI API invoked.');state.changes.forEach(c=>addEvent('SYSTEM_VERDICT',c.title+': '+c.verdict,c.reason,c.id));}
+seedAudit();
+function stats(){return {total:state.changes.filter(c=>c.mutates!==false).length,verified:state.changes.filter(c=>c.verdict==='VERIFIED'&&c.mutates!==false).length,blocked:blockers().length,approved:approvalList().length}}
+function head(title,subtitle,actions=''){return `<div class="breadcrumb">Workspaces <span class="arrow"> / </span> HMV <span class="arrow"> / </span> Local File FY2024</div><div class="page-head"><div><h1>${title}</h1><p class="subtitle">${subtitle}</p></div><div class="row">${actions}</div></div>`}
+function renderNav(){const names=['Home','Workspaces','History','Settings'];$('.global').innerHTML=names.map(n=>button(n,'global',n===state.global?'active':'',`data-id="${n}"`)).join('');const areas=[['Overview','◫'],['Documents','▤'],['Sources','◉'],['Document Changes','⇄'],['Review','✓'],['Approved Changes','▣'],['Validation','◇'],['Audit','≡']];$('#sidebar').innerHTML=`<div class="workspace-label"><div class="row"><span class="workspace-icon">HMV</span><div><strong>Local File FY2024</strong><div class="muted smalltext">Vietnam · Transfer pricing</div></div></div></div><nav class="side-nav" aria-label="Workspace areas">${areas.map(([n,i])=>`<button data-action="nav" data-id="${n}" class="${n===state.area&&state.global==='Workspaces'?'active':''}"><span class="nav-symbol">${i}</span>${n}${n==='Review'?`<span class="nav-count">${state.changes.filter(c=>decision(c)==='PENDING'&&c.mutates!==false).length}</span>`:''}${n==='Sources'?`<span class="nav-count">${blockers().length}</span>`:''}</button>`).join('')}</nav><div class="source-rail"><div class="eyebrow">Workflow inputs · 3</div>${F.documents.map(d=>`<button data-action="document" data-id="${d.id}"><span class="file-icon ${d.type.toLowerCase()}">${d.type==='XLSX'?'X':'W'}</span><span>${d.short}<br><span class="muted" style="font-size:10px">${d.period} · ${d.shortRole}</span></span></button>`).join('')}</div><div class="rail-footer"><div class="row"><span class="dot" style="color:#4d8870"></span> Session held in this browser</div><p style="margin-top:8px">Missing evidence stays blocked.<br>Approval never supplies evidence.</p>${button('Workspace settings','global','small ghost', 'data-id="Settings"')}</div>`;}
+function render(){renderNav();const views={Overview:overview,Documents:documents,Sources:sources,'Document Changes':changes,Review:changes,'Approved Changes':approved,Validation:validation,Audit:audit};$('#main').innerHTML=state.global==='Workspaces'?views[state.area]():globalView();if(state.dense)document.body.classList.add('reduced-density');else document.body.classList.remove('reduced-density');}
+function overview(){const s=stats();return head('Prepare the FY2024 Local File','HMV · Master template + prior-year content + current-year Appendix I',button('Review changes →','nav','primary','data-id="Review"'))+`<div class="stats"><div class="card stat"><div class="muted smalltext">Proposed changes</div><div class="number">${s.total}</div><div class="foot">Across business facts and template structure</div></div><div class="card stat"><div class="muted smalltext">Evidence verified</div><div class="number" style="color:var(--green)">${s.verified}</div><div class="foot">Ready for an explicit reviewer decision</div></div><div class="card stat"><div class="muted smalltext">Source & review blockers</div><div class="number" style="color:var(--amber)">${s.blocked}</div><div class="foot">Whole-document release remains withheld</div></div><div class="card stat"><div class="muted smalltext">Approved mutations</div><div class="number">${s.approved}<span style="font-size:15px;color:var(--muted)"> / ${s.verified}</span></div><div class="foot">${state.output?'Staged output available for inspection':'No original document has been changed'}</div></div></div><div class="overview-grid"><div class="stack"><section class="card"><div class="card-head"><h3>Your attention is needed</h3>${pill('WITHHELD','Release withheld')}</div><div class="card-pad"><p class="muted" style="font-size:13px">The supported financial updates can move forward independently. Current company records and benchmarking evidence are still needed to finish the Local File.</p><div class="notice" style="margin-top:17px"><strong>Current benchmarking is missing</strong>The workbook supports a factual NCP of 6.08%. It does not establish the current comparable-company set or an arm’s-length conclusion.</div></div>${['benchmark','entity','registration'].map(id=>{const c=byId(id);return `<div class="list-row actionable" role="button" tabindex="0" data-action="select" data-id="${id}"><div class="spacer"><div class="title">${c.title}</div><div class="sub">${c.section} · ${c.need}</div></div>${pill(c.verdict)}<span class="arrow">›</span></div>`}).join('')}</section><section class="card"><div class="card-head"><h3>Substantive changes since FY2023</h3>${button('View all','nav','small ghost','data-id="Document Changes"')}</div>${['processing','ncp','template-contents'].map(id=>{const c=byId(id);return `<div class="list-row actionable" role="button" tabindex="0" data-action="select" data-id="${id}"><div class="spacer"><div class="title">${c.title}</div><div class="value-delta"><span class="old">${esc(c.before)}</span><span class="arrow">→</span><span class="new">${esc(c.after)}</span></div><div class="sub">${esc(c.location)}</div></div>${pill(c.verdict)}</div>`}).join('')}</section></div><div class="stack"><section class="card card-pad"><div class="eyebrow">Document readiness</div><h2>Review in progress</h2><p class="muted smalltext" style="margin:10px 0 20px">${s.verified} supported changes. ${s.blocked} unresolved requirements. Approval applies only to the selected, evidenced scope.</p><div class="progress-track"><div class="progress-bar" style="width:${Math.round(s.approved/s.total*100)}%"></div></div><div class="steps"><div class="step done">Sources<br>Inspected</div><div class="step current">Review<br>${s.approved} approved</div><div class="step">Apply<br>${state.output?'Simulated':'Pending'}</div><div class="step">Release<br>Withheld</div></div></section><section class="card"><div class="card-head"><h3>Working document set</h3><span class="muted smalltext">3 inputs</span></div>${F.documents.map(d=>`<div class="list-row actionable" role="button" tabindex="0" data-action="document" data-id="${d.id}"><span class="file-icon ${d.type.toLowerCase()}">${d.type==='XLSX'?'X':'W'}</span><div><div class="title">${d.short}</div><div class="sub">${d.role}</div></div></div>`).join('')}</section><section class="card card-pad"><div class="eyebrow">Intended final deliverable</div><h3>HMV Final Local File FY2024.docx</h3><p class="muted smalltext" style="margin:9px 0 16px">Aligned to the new template, with approved financial updates and unresolved items held outside release.</p>${button('Preview proposed document','output','small')} ${button('Expected-output comparison','expected','small ghost')}</section></div></div>`}
+function filtered(){return state.changes.filter(c=>{const q=state.search.toLowerCase();return(!q||[c.title,c.before,c.after,c.section,c.location].join(' ').toLowerCase().includes(q))&&(state.filter==='All verdicts'||state.filter==='Verified'&&c.verdict==='VERIFIED'||state.filter==='Review required'&&c.verdict==='REVIEW_REQUIRED'||state.filter==='Missing source'&&c.verdict==='SOURCE_MISSING'||state.filter==='Conflict'&&['SOURCE_CONFLICT','SOURCE_AMBIGUOUS'].includes(c.verdict)||state.filter==='High materiality'&&c.risk==='High')&&(state.section==='All sections'||c.section===state.section)&&(state.source==='All sources'||c.source===state.source)}).sort((a,b)=>state.area==='Review'?((b.risk==='High')-(a.risk==='High')||((b.verdict!=='VERIFIED')-(a.verdict!=='VERIFIED'))):0)}
+function options(values,value){const labels={appendix:'Appendix I FY2024',template:'Master Template',prior:'Previous Local File',missing:'No current source'};return values.map(v=>`<option value="${esc(v)}" ${v===value?'selected':''}>${esc(labels[v]||v)}</option>`).join('')}
+function changes(){const items=filtered();return head(state.area==='Review'?'Review queue':'Document changes',state.area==='Review'?'Make a decision with the evidence beside you. Material and blocked items appear first.':'Business changes proposed against the FY2025 master template for the FY2024 Local File.',button('Approved changes','nav','','data-id="Approved Changes"'))+`<div class="toolbar"><label class="sr-only" for="search">Search changes</label><input class="search" id="search" placeholder="Search concepts, amounts or evidence…" value="${esc(state.search)}"><select aria-label="Evidence filter" data-filter="filter">${options(['All verdicts','Verified','Review required','Missing source','Conflict','High materiality'],state.filter)}</select><select aria-label="Section filter" data-filter="section">${options(['All sections',...new Set(state.changes.map(c=>c.section))],state.section)}</select><select aria-label="Source filter" data-filter="source">${options(['All sources','appendix','template','prior','missing'],state.source)}</select>${button('Clear','clear-filters','small')}</div><div class="toolbar-note">${items.length} of ${state.changes.length} items · System evidence, illustrative AI assessment and human decision are distinct.</div><div class="work-grid"><section class="card changes" aria-label="Changes">${items.length?items.map(c=>`<button class="change ${c.id===state.selected?'selected':''}" data-action="select" data-id="${c.id}" aria-pressed="${c.id===state.selected}"><div class="row between"><span class="meta">${esc(c.section)} · ${esc(pretty(c.type))}</span>${c.risk==='High'?'<span class="muted" style="font-size:10px">HIGH MATERIALITY</span>':''}</div><div class="title">${esc(c.title)}</div><div class="value-delta"><span class="old">${esc(c.before)}</span><span class="arrow">→</span><span class="${c.verdict==='VERIFIED'?'new':'muted'}">${esc(c.after)}</span></div><div class="bottom">${pill(c.verdict)}${pill(decision(c))}${c.edited?pill('AWAITING_REASSESSMENT','Reviewer edited'):''}</div></button>`).join(''):'<div class="empty"><h3>No matching changes</h3><p>Adjust or clear the filters.</p></div>'}</section>${inspector()}</div>`}
+function inspector(){const c=selected();return `<aside class="card inspector" id="inspector" aria-label="Change inspector"><div class="inspector-title"><div class="row between"><span class="eyebrow">Change detail</span>${button('Close','close-inspector','small ghost mobile-close')}</div><h3>${esc(c.title)}</h3><div class="row wrap">${pill(c.verdict)}${pill(decision(c))}</div></div><div class="tabs" role="tablist">${['Evidence','Preview','AI','Decision'].map(t=>`<button role="tab" aria-selected="${t===state.tab}" class="${t===state.tab?'active':''}" data-action="tab" data-id="${t}">${t}</button>`).join('')}</div><div class="inspector-body">${inspectorContent(c)}</div><div class="inspector-actions">${button('Approve','decision','primary',`data-id="APPROVED" ${c.verdict!=='VERIFIED'||c.mutates===false?'disabled':''}`)}${button('Reject','decision','',`data-id="REJECTED" ${c.mutates===false?'disabled':''}`)}${button('Edit','decision','',`data-id="EDIT" ${c.mutates===false?'disabled':''}`)}${button('Request source','decision','', 'data-id="SOURCE_REQUESTED"')}${button('Defer','decision','','data-id="DEFERRED"')}${c.verdict!=='VERIFIED'?'<span class="disabled-note">Approval is unavailable until evidence is verified.</span>':''}</div></aside>`}
+function inspectorContent(c){if(state.tab==='AI')return `<div class="notice info"><strong>Illustrative AI assessment</strong>Authored for this prototype. No model was invoked and this explanation grants no authority.</div><div class="field" style="margin-top:20px"><div class="label">Semantic interpretation</div><p>${esc(c.ai)}</p></div><div class="field"><div class="label">System evidence verdict</div>${pill(c.verdict)}<p style="margin-top:10px">${esc(c.reason)}</p></div>${button('Explain this review','assistant','small')}`;if(state.tab==='Decision'){const history=state.decisions.filter(d=>d.change_id===c.id);return `<div class="field"><div class="label">Current reviewer decision</div>${pill(decision(c))}</div>${history.length?history.map(d=>`<div class="audit-mini"><strong>${esc(pretty(d.outcome))}</strong> · ${esc(d.reviewer)}<p>${esc(d.rationale||'No rationale required for this low-risk decision.')}</p>${d.edited_value?`<p>Original: ${esc(d.original_proposal)}<br>Edited: ${esc(d.edited_value)}</p>`:''}<span class="muted">${esc(new Date(d.timestamp).toLocaleString())}</span></div>`).join(''):'<p class="muted smalltext">No decision recorded. High-materiality items require a rationale.</p>'}<div class="notice info" style="margin-top:20px">Each decision appends to history. Edits require a new evidence assessment and invalidate any sealed scope.</div>`}if(state.tab==='Preview')return `<label class="label" for="preview-mode">Document context</label><select id="preview-mode" style="width:100%;margin-bottom:16px">${options(['FY2023','Template','Proposed FY2024','Before / After'],state.preview)}</select>${miniPreview(c)}${button('Expand document','expand-preview','small', 'style="margin-top:15px"')}`;return `<div class="field"><div class="label">FY2023 · Historical</div><div class="content">${esc(c.before)}</div><p class="muted" style="margin-top:6px">${esc(c.priorLocation||'Prior Local File · relevant section')}</p></div><div class="field"><div class="label">Proposed FY2024</div><div class="content ${c.verdict==='VERIFIED'?'proposed':'blocked'}">${esc(c.after)}</div></div><div class="field"><div class="label">System evidence verdict</div>${pill(c.verdict)}<p style="margin-top:10px">${esc(c.reason)}</p></div><div class="field"><div class="label">Source lineage</div><div class="evidence-line"><strong>${esc(c.source==='missing'?'Required source not supplied':doc(c.source)?.label)}</strong><span>${esc(c.location)}</span></div><p>${esc(c.evidence)}</p>${c.formula?`<div class="code-detail" style="margin-top:10px">${esc(c.formula)}</div>`:''}</div><div class="field"><div class="label">Human authority</div><p>${c.risk==='High'?'High materiality · rationale required.':'Explicit reviewer approval required.'} Missing evidence cannot be overridden.</p></div>${button('Technical lineage','technical','small ghost')}`}
+function miniPreview(c){const before=`<div class="label">FY2023</div><p>${esc(c.before)}</p>`,after=`<div class="label">Proposed FY2024 · draft</div>${c.verdict==='VERIFIED'?`<p><mark>${esc(c.after)}</mark></p>`:`<div class="pending">Pending evidence / review. ${esc(c.after)}</div>`}`;return `<article class="paper" style="padding:20px;min-height:240px"><div class="running">HMV · Local File · Context excerpt</div><h3>${esc(c.section)}</h3><h4>${esc(c.title)}</h4>${state.preview==='FY2023'?before:state.preview==='Template'?`<div class="guidance">${esc(c.templateContext||'Use the current master template structure. Replace client-specific fields only after evidence and approval.')}</div><p class="replaceable">Client-specific content · approval required</p>`:state.preview==='Before / After'?before+'<hr style="border:0;border-top:1px solid #ddd;margin:18px 0">'+after:after}<div class="page-foot">Structured preview · not a rendered source page</div></article>`}
+function documents(){const d=doc(state.doc);return head('Document set','Three business inputs, each with a distinct role and authority.',button('Request additional source','upload'))+`<div class="doc-grid"><div class="card"><div class="doc-list">${F.documents.map(d=>`<button class="${d.id===state.doc?'active':''}" data-action="document" data-id="${d.id}"><span class="file-icon ${d.type.toLowerCase()}">${d.type==='XLSX'?'X':'W'}</span><span><strong>${d.short}</strong><br><span class="muted">${d.period} · ${d.type}</span></span></button>`).join('')}</div><div class="doc-meta"><div class="label">Selected input</div><p>${esc(d.filename)}</p><dl><dt>Role</dt><dd>${esc(d.role)}</dd><dt>Authority</dt><dd>${esc(d.authority)}</dd><dt>Period</dt><dd>${esc(d.period)}</dd><dt>State</dt><dd>Inspected · unchanged</dd></dl><p class="muted">${esc(d.inspection)}</p><p style="margin-top:12px">Excerpts are structured from inspection, not a pixel-perfect DOCX rendering.</p></div></div><section class="card"><div class="card-head"><div><h3>${d.label}</h3><p class="muted smalltext">${d.authority}</p></div>${pill('PASS','Inspected')}</div><div class="paper-well">${sourcePaper(d.id)}</div></section></div>`}
+function sourcePaper(id){if(id==='appendix')return `<article class="paper"><div class="running">Appendix I · FY ended 31 December 2024 · Workbook extract</div><h2>Related-party transactions</h2><p class="muted smalltext">III. Summary-RPTs · recorded values in VND · literal inputs and cached formula results inspected</p><table><thead><tr><th>Transaction</th><th>Cell</th><th style="text-align:right">VND</th></tr></thead><tbody>${F.transactions.map(t=>`<tr><td>${esc(t.title)}<div class="sub">${esc(t.party)}</div></td><td>${t.cell}</td><td style="text-align:right;white-space:nowrap">${esc(t.amount)}</td></tr>`).join('')}</tbody></table><div class="pending" style="margin-top:15px">Processing-services reconciliation is blocked: summary H38 records 193,729,728,552 VND, while Note FS!R374 records 196,138,816,993 VND. The client email cited in O38 was not supplied. Do not infer that either value resolves the discrepancy.</div><h3>Profit level indicator</h3><p>FS!D65 = D61 / (D56 − D61)</p><p><mark>11,154,109,008 / (194,469,728,040 − 11,154,109,008) = 6.084647…%</mark></p><p>Displayed to two decimal places: <strong>6.08%</strong>. This factual result does not verify an arm’s-length conclusion.</p><div class="pending">Identity needs review: the Vietnamese taxpayer name and the English taxpayer name are inconsistent. This workbook does not establish the complete English legal name.</div><div class="page-foot">Workbook contains 18 sheets. Relevant extracts only; no recalculation engine invoked.</div></article>`;if(id==='template')return `<article class="paper"><div class="running">MASTER TEMPLATE · Manufacturer · 13 June 2025 · Structured excerpt</div><h2>Local File for FY20XX</h2><p class="replaceable">Client-specific fields are highlighted in the source template.</p><h3>1. Introduction</h3><p>The template references Decree 132 and Decree 20/2025. Entity and period fields require governed replacement.</p><h3>5. Functional analysis</h3><div class="guidance">The FAR matrix must be adapted to the client. Limited information may require changing the matrix or consulting the engagement reviewer. Guidance only — exclude from final content.</div><h3>Appendix · Required Local File contents</h3><p>Management structure, local organisation chart and reporting lines, including where management is based.</p><div class="page-foot">Source locations: ¶75, ¶89, ¶372, ¶780, ¶787. Gray boxes are instructions; yellow fields are replaceable.</div></article>`;return `<article class="paper"><div class="running">Hestra Matsuoka Vietnam Co., Ltd · Local File FY2023</div><h2>3. Company overview</h2><h3>3.1 Company background</h3><p>The fifth registration amendment was dated 1 June 2023.</p><p>Lot E-3a, Japanese Industrial Zone – Hai Phong, Tan Tien Commune, An Duong District, Hai Phong City, Vietnam.</p><p>At 31 December 2023, the company had <mark>404 employees</mark>.</p><h3>4. Related-party transactions</h3><table><tr><th>Transaction</th><th>Related party</th><th>VND</th></tr><tr><td>Provision of processing services</td><td>MMAB</td><td>207,324,199,532</td></tr></table><h3>6. Economic analysis</h3><p>NCP: <mark>14.18%</mark>. The historical analysis used 13 comparables and 2020–2022 weighted-average data.</p><div class="page-foot">Historical authority only · ¶266–267, ¶310, Table 7, ¶234–240</div></article>`}
+function sources(){const ids=F.requirements;return head('Sources & sufficiency','See which facts the supplied documents can support, and what still needs to be provided.',button('Provide source','upload','primary'))+`<div class="notice info" style="margin-bottom:20px"><strong>Period, authority and completeness are separate checks</strong>FY2024 figures do not establish current registration, workforce or benchmarking facts. Uploading a source creates an intake record; it never grants automatic verification.</div><section class="card table-scroll"><table class="requirements"><thead><tr><th>Business requirement / section</th><th>Required period</th><th>Available evidence & authority</th><th>Outcome</th><th></th></tr></thead><tbody>${ids.map(id=>{const c=byId(id);return `<tr><td><strong>${esc(c.need||c.title)}</strong><div class="sub">${esc(c.section)}</div></td><td>FY2024${c.source==='template'?'<div class="sub">Current template</div>':''}</td><td>${esc(c.source==='missing'?'No source supplied':doc(c.source).short)}<div class="sub">${esc(c.location)}</div><div class="sub">${esc(c.source==='missing'?'Authority not established':doc(c.source).authority)}</div></td><td>${pill(c.verdict==='VERIFIED'?'SUFFICIENT':c.verdict)}${state.requests.some(r=>r.change_id===id)?'<div class="sub">Request recorded</div>':''}</td><td>${button(c.verdict==='VERIFIED'?'Inspect':'Request','requirement','small',`data-id="${id}"`)}</td></tr>`}).join('')}</tbody></table></section><div class="split" style="margin-top:20px"><section class="card card-pad"><h3>Source requests</h3>${state.requests.length?state.requests.map(r=>`<div class="audit-mini"><strong>${esc(byId(r.change_id).title)}</strong><p>${esc(r.requirement)}</p><p class="muted">${esc(r.timestamp)} · Pending intake</p></div>`).join(''):'<p class="muted smalltext" style="margin-top:10px">No source requests recorded in this session.</p>'}</section><section class="card card-pad"><h3>Intake queue · simulation</h3>${state.uploads.length?state.uploads.map(u=>`<div class="audit-mini"><strong>${esc(u.name)}</strong><p>Received for ${esc(byId(u.change_id).title)}. ${pill('AWAITING_REASSESSMENT')}</p><p class="muted">File contents were not read. Authority and period remain unassessed.</p></div>`).join(''):'<p class="muted smalltext" style="margin-top:10px">Additional files remain intake items until assessed. The three inspected workflow inputs are the only evidence sources.</p>'}${button('Explore source exceptions','source-exceptions','small', 'style="margin-top:14px"')}</section></div>`}
+function approved(){const list=approvalList();return head('Approved changes','The exact reviewer-authorized scope. Source blockers are excluded.',button('Create ChangeSet','seal','primary',!list.length?'disabled':''))+`<div class="notice ${state.sealed?.valid?'info':''}" style="margin-bottom:18px"><strong>${state.sealed?(state.sealed.valid?'Sealed scope · '+state.sealed.id:'Previous authorization invalidated'):'No execution authorization sealed'}</strong>${state.sealed?.valid?`${state.sealed.changes.length} immutable demo mutations · target version v1 · review, evidence and payload snapshot retained.`:'Create a ChangeSet after reviewing the eligible changes. Any later edit, rejection or changed authorization scope requires a new ChangeSet.'}</div><section class="card"><div class="card-head"><h3>${list.length} eligible mutations</h3><span class="muted smalltext">${blockers().length} unresolved items excluded</span></div>${list.length?`<div class="table-scroll"><table><thead><tr><th>Target / operation</th><th>Before</th><th>Exact approved payload</th><th>Authority</th></tr></thead><tbody>${list.map(c=>`<tr><td><strong>${esc(c.title)}</strong><div class="sub">${esc(c.section)}</div><div class="sub">${esc(c.type)}</div></td><td>${esc(c.before)}</td><td><strong>${esc(c.after)}</strong><div class="sub">${esc(c.location)}</div></td><td>${pill(c.verdict)}<div style="margin-top:5px">${pill(decision(c))}</div>${button('Review','select','small ghost',`data-id="${c.id}"`)}</td></tr>`).join('')}</tbody></table></div>`:`<div class="empty"><h3>Choose what Foundation may write</h3><p>Approve verified changes in the review queue. Missing-source items cannot enter this list.</p>${button('Open review queue','nav','primary','data-id="Review"')}</div>`}</section><div class="row between wrap" style="margin-top:20px"><p class="muted smalltext">Execution uses the sealed snapshot. No free-form payload overrides.</p>${button('Execute Approved Changes','execute','primary',!state.sealed?.valid?'disabled':'')}</div><section class="card" style="margin-top:24px"><div class="card-head"><h3>Excluded from authorization</h3>${pill('WITHHELD','Release withheld')}</div>${blockers().map(c=>`<div class="list-row"><div class="spacer"><div class="title">${esc(c.title)}</div><div class="sub">${esc(c.need)}</div></div>${pill(c.verdict)}${button('Inspect','select','small ghost',`data-id="${c.id}"`)}</div>`).join('')}</section>`}
+function validation(){const out=state.output;return head('Validation & final output','Independent output checks and the unresolved evidence that controls release.',button('Expected-output comparison','expected'))+`<section class="card"><div class="output-title"><span class="file-icon">W</span><div class="spacer"><h2>HMV Final Local File FY2024.docx</h2><p class="muted smalltext">Intended deliverable · the prototype produces a staged preview, never a DOCX</p></div>${pill(out?.status||'PENDING')}</div><div class="card-pad" style="border-top:1px solid var(--line)"><div class="row wrap between"><p>${out?`${out.applied.length} approved changes simulated · version ${out.version} · ${new Date(out.created_at).toLocaleString()}`:'No execution simulation completed.'}</p>${pill(out?.quarantined?'QUARANTINED':'WITHHELD','Release '+(out?.quarantined?'quarantined':'withheld'))}</div><div class="notice ${out?.quarantined?'bad':''}" style="margin-top:16px"><strong>${out?.quarantined?'Independent validation detected an unauthorized difference':'Whole-document release is withheld'}</strong>${out?.quarantined?'The staged output is quarantined. It cannot be released or presented as a validated document.':`${blockers().length} mandatory source/review blockers remain. A successful approved subset cannot complete the whole task.`}</div></div><div class="tabs">${['Summary','Final preview','Change summary','Exceptions'].map(t=>button(t,'output-tab',state.view===t?'active':'',`data-id="${t}"`)).join('')}</div><div class="card-pad">${state.view==='Final preview'?outputPaper():state.view==='Change summary'?`${out?out.applied.map(c=>`<div class="list-row"><div class="spacer"><strong>${esc(c.title)}</strong><div class="sub">${esc(c.before)} → ${esc(c.after)}</div></div>${pill('APPLIED','Simulated')}</div>`).join(''):'No mutations applied yet.'}`:state.view==='Exceptions'?blockers().map(c=>`<div class="list-row"><div class="spacer"><strong>${esc(c.title)}</strong><div class="sub">${esc(c.need)}</div></div>${pill(c.verdict)}</div>`).join(''):`<div class="split"><div><div class="label">Independent validation · simulated</div><ul class="checklist">${[['Approved payload exactness',out?'PASS':'PENDING'],['Protected regions preserved',out?(out.quarantined?'FAILED':'PASS'):'PENDING'],['Unrelated content unchanged',out?(out.quarantined?'FAILED':'PASS'):'PENDING'],['Input document unchanged',out?'PASS':'PENDING'],['Business completeness','WITHHELD']].map(([l,s])=>`<li><span class="spacer">${l}</span>${pill(s)}</li>`).join('')}</ul><p class="muted smalltext" style="margin-top:12px">Separate validator role checks the simulated output. No Office engine or independent native validator was invoked.</p></div><div><div class="label">Output handling</div><p class="muted smalltext">${out?'Staged content includes only the immutable approved subset. Open exceptions remain visible.':'Review, approve and execute an evidenced subset to inspect the resulting staged state.'}</p><div class="stack" style="margin-top:18px">${button('Open final preview','output-tab','','data-id="Final preview"')}${button('Download staged preview (.html)','download-output','',!out||out.quarantined?'disabled':'')}${button('Export demo audit package (.json)','export')}</div></div></div>`}</div></section>`}
+function outputPaper(){const applied=state.output?.applied||[];return `<div class="paper-well"><article class="paper"><div class="running">HMV · Proposed FY2024 Local File · STAGED / NOT RELEASED</div><h2>Local File</h2><p>For the year ended 31 December 2024</p><div class="pending">${state.output?.quarantined?'QUARANTINED · Validation failed.':'PARTIAL DRAFT · Legal identity, workforce, benchmarking and other source requirements are unresolved.'}</div>${applied.length?applied.map(c=>`<h3>${esc(c.section)} · ${esc(c.title)}</h3><p><mark>${esc(c.after)}</mark></p>`).join(''):'<p>No approved mutations have been applied. Proposed content is available in the review queue.</p>'}<h3>Unresolved sections</h3>${blockers().map(c=>`<p><strong>${esc(c.title)}</strong> — Pending evidence / review. No unsupported current-year value inserted.</p>`).join('')}<div class="page-foot">Simulation preview · no DOCX generated · not suitable for filing</div></article></div>`}
+function audit(){return head('Audit & decision history','An append-only session history of source lineage, judgments and simulated output.',button('Export audit package','export','primary'))+`<section class="card"><div class="card-head"><h3>${state.audit.length} recorded events</h3><span class="muted smalltext">Local session · chronological</span></div><div class="timeline">${state.audit.map(e=>`<div class="event"><div class="event-meta">${esc(e.event_id)} · ${esc(new Date(e.occurred_at).toLocaleTimeString())} · ${esc(e.type)}</div><h4>${esc(e.title)}</h4><p>${esc(e.detail)}</p><div class="event-meta">${esc(e.actor)}${e.causation_event_id?' · follows '+esc(e.causation_event_id):' · root'}</div></div>`).join('')}</div></section>`}
+function globalView(){if(state.global==='Settings')return head('Workspace settings','Local prototype preferences. These do not change the source documents.')+`<section class="card card-pad recent-card"><h3>Reviewer identity</h3><label class="form-label" for="reviewer-name">Name attached to future decisions</label><input id="reviewer-name" value="${esc(state.reviewer)}"> ${button('Save reviewer','save-reviewer','primary')}<p class="muted smalltext" style="margin-top:9px">Previous decisions retain the reviewer name recorded at the time.</p><hr style="border:0;border-top:1px solid var(--line);margin:25px 0"><h3>Display & local session</h3><label class="row" style="margin:16px 0"><input id="density" type="checkbox" ${state.dense?'checked':''}> Compact review rows</label><p class="muted smalltext">State lives in memory. Reloading resets the simulation; export the audit package before closing. No telemetry, network requests or persistent storage.</p><div style="margin-top:20px">${button('Reset local demo','reset','danger')}</div><hr style="border:0;border-top:1px solid var(--line);margin:25px 0"><h3>Demonstrate an exception</h3><p class="muted smalltext" style="margin:9px 0">These are explicit simulated failure conditions, not findings about the source files.</p><label class="form-label" for="scenario">Next execution simulation</label><select id="scenario">${options(['NORMAL','PRECONDITION_FAILED','LOCATOR_NOT_FOUND','MAPPING_AMBIGUITY','VALIDATION_FAILED','BUSINESS_RECONCILIATION_FAILED'],state.scenario)}</select><p class="muted smalltext" style="margin-top:12px">Pre-execution failures apply no changes. Validation failures quarantine the staged output.</p></section>`;if(state.global==='History')return head('Workspace history','Review activity in this local session.')+`<section class="card recent-card"><div class="card-head"><h3>HMV · Local File FY2024</h3>${button('Open audit','nav','small','data-id="Audit"')}</div>${state.decisions.length?state.decisions.slice().reverse().map(d=>`<div class="list-row"><div class="spacer"><strong>${esc(byId(d.change_id).title)}</strong><p class="muted smalltext">${esc(d.reviewer)} · ${esc(new Date(d.timestamp).toLocaleString())}</p></div>${pill(d.outcome)}</div>`).join(''):'<div class="empty">No reviewer decisions recorded yet.</div>'}</section>`;return head('Your workspaces','Document work that needs your judgment.')+`<section class="card recent-card"><div class="card-pad"><div class="row"><span class="workspace-icon">HMV</span><div class="spacer"><h2>Local File FY2024</h2><p class="muted smalltext">Vietnam · Manufacturer · Three inspected inputs</p></div>${pill('WITHHELD','Review in progress')}</div><p class="muted" style="margin:22px 0">${stats().verified} supported changes are ready for review. ${blockers().length} evidence and review requirements prevent release.</p>${button('Continue review →','nav','primary','data-id="Review"')}</div></section>`}
+let toastTimer;function toast(msg){$('#toast').textContent=msg;$('#toast').hidden=false;clearTimeout(toastTimer);toastTimer=setTimeout(()=>$('#toast').hidden=true,4500)}
+let previousFocus;function modal(title,body,footer='',wide=false){previousFocus=document.activeElement;const d=$('#dialog');d.className='dialog'+(wide?' wide':'');d.innerHTML=`<div class="dialog-head"><h2 id="dialog-title">${title}</h2>${button('✕','close','ghost','aria-label="Close dialog"')}</div><div class="dialog-body">${body}</div>${footer?`<div class="dialog-foot">${footer}</div>`:''}`;if(!d.open)d.showModal();}
+function close(){if(state.busy)return;$('#dialog').close();previousFocus?.focus()}
+function invalidate(reason){if(state.sealed?.valid){state.sealed.valid=false;addEvent('AUTHORIZATION_INVALIDATED','Sealed ChangeSet invalidated',reason,state.sealed.id)}}
+function reviewModal(outcome){const c=selected();const needs=outcome==='EDIT'||outcome==='SOURCE_REQUESTED'||c.risk==='High'||['SOURCE_CONFLICT','SOURCE_AMBIGUOUS'].includes(c.verdict);if(outcome==='APPROVED'&&(c.verdict!=='VERIFIED'||c.mutates===false)){toast('Only verified, mutable items can be approved.');return;}state.pendingOutcome=outcome;modal(outcome==='EDIT'?'Edit proposed content':outcome==='SOURCE_REQUESTED'?'Request authoritative source':pretty(outcome)+' · '+c.title,`<div class="notice info"><strong>${esc(c.title)}</strong>${esc(c.after)}</div>${outcome==='EDIT'?`<label class="form-label" for="edited-value">Reviewer-edited proposal</label><textarea id="edited-value">${esc(c.after)}</textarea><p class="muted smalltext">Edited content loses verification and must be reassessed before approval.</p>`:''}${outcome==='SOURCE_REQUESTED'?`<label class="form-label" for="source-requirement">Source requirement · FY2024</label><textarea id="source-requirement">${esc(c.need||'Authoritative evidence supporting the current-year fact, including period and provenance.')}</textarea>`:''}<label class="form-label" for="rationale">Reviewer rationale ${needs?'(required)':'(optional)'}</label><textarea id="rationale" placeholder="Record the evidence considered and the reason for your decision…"></textarea><div id="form-error" class="error-text" role="status"></div><p class="muted smalltext">Recorded as ${esc(state.reviewer)}. Source observations and earlier decisions remain unchanged.</p>`,button('Cancel','close')+button(outcome==='EDIT'?'Save revised proposal':outcome==='SOURCE_REQUESTED'?'Send local request':'Record decision','save-decision','primary'));}
+function saveDecision(){const c=selected(),o=state.pendingOutcome,r=$('#rationale').value.trim(),needs=o==='EDIT'||o==='SOURCE_REQUESTED'||c.risk==='High'||['SOURCE_CONFLICT','SOURCE_AMBIGUOUS'].includes(c.verdict);if(needs&&!r){$('#form-error').textContent='Add a rationale before recording this decision.';$('#rationale').focus();return;}const val=$('#edited-value')?.value.trim(),req=$('#source-requirement')?.value.trim();if(o==='EDIT'&&!val||o==='SOURCE_REQUESTED'&&!req){$('#form-error').textContent='The proposed value or source requirement cannot be empty.';return;}if(o==='APPROVED'&&c.verdict!=='VERIFIED'){toast('Evidence is no longer verified. Approval refused.');return;}invalidate('Reviewer decision or payload changed. New authorization is required.');const record={decision_id:'review-'+(state.decisions.length+1),change_id:c.id,outcome:o,reviewer:state.reviewer,rationale:r,timestamp:now(),original_proposal:F.changes.find(x=>x.id===c.id).after,previous_proposal:c.after,edited_value:val||null};state.decisions.push(record);if(o==='EDIT'){c.after=val;c.edited=true;c.verdict='REVIEW_REQUIRED';c.reason='Reviewer-edited content has not been verified against authoritative evidence. Original source observations are retained.';c.decision='PENDING';}else c.decision=o;if(o==='SOURCE_REQUESTED'){state.requests.push({change_id:c.id,requirement:req,timestamp:record.timestamp});}addEvent('USER_ACTION',pretty(o)+' · '+c.title,r||'Explicit low-risk reviewer decision.',c.id);close();render();toast(o==='SOURCE_REQUESTED'?'Source request recorded locally. Mutation remains blocked.':o==='EDIT'?'Revision saved. Evidence reassessment is required.':'Decision recorded in the audit history.');}
+function showExpected(){addEvent('EXPECTED_OUTPUT_COMPARISON','Expected-output comparison opened','Offline oracle used only for comparison. No source verdict or proposal was changed.');const rows=F.oracle.map(o=>{const c=byId(o.change_id);const status=c.verdict==='VERIFIED'?(c.after===o.expected?'MATCHED':'REVIEW_REQUIRED'):'SOURCE_MISSING';return `<tr><td><strong>${esc(c.title)}</strong><div class="sub">${esc(o.location)}</div></td><td>${c.verdict==='VERIFIED'?esc(c.after):'<strong>Pending evidence / review</strong>'}<div class="sub">${esc(c.verdict)}</div></td><td>${esc(o.expected)}<div class="sub">GOLDEN_REFERENCE_ONLY</div></td><td>${pill(status,status==='MATCHED'?'Expected match':status==='SOURCE_MISSING'?'Expected change unsupported':'Difference to review')}</td></tr>`}).join('');modal('Expected-output comparison',`<div class="notice info"><strong>Offline test oracle · never a workflow source</strong>${esc(F.golden.filename)}<br>Expected values are known only in this comparison. They cannot populate a proposal, satisfy a source requirement or authorize a change.</div><div class="row wrap" style="margin:18px 0"><span class="pill ref">Reference only</span><span class="muted smalltext">Compares the selected material excerpts, not the complete DOCX.</span></div><div class="table-scroll"><table><thead><tr><th>Business concept</th><th>Workflow proposal</th><th>Golden expected state</th><th>Comparison</th></tr></thead><tbody>${rows}</tbody></table></div><div class="notice" style="margin-top:20px"><strong>Withholding unsupported expected content is correct behavior</strong>Registration, address, workforce and benchmark data remain non-executable. A matching NCP does not establish the arm’s-length conclusion.</div><p class="muted smalltext" style="margin-top:15px">Unexpected proposals / missing changes are assessed only within this bounded comparison set. No full-document equivalence is claimed.</p>`,button('Close comparison','close','primary'),true);}
+function technical(){const c=selected();modal('Technical lineage',`<div class="notice info"><strong>Advanced detail · illustrative target identities</strong>Source cell and paragraph references are real inspection locations. Native execution addresses and capabilities below are prototype concepts, not resolved or qualified bindings.</div><div class="code-detail" style="margin-top:16px">Business target: hmv.fy2024.${esc(c.id)}
+Semantic reference: demo-semantic/${esc(c.id)}
+Native locator concept: exact object in target version v1
+Native binding: not created by this prototype
+Source location: ${esc(c.location)}
+Source version: local-inspection-v1 · binary unchanged
+Configuration: local-ui-fixture-v1
+Preflight capability: not executed in this prototype
+Execution precondition: VERIFIED + APPROVED + sealed scope
+Protected scope: all content outside the approved target
+Authorization: simulation only, not a Frozen Contract record</div>`,button('Close','close'));}
+function upload(){modal('Provide an additional source',`<div class="notice info"><strong>Local intake simulation</strong>Only the chosen filename is recorded in memory. File contents are not read or uploaded, and no evidence verdict is upgraded.</div><label class="form-label" for="upload-target">Requirement</label><select id="upload-target" style="width:100%">${state.changes.filter(c=>c.mutates!==false).map(c=>`<option value="${c.id}" ${c.id===state.selected?'selected':''}>${esc(c.title)}</option>`).join('')}</select><label class="form-label" for="source-file">Choose a local source</label><input type="file" id="source-file" accept=".docx,.xlsx,.pdf" style="width:100%"><div id="form-error" class="error-text" role="status"></div>`,button('Cancel','close')+button('Record intake','save-upload','primary'));}
+function sourceExceptions(){modal('Source exception demonstration',`<p class="muted smalltext">Apply an explicit simulated failure to the selected requirement. It can only remove eligibility. Original evidence and prior decisions remain in history.</p><label class="form-label" for="exception-target">Requirement</label><select id="exception-target" style="width:100%">${state.changes.filter(c=>c.mutates!==false).map(c=>`<option value="${c.id}">${esc(c.title)}</option>`).join('')}</select><label class="form-label" for="exception-status">Simulated source outcome</label><select id="exception-status" style="width:100%">${options(['SOURCE_MISSING','SOURCE_STALE','SOURCE_CONFLICT','SOURCE_NOT_AUTHORITATIVE','SOURCE_AMBIGUOUS'],'SOURCE_STALE')}</select><p class="muted smalltext" style="margin-top:12px">A stale source needs a fresh version; a conflict needs reconciliation; an ambiguous or non-authoritative source needs an authoritative replacement. Human approval cannot substitute for those checks.</p>`,button('Cancel','close')+button('Demonstrate exception','apply-source-exception','primary'));}
+function seal(){const list=approvalList();if(!list.length){toast('No verified and approved changes.');return;}modal('Seal approved changes',`<div class="notice info"><strong>${list.length} mutations · explicit approval only</strong>This local ChangeSet snapshots the exact payload, source lineage and reviewer decisions. It is an illustrative UI object, not executable backend authorization.</div><ul class="checklist"><li><span class="check">✓</span>Target template version v1 is locked for the simulation.</li><li><span class="check">✓</span>Every included item is VERIFIED and APPROVED.</li><li><span class="check">✓</span>Protected scope and required validation are preserved.</li><li><span style="color:var(--amber)">!</span>${blockers().length} unresolved requirements remain excluded; release withheld.</li></ul>`,button('Cancel','close')+button('Seal ChangeSet','confirm-seal','primary'));}
+function execute(){if(!state.sealed?.valid){toast('A valid sealed ChangeSet is required.');return;}modal('Execute approved changes · simulation',`<div class="notice info"><strong>No source file will be modified</strong>A staged in-memory output is built from the sealed scope. Independent validation is simulated separately.</div><ul class="checklist"><li>Document / version lock<span class="spacer"></span>${pill('PASS','v1 locked')}</li><li>Target resolution<span class="spacer"></span>${pill('PASS','Exact targets · simulated')}</li><li>Preconditions<span class="spacer"></span>${pill('PASS','Evidence + approval')}</li><li>Protected regions<span class="spacer"></span>${pill('PASS','Outside scope')}</li><li>Approved mutation count<span class="spacer"></span><strong>${state.sealed.changes.length}</strong></li><li>Excluded blocker count<span class="spacer"></span><strong>${blockers().length}</strong></li></ul>${state.scenario!=='NORMAL'?`<div class="notice" style="margin-top:15px"><strong>Injected test condition</strong>${esc(state.scenario)}</div>`:''}`,button('Cancel','close')+button('Start simulation','start-execution','primary'));}
+async function runExecution(){if(state.busy||!state.sealed?.valid)return;const authorization=clone(state.sealed);state.busy=true;state.run++;const run=state.run;addEvent('EXECUTION','Execution simulation requested',authorization.id+' · sealed snapshot only.');const stages=['Preparing staged copy','Resolving targets','Applying approved changes','Preserving document structures','Validating output'];for(let i=0;i<stages.length;i++){modal('Applying the approved scope',`<p class="muted smalltext">Execution simulation ${run} · ${authorization.changes.length} approved mutations</p>${stages.map((s,j)=>`<div class="progress-stage ${j<i?'done':j===i?'active':''}"><span class="stage-no">${j<i?'✓':j+1}</span>${s}</div>`).join('')}<div class="notice info">Staged in-memory preview only. No Office document mutation.</div>`);await new Promise(r=>setTimeout(r,450));if(i===1&&['PRECONDITION_FAILED','LOCATOR_NOT_FOUND','MAPPING_AMBIGUITY'].includes(state.scenario)){const err=state.scenario;invalidate('Simulated execution guard failed: '+err);addEvent('EXECUTION_REFUSED',err,'No mutations applied. No fuzzy target fallback. Existing staged output, if any, is from an earlier run.');state.busy=false;close();render();modal('Execution refused',`<div class="notice bad"><strong>${esc(err)}</strong>The staged operation stopped before mutation. Resolve the condition, re-review the scope and create a new ChangeSet.</div>`,button('Close','close','primary'));return;}}const bad=state.scenario==='VALIDATION_FAILED'||state.scenario==='BUSINESS_RECONCILIATION_FAILED';addEvent('EXECUTION','Approved scope applied in memory',authorization.changes.length+' payloads copied from '+authorization.id);addEvent('VALIDATION',bad?'Independent validation failed':'Independent validation passed for the approved subset',bad?(state.scenario==='VALIDATION_FAILED'?'UNAUTHORIZED_CHANGE_DETECTED · simulated unrelated content change; quarantine required.':'BUSINESS_RECONCILIATION_FAILED · simulated reconciliation failure; quarantine required.'):'Separate simulated validator checked exact payload, protected scope and unrelated content. Source completeness remains blocked.');state.output={version:'staged-v'+run,created_at:now(),authorization_id:authorization.id,applied:clone(authorization.changes),validation:bad?'FAILED':'PASS',quarantined:bad,status:bad?'QUARANTINED':'PARTIALLY_COMPLETED',release:'WITHHELD',simulation:true};state.outputHistory.push(clone(state.output));addEvent('RELEASE_WITHHELD','Document release withheld',blockers().length+' mandatory evidence/review requirements remain. Partial success does not release the whole task.');state.busy=false;close();state.area='Validation';state.global='Workspaces';state.view='Summary';render();toast(bad?'Staged output quarantined by independent validation.':'Approved subset simulated. Whole-document release remains withheld.');}
+function download(name,type,content){const a=document.createElement('a'),u=URL.createObjectURL(new Blob([content],{type}));a.href=u;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(u),1000)}
+function exportAudit(){addEvent('AUDIT_EXPORT','Demo audit package exported','Local download. Includes static evidence matrix, immutable review history and simulated execution state.');download('hmv-fy2024-demo-audit.json','application/json',JSON.stringify({prototype:true,not_a_backend_contract:true,workspace:F.workspace,documents:F.documents,fact_matrix:F.factMatrix,source_observations:F.changes,review_decisions:state.decisions,current_proposals:state.changes,requests:state.requests,intake:state.uploads,authorization:state.sealed,authorization_history:state.authorizationHistory,output:state.output,output_history:state.outputHistory,audit_events:state.audit,oracle_use:'Offline comparison only; never business evidence'},null,2));toast('Demo audit package downloaded locally.');if(state.area==='Audit')render();}
+function assistant(){const c=selected();addEvent('AI_SEMANTIC_ASSESSMENT','Illustrative explanation opened',c.title+' · authored explanation only; no AI execution authority.',c.id);modal('Review assistant',`<div class="notice info"><strong>Illustrative assistance · no live AI</strong>This authored explanation helps interpret the selected item. It cannot change evidence, approve a value or authorize execution.</div><h3 style="margin:20px 0 8px">${esc(c.title)}</h3><p>${esc(c.ai)}</p><div class="field" style="margin-top:20px"><div class="label">What the system can establish</div><p>${esc(c.reason)}</p></div><div class="field"><div class="label">Suggested reviewer action</div><p>${c.verdict==='VERIFIED'?'Inspect the cited input, confirm the scope and record an explicit decision.':'Request '+esc(c.need||'authoritative current-year evidence')+'. Approval cannot fill the evidence gap.'}</p></div>`,button('Inspect evidence','assistant-evidence','primary'));}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b||b.disabled)return;const a=b.dataset.action,id=b.dataset.id;if(state.busy&&a!=='none')return;switch(a){case'menu':$('#sidebar').classList.toggle('open');break;case'global':state.global=id;$('#sidebar').classList.remove('open');render();break;case'nav':state.global='Workspaces';state.area=id;$('#sidebar').classList.remove('open');render();window.scrollTo(0,0);break;case'document':state.global='Workspaces';state.area='Documents';state.doc=id;$('#sidebar').classList.remove('open');render();break;case'select':state.selected=id;state.global='Workspaces';if(!['Document Changes','Review'].includes(state.area))state.area='Review';state.tab='Evidence';render();if(innerWidth<=750)$('#inspector').classList.add('open');break;case'tab':{const mobile=$('#inspector').classList.contains('open');state.tab=id;render();if(mobile)$('#inspector').classList.add('open');break;}case'close-inspector':$('#inspector').classList.remove('open');break;case'clear-filters':state.search='';state.filter='All verdicts';state.section='All sections';state.source='All sources';render();break;case'decision':reviewModal(id);break;case'save-decision':saveDecision();break;case'close':close();break;case'expected':showExpected();break;case'technical':technical();break;case'upload':upload();break;case'save-upload':{const file=$('#source-file').files[0];if(!file){$('#form-error').textContent='Choose a local file to simulate intake.';return;}const target=$('#upload-target').value;state.uploads.push({name:file.name,change_id:target,timestamp:now(),status:'AWAITING_REASSESSMENT'});addEvent('SOURCE_INTAKE','Additional source intake recorded','Filename recorded locally; contents not read. No verdict changed.',target);close();render();toast('Intake recorded. Evidence reassessment remains pending.');break;}case'requirement':state.selected=id;if(byId(id).verdict==='VERIFIED'){state.area='Review';render();}else reviewModal('SOURCE_REQUESTED');break;case'source-exceptions':sourceExceptions();break;case'apply-source-exception':{const c=byId($('#exception-target').value),v=$('#exception-status').value;invalidate('Simulated source sufficiency failure.');c.verdict=v;c.decision='PENDING';c.reason='Explicit demo exception: '+v+'. Original input observations are unchanged; replacement evidence and reassessment are required.';addEvent('SIMULATED_SOURCE_EXCEPTION',v+' · '+c.title,'Injected UI test condition, not an actual source finding.',c.id);close();render();break;}case'seal':seal();break;case'confirm-seal':{if(!approvalList().length){toast('No verified and approved scope remains.');close();return;}const count=state.audit.filter(e=>e.type==='APPROVED_MUTATION').length+1;state.sealed={id:'DEMO-ACS-'+String(count).padStart(3,'0'),valid:true,sealed_at:now(),target_version:'v1',changes:clone(approvalList()),decisions:clone(state.decisions.filter(d=>approvalList().some(c=>c.id===d.change_id))),protected_scope:'All content outside approved targets',required_validation:['Exact payload','Unrelated content unchanged','Protected scope preserved'],simulation:true};state.authorizationHistory.push(clone(state.sealed));addEvent('APPROVED_MUTATION','ChangeSet sealed',state.sealed.changes.length+' verified and approved payloads. Missing-source items excluded.',state.sealed.id);close();render();toast('Approved scope sealed.');break;}case'execute':execute();break;case'start-execution':runExecution();break;case'output':state.global='Workspaces';state.area='Validation';state.view='Final preview';render();break;case'output-tab':state.view=id;render();break;case'download-output':if(state.output&&!state.output.quarantined){addEvent('OUTPUT_EXPORT','Staged HTML preview exported','Simulation only; not DOCX; release withheld.');download('HMV-FY2024-STAGED-PREVIEW.html','text/html','<!doctype html><meta charset="utf-8"><title>HMV FY2024 · STAGED SIMULATION</title><style>body{font:15px/1.7 Georgia;max-width:850px;margin:40px auto;padding:20px}h2,h3{color:#244f90}.pending{background:#fff1d9;padding:15px}mark{background:#edf3ff}</style>'+outputPaper());toast('Staged HTML downloaded. No DOCX was generated.');}break;case'export':exportAudit();break;case'assistant':assistant();break;case'assistant-evidence':close();state.area='Review';state.global='Workspaces';state.tab='Evidence';render();if(innerWidth<=750)$('#inspector').classList.add('open');break;case'expand-preview':modal('Document context · '+selected().title,miniPreview(selected()),button('Close preview','close'),true);break;case'profile':state.global='Settings';render();break;case'save-reviewer':{const n=$('#reviewer-name').value.trim();if(!n){toast('Enter a reviewer name.');return;}state.reviewer=n;addEvent('USER_ACTION','Reviewer identity updated','Applies only to subsequent decisions.');toast('Reviewer saved for future decisions.');break;}case'reset':modal('Reset this local session?',`<p>Reviews, source requests and staged output will be cleared. The source files are unchanged. Export the audit package first if you want to retain this session.</p>`,button('Cancel','close')+button('Export audit','export')+button('Reset demo','confirm-reset','danger'));break;case'confirm-reset':location.reload();break;}});
+document.addEventListener('change',e=>{if(e.target.dataset.filter){state[e.target.dataset.filter]=e.target.value;render();}if(e.target.id==='preview-mode'){const mobile=$('#inspector').classList.contains('open');state.preview=e.target.value;render();if(mobile)$('#inspector').classList.add('open');}if(e.target.id==='density'){state.dense=e.target.checked;render();}if(e.target.id==='scenario'){state.scenario=e.target.value;toast('Next execution condition: '+pretty(state.scenario));}});
+document.addEventListener('input',e=>{if(e.target.id==='search'){const pos=e.target.selectionStart;state.search=e.target.value;render();$('#search').focus();$('#search').setSelectionRange(pos,pos);}});
+document.addEventListener('keydown',e=>{const el=e.target;if((e.key==='Enter'||e.key===' ')&&el.matches('[role="button"][data-action]')){e.preventDefault();el.click();}});
+$('#dialog').addEventListener('cancel',e=>{if(state.busy)e.preventDefault();});
+render();
+</script>
+</body>
+</html>

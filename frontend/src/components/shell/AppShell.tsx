@@ -5,6 +5,7 @@ import { useWorkspaceStore } from '../../state/workspaceStore';
 // Lazy imports — pages
 import { HomePage } from '../../pages/HomePage';
 import { WorkspaceView } from '../workspace/WorkspaceView';
+import { GtpsRealDocDemo } from '../gtps/GtpsRealDocDemo';
 
 export const AppShell: React.FC = () => {
   const { currentView, setCurrentView, restoreSession } = useWorkspaceStore();
@@ -22,6 +23,7 @@ export const AppShell: React.FC = () => {
     switch (currentView) {
       case 'home': return 'home';
       case 'workspace': return 'workspace';
+      case 'gtps-demo': return 'gtps-demo';
       case 'history': return 'history';
       case 'settings': return 'settings';
       default: return 'home';
@@ -41,6 +43,8 @@ export const AppShell: React.FC = () => {
         return <HomePage />;
       case 'workspace':
         return <WorkspaceView />;
+      case 'gtps-demo':
+        return <GtpsRealDocDemo />;
       case 'history':
         return (
           <div className="empty-state">

@@ -1,0 +1,639 @@
+/**
+ * GtpsRealDocDemo.css — v5-lite visual design system, connected mode.
+ * ===================================================================
+ * Mirrors the exact colors, typography, spacing, and proportions of
+ * foundation-document-processing-mvp-v5-lite.html but scoped to the
+ * .gtps-demo container to avoid bleeding into the rest of the app.
+ */
+
+/* ── Design tokens (from v5-lite :root) ── */
+.gtps-demo {
+  --bg: #f7f8fa;
+  --surface: #fff;
+  --line: #e3e7ec;
+  --ink: #172235;
+  --muted: #718095;
+  --blue: #2563eb;
+  --blue2: #eef4ff;
+  --green: #24745d;
+  --green2: #eaf6f0;
+  --amber: #94651c;
+  --amber2: #fff5e2;
+  --red: #ad4747;
+  --red2: #fff0f0;
+  --shadow: 0 8px 28px rgba(25, 38, 57, 0.06);
+
+  font: 13px/1.45 "Segoe UI", Arial, sans-serif;
+  color: var(--ink);
+  background: var(--bg);
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+
+/* ── Top bar ── */
+.gtps-demo .demo-topbar {
+  height: 48px;
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.gtps-demo .demo-topbar .brand-mark {
+  width: 26px;
+  height: 26px;
+  border-radius: 6px;
+  background: #1f5bd8;
+  color: #fff;
+  display: grid;
+  place-items: center;
+  font-weight: 800;
+  font-size: 12px;
+}
+
+.gtps-demo .demo-topbar .title {
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.gtps-demo .demo-topbar .spacer { flex: 1; }
+
+.gtps-demo .demo-badge {
+  display: inline-flex;
+  align-items: center;
+  border: 1px solid #ead19c;
+  background: #fff8e8;
+  color: #7b5618;
+  border-radius: 7px;
+  padding: 4px 8px;
+  font-size: 8.5px;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+}
+
+.gtps-demo .governance-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #c5d2e3;
+  background: #f5f8ff;
+  color: #4a6891;
+  border-radius: 7px;
+  padding: 4px 8px;
+  font-size: 8px;
+  font-weight: 700;
+}
+
+/* ── Shell grid (3-pane: Left rail 20%, Center 52%, Right 28%) ── */
+.gtps-demo .demo-shell {
+  flex: 1;
+  display: grid;
+  grid-template-columns: 300px minmax(400px, 1fr) minmax(380px, 0.85fr);
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Left Rail ── */
+.gtps-demo .demo-rail {
+  background: #fbfcfd;
+  border-right: 1px solid var(--line);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.gtps-demo .railhead {
+  background: var(--surface);
+  border-bottom: 1px solid var(--line);
+  padding: 12px;
+  flex-shrink: 0;
+}
+
+.gtps-demo .eyebrow {
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.75px;
+  color: #8591a2;
+  font-weight: 800;
+}
+
+.gtps-demo .railhead h2 {
+  font-size: 12.5px;
+  margin: 3px 0 0;
+}
+
+.gtps-demo .railbody {
+  overflow-y: auto;
+  padding: 10px;
+  flex: 1;
+  min-height: 0;
+}
+
+.gtps-demo .railtitle {
+  font-size: 8.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.7px;
+  color: #8491a1;
+  font-weight: 800;
+  margin: 10px 2px 7px;
+}
+
+/* ── Document cards in rail ── */
+.gtps-demo .doc-card {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--surface);
+  padding: 9px;
+  margin-bottom: 6px;
+  cursor: pointer;
+  transition: border-color 0.15s;
+}
+
+.gtps-demo .doc-card:hover { border-color: #c0cad7; }
+.gtps-demo .doc-card.active {
+  background: #f5f8ff;
+  border-color: #aabfe9;
+  box-shadow: inset 3px 0 var(--blue);
+}
+
+.gtps-demo .doc-card-row { display: flex; gap: 8px; align-items: flex-start; }
+
+.gtps-demo .file-icon {
+  width: 28px;
+  height: 33px;
+  border: 1px solid #cbd7e8;
+  border-radius: 5px;
+  background: #eef3ff;
+  color: #315fae;
+  display: grid;
+  place-items: center;
+  font-size: 8px;
+  font-weight: 800;
+  flex: 0 0 auto;
+}
+
+.gtps-demo .file-icon.xlsx {
+  background: #edf7f1;
+  color: #2e7358;
+  border-color: #cfe2d7;
+}
+
+.gtps-demo .doc-card strong { display: block; font-size: 10.5px; }
+.gtps-demo .doc-card small { display: block; color: var(--muted); font-size: 8.5px; margin-top: 2px; }
+
+.gtps-demo .role-badge {
+  display: inline-block;
+  color: #596a80;
+  background: #f2f4f7;
+  border-radius: 5px;
+  padding: 2px 5px;
+  font-size: 7.8px;
+  margin-top: 4px;
+}
+
+/* ── Status pills ── */
+.gtps-demo .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 3px 6px;
+  border-radius: 999px;
+  font-size: 8px;
+  font-weight: 750;
+  background: #f0f2f4;
+  color: #657285;
+}
+.gtps-demo .pill::before { content: ''; width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
+.gtps-demo .pill.good { background: var(--green2); color: var(--green); }
+.gtps-demo .pill.warn { background: var(--amber2); color: var(--amber); }
+.gtps-demo .pill.bad { background: var(--red2); color: var(--red); }
+.gtps-demo .pill.blue { background: var(--blue2); color: var(--blue); }
+
+/* ── Summary metrics ── */
+.gtps-demo .summary-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  border: 1px solid var(--line);
+  border-radius: 9px;
+  overflow: hidden;
+  margin-bottom: 9px;
+}
+
+.gtps-demo .summary-grid > div {
+  padding: 8px;
+  border-right: 1px solid var(--line);
+  text-align: center;
+}
+
+.gtps-demo .summary-grid > div:last-child { border-right: 0; }
+.gtps-demo .summary-grid span { display: block; font-size: 7.8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; }
+.gtps-demo .summary-grid strong { display: block; font-size: 15px; margin-top: 2px; }
+
+/* ── Filter toolbar ── */
+.gtps-demo .filter-bar {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.gtps-demo .filter-btn {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 5px 7px;
+  font-size: 8.5px;
+  background: var(--surface);
+  cursor: pointer;
+  font-weight: 650;
+  color: var(--muted);
+  transition: all 0.15s;
+}
+
+.gtps-demo .filter-btn:hover { background: #f5f7fa; }
+.gtps-demo .filter-btn.active {
+  background: var(--blue2);
+  border-color: #bfd0ee;
+  color: var(--blue);
+  font-weight: 750;
+}
+
+/* ── Proposal cards in rail ── */
+.gtps-demo .proposal-card {
+  width: 100%;
+  text-align: left;
+  border: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  background: var(--surface);
+  padding: 9px 10px;
+  cursor: pointer;
+  border-radius: 8px;
+  margin-bottom: 5px;
+  transition: all 0.15s;
+}
+
+.gtps-demo .proposal-card:hover { background: #fafbfd; }
+.gtps-demo .proposal-card.active {
+  background: #f2f6ff;
+  box-shadow: inset 3px 0 var(--blue);
+  border-color: #aabfe9;
+}
+
+.gtps-demo .proposal-card .prop-title { font-size: 10.5px; font-weight: 700; margin-bottom: 2px; }
+.gtps-demo .proposal-card .prop-region { font-size: 8.5px; color: var(--muted); }
+.gtps-demo .proposal-card .prop-meta { display: flex; gap: 5px; align-items: center; margin-top: 5px; }
+
+/* ── Center Pane (proposed changes preview) ── */
+.gtps-demo .center-pane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border-right: 1px solid var(--line);
+  background: var(--surface);
+}
+
+.gtps-demo .pane-header {
+  height: 42px;
+  border-bottom: 1px solid var(--line);
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  flex-shrink: 0;
+  gap: 8px;
+}
+
+.gtps-demo .pane-header strong { font-size: 10.5px; }
+.gtps-demo .pane-header .sub { font-size: 8.5px; color: var(--muted); }
+
+.gtps-demo .pane-body {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  background: #edf0f4;
+}
+
+/* ── Right Pane (original template / evidence) ── */
+.gtps-demo .right-pane {
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: var(--surface);
+}
+
+/* ── Document render container ── */
+.gtps-demo .doc-render-wrap {
+  flex: 1;
+  overflow: auto;
+  min-height: 0;
+  background: #edf0f4;
+  padding: 10px;
+}
+
+.gtps-demo .doc-render-paper {
+  max-width: 760px;
+  margin: 0 auto;
+  background: var(--surface);
+  min-height: 600px;
+  box-shadow: var(--shadow);
+}
+
+/* ── Evidence detail panel ── */
+.gtps-demo .evidence-panel {
+  border-top: 1px solid var(--line);
+  background: var(--surface);
+  padding: 12px;
+  flex-shrink: 0;
+  max-height: 45%;
+  overflow-y: auto;
+}
+
+.gtps-demo .evidence-panel h3 { font-size: 12px; margin: 0 0 8px; }
+
+.gtps-demo .ev-grid {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: 4px 8px;
+  font-size: 9.5px;
+}
+
+.gtps-demo .ev-grid .ev-label { color: #7d8998; font-weight: 600; }
+.gtps-demo .ev-grid .ev-value { color: var(--ink); overflow-wrap: anywhere; }
+
+.gtps-demo .ev-actions {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+/* ── Buttons (from v5-lite) ── */
+.gtps-demo .btn {
+  border: 1px solid var(--line);
+  background: var(--surface);
+  border-radius: 7px;
+  padding: 7px 10px;
+  font-size: 10.5px;
+  font-weight: 650;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.gtps-demo .btn:hover:not(:disabled) { background: #f5f7fa; }
+.gtps-demo .btn:disabled { cursor: not-allowed; opacity: 0.4; }
+.gtps-demo .btn.primary { background: var(--blue); color: #fff; border-color: var(--blue); }
+.gtps-demo .btn.primary:hover:not(:disabled) { background: #1d4ed8; }
+.gtps-demo .btn.ghost { border-color: transparent; background: transparent; }
+.gtps-demo .btn.success { background: var(--green); color: #fff; border-color: var(--green); }
+.gtps-demo .btn.danger { background: var(--red); color: #fff; border-color: var(--red); }
+.gtps-demo .btn.sm { padding: 5px 8px; font-size: 9px; }
+
+/* ── Intake Stage ── */
+.gtps-demo .intake-wrap {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 32px 24px;
+}
+
+.gtps-demo .intake-wrap h1 { font-size: 20px; margin: 0 0 6px; }
+.gtps-demo .intake-wrap > p { color: var(--muted); font-size: 11px; margin: 0 0 20px; }
+
+.gtps-demo .drop-zone {
+  border: 2px dashed #c5d0de;
+  border-radius: 12px;
+  padding: 28px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.2s;
+  margin-bottom: 14px;
+  background: var(--surface);
+}
+
+.gtps-demo .drop-zone:hover,
+.gtps-demo .drop-zone.dragging {
+  border-color: var(--blue);
+  background: var(--blue2);
+}
+
+.gtps-demo .drop-zone strong { display: block; font-size: 12px; margin-bottom: 4px; }
+.gtps-demo .drop-zone span { font-size: 9.5px; color: var(--muted); }
+
+.gtps-demo .demo-load-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid #d2dcf0;
+  background: #f7f9ff;
+  border-radius: 10px;
+  padding: 12px;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  margin-bottom: 16px;
+  transition: all 0.15s;
+}
+
+.gtps-demo .demo-load-btn:hover { border-color: #aabfe9; background: var(--blue2); }
+.gtps-demo .demo-load-btn strong { font-size: 11px; display: block; }
+.gtps-demo .demo-load-btn small { font-size: 9px; color: var(--muted); display: block; margin-top: 2px; }
+
+.gtps-demo .intake-doc-list { display: grid; gap: 7px; margin-bottom: 14px; }
+
+.gtps-demo .intake-doc-row {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr) 140px auto;
+  gap: 9px;
+  align-items: center;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 9px;
+  background: var(--surface);
+}
+
+.gtps-demo .intake-doc-row strong { display: block; font-size: 10px; }
+.gtps-demo .intake-doc-row small { display: block; color: var(--muted); font-size: 8.5px; margin-top: 2px; }
+
+.gtps-demo .role-select {
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 5px 7px;
+  font-size: 9px;
+  background: var(--surface);
+}
+
+.gtps-demo .readiness-bar {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 14px;
+  flex-wrap: wrap;
+}
+
+.gtps-demo .readiness-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 9px;
+  color: var(--muted);
+}
+
+.gtps-demo .readiness-item .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #d5dae2;
+}
+
+.gtps-demo .readiness-item .dot.ready { background: var(--green); }
+
+/* ── Notice / hint banners ── */
+.gtps-demo .notice {
+  border-left: 3px solid #6d8fd0;
+  background: #f5f8ff;
+  border-radius: 6px;
+  padding: 8px 10px;
+  font-size: 9.5px;
+  color: #50627a;
+  margin-bottom: 10px;
+}
+
+.gtps-demo .notice.warn {
+  border-color: #c49141;
+  background: #fffaf1;
+  color: #735b36;
+}
+
+.gtps-demo .notice.gov {
+  border-color: #9bb1d5;
+  background: #f7faff;
+  color: #4a6891;
+}
+
+/* ── Analyzing overlay ── */
+.gtps-demo .analyze-overlay {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  gap: 12px;
+  text-align: center;
+  padding: 24px;
+}
+
+.gtps-demo .analyze-overlay .spinner {
+  width: 32px;
+  height: 32px;
+  border: 3px solid var(--line);
+  border-top-color: var(--blue);
+  border-radius: 50%;
+  animation: gtps-spin 0.8s linear infinite;
+}
+
+@keyframes gtps-spin { to { transform: rotate(360deg); } }
+
+/* ── Error banner ── */
+.gtps-demo .error-banner {
+  border: 1px solid #e5b8b8;
+  background: var(--red2);
+  color: var(--red);
+  border-radius: 8px;
+  padding: 8px 10px;
+  font-size: 9.5px;
+  margin-bottom: 10px;
+}
+
+/* ── Preview status banner ── */
+.gtps-demo .preview-banner {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px;
+  border: 1px solid #d7e1ef;
+  border-radius: 8px;
+  background: #f8faff;
+  font-size: 8.8px;
+  color: #607087;
+  margin: 8px 10px;
+  flex-shrink: 0;
+}
+
+.gtps-demo .preview-banner strong { color: #26364b; }
+
+/* ── Back-to-comparison button ── */
+.gtps-demo .back-btn {
+  position: sticky;
+  top: 8px;
+  z-index: 5;
+  margin: 8px 10px;
+}
+
+/* ── Proposal overlay markers on DOCX render ── */
+.gtps-demo .table-proposal-badge {
+  position: absolute;
+  left: -4px;
+  top: -2px;
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 7.5px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.gtps-demo .table-proposal-badge.mapped { background: var(--green2); color: var(--green); }
+.gtps-demo .table-proposal-badge.needs-confirm { background: var(--amber2); color: var(--amber); }
+.gtps-demo .table-proposal-badge.missing { background: var(--red2); color: var(--red); }
+.gtps-demo .table-proposal-badge.unsupported { background: #f0f2f4; color: #657285; }
+
+/* ── Responsive adjustments ── */
+@media (max-width: 1100px) {
+  .gtps-demo .demo-shell {
+    grid-template-columns: 260px minmax(300px, 1fr) minmax(280px, 0.75fr);
+  }
+}
+
+@media (max-width: 860px) {
+  .gtps-demo .demo-shell {
+    grid-template-columns: 1fr;
+  }
+  .gtps-demo .demo-rail {
+    max-height: 250px;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+}
+
+/* ── Scrollbar styling (from v5-lite) ── */
+.gtps-demo .railbody,
+.gtps-demo .pane-body,
+.gtps-demo .doc-render-wrap,
+.gtps-demo .evidence-panel {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+
+.gtps-demo .railbody:hover,
+.gtps-demo .pane-body:hover,
+.gtps-demo .doc-render-wrap:hover,
+.gtps-demo .evidence-panel:hover {
+  scrollbar-color: #9ba5b1 transparent;
+}
+
+/* ── Remove button ── */
+.gtps-demo .remove-btn {
+  border: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  padding: 4px;
+  font-size: 14px;
+  line-height: 1;
+}
+
+.gtps-demo .remove-btn:hover { color: var(--red); }

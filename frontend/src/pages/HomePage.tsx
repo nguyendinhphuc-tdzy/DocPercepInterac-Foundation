@@ -86,6 +86,48 @@ export const HomePage: React.FC = () => {
               </button>
             </div>
           </div>
+
+          <div
+            data-testid="workflow-starter-GTPS_REAL_DOC_DEMO"
+            style={{
+              display: 'flex', alignItems: 'flex-start', gap: 'var(--space-3)',
+              padding: 'var(--space-4)', background: 'var(--bg-surface)',
+              border: '1px solid var(--border)', borderRadius: 'var(--radius-xl)',
+              marginTop: 'var(--space-3)',
+            }}
+          >
+            <div style={{
+              width: 34, height: 34, borderRadius: 'var(--radius-lg)', flexShrink: 0,
+              background: 'rgba(59, 130, 246, 0.1)', border: '1px solid rgba(59, 130, 246, 0.3)',
+              display: 'flex', alignItems: 'center', justifyContent: 'center',
+            }}>
+              <FileText size={16} style={{ color: 'var(--accent)' }} />
+            </div>
+
+            <div style={{ flex: 1, minWidth: 0 }}>
+              <div style={{
+                fontSize: 'var(--text-md)', fontWeight: 600, color: 'var(--text-primary)',
+                marginBottom: 2,
+              }}>
+                GTPS Local File Demo (v5-lite Interactive)
+              </div>
+              <p style={{
+                fontSize: 'var(--text-sm)', color: 'var(--text-secondary)',
+                lineHeight: 1.6, marginBottom: 'var(--space-3)',
+              }}>
+                Interactive demo with real DOCX/XLSX user files, three-role intake,
+                deterministic mapping proposals, and zero document mutation.
+              </p>
+              <button
+                className="btn btn-secondary"
+                data-testid="start-gtps-demo"
+                onClick={() => setCurrentView('gtps-demo')}
+              >
+                <span>Launch Demo</span>
+                <ArrowRight size={15} />
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Generic entry — opens Workspace directly; documents are added there,
